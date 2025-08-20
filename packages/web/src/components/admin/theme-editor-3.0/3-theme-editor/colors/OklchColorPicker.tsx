@@ -1,10 +1,10 @@
 'use client';
 
 import React from 'react';
-import { Slider } from '@/components/ui/slider';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { Slider } from '../../ui/slider';
+import { Label } from '../../ui/label';
+import { Input } from '../../ui/input';
+import { Button } from '../../ui/button';
 import { OklchColor } from '../../types/theme.types';
 
 interface OklchColorPickerProps {

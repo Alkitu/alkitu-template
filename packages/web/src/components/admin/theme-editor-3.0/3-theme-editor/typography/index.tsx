@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { Card } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
+import { Card } from '../../ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../ui/select';
+import { Label } from '../../ui/label';
 import { ThemeTypography } from '../../types/theme.types';
 import { TypographySection } from './TypographySection';
 import { DEFAULT_TYPOGRAPHY } from './types';
@@ -117,7 +117,7 @@ export function TypographyEditor({
             </Select>
             <div 
               className="text-sm p-2 border rounded"
-              style={{ fontFamily: Array.isArray(typography.fontFamilies?.sans) ? typography.fontFamilies.sans[0] : typography.fontFamilies?.sans?.split(',')[0]?.trim() || 'Inter' }}
+              style={{ fontFamily: Array.isArray(typography.fontFamilies?.sans) ? typography.fontFamilies.sans[0] : typography.fontFamilies?.sans?.split(',')[0]?.trim() || 'var(--font-sans)' }}
             >
               The quick brown fox jumps over the lazy dog.
             </div>
@@ -143,7 +143,7 @@ export function TypographyEditor({
             </Select>
             <div 
               className="text-sm p-2 border rounded"
-              style={{ fontFamily: Array.isArray(typography.fontFamilies?.serif) ? typography.fontFamilies.serif[0] : typography.fontFamilies?.serif?.split(',')[0]?.trim() || 'Georgia' }}
+              style={{ fontFamily: Array.isArray(typography.fontFamilies?.serif) ? typography.fontFamilies.serif[0] : typography.fontFamilies?.serif?.split(',')[0]?.trim() || 'var(--font-serif)' }}
             >
               The quick brown fox jumps over the lazy dog.
             </div>
@@ -169,7 +169,7 @@ export function TypographyEditor({
             </Select>
             <div 
               className="text-sm p-2 border rounded"
-              style={{ fontFamily: Array.isArray(typography.fontFamilies?.mono) ? typography.fontFamilies.mono[0] : typography.fontFamilies?.mono?.split(',')[0]?.trim() || 'JetBrains Mono' }}
+              style={{ fontFamily: Array.isArray(typography.fontFamilies?.mono) ? typography.fontFamilies.mono[0] : typography.fontFamilies?.mono?.split(',')[0]?.trim() || 'var(--font-mono)' }}
             >
               const greeting = "Hello World";
             </div>

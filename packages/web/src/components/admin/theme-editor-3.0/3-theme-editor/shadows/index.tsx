@@ -1,10 +1,10 @@
 'use client';
 
 import React from 'react';
-import { Card } from '@/components/ui/card';
-import { Slider } from '@/components/ui/slider';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Card } from '../../ui/card';
+import { Slider } from '../../ui/slider';
+import { Input } from '../../ui/input';
+import { Label } from '../../ui/label';
 import { ThemeShadows } from '../../types/theme.types';
 
 interface ShadowsEditorProps {
@@ -48,7 +48,7 @@ export function ShadowsEditor({
 
   // Parse shadow values to extract blur and spread for editing
   const parseShadow = (shadowValue: string) => {
-    // Basic parsing for box-shadow values like "0 1px 3px 0 rgb(0 0 0 / 0.1)"
+    // Basic parsing for box-shadow values like "0 1px 3px 0 hsl(var(--foreground) / 0.1)"
     const match = shadowValue.match(/(\d+)px\s+(\d+)px\s+(\d+)px/);
     if (match) {
       return {
@@ -60,7 +60,7 @@ export function ShadowsEditor({
     return { offsetX: 0, offsetY: 0, blur: 0 };
   };
 
-  const createShadow = (offsetX: number, offsetY: number, blur: number, color = 'rgb(0 0 0 / 0.1)') => {
+  const createShadow = (offsetX: number, offsetY: number, blur: number, color = 'hsl(var(--foreground) / 0.1)') => {
     return `${offsetX}px ${offsetY}px ${blur}px 0 ${color}`;
   };
 
@@ -269,7 +269,7 @@ export function ShadowsEditor({
         <h3 className="text-sm font-medium mb-2">Shadow Colors</h3>
         <div className="text-xs text-muted-foreground space-y-2">
           <p>
-            Shadow colors are currently set to <code className="bg-muted px-1 rounded">rgb(0 0 0 / 0.1)</code> for consistency.
+            Shadow colors are currently set to <code className="bg-muted px-1 rounded">hsl(var(--foreground) / 0.1)</code> for consistency.
           </p>
           <p>
             To customize shadow colors, edit the CSS values directly or integrate with the color system.

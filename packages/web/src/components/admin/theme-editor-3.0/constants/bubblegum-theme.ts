@@ -141,18 +141,18 @@ export const BUBBLEGUM_THEME: ThemeData = {
   // Typography
   typography: {
     fontFamilies: {
-      sans: "Poppins, sans-serif",
-      serif: "Lora, serif",
-      mono: "Fira Code, monospace"
+      sans: 'var(--font-sans)',
+      serif: 'var(--font-serif)',
+      mono: 'var(--font-mono)'
     },
-    trackingNormal: '0em'
+    trackingNormal: 'var(--tracking-normal)'
   },
 
   // Brand
   brand: {
     name: 'Bubblegum Theme',
-    primaryColor: createColorToken('brand-primary', 'oklch(0.6180 0.1830 340.2470)', 0.6180, 0.1830, 340.2470, 'Primary brand color'),
-    secondaryColor: createColorToken('brand-secondary', 'oklch(0.7950 0.0820 187.4630)', 0.7950, 0.0820, 187.4630, 'Secondary brand color')
+    primaryColor: createColorToken('primary', 'oklch(0.6180 0.1830 340.2470)', 0.6180, 0.1830, 340.2470, 'Primary brand color'),  // Migrated from brand-primary
+    secondaryColor: createColorToken('secondary', 'oklch(0.7950 0.0820 187.4630)', 0.7950, 0.0820, 187.4630, 'Secondary brand color')  // Migrated from brand-secondary
   },
 
   // Borders
@@ -171,14 +171,14 @@ export const BUBBLEGUM_THEME: ThemeData = {
 
   // Shadows
   shadows: {
-    shadow2xs: '0 1px 3px 0px hsl(0 0% 0% / 0.05)',
-    shadowXs: '0 1px 3px 0px hsl(0 0% 0% / 0.05)',
-    shadowSm: '0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10)',
-    shadow: '0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10)',
-    shadowMd: '0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 2px 4px -1px hsl(0 0% 0% / 0.10)',
-    shadowLg: '0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 4px 6px -1px hsl(0 0% 0% / 0.10)',
-    shadowXl: '0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 8px 10px -1px hsl(0 0% 0% / 0.10)',
-    shadow2xl: '0 1px 3px 0px hsl(0 0% 0% / 0.25)'
+    shadow2xs: '0 1px 3px 0px hsl(var(--foreground) / 0.05)',
+    shadowXs: '0 1px 3px 0px hsl(var(--foreground) / 0.05)',
+    shadowSm: '0 1px 3px 0px hsl(var(--foreground) / 0.10), 0 1px 2px -1px hsl(var(--foreground) / 0.10)',
+    shadow: '0 1px 3px 0px hsl(var(--foreground) / 0.10), 0 1px 2px -1px hsl(var(--foreground) / 0.10)',
+    shadowMd: '0 1px 3px 0px hsl(var(--foreground) / 0.10), 0 2px 4px -1px hsl(var(--foreground) / 0.10)',
+    shadowLg: '0 1px 3px 0px hsl(var(--foreground) / 0.10), 0 4px 6px -1px hsl(var(--foreground) / 0.10)',
+    shadowXl: '0 1px 3px 0px hsl(var(--foreground) / 0.10), 0 8px 10px -1px hsl(var(--foreground) / 0.10)',
+    shadow2xl: '0 1px 3px 0px hsl(var(--foreground) / 0.25)'
   },
 
   // Scroll

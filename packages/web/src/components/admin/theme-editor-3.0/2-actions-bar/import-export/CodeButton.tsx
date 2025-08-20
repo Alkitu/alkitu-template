@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '../../ui/button';
 import { Code } from 'lucide-react';
 import { ThemeWithCurrentColors, ThemeExportFormat } from '../../types/theme.types';
 import { ThemeCodeModal } from './ThemeCodeModal';

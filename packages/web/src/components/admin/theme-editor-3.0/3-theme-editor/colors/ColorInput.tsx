@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Button } from '../../ui/button';
+import { Input } from '../../ui/input';
+import { Popover, PopoverContent, PopoverTrigger } from '../../ui/popover';
 import { Shuffle } from 'lucide-react';
 import { ColorLinkButton } from './ColorLinkButton';
 import { ColorToken, OklchColor, ThemeColors } from '../../types/theme.types';
@@ -32,7 +32,8 @@ export function ColorInput({
   className = ""
 }: ColorInputProps) {
   const [isPickerOpen, setIsPickerOpen] = useState(false);
-  const [inputValue, setInputValue] = useState(() => color?.hex || '#000000');
+  const DEFAULT_COLOR = 'hsl(var(--foreground))';
+  const [inputValue, setInputValue] = useState(() => color?.hex || DEFAULT_COLOR);
   const [isEditingInput, setIsEditingInput] = useState(false);
 
   // Update input value when color prop changes (show hex) but not when user is editing
@@ -62,7 +63,7 @@ export function ColorInput({
       onChange(newColorToken);
     } else {
       // Revert to current color's hex value if invalid
-      setInputValue(color?.hex || '#000000');
+      setInputValue(color?.hex || DEFAULT_COLOR);
     }
   };
 
@@ -88,7 +89,7 @@ export function ColorInput({
 
   // Get color for preview swatch (always show as hex)
   const getColorPreview = (): string => {
-    return color?.hex || '#000000';
+    return color?.hex || DEFAULT_COLOR;
   };
 
   return (
@@ -134,7 +135,7 @@ export function ColorInput({
         onFocus={handleInputFocus}
         onBlur={handleInputBlur}
         onKeyDown={handleInputKeyDown}
-        placeholder="#000000"
+        placeholder="Color hex value"
         className="flex-1 font-mono text-xs text-foreground bg-input border-border"
       />
 

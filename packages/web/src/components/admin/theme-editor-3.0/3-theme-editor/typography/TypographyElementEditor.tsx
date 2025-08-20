@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import { Label } from '@/components/ui/label';
-import { SelectItem } from '@/components/ui/select';
+import { Label } from '../../ui/label';
+import { SelectItem } from '../../ui/select';
 import { NumericInput } from './NumericInput';
 import { KeyboardSelect } from './KeyboardSelect';
 import { TypographyElement } from './types';

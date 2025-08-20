@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '../../ui/button';
 import { Save, Heart, Check } from 'lucide-react';
 import { ThemeData } from '../../types/theme.types';
 import { SaveThemeDialog } from './SaveThemeDialog';

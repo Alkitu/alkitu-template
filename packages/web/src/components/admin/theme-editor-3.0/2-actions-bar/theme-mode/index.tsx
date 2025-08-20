@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '../../ui/badge';
 import { ThemeMode } from '../../types/theme.types';
 import { ModeToggle } from './ModeToggle';
 

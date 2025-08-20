@@ -1,19 +1,25 @@
 'use client';
 
 import { useState } from 'react';
-import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 import { Label } from '@/components/ui/label';
 import { useTranslations } from '@/context/TranslationContext';
 import { FormError } from '@/components/shared/messages/form-error';
 import { FormSuccess } from '@/components/shared/messages/form-success';
-import { getCurrentLocalizedRoute } from '@/lib/locale';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
-export const ResetPasswordForm = () => {
+interface ResetPasswordFormProps {
+  token: string;
+}
+
+export const ResetPasswordForm = ({ token }: ResetPasswordFormProps) => {
   const t = useTranslations();
-  const pathname = usePathname();
-  const [email, setEmail] = useState('');
+  const router = useRouter();
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -24,39 +30,53 @@ export const ResetPasswordForm = () => {
     setError('');
     setSuccess('');
 
+    // Validate passwords match
+    if (password !== confirmPassword) {
+      setError(t('auth.resetPassword.passwordMismatch') || 'Las contraseñas no coinciden');
+      setIsLoading(false);
+      return;
+    }
+
+    // Validate password length
+    if (password.length < 6) {
+      setError(t('auth.resetPassword.passwordTooShort') || 'La contraseña debe tener al menos 6 caracteres');
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      const response = await fetch('/api/auth/forgot-password', {
+      const response = await fetch('/api/auth/reset-password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ 
+          token, 
+          newPassword: password 
+        }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'Failed to send reset email');
+        throw new Error(data.message || 'Error resetting password');
       }
 
       setSuccess(
-        t('auth.resetPassword.success', {}, 'auth') ||
-          'Password reset email sent successfully!',
+        data.message ||
+        'Contraseña actualizada exitosamente. Redirigiendo al login...'
       );
 
-      // Redirect to verify request page with proper locale
+      // Redirect to login after 3 seconds
       setTimeout(() => {
-        const localizedVerifyRoute = getCurrentLocalizedRoute(
-          '/auth/verify-request',
-          pathname,
-        );
-        window.location.href = localizedVerifyRoute;
-      }, 2000);
+        router.push('/auth/login');
+      }, 3000);
+
     } catch (err: any) {
       setError(
-        err.message ||
-          t('auth.resetPassword.error', {}, 'auth') ||
-          'Failed to send reset email',
+        err.message || 
+        t('auth.resetPassword.error') || 
+        'Error actualizando la contraseña'
       );
     } finally {
       setIsLoading(false);
@@ -64,26 +84,67 @@ export const ResetPasswordForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="email">{t('auth.login.email')}</Label>
-        <Input
-          id="email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder={t('auth.login.email')}
-          required
-          disabled={isLoading}
-        />
+    <div className="space-y-6">
+      <div className="space-y-2 text-center">
+        <h1 className="text-3xl font-bold">
+          {t('auth.resetPassword.title') || 'Restablecer contraseña'}
+        </h1>
+        <p className="text-muted-foreground">
+          {t('auth.resetPassword.description') || 
+          'Ingresa tu nueva contraseña'}
+        </p>
       </div>
 
-      <FormError message={error} />
-      <FormSuccess message={success} />
+      <form onSubmit={handleSubmit} className="space-y-4" suppressHydrationWarning>
+        <div className="space-y-2" suppressHydrationWarning>
+          <Label htmlFor="password">
+            {t('auth.resetPassword.newPassword') || 'Nueva contraseña'}
+          </Label>
+          <PasswordInput
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder={t('auth.resetPassword.passwordPlaceholder') || 'Mínimo 6 caracteres'}
+            required
+            disabled={isLoading}
+            minLength={6}
+          />
+        </div>
 
-      <Button type="submit" className="w-full" disabled={isLoading}>
-        {isLoading ? t('Common.general.loading') : 'Send Reset Email'}
-      </Button>
-    </form>
+        <div className="space-y-2" suppressHydrationWarning>
+          <Label htmlFor="confirmPassword">
+            {t('auth.resetPassword.confirmPassword') || 'Confirmar contraseña'}
+          </Label>
+          <PasswordInput
+            id="confirmPassword"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder={t('auth.resetPassword.confirmPasswordPlaceholder') || 'Repite tu nueva contraseña'}
+            required
+            disabled={isLoading}
+            minLength={6}
+          />
+        </div>
+
+        <FormError message={error} />
+        <FormSuccess message={success} />
+
+        <Button type="submit" className="w-full" disabled={isLoading}>
+          {isLoading 
+            ? (t('Common.general.loading') || 'Actualizando...') 
+            : (t('auth.resetPassword.submit') || 'Actualizar contraseña')
+          }
+        </Button>
+      </form>
+
+      <div className="text-center">
+        <Link 
+          href="/auth/login" 
+          className="text-sm text-muted-foreground hover:text-primary underline-offset-4 hover:underline"
+        >
+          {t('auth.resetPassword.backToLogin') || 'Volver al inicio de sesión'}
+        </Link>
+      </div>
+    </div>
   );
 };

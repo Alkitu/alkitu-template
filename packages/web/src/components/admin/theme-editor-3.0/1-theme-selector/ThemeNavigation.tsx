@@ -1,9 +1,9 @@
 'use client';
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '../ui/button';
 import { ChevronLeft, ChevronRight, Shuffle } from 'lucide-react';
-import { Separator } from '@/components/ui/separator';
+import { Separator } from '../ui/separator';
 
 interface ThemeNavigationProps {
   onPrevious: () => void;

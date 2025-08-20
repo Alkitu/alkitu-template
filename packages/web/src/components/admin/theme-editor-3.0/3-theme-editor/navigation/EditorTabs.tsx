@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger } from '../../ui/tabs';
 import { Palette, Type, Building, Square, Spacing, Shadow, Scroll } from 'lucide-react';
 import { EditorSection } from '../../types/editor.types';
 

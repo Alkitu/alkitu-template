@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Card } from '../../ui/card';
+import { Badge } from '../../ui/badge';
 import { Check, AlertTriangle, X, Sun } from 'lucide-react';
 import { useThemeEditor } from '../../context/ThemeEditorContext';
 import { getContrastRatio, getContrastGrade } from '../../utils/contrast';
@@ -107,8 +107,14 @@ export function ContrastChecker() {
     if (currentViewport === 'smartphone') {
       return 'grid grid-cols-1 gap-4';
     }
-    // For desktop, tablet, and TV use responsive grids
-    return 'grid grid-cols-1 md:grid-cols-2 gap-4';
+    if (currentViewport === 'tablet') {
+      return 'grid grid-cols-2 gap-4';
+    }
+    if (currentViewport === 'tv') {
+      return 'grid grid-cols-3 xl:grid-cols-4 gap-6';
+    }
+    // Desktop
+    return 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4';
   };
 
   const getInteractiveGridClasses = () => {
@@ -116,7 +122,13 @@ export function ContrastChecker() {
     if (currentViewport === 'smartphone') {
       return 'grid grid-cols-1 gap-4';
     }
-    // For desktop, tablet, and TV use responsive grids
+    if (currentViewport === 'tablet') {
+      return 'grid grid-cols-3 gap-4';
+    }
+    if (currentViewport === 'tv') {
+      return 'grid grid-cols-3 gap-6';
+    }
+    // Desktop
     return 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4';
   };
   // Use current mode colors for contrast checking

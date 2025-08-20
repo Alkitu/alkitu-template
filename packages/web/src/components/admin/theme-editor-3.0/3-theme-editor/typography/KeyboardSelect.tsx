@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useCallback, KeyboardEvent } from 'react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../ui/select';
 
 interface KeyboardSelectProps {
   value: string;

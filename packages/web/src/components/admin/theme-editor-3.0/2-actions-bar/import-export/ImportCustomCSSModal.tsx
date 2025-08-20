@@ -1,12 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../ui/dialog';
+import { Button } from '../../ui/button';
+import { Input } from '../../ui/input';
+import { Label } from '../../ui/label';
+import { Textarea } from '../../ui/textarea';
+import { Alert, AlertDescription } from '../../ui/alert';
 import { AlertCircle, Upload } from 'lucide-react';
 import { ThemeData } from '../../types/theme.types';
 import { SaveThemeDialog } from '../save-controls/SaveThemeDialog';
@@ -96,9 +96,9 @@ export function ImportCustomCSSModal({
         darkColors,
         typography: {
           fontFamilies: {
-            sans: 'ui-sans-serif, system-ui, sans-serif',
-            serif: 'ui-serif, Georgia, serif',
-            mono: 'ui-monospace, SFMono-Regular, monospace'
+            sans: 'var(--font-sans)',
+            serif: 'var(--font-serif)',
+            mono: 'var(--font-mono)'
           },
           trackingNormal: '0em'
         },
@@ -116,14 +116,14 @@ export function ImportCustomCSSModal({
           radiusXl: 'calc(var(--radius) + 4px)'
         },
         shadows: {
-          shadow2xs: '0 1px 3px 0px hsl(0 0% 0% / 0.05)',
-          shadowXs: '0 1px 3px 0px hsl(0 0% 0% / 0.05)',
-          shadowSm: '0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10)',
-          shadow: '0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10)',
-          shadowMd: '0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 2px 4px -1px hsl(0 0% 0% / 0.10)',
-          shadowLg: '0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 4px 6px -1px hsl(0 0% 0% / 0.10)',
-          shadowXl: '0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 8px 10px -1px hsl(0 0% 0% / 0.10)',
-          shadow2xl: '0 1px 3px 0px hsl(0 0% 0% / 0.25)'
+          shadow2xs: '0 1px 3px 0px hsl(var(--foreground) / 0.05)',
+          shadowXs: '0 1px 3px 0px hsl(var(--foreground) / 0.05)',
+          shadowSm: '0 1px 3px 0px hsl(var(--foreground) / 0.10), 0 1px 2px -1px hsl(var(--foreground) / 0.10)',
+          shadow: '0 1px 3px 0px hsl(var(--foreground) / 0.10), 0 1px 2px -1px hsl(var(--foreground) / 0.10)',
+          shadowMd: '0 1px 3px 0px hsl(var(--foreground) / 0.10), 0 2px 4px -1px hsl(var(--foreground) / 0.10)',
+          shadowLg: '0 1px 3px 0px hsl(var(--foreground) / 0.10), 0 4px 6px -1px hsl(var(--foreground) / 0.10)',
+          shadowXl: '0 1px 3px 0px hsl(var(--foreground) / 0.10), 0 8px 10px -1px hsl(var(--foreground) / 0.10)',
+          shadow2xl: '0 1px 3px 0px hsl(var(--foreground) / 0.25)'
         },
         scroll: { width: '8px', behavior: 'smooth', smooth: true, hide: false },
         tags: ['imported', 'custom'],
@@ -213,7 +213,7 @@ export function ImportCustomCSSModal({
   // Create default color token
   const createDefaultColorToken = (name: string): any => {
     const { createPreciseColorToken } = require('../../utils/color-conversions-v2');
-    return createPreciseColorToken(name, '#808080'); // Default gray
+    return createPreciseColorToken(name, 'hsl(var(--muted-foreground))');
   };
 
   const handleImportClick = () => {

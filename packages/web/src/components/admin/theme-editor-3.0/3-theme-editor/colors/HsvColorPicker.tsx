@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Input } from '../../ui/input';
+import { Label } from '../../ui/label';
 import { ColorToken } from '../../types/theme.types';
 import { 
   // Legacy imports (still needed for some functions)
@@ -203,15 +203,15 @@ export function HsvColorPicker({ colorToken, onChange, className }: HsvColorPick
           className="w-full h-32 rounded-lg cursor-crosshair relative overflow-hidden"
           style={{
             background: `
-              linear-gradient(to bottom, transparent, #000),
-              linear-gradient(to right, #fff, hsl(${hsv.h}, 100%, 50%))
+              linear-gradient(to bottom, transparent, hsl(var(--foreground))),
+              linear-gradient(to right, hsl(var(--background)), hsl(${hsv.h}, 100%, 50%))
             `
           }}
           onMouseDown={handleSatValMouseDown}
         >
           {/* Saturation/Value Indicator */}
           <div
-            className="absolute w-3 h-3 border-2 border-white rounded-full shadow-md pointer-events-none transform -translate-x-1/2 -translate-y-1/2"
+            className="absolute w-3 h-3 border-2 border-background rounded-full shadow-md pointer-events-none transform -translate-x-1/2 -translate-y-1/2"
             style={{
               left: `${satPosition}%`,
               top: `${valPosition}%`,
@@ -233,7 +233,7 @@ export function HsvColorPicker({ colorToken, onChange, className }: HsvColorPick
         >
           {/* Hue Indicator */}
           <div
-            className="absolute w-3 h-6 bg-white border border-gray-300 rounded-sm shadow-md pointer-events-none transform -translate-x-1/2 -translate-y-1"
+            className="absolute w-3 h-6 bg-background border border-border rounded-sm shadow-md pointer-events-none transform -translate-x-1/2 -translate-y-1"
             style={{
               left: `${huePosition}%`,
               top: '50%',

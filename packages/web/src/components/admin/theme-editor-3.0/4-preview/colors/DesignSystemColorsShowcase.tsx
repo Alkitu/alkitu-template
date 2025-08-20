@@ -1,10 +1,10 @@
 'use client';
 
 import React from 'react';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Card } from '../../ui/card';
+import { Badge } from '../../ui/badge';
 import { Copy, CheckCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '../../ui/button';
 import { ThemeColors } from '../../types/theme.types';
 import { CSS_VARIABLE_MAP } from '../../types/color-sections.types';
 import { oklchToHex } from '../../utils/color-conversions';
@@ -152,9 +152,17 @@ export function DesignSystemColorsShowcase({ colors }: DesignSystemColorsShowcas
   const getGridClasses = () => {
     const currentViewport = state.viewport.current;
     if (currentViewport === 'smartphone') {
-      return 'grid grid-cols-1 gap-4';
+      return 'grid grid-cols-1 gap-3';
     }
-    // For desktop, tablet, and TV use responsive grids
+    if (currentViewport === 'tablet') {
+      // Tablet: 2 columns for most sections, 3 for smaller items
+      return 'grid grid-cols-2 gap-4';
+    }
+    if (currentViewport === 'tv') {
+      // TV: More columns with larger gaps
+      return 'grid grid-cols-4 xl:grid-cols-5 gap-6';
+    }
+    // Desktop: Responsive grid
     return 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4';
   };
 
@@ -201,18 +209,28 @@ export function DesignSystemColorsShowcase({ colors }: DesignSystemColorsShowcas
       </div>
 
       {/* Color Categories */}
-      {categories.map((category) => (
-        <div key={category} className="space-y-4">
-          <h4 className="text-sm font-medium text-foreground border-b border-border pb-2">
-            {category}
-          </h4>
-          <div className={getGridClasses()}>
-            {colorsByCategory[category].map((item) => (
-              <ColorCard key={item.colorKey} item={item} colors={colors} />
-            ))}
+      {categories.map((category) => {
+        // Special grid for chart colors (5 items) to distribute better
+        const isChartColors = category === 'Chart Colors';
+        const categoryGridClass = isChartColors && state.viewport.current === 'tablet' 
+          ? 'grid grid-cols-3 gap-4' 
+          : isChartColors && state.viewport.current === 'tv'
+          ? 'grid grid-cols-5 gap-6'
+          : getGridClasses();
+        
+        return (
+          <div key={category} className="space-y-4">
+            <h4 className="text-sm font-medium text-foreground border-b border-border pb-2">
+              {category}
+            </h4>
+            <div className={categoryGridClass}>
+              {colorsByCategory[category].map((item) => (
+                <ColorCard key={item.colorKey} item={item} colors={colors} />
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
 
     </div>
   );

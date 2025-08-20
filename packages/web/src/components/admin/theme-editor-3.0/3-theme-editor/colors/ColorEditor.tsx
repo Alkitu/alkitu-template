@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../../ui/accordion';
 import { useThemeEditor } from '../../context/ThemeEditorContext';
 import { COLOR_SECTIONS, COLOR_LABELS } from '../../types/color-sections.types';
 import { ColorInput } from './ColorInput';

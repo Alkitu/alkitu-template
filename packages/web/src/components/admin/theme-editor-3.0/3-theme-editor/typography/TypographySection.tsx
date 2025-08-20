@@ -2,8 +2,8 @@
 
 import React, { useState } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { Button } from '../../ui/button';
+import { Card } from '../../ui/card';
 import { TypographyElementEditor } from './TypographyElementEditor';
 import { useTypographyState } from './useTypographyState';
 import { TypographyElement, TypographyElements } from './types';

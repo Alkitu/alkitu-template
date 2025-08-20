@@ -1,15 +1,15 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../ui/dialog';
+import { Button } from '../../ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs';
 import { Copy, Check } from 'lucide-react';
 import { ThemeWithCurrentColors } from '../../types/theme.types';
 import { generateThemeCSS } from '../../utils/css-variables';
 import { oklchToHex, oklchToRgb } from '../../utils/color-conversions';
 import { CSS_VARIABLE_MAP } from '../../types/color-sections.types';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../ui/select';
 
 interface ThemeCodeModalProps {
   theme: ThemeWithCurrentColors;

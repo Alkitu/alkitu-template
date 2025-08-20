@@ -6,6 +6,12 @@ export function withAuthMiddleware(next: NextMiddleware): NextMiddleware {
   return async function middleware(request, event) {
     const { pathname } = request.nextUrl;
 
+    // TEMPORAL: Bypass de autenticación para desarrollo
+    if (process.env.SKIP_AUTH === 'true') {
+      console.log('[AUTH MIDDLEWARE] BYPASSING AUTH - DEVELOPMENT MODE');
+      return next(request, event);
+    }
+
     console.log('[AUTH MIDDLEWARE] Processing:', pathname);
     console.log('[AUTH MIDDLEWARE] Request URL:', request.url);
     console.log(

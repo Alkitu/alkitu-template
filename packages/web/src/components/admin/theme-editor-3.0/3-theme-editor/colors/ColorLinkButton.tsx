@@ -1,13 +1,13 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { Button } from '@/components/ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Button } from '../../ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '../../ui/popover';
 import { Link, Check } from 'lucide-react';
 import { ColorToken, ThemeColors } from '../../types/theme.types';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { Label } from '../../ui/label';
+import { Badge } from '../../ui/badge';
+import { ScrollArea } from '../../ui/scroll-area';
 
 interface ColorLinkButtonProps {
   currentColor: ColorToken;
@@ -34,7 +34,7 @@ export function ColorLinkButton({
       .map(([key, colorToken]) => ({
         key,
         name: colorToken.name,
-        hex: colorToken.hex || '#000000',
+        hex: colorToken.hex || 'hsl(var(--foreground))',
         isLinked: linkedColors.includes(key)
       }));
   }, [allColors, currentColor.name, linkedColors]);

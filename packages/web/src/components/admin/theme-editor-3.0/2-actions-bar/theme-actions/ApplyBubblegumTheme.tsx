@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '../../ui/button';
 import { Palette } from 'lucide-react';
 import { useThemeEditor } from '../../context/ThemeEditorContext';
 import { BUBBLEGUM_THEME } from '../../constants/bubblegum-theme';

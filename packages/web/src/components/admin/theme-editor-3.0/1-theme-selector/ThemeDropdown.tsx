@@ -1,10 +1,10 @@
 'use client';
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '../ui/button';
 import { Check, Heart } from 'lucide-react';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Badge } from '@/components/ui/badge';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
+import { Badge } from '../ui/badge';
 import { ThemeData } from '../types/theme.types';
 import { ThemePreview } from './ThemePreview';
 import { ThemeSearch } from './ThemeSearch';

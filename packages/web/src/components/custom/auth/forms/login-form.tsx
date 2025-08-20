@@ -3,11 +3,13 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 import { Label } from '@/components/ui/label';
 import { useTranslations } from '@/context/TranslationContext';
 import { FormError } from '@/components/shared/messages/form-error';
 import { FormSuccess } from '@/components/shared/messages/form-success';
 import { useAuthRedirect } from '@/hooks/useAuthRedirect';
+import Link from 'next/link';
 
 export const LoginForm = () => {
   const t = useTranslations();
@@ -80,9 +82,8 @@ export const LoginForm = () => {
 
       <div className="space-y-2" suppressHydrationWarning>
         <Label htmlFor="password">{t('auth.login.password')}</Label>
-        <Input
+        <PasswordInput
           id="password"
-          type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder={t('auth.login.password')}
@@ -97,6 +98,25 @@ export const LoginForm = () => {
       <Button type="submit" className="w-full" disabled={isLoading}>
         {isLoading ? t('Common.general.loading') : t('auth.login.submit')}
       </Button>
+
+      <div className="text-center space-y-2">
+        <Link 
+          href="/auth/forgot-password" 
+          className="text-sm text-muted-foreground hover:text-primary underline-offset-4 hover:underline block"
+        >
+          {t('auth.login.forgotPassword') || '¿Olvidaste tu contraseña?'}
+        </Link>
+        
+        <div className="text-sm text-muted-foreground">
+          o{' '}
+          <Link 
+            href="/auth/email-login" 
+            className="text-primary hover:underline"
+          >
+            {t('auth.login.emailLogin') || 'accede con código de email'}
+          </Link>
+        </div>
+      </div>
     </form>
   );
 };

@@ -1,10 +1,10 @@
 'use client';
 
 import React from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
+import { Badge } from '../ui/badge';
+import { Card } from '../ui/card';
+import { Button } from '../ui/button';
 import { useThemeEditor } from '../context/ThemeEditorContext';
 import { PreviewSection } from '../types';
 import { VIEWPORT_CONFIGS } from '../types/viewport.types';
@@ -197,32 +197,32 @@ export function Preview() {
         onValueChange={(value) => setPreviewSection(value as PreviewSection)}
         className="w-full h-full flex flex-col"
       >
-        {/* Internal navigation tabs - smaller for TV */}
-        <TabsList className={`grid w-full grid-cols-3 gap-1 h-auto p-1 flex-shrink-0 ${isTV ? 'mx-1 mt-1' : 'mx-2 mt-2'}`}>
+        {/* Internal navigation tabs - much larger for TV */}
+        <TabsList className={`grid w-full grid-cols-3 gap-2 h-auto ${isTV ? 'p-4' : 'p-1'} flex-shrink-0 ${isTV ? 'mx-4 mt-4' : 'mx-2 mt-2'}`}>
           {sections.map(({ id, label, icon: Icon }) => (
             <TabsTrigger 
               key={id} 
               value={id}
-              className={`flex flex-col gap-1 ${isTV ? 'h-8 text-[10px]' : 'h-12 text-xs'}`}
+              className={`flex flex-col ${isTV ? 'gap-4 h-32 text-2xl font-bold py-6' : 'gap-1 h-12 text-xs'}`}
             >
-              <Icon className={`${isTV ? 'h-2 w-2' : 'h-3 w-3'}`} />
-              <span>{label}</span>
+              <Icon className={`${isTV ? 'h-12 w-12' : 'h-3 w-3'}`} />
+              <span className={isTV ? 'text-2xl' : ''}>{label}</span>
             </TabsTrigger>
           ))}
         </TabsList>
 
-        {/* Content with TV scaling */}
+        {/* Content with TV scaling - 30% larger text for ALL elements */}
         <TabsContent value="colors" className="mt-2 flex-1 min-h-0 overflow-hidden">
-          <div className={`h-full overflow-y-auto pb-4 scrollbar-thin scrollbar-thumb-border scrollbar-track-background ${isTV ? 'px-1' : 'px-2'}`}>
-            <div className={isTV ? 'text-sm' : ''}>
+          <div className={`h-full overflow-y-auto pb-4 scrollbar-thin scrollbar-thumb-border scrollbar-track-background ${isTV ? 'px-6' : 'px-2'}`}>
+            <div className={isTV ? '[&_h1]:text-4xl [&_h2]:text-3xl [&_h3]:text-2xl [&_h4]:text-xl [&_p]:text-lg [&_.text-xs]:text-base [&_.text-sm]:text-lg [&_.text-base]:text-xl [&_.text-lg]:text-2xl [&_.text-2xl]:text-3xl [&_.h-3]:h-5 [&_.w-3]:w-5 [&_.h-2]:h-4 [&_.w-2]:w-4 [&_.h-6]:h-8 [&_.w-6]:w-8 [&_.h-24]:h-32 [&_.p-4]:p-6 [&_.gap-2]:gap-3 [&_.gap-1]:gap-2' : ''}>
               <ContrastChecker />
             </div>
           </div>
         </TabsContent>
 
         <TabsContent value="typography" className="mt-2 flex-1 min-h-0 overflow-hidden">
-          <div className={`h-full overflow-y-auto pb-4 scrollbar-thin scrollbar-thumb-border scrollbar-track-background ${isTV ? 'px-1' : 'px-2'}`}>
-            <div className={isTV ? 'text-sm' : ''}>
+          <div className={`h-full overflow-y-auto pb-4 scrollbar-thin scrollbar-thumb-border scrollbar-track-background ${isTV ? 'px-6' : 'px-2'}`}>
+            <div className={isTV ? '[&_h1]:text-5xl [&_h2]:text-4xl [&_h3]:text-3xl [&_h4]:text-2xl [&_h5]:text-xl [&_p]:text-lg [&_.text-xs]:text-base [&_.text-sm]:text-lg [&_.text-base]:text-xl [&_.text-lg]:text-2xl [&_.text-xl]:text-3xl [&_.text-2xl]:text-4xl [&_.h-3]:h-5 [&_.w-3]:w-5 [&_.h-4]:h-6 [&_.w-4]:w-6 [&_.p-2]:p-3 [&_.p-3]:p-4 [&_.p-4]:p-6 [&_.gap-2]:gap-3 [&_.gap-3]:gap-4' : ''}>
               <TypographyPreview />
             </div>
           </div>
@@ -230,10 +230,10 @@ export function Preview() {
 
         {sections.slice(2).map(({ id, label }) => (
           <TabsContent key={id} value={id} className="mt-2 flex-1 min-h-0 overflow-hidden">
-            <div className={`h-full overflow-y-auto pb-4 scrollbar-thin scrollbar-thumb-border scrollbar-track-background ${isTV ? 'px-1' : 'px-2'}`}>
-              <Card className={isTV ? 'p-2' : 'p-4'}>
-                <div className={`bg-muted/20 rounded border-2 border-dashed border-muted-foreground/20 flex items-center justify-center ${isTV ? 'h-16' : 'h-24'}`}>
-                  <span className={`text-muted-foreground text-center ${isTV ? 'text-xs' : 'text-xs'}`}>
+            <div className={`h-full overflow-y-auto pb-4 scrollbar-thin scrollbar-thumb-border scrollbar-track-background ${isTV ? 'px-6' : 'px-2'}`}>
+              <Card className={isTV ? 'p-6' : 'p-4'}>
+                <div className={`bg-muted/20 rounded border-2 border-dashed border-muted-foreground/20 flex items-center justify-center ${isTV ? 'h-40' : 'h-24'}`}>
+                  <span className={`text-muted-foreground text-center ${isTV ? 'text-2xl font-semibold' : 'text-xs'}`}>
                     {label} showcase will be here
                   </span>
                 </div>

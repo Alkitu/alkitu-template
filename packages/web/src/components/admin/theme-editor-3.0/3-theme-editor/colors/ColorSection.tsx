@@ -2,8 +2,8 @@
 
 import React, { useState } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { Button } from '../../ui/button';
+import { Card } from '../../ui/card';
 import { ColorSection as ColorSectionType } from '../../types/color-sections.types';
 import { ThemeColors, ColorToken } from '../../types/theme.types';
 import { COLOR_LABELS } from '../../types/color-sections.types';

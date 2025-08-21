@@ -3,8 +3,9 @@
 import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
 import { ThemeData, ThemeWithCurrentColors, ThemeMode, EditorState, EditorSection, ViewportState, ViewportSize, PreviewState, PreviewSection } from '../types';
 import { DEFAULT_THEME, DEFAULT_THEMES } from '../constants/default-themes';
-import { applyThemeToRoot, applyThemeMode, applyModeSpecificColors } from '../utils/css-variables';
+import { applyThemeToRoot, applyThemeMode, applyModeSpecificColors, applyTypographyElements } from '../utils/css-variables';
 import { applyScrollbarStyles } from '../utils/scrollbar-styles';
+import { DEFAULT_TYPOGRAPHY } from '../3-theme-editor/typography/types';
 
 // History interface for undo/redo functionality
 interface HistoryEntry {
@@ -355,6 +356,8 @@ export function ThemeEditorProvider({ children }: ThemeEditorProviderProps) {
     applyModeSpecificColors(initialColors);
     applyThemeMode(state.themeMode);
     applyScrollbarStyles();
+    // Apply default typography elements so Preview works immediately
+    applyTypographyElements(DEFAULT_TYPOGRAPHY);
   }, []);
   
   // Apply colors and mode when theme mode changes

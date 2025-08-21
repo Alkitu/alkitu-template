@@ -73,6 +73,8 @@ export function ColorSection({
                 <ColorInput
                   color={color}
                   onChange={(newColor) => onColorChange(colorKey, newColor)}
+                  allColors={colors}
+                  mode="light"
                   className="w-full"
                 />
               </div>

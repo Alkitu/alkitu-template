@@ -21,10 +21,10 @@ export interface TypographyElements {
   emphasis: TypographyElement;
 }
 
-// Default typography values using global CSS variables
+// Default typography values using Poppins as default font
 export const DEFAULT_TYPOGRAPHY: TypographyElements = {
   h1: {
-    fontFamily: 'var(--font-sans)',
+    fontFamily: 'Poppins, ui-sans-serif, system-ui, sans-serif',
     fontSize: '2.5rem',
     fontWeight: '700',
     lineHeight: '1.2',
@@ -33,7 +33,7 @@ export const DEFAULT_TYPOGRAPHY: TypographyElements = {
     textDecoration: 'none'
   },
   h2: {
-    fontFamily: 'var(--font-sans)',
+    fontFamily: 'Poppins, ui-sans-serif, system-ui, sans-serif',
     fontSize: '2rem',
     fontWeight: '600',
     lineHeight: '1.3',
@@ -42,7 +42,7 @@ export const DEFAULT_TYPOGRAPHY: TypographyElements = {
     textDecoration: 'none'
   },
   h3: {
-    fontFamily: 'var(--font-sans)',
+    fontFamily: 'Poppins, ui-sans-serif, system-ui, sans-serif',
     fontSize: '1.5rem',
     fontWeight: '600',
     lineHeight: '1.4',
@@ -51,7 +51,7 @@ export const DEFAULT_TYPOGRAPHY: TypographyElements = {
     textDecoration: 'none'
   },
   h4: {
-    fontFamily: 'var(--font-sans)',
+    fontFamily: 'Poppins, ui-sans-serif, system-ui, sans-serif',
     fontSize: '1.25rem',
     fontWeight: '500',
     lineHeight: '1.4',
@@ -60,7 +60,7 @@ export const DEFAULT_TYPOGRAPHY: TypographyElements = {
     textDecoration: 'none'
   },
   h5: {
-    fontFamily: 'var(--font-sans)',
+    fontFamily: 'Poppins, ui-sans-serif, system-ui, sans-serif',
     fontSize: '1.125rem',
     fontWeight: '500',
     lineHeight: '1.5',
@@ -69,7 +69,7 @@ export const DEFAULT_TYPOGRAPHY: TypographyElements = {
     textDecoration: 'none'
   },
   paragraph: {
-    fontFamily: 'var(--font-sans)',
+    fontFamily: 'Poppins, ui-sans-serif, system-ui, sans-serif',
     fontSize: '1rem',
     fontWeight: '400',
     lineHeight: '1.6',
@@ -87,7 +87,7 @@ export const DEFAULT_TYPOGRAPHY: TypographyElements = {
     textDecoration: 'none'
   },
   emphasis: {
-    fontFamily: 'var(--font-sans)',
+    fontFamily: 'Poppins, ui-sans-serif, system-ui, sans-serif',
     fontSize: '0.875rem',
     fontWeight: '500',
     lineHeight: '1.5',

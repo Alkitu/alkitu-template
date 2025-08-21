@@ -46,11 +46,49 @@ export function TypographyElementEditor({
   className = ""
 }: TypographyElementEditorProps) {
 
+  // Helper function to extract the first font name from font family string
+  const extractFirstFontName = (fontFamily: string): string => {
+    if (!fontFamily) return 'Poppins';
+    
+    // Split by comma and take the first font, removing quotes and trimming
+    const firstFont = fontFamily.split(',')[0]?.trim().replace(/['"]/g, '') || 'Poppins';
+    return firstFont;
+  };
+
+  // Helper function to build full font family string when a font is selected
+  const buildFontFamilyString = (selectedFont: string): string => {
+    // If it's a common font, add fallbacks
+    const fallbackMap: Record<string, string> = {
+      'Poppins': 'Poppins, ui-sans-serif, system-ui, sans-serif',
+      'Inter': 'Inter, ui-sans-serif, system-ui, sans-serif',
+      'Roboto': 'Roboto, ui-sans-serif, system-ui, sans-serif',
+      'Open Sans': 'Open Sans, ui-sans-serif, system-ui, sans-serif',
+      'Lato': 'Lato, ui-sans-serif, system-ui, sans-serif',
+      'Montserrat': 'Montserrat, ui-sans-serif, system-ui, sans-serif',
+      'Source Sans Pro': 'Source Sans Pro, ui-sans-serif, system-ui, sans-serif',
+      'Source Serif 4': 'Source Serif 4, ui-serif, Georgia, serif',
+      'Georgia': 'Georgia, ui-serif, serif',
+      'Times New Roman': 'Times New Roman, ui-serif, serif',
+      'JetBrains Mono': 'JetBrains Mono, ui-monospace, monospace',
+      'Fira Code': 'Fira Code, ui-monospace, monospace'
+    };
+
+    return fallbackMap[selectedFont] || `${selectedFont}, sans-serif`;
+  };
+
   const handleChange = (property: keyof TypographyElement, value: string) => {
-    onChange({
-      ...element,
-      [property]: value
-    });
+    // Special handling for fontFamily to build complete font stack
+    if (property === 'fontFamily') {
+      onChange({
+        ...element,
+        [property]: buildFontFamilyString(value)
+      });
+    } else {
+      onChange({
+        ...element,
+        [property]: value
+      });
+    }
   };
 
   return (
@@ -78,9 +116,10 @@ export function TypographyElementEditor({
         <div className="bg-muted/30 p-3 rounded-lg flex-1 min-w-[200px] flex flex-col justify-between">
           <Label className="text-xs font-medium text-foreground self-start">Familia</Label>
           <KeyboardSelect
-            value={element.fontFamily}
+            value={extractFirstFontName(element.fontFamily)}
             onValueChange={(value) => handleChange('fontFamily', value)}
             options={ALL_GOOGLE_FONTS.map(font => ({ value: font, label: font }))}
+            placeholder={extractFirstFontName(element.fontFamily) || 'Poppins'}
             className="w-full mt-auto"
           >
             {ALL_GOOGLE_FONTS.map(font => (

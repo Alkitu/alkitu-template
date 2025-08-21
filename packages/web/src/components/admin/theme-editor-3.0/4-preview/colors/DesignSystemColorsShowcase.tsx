@@ -98,14 +98,21 @@ function ColorCard({ item, colors }: { item: ColorShowcaseItem; colors: ThemeCol
     <Card className="p-4 bg-card border-border hover:shadow-md transition-shadow">
       <div className="space-y-3">
         {/* Header */}
-        <div className="flex items-start justify-between">
-          <div className="flex-1 min-w-0">
-            <h5 className="font-medium text-foreground truncate">{item.name}</h5>
-            <p className="text-xs text-muted-foreground mt-1">{item.description}</p>
-          </div>
-          <Badge variant="outline" className="ml-2 flex-shrink-0 text-xs">
-            {item.category}
-          </Badge>
+        <div>
+          <h5 style={{
+            fontFamily: 'var(--typography-h5-font-family)',
+            fontSize: 'var(--typography-h5-font-size)',
+            fontWeight: 'var(--typography-h5-font-weight)',
+            lineHeight: 'var(--typography-h5-line-height)',
+            letterSpacing: 'var(--typography-h5-letter-spacing)'
+          }} className="text-foreground truncate">{item.name}</h5>
+          <p style={{
+            fontFamily: 'var(--typography-paragraph-font-family)',
+            fontSize: 'var(--typography-paragraph-font-size)',
+            fontWeight: 'var(--typography-paragraph-font-weight)',
+            lineHeight: 'var(--typography-paragraph-line-height)',
+            letterSpacing: 'var(--typography-paragraph-letter-spacing)'
+          }} className="text-muted-foreground mt-1 text-xs">{item.description}</p>
         </div>
 
         {/* Color Preview */}
@@ -118,11 +125,21 @@ function ColorCard({ item, colors }: { item: ColorShowcaseItem; colors: ThemeCol
           
           {/* Color Value & CSS Variable */}
           <div className="space-y-1">
-            <div className="text-xs font-mono text-muted-foreground truncate">
+            <div style={{
+              fontFamily: 'var(--typography-emphasis-font-family)',
+              fontSize: 'var(--typography-emphasis-font-size)',
+              fontWeight: 'var(--typography-emphasis-font-weight)',
+              letterSpacing: 'var(--typography-emphasis-letter-spacing)'
+            }} className="text-muted-foreground truncate text-xs">
               {cssVariable}
             </div>
             <div className="flex items-center justify-between bg-muted/30 px-2 py-1 rounded min-w-0">
-              <span className="text-xs font-mono text-foreground truncate flex-1 mr-2">
+              <span style={{
+                fontFamily: 'var(--typography-emphasis-font-family)',
+                fontSize: 'var(--typography-emphasis-font-size)',
+                fontWeight: 'var(--typography-emphasis-font-weight)',
+                letterSpacing: 'var(--typography-emphasis-letter-spacing)'
+              }} className="text-foreground truncate flex-1 mr-2 text-xs">
                 {hexValue}
               </span>
               <Button
@@ -198,12 +215,29 @@ export function DesignSystemColorsShowcase({ colors }: DesignSystemColorsShowcas
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-foreground">Design System Colors</h3>
-          <p className="text-sm text-muted-foreground mt-1">
+          <h3 style={{
+            fontFamily: 'var(--typography-h3-font-family)',
+            fontSize: 'var(--typography-h3-font-size)',
+            fontWeight: 'var(--typography-h3-font-weight)',
+            lineHeight: 'var(--typography-h3-line-height)',
+            letterSpacing: 'var(--typography-h3-letter-spacing)'
+          }} className="text-foreground">Design System Colors</h3>
+          <p style={{
+            fontFamily: 'var(--typography-paragraph-font-family)',
+            fontSize: 'var(--typography-paragraph-font-size)',
+            fontWeight: 'var(--typography-paragraph-font-weight)',
+            lineHeight: 'var(--typography-paragraph-line-height)',
+            letterSpacing: 'var(--typography-paragraph-letter-spacing)'
+          }} className="text-muted-foreground mt-1">
             Complete color palette synchronized with CSS variables
           </p>
         </div>
-        <Badge variant="secondary" className="text-xs">
+        <Badge variant="secondary" style={{
+          fontFamily: 'var(--typography-emphasis-font-family)',
+          fontSize: 'var(--typography-emphasis-font-size)',
+          fontWeight: 'var(--typography-emphasis-font-weight)',
+          letterSpacing: 'var(--typography-emphasis-letter-spacing)'
+        }}>
           {categories.length} Sections • {DESIGN_SYSTEM_COLORS.length} Colors
         </Badge>
       </div>
@@ -220,7 +254,13 @@ export function DesignSystemColorsShowcase({ colors }: DesignSystemColorsShowcas
         
         return (
           <div key={category} className="space-y-4">
-            <h4 className="text-sm font-medium text-foreground border-b border-border pb-2">
+            <h4 style={{
+              fontFamily: 'var(--typography-h4-font-family)',
+              fontSize: 'var(--typography-h4-font-size)',
+              fontWeight: 'var(--typography-h4-font-weight)',
+              lineHeight: 'var(--typography-h4-line-height)',
+              letterSpacing: 'var(--typography-h4-letter-spacing)'
+            }} className="text-foreground border-b border-border pb-2">
               {category}
             </h4>
             <div className={categoryGridClass}>

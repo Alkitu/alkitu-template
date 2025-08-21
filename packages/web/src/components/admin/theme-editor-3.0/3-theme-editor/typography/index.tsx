@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Label } from '../../ui/label';
 import { ThemeTypography } from '../../types/theme.types';
 import { TypographySection } from './TypographySection';
-import { DEFAULT_TYPOGRAPHY } from './types';
+import { DEFAULT_TYPOGRAPHY, TypographyElements } from './types';
 import { applyTypographyElements } from '../../utils/css-variables';
 
 interface TypographyEditorProps {
@@ -16,12 +16,12 @@ interface TypographyEditorProps {
 }
 
 const FONT_OPTIONS = [
+  { value: 'Poppins', label: 'Poppins' },
   { value: 'Inter', label: 'Inter' },
   { value: 'Roboto', label: 'Roboto' },
   { value: 'Open Sans', label: 'Open Sans' },
   { value: 'Lato', label: 'Lato' },
   { value: 'Montserrat', label: 'Montserrat' },
-  { value: 'Poppins', label: 'Poppins' },
   { value: 'Source Sans Pro', label: 'Source Sans Pro' }
 ];
 
@@ -58,6 +58,18 @@ export function TypographyEditor({
       </div>
     );
   }
+
+  // Helper function to extract font name from font family string
+  const extractFontName = (fontFamily: string | string[] | undefined): string => {
+    if (!fontFamily) return '';
+    
+    if (Array.isArray(fontFamily)) {
+      return fontFamily[0] || '';
+    }
+    
+    // Take the first font from the comma-separated list
+    return fontFamily.split(',')[0]?.trim() || '';
+  };
 
   const handleFontFamilyChange = (type: 'sans' | 'serif' | 'mono', fontName: string) => {
     const updatedTypography = {
@@ -101,11 +113,11 @@ export function TypographyEditor({
           <div className="space-y-2">
             <Label className="text-xs">Sans Serif</Label>
             <Select 
-              value={Array.isArray(typography.fontFamilies?.sans) ? typography.fontFamilies.sans[0] : typography.fontFamilies?.sans?.split(',')[0]?.trim() || 'Inter'} 
+              value={extractFontName(typography.fontFamilies?.sans) || 'Poppins'} 
               onValueChange={(value) => handleFontFamilyChange('sans', value)}
             >
               <SelectTrigger className="h-8">
-                <SelectValue />
+                <SelectValue placeholder={extractFontName(typography.fontFamilies?.sans) || 'Poppins'} />
               </SelectTrigger>
               <SelectContent>
                 {FONT_OPTIONS.map(font => (
@@ -127,11 +139,11 @@ export function TypographyEditor({
           <div className="space-y-2">
             <Label className="text-xs">Serif</Label>
             <Select 
-              value={Array.isArray(typography.fontFamilies?.serif) ? typography.fontFamilies.serif[0] : typography.fontFamilies?.serif?.split(',')[0]?.trim() || 'Georgia'} 
+              value={extractFontName(typography.fontFamilies?.serif) || 'Source Serif 4'} 
               onValueChange={(value) => handleFontFamilyChange('serif', value)}
             >
               <SelectTrigger className="h-8">
-                <SelectValue />
+                <SelectValue placeholder={extractFontName(typography.fontFamilies?.serif) || 'Source Serif 4'} />
               </SelectTrigger>
               <SelectContent>
                 {SERIF_FONTS.map(font => (
@@ -153,11 +165,11 @@ export function TypographyEditor({
           <div className="space-y-2">
             <Label className="text-xs">Monospace</Label>
             <Select 
-              value={Array.isArray(typography.fontFamilies?.mono) ? typography.fontFamilies.mono[0] : typography.fontFamilies?.mono?.split(',')[0]?.trim() || 'JetBrains Mono'} 
+              value={extractFontName(typography.fontFamilies?.mono) || 'JetBrains Mono'} 
               onValueChange={(value) => handleFontFamilyChange('mono', value)}
             >
               <SelectTrigger className="h-8">
-                <SelectValue />
+                <SelectValue placeholder={extractFontName(typography.fontFamilies?.mono) || 'JetBrains Mono'} />
               </SelectTrigger>
               <SelectContent>
                 {MONO_FONTS.map(font => (

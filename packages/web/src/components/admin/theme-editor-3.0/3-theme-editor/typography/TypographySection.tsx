@@ -13,7 +13,8 @@ interface TypographySectionProps {
 }
 
 // Re-export for backward compatibility
-export { TypographyElements, TypographyElement, DEFAULT_TYPOGRAPHY } from './types';
+export type { TypographyElements, TypographyElement } from './types';
+export { DEFAULT_TYPOGRAPHY } from './types';
 
 // Typography element configurations
 const TYPOGRAPHY_CONFIG = [

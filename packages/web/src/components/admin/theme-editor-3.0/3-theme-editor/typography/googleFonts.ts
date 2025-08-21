@@ -65,10 +65,16 @@ export const GOOGLE_FONTS = {
   ]
 };
 
-// Flatten all fonts for the main selector
-export const ALL_GOOGLE_FONTS = [
+// Flatten all fonts for the main selector, with Poppins first
+const allFonts = [
   ...GOOGLE_FONTS.sans,
   ...GOOGLE_FONTS.serif,
   ...GOOGLE_FONTS.mono,
   ...GOOGLE_FONTS.display
 ].sort();
+
+// Put Poppins at the beginning as the default
+export const ALL_GOOGLE_FONTS = [
+  'Poppins',
+  ...allFonts.filter(font => font !== 'Poppins')
+];

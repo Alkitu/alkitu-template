@@ -42,10 +42,22 @@ function ContrastCard({ pair, colors }: ContrastCardProps) {
     <Card className="p-4 bg-card border-border">
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h4 className="text-sm font-medium text-foreground">{pair.name}</h4>
+          <h4 style={{
+            fontFamily: 'var(--typography-h5-font-family)',
+            fontSize: 'var(--typography-h5-font-size)',
+            fontWeight: 'var(--typography-h5-font-weight)',
+            lineHeight: 'var(--typography-h5-line-height)',
+            letterSpacing: 'var(--typography-h5-letter-spacing)'
+          }} className="text-foreground">{pair.name}</h4>
           <Badge 
             variant={grade === 'Fail' ? 'destructive' : 'secondary'}
             className="flex items-center gap-1"
+            style={{
+              fontFamily: 'var(--typography-emphasis-font-family)',
+              fontSize: 'var(--typography-emphasis-font-size)',
+              fontWeight: 'var(--typography-emphasis-font-weight)',
+              letterSpacing: 'var(--typography-emphasis-letter-spacing)'
+            }}
           >
             {getGradeIcon(grade)}
             <span>{ratio.toFixed(2)}</span>
@@ -57,14 +69,27 @@ function ContrastCard({ pair, colors }: ContrastCardProps) {
           style={{ backgroundColor: bgColor }}
         >
           <span 
-            className="text-2xl font-bold"
-            style={{ color: fgColor }}
+            style={{ 
+              color: fgColor,
+              fontFamily: 'var(--typography-h1-font-family)',
+              fontSize: 'var(--typography-h1-font-size)',
+              fontWeight: 'var(--typography-h1-font-weight)',
+              lineHeight: 'var(--typography-h1-line-height)',
+              letterSpacing: 'var(--typography-h1-letter-spacing)'
+            }}
           >
             Aa
           </span>
           <span 
-            className="ml-4 text-sm"
-            style={{ color: fgColor }}
+            className="ml-4"
+            style={{ 
+              color: fgColor,
+              fontFamily: 'var(--typography-paragraph-font-family)',
+              fontSize: 'var(--typography-paragraph-font-size)',
+              fontWeight: 'var(--typography-paragraph-font-weight)',
+              lineHeight: 'var(--typography-paragraph-line-height)',
+              letterSpacing: 'var(--typography-paragraph-letter-spacing)'
+            }}
           >
             Sample Text
           </span>
@@ -77,8 +102,18 @@ function ContrastCard({ pair, colors }: ContrastCardProps) {
               style={{ backgroundColor: bgColor }}
             />
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-medium text-foreground">Background</p>
-              <p className="text-xs text-muted-foreground font-mono truncate">{bgColor}</p>
+              <p style={{
+                fontFamily: 'var(--typography-emphasis-font-family)',
+                fontSize: 'var(--typography-emphasis-font-size)',
+                fontWeight: 'var(--typography-emphasis-font-weight)',
+                letterSpacing: 'var(--typography-emphasis-letter-spacing)'
+              }} className="text-foreground">Background</p>
+              <p style={{
+                fontFamily: 'var(--typography-emphasis-font-family)',
+                fontSize: 'var(--typography-emphasis-font-size)',
+                fontWeight: 'var(--typography-emphasis-font-weight)',
+                letterSpacing: 'var(--typography-emphasis-letter-spacing)'
+              }} className="text-muted-foreground truncate font-mono">{bgColor}</p>
             </div>
           </div>
           
@@ -88,8 +123,18 @@ function ContrastCard({ pair, colors }: ContrastCardProps) {
               style={{ backgroundColor: fgColor }}
             />
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-medium text-foreground">Foreground</p>
-              <p className="text-xs text-muted-foreground font-mono truncate">{fgColor}</p>
+              <p style={{
+                fontFamily: 'var(--typography-emphasis-font-family)',
+                fontSize: 'var(--typography-emphasis-font-size)',
+                fontWeight: 'var(--typography-emphasis-font-weight)',
+                letterSpacing: 'var(--typography-emphasis-letter-spacing)'
+              }} className="text-foreground">Foreground</p>
+              <p style={{
+                fontFamily: 'var(--typography-emphasis-font-family)',
+                fontSize: 'var(--typography-emphasis-font-size)',
+                fontWeight: 'var(--typography-emphasis-font-weight)',
+                letterSpacing: 'var(--typography-emphasis-letter-spacing)'
+              }} className="text-muted-foreground truncate font-mono">{fgColor}</p>
             </div>
           </div>
         </div>
@@ -138,7 +183,13 @@ export function ContrastChecker() {
 
   if (!colors) {
     return (
-      <div className="text-center text-muted-foreground">
+      <div className="text-center text-muted-foreground" style={{
+        fontFamily: 'var(--typography-paragraph-font-family)',
+        fontSize: 'var(--typography-paragraph-font-size)',
+        fontWeight: 'var(--typography-paragraph-font-weight)',
+        lineHeight: 'var(--typography-paragraph-line-height)',
+        letterSpacing: 'var(--typography-paragraph-letter-spacing)'
+      }}>
         No theme colors available
       </div>
     );
@@ -179,17 +230,34 @@ export function ContrastChecker() {
     <div className={`${state.viewport.current === 'smartphone' ? 'space-y-3' : 'space-y-6'}`}>
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h3 className={`font-semibold text-foreground ${state.viewport.current === 'smartphone' ? 'text-base' : 'text-lg'}`}>Contrast Checker</h3>
+        <h3 style={{
+          fontFamily: 'var(--typography-h3-font-family)',
+          fontSize: 'var(--typography-h3-font-size)',
+          fontWeight: 'var(--typography-h3-font-weight)',
+          lineHeight: 'var(--typography-h3-line-height)',
+          letterSpacing: 'var(--typography-h3-letter-spacing)'
+        }} className="text-foreground">Contrast Checker</h3>
       </div>
 
       {/* Filter Tabs */}
       <div className="flex items-center gap-2">
-        <Badge variant="secondary" className="cursor-pointer text-xs">All</Badge>
+        <Badge variant="secondary" className="cursor-pointer" style={{
+          fontFamily: 'var(--typography-emphasis-font-family)',
+          fontSize: 'var(--typography-emphasis-font-size)',
+          fontWeight: 'var(--typography-emphasis-font-weight)',
+          letterSpacing: 'var(--typography-emphasis-letter-spacing)'
+        }}>All</Badge>
         <Badge 
           variant="outline" 
-          className={`cursor-pointer flex items-center gap-1 text-xs ${
+          className={`cursor-pointer flex items-center gap-1 ${
             contrastIssues > 0 ? 'text-destructive border-destructive/30' : ''
           }`}
+          style={{
+            fontFamily: 'var(--typography-emphasis-font-family)',
+            fontSize: 'var(--typography-emphasis-font-size)',
+            fontWeight: 'var(--typography-emphasis-font-weight)',
+            letterSpacing: 'var(--typography-emphasis-letter-spacing)'
+          }}
         >
           <AlertTriangle className="h-2 w-2" />
           Issues ({contrastIssues})
@@ -198,7 +266,13 @@ export function ContrastChecker() {
 
       {/* Content & Containers */}
       <div>
-        <h4 className={`text-sm font-medium text-foreground ${state.viewport.current === 'smartphone' ? 'mb-2' : 'mb-3'}`}>Content & Containers</h4>
+        <h4 style={{
+          fontFamily: 'var(--typography-h4-font-family)',
+          fontSize: 'var(--typography-h4-font-size)',
+          fontWeight: 'var(--typography-h4-font-weight)',
+          lineHeight: 'var(--typography-h4-line-height)',
+          letterSpacing: 'var(--typography-h4-letter-spacing)'
+        }} className={`text-foreground ${state.viewport.current === 'smartphone' ? 'mb-2' : 'mb-3'}`}>Content & Containers</h4>
         <div className={getGridClasses()}>
           {contentContainers.map((pair) => (
             <ContrastCard key={pair.name} pair={pair} colors={colors} />
@@ -208,7 +282,13 @@ export function ContrastChecker() {
 
       {/* Interactive Elements */}
       <div>
-        <h4 className={`text-sm font-medium text-foreground ${state.viewport.current === 'smartphone' ? 'mb-2' : 'mb-3'}`}>Interactive Elements</h4>
+        <h4 style={{
+          fontFamily: 'var(--typography-h4-font-family)',
+          fontSize: 'var(--typography-h4-font-size)',
+          fontWeight: 'var(--typography-h4-font-weight)',
+          lineHeight: 'var(--typography-h4-line-height)',
+          letterSpacing: 'var(--typography-h4-letter-spacing)'
+        }} className={`text-foreground ${state.viewport.current === 'smartphone' ? 'mb-2' : 'mb-3'}`}>Interactive Elements</h4>
         <div className={getInteractiveGridClasses()}>
           {interactiveElements.map((pair) => (
             <ContrastCard key={pair.name} pair={pair} colors={colors} />
@@ -218,7 +298,13 @@ export function ContrastChecker() {
 
       {/* Navigation & Functional */}
       <div>
-        <h4 className={`text-sm font-medium text-foreground ${state.viewport.current === 'smartphone' ? 'mb-2' : 'mb-3'}`}>Navigation & Functional</h4>
+        <h4 style={{
+          fontFamily: 'var(--typography-h4-font-family)',
+          fontSize: 'var(--typography-h4-font-size)',
+          fontWeight: 'var(--typography-h4-font-weight)',
+          lineHeight: 'var(--typography-h4-line-height)',
+          letterSpacing: 'var(--typography-h4-letter-spacing)'
+        }} className={`text-foreground ${state.viewport.current === 'smartphone' ? 'mb-2' : 'mb-3'}`}>Navigation & Functional</h4>
         <div className={getGridClasses()}>
           {navigationFunctional.map((pair) => (
             <ContrastCard key={pair.name} pair={pair} colors={colors} />

@@ -164,20 +164,22 @@ const getTransformedData = (t: any, pathname: string) => ({
       section: 'settings',
       items: [
         {
-          title: t?.('nav.themes') || 'Temas y Apariencia',
-          url: '/admin/settings/themes',
-        },
-        {
-          title: t?.('nav.chatbot') || 'Chatbot',
-          url: '/admin/settings/chatbot',
-        },
-        {
-          title: t?.('nav.themes2') || 'Temas 2.0',
-          url: '/admin/settings/themes-2',
-        },
-        {
-          title: t?.('nav.themes3') || 'Temas 3.0',
+          title: 'Personalizar Tema v3',
           url: getCurrentLocalizedRoute('/admin/settings/themes-3.0', pathname),
+        },
+        {
+          title: 'Old Versions',
+          url: '#',
+          items: [
+            {
+              title: t?.('nav.themes') || 'Temas y Apariencia',
+              url: '/admin/settings/themes',
+            },
+            {
+              title: t?.('nav.chatbot') || 'Chatbot',
+              url: '/admin/settings/chatbot',
+            },
+          ],
         },
       ],
     },
@@ -235,7 +237,7 @@ function Dashboard({ children, showWelcome = false }: DashboardProps) {
   const transformedData = getTransformedData(t, pathname);
 
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={false}>
       <AppSidebar {...transformedData} />
 
       <SidebarInset className="flex flex-col min-h-screen overflow-hidden">

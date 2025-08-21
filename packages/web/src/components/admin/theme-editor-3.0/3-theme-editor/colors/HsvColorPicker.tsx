@@ -203,18 +203,20 @@ export function HsvColorPicker({ colorToken, onChange, className }: HsvColorPick
           className="w-full h-32 rounded-lg cursor-crosshair relative overflow-hidden"
           style={{
             background: `
-              linear-gradient(to bottom, transparent, hsl(var(--foreground))),
-              linear-gradient(to right, hsl(var(--background)), hsl(${hsv.h}, 100%, 50%))
+              linear-gradient(to bottom, transparent, #000000),
+              linear-gradient(to right, #ffffff, hsl(${hsv.h}, 100%, 50%))
             `
           }}
           onMouseDown={handleSatValMouseDown}
         >
           {/* Saturation/Value Indicator */}
           <div
-            className="absolute w-3 h-3 border-2 border-background rounded-full shadow-md pointer-events-none transform -translate-x-1/2 -translate-y-1/2"
+            className="absolute w-3 h-3 border-2 rounded-full shadow-md pointer-events-none transform -translate-x-1/2 -translate-y-1/2"
             style={{
               left: `${satPosition}%`,
               top: `${valPosition}%`,
+              backgroundColor: 'white',
+              borderColor: 'rgba(0,0,0,0.5)',
               boxShadow: '0 0 0 1px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.2)'
             }}
           />
@@ -233,10 +235,12 @@ export function HsvColorPicker({ colorToken, onChange, className }: HsvColorPick
         >
           {/* Hue Indicator */}
           <div
-            className="absolute w-3 h-6 bg-background border border-border rounded-sm shadow-md pointer-events-none transform -translate-x-1/2 -translate-y-1"
+            className="absolute w-3 h-6 rounded-sm shadow-md pointer-events-none transform -translate-x-1/2 -translate-y-1"
             style={{
               left: `${huePosition}%`,
               top: '50%',
+              backgroundColor: 'white',
+              border: '1px solid rgba(0,0,0,0.3)',
               boxShadow: '0 1px 3px rgba(0,0,0,0.3)'
             }}
           />
@@ -246,8 +250,11 @@ export function HsvColorPicker({ colorToken, onChange, className }: HsvColorPick
       {/* Color Preview with OKLCH */}
       <div className="flex items-center gap-3">
         <div
-          className="w-12 h-8 rounded border border-border shadow-inner"
-          style={{ backgroundColor: colorToken?.hex || '#000000' }}
+          className="w-12 h-8 rounded shadow-inner"
+          style={{ 
+            backgroundColor: colorToken?.hex || '#000000',
+            border: '1px solid rgba(0,0,0,0.2)'
+          }}
         />
         <div className="flex-1 space-y-1">
           <Label className="text-xs text-muted-foreground">Current Color</Label>

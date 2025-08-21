@@ -145,7 +145,7 @@ export const DEFAULT_THEME: ThemeData = {
   darkColors: DEFAULT_DARK_COLORS,
   typography: {
     fontFamilies: {
-      sans: 'ui-sans-serif, system-ui, sans-serif',
+      sans: 'Poppins, ui-sans-serif, system-ui, sans-serif',
       serif: 'ui-serif, Georgia, serif',
       mono: 'ui-monospace, SFMono-Regular, monospace'
     },

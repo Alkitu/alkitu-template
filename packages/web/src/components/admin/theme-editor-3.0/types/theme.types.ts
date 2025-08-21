@@ -103,12 +103,52 @@ export interface ThemeTypography {
   trackingNormal: string;
 }
 
-export interface ThemeBrand {
-  logo?: string;
+export interface LogoVariant {
+  id: string;
   name: string;
+  type: 'icon' | 'horizontal' | 'vertical';
+  aspectRatio: string;
+  svgContent: string;
+  detectedColors: string[];
+  variants: {
+    original: string;
+    white: string;
+    black: string;
+    gray: string;
+  };
+  metadata: {
+    fileName: string;
+    fileSize: string;
+    dimensions: string;
+    viewBox: string;
+    colorCount: number;
+    hasGradients: boolean;
+  };
+}
+
+export interface ThemeBrand {
+  // Brand Identity
+  name: string;
+  tagline?: string;
+  description?: string;
+  voice?: string;
+  tone?: string;
+  colorGuidelines?: string;
+  
+  // Logo variants
+  logos: {
+    icon: LogoVariant | null;
+    horizontal: LogoVariant | null;
+    vertical: LogoVariant | null;
+  };
+  
+  // Colors
   primaryColor: ColorToken;
   secondaryColor: ColorToken;
   brandColors?: ColorToken[];
+  
+  // Legacy support
+  logo?: string;
 }
 
 export interface ThemeSpacing {

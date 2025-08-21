@@ -11,6 +11,7 @@ import { VIEWPORT_CONFIGS } from '../types/viewport.types';
 import { Palette, Type, Building, Atom, Layers, Layout, Battery, Wifi, Signal } from 'lucide-react';
 import { ContrastChecker } from './colors/ContrastChecker';
 import { TypographyPreview } from './typography/TypographyPreview';
+import { BrandPreview } from './brand-preview';
 
 export function Preview() {
   const { state, setPreviewSection } = useThemeEditor();
@@ -228,7 +229,15 @@ export function Preview() {
           </div>
         </TabsContent>
 
-        {sections.slice(2).map(({ id, label }) => (
+        <TabsContent value="brand" className="mt-2 flex-1 min-h-0 overflow-hidden">
+          <div className={`h-full overflow-y-auto pb-4 scrollbar-thin scrollbar-thumb-border scrollbar-track-background ${isTV ? 'px-6' : 'px-2'}`}>
+            <div className={isTV ? '[&_h1]:text-5xl [&_h2]:text-4xl [&_h3]:text-3xl [&_h4]:text-2xl [&_h5]:text-xl [&_p]:text-lg [&_.text-xs]:text-base [&_.text-sm]:text-lg [&_.text-base]:text-xl [&_.text-lg]:text-2xl [&_.text-xl]:text-3xl [&_.text-2xl]:text-4xl [&_.h-3]:h-5 [&_.w-3]:w-5 [&_.h-4]:h-6 [&_.w-4]:w-6 [&_.p-2]:p-3 [&_.p-3]:p-4 [&_.p-4]:p-6 [&_.gap-2]:gap-3 [&_.gap-3]:gap-4' : ''}>
+              <BrandPreview brand={state.currentTheme.brand} />
+            </div>
+          </div>
+        </TabsContent>
+
+        {sections.slice(3).map(({ id, label }) => (
           <TabsContent key={id} value={id} className="mt-2 flex-1 min-h-0 overflow-hidden">
             <div className={`h-full overflow-y-auto pb-4 scrollbar-thin scrollbar-thumb-border scrollbar-track-background ${isTV ? 'px-6' : 'px-2'}`}>
               <Card className={isTV ? 'p-6' : 'p-4'}>
@@ -292,8 +301,16 @@ export function Preview() {
               </div>
             </div>
           )}
+
+          {activeSection === 'brand' && (
+            <div className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-background">
+              <div className="p-2 pb-[400px]">
+                <BrandPreview brand={state.currentTheme.brand} />
+              </div>
+            </div>
+          )}
           
-          {!['colors', 'typography'].includes(activeSection) && (
+          {!['colors', 'typography', 'brand'].includes(activeSection) && (
             <div className="h-full flex items-center justify-center overflow-y-auto">
               <Card className="p-4 w-full mx-2">
                 <div className="h-32 bg-muted/20 rounded border-2 border-dashed border-muted-foreground/20 flex items-center justify-center">
@@ -356,8 +373,16 @@ export function Preview() {
               </div>
             </div>
           )}
+
+          {activeSection === 'brand' && (
+            <div className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-background">
+              <div className="p-1 pb-52">
+                <BrandPreview brand={state.currentTheme.brand} />
+              </div>
+            </div>
+          )}
           
-          {!['colors', 'typography'].includes(activeSection) && (
+          {!['colors', 'typography', 'brand'].includes(activeSection) && (
             <div className="h-full flex items-center justify-center overflow-y-auto">
               <Card className="p-2 w-full mx-1">
                 <div className="h-32 bg-muted/20 rounded border-2 border-dashed border-muted-foreground/20 flex items-center justify-center">

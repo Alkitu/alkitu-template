@@ -153,6 +153,16 @@ export const DEFAULT_THEME: ThemeData = {
   },
   brand: {
     name: 'Default Brand',
+    tagline: '',
+    description: '',
+    voice: '',
+    tone: '',
+    colorGuidelines: '',
+    logos: {
+      icon: null,
+      horizontal: null,
+      vertical: null
+    },
     primaryColor: createColorToken('primary', 'oklch(0.2050 0 0)', 0.2050, 0, 0),  // Migrated from brand-primary
     secondaryColor: createColorToken('secondary', 'oklch(0.9700 0 0)', 0.9700, 0, 0)  // Migrated from brand-secondary
   },
@@ -295,6 +305,16 @@ export const AMBER_MINIMAL_THEME: ThemeData = {
   },
   brand: {
     name: 'Amber Minimal Brand',
+    tagline: '',
+    description: '',
+    voice: '',
+    tone: '',
+    colorGuidelines: '',
+    logos: {
+      icon: null,
+      horizontal: null,
+      vertical: null
+    },
     primaryColor: createColorToken('primary', 'oklch(0.6830 0.1468 55.4)', 0.6830, 0.1468, 55.4),  // Migrated from brand-primary
     secondaryColor: createColorToken('secondary', 'oklch(0.9558 0.0044 106.78)', 0.9558, 0.0044, 106.78)  // Migrated from brand-secondary
   },
@@ -424,6 +444,16 @@ export const AMETHYST_HAZE_THEME: ThemeData = {
   },
   brand: {
     name: 'Amethyst Haze Brand',
+    tagline: '',
+    description: '',
+    voice: '',
+    tone: '',
+    colorGuidelines: '',
+    logos: {
+      icon: null,
+      horizontal: null,
+      vertical: null
+    },
     primaryColor: createColorToken('primary', 'oklch(0.6370 0.0850 280.00)', 0.6370, 0.0850, 280.00),  // Migrated from brand-primary
     secondaryColor: createColorToken('secondary', 'oklch(0.7610 0.0750 340.00)', 0.7610, 0.0750, 340.00)  // Migrated from brand-secondary
   },
@@ -551,6 +581,16 @@ export const BOLD_TECH_THEME: ThemeData = {
   },
   brand: {
     name: 'Bold Tech Brand',
+    tagline: '',
+    description: '',
+    voice: '',
+    tone: '',
+    colorGuidelines: '',
+    logos: {
+      icon: null,
+      horizontal: null,
+      vertical: null
+    },
     primaryColor: createColorToken('primary', 'oklch(0.6330 0.1950 280.50)', 0.6330, 0.1950, 280.50),  // Migrated from brand-primary
     secondaryColor: createColorToken('secondary', 'oklch(0.8730 0.0750 210.00)', 0.8730, 0.0750, 210.00)  // Migrated from brand-secondary
   },
@@ -671,6 +711,16 @@ export const BUBBLEGUM_THEME: ThemeData = {
   },
   brand: {
     name: 'Bubblegum Brand',
+    tagline: '',
+    description: '',
+    voice: '',
+    tone: '',
+    colorGuidelines: '',
+    logos: {
+      icon: null,
+      horizontal: null,
+      vertical: null
+    },
     primaryColor: createPreciseColorToken('primary', '#d04f99'),  // Migrated from brand-primary
     secondaryColor: createPreciseColorToken('secondary', '#8acfd1')  // Migrated from brand-secondary
   },
@@ -779,7 +829,17 @@ export const CAFFEINE_THEME: ThemeData = {
     scrollbarThumb: createColorToken('scrollbar-thumb', 'oklch(0.1270 0.0180 10.00)', 0.1270, 0.0180, 10.00)
   },
   typography: { fontFamilies: { sans: 'ui-sans-serif, system-ui, sans-serif', serif: 'ui-serif, Georgia, serif', mono: 'ui-monospace, SFMono-Regular, monospace' }, trackingNormal: '0em' },
-  brand: { name: 'Caffeine Brand', primaryColor: createColorToken('primary', 'oklch(0.2980 0.0430 40.00)', 0.2980, 0.0430, 40.00), secondaryColor: createColorToken('secondary', 'oklch(0.9130 0.0890 50.00)', 0.9130, 0.0890, 50.00) },  // Migrated from brand-*
+  brand: { 
+    name: 'Caffeine Brand', 
+    tagline: '', 
+    description: '', 
+    voice: '', 
+    tone: '', 
+    colorGuidelines: '', 
+    logos: { icon: null, horizontal: null, vertical: null }, 
+    primaryColor: createColorToken('primary', 'oklch(0.2980 0.0430 40.00)', 0.2980, 0.0430, 40.00), 
+    secondaryColor: createColorToken('secondary', 'oklch(0.9130 0.0890 50.00)', 0.9130, 0.0890, 50.00) 
+  },  // Migrated from brand-*
   spacing: { spacing: '0.25rem' },
   borders: { radius: '0.5rem', radiusSm: 'calc(var(--radius) - 4px)', radiusMd: 'calc(var(--radius) - 2px)', radiusLg: 'var(--radius)', radiusXl: 'calc(var(--radius) + 4px)' },
   shadows: { shadow2xs: '0 1px 3px 0px hsl(0 0% 0% / 0.05)', shadowXs: '0 1px 3px 0px hsl(0 0% 0% / 0.05)', shadowSm: '0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10)', shadow: '0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10)', shadowMd: '0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 2px 4px -1px hsl(0 0% 0% / 0.10)', shadowLg: '0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 4px 6px -1px hsl(0 0% 0% / 0.10)', shadowXl: '0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 8px 10px -1px hsl(0 0% 0% / 0.10)', shadow2xl: '0 1px 3px 0px hsl(0 0% 0% / 0.25)' },
@@ -870,7 +930,17 @@ export const CANDYLAND_THEME: ThemeData = {
     scrollbarThumb: createColorToken('scrollbar-thumb', 'oklch(0.2750 0 0)', 0.2750, 0, 0)
   },
   typography: { fontFamilies: { sans: 'Poppins, sans-serif', serif: 'ui-serif, Georgia, serif', mono: 'Roboto Mono, monospace' }, trackingNormal: '0em' },
-  brand: { name: 'Candyland Brand', primaryColor: createColorToken('primary', 'oklch(0.8200 0.1110 350.00)', 0.8200, 0.1110, 350.00), secondaryColor: createColorToken('secondary', 'oklch(0.7780 0.1050 205.00)', 0.7780, 0.1050, 205.00) },  // Migrated from brand-*
+  brand: { 
+    name: 'Candyland Brand', 
+    tagline: '', 
+    description: '', 
+    voice: '', 
+    tone: '', 
+    colorGuidelines: '', 
+    logos: { icon: null, horizontal: null, vertical: null }, 
+    primaryColor: createColorToken('primary', 'oklch(0.8200 0.1110 350.00)', 0.8200, 0.1110, 350.00), 
+    secondaryColor: createColorToken('secondary', 'oklch(0.7780 0.1050 205.00)', 0.7780, 0.1050, 205.00) 
+  },  // Migrated from brand-*
   spacing: { spacing: '0.25rem' },
   borders: { radius: '0.5rem', radiusSm: 'calc(var(--radius) - 4px)', radiusMd: 'calc(var(--radius) - 2px)', radiusLg: 'var(--radius)', radiusXl: 'calc(var(--radius) + 4px)' },
   shadows: { shadow2xs: '0 1px 3px 0px hsl(0 0% 0% / 0.05)', shadowXs: '0 1px 3px 0px hsl(0 0% 0% / 0.05)', shadowSm: '0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10)', shadow: '0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10)', shadowMd: '0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 2px 4px -1px hsl(0 0% 0% / 0.10)', shadowLg: '0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 4px 6px -1px hsl(0 0% 0% / 0.10)', shadowXl: '0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 8px 10px -1px hsl(0 0% 0% / 0.10)', shadow2xl: '0 1px 3px 0px hsl(0 0% 0% / 0.25)' },

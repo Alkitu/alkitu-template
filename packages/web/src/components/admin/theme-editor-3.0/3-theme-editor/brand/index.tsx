@@ -1,11 +1,11 @@
 'use client';
 
 import React from 'react';
-import { Card } from '../../ui/card';
-import { Input } from '../../ui/input';
-import { Label } from '../../ui/label';
-import { Textarea } from '../../ui/textarea';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../../ui/accordion';
 import { ThemeBrand } from '../../types/theme.types';
+import { LogoUploadSection } from './LogoUploadSection';
+import { LogoVariant } from './types';
+import { useThemeEditor } from '../../context/ThemeEditorContext';
 
 interface BrandEditorProps {
   brand: ThemeBrand;
@@ -18,7 +18,8 @@ export function BrandEditor({
   onBrandChange, 
   className = ""
 }: BrandEditorProps) {
-  
+  const { state } = useThemeEditor();
+
   const handleInputChange = (field: keyof ThemeBrand, value: string) => {
     const updatedBrand = {
       ...brand,
@@ -27,151 +28,92 @@ export function BrandEditor({
     onBrandChange(updatedBrand);
   };
 
+  const handleLogoChange = (type: 'icon' | 'horizontal' | 'vertical', logo: LogoVariant | null) => {
+    const updatedBrand = {
+      ...brand,
+      logos: {
+        ...brand.logos,
+        [type]: logo
+      }
+    };
+    onBrandChange(updatedBrand);
+  };
+
+
   return (
-    <div className={`space-y-6 ${className}`}>
-      {/* Brand Identity */}
-      <Card className="p-4">
-        <h3 className="text-sm font-medium mb-4">Brand Identity</h3>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Brand Name */}
-          <div className="space-y-2">
-            <Label className="text-xs">Brand Name</Label>
-            <Input
-              value={brand.name || ''}
-              onChange={(e) => handleInputChange('name', e.target.value)}
-              placeholder="Enter brand name"
-              className="h-8"
-            />
-          </div>
+    <div className={className}>
+      <Accordion type="multiple" defaultValue={["logo-icon", "logo-horizontal", "logo-vertical"]} className="w-full">
 
-          {/* Tagline */}
-          <div className="space-y-2">
-            <Label className="text-xs">Tagline</Label>
-            <Input
-              value={brand.tagline || ''}
-              onChange={(e) => handleInputChange('tagline', e.target.value)}
-              placeholder="Enter brand tagline"
-              className="h-8"
+        {/* LOGO_ICON_SECTION */}
+        <AccordionItem value="logo-icon">
+          <AccordionTrigger style={{
+            fontFamily: 'var(--typography-h4-font-family)',
+            fontSize: 'var(--typography-h4-font-size)',
+            fontWeight: 'var(--typography-h4-font-weight)',
+            lineHeight: 'var(--typography-h4-line-height)',
+            letterSpacing: 'var(--typography-h4-letter-spacing)'
+          }} className="text-foreground">
+            Logo (V1) - Icono
+          </AccordionTrigger>
+          <AccordionContent>
+            <LogoUploadSection
+              title="Icono"
+              type="icon"
+              aspectRatio="1:1"
+              instructions="Sube tu logo en formato cuadrado (1:1). Ideal para favicons, app icons y espacios reducidos."
+              logo={brand.logos.icon}
+              onLogoChange={(logo) => handleLogoChange('icon', logo)}
             />
-          </div>
-        </div>
+          </AccordionContent>
+        </AccordionItem>
 
-        {/* Description */}
-        <div className="space-y-2 mt-4">
-          <Label className="text-xs">Description</Label>
-          <Textarea
-            value={brand.description || ''}
-            onChange={(e) => handleInputChange('description', e.target.value)}
-            placeholder="Enter brand description"
-            rows={3}
-            className="resize-none"
-          />
-        </div>
-      </Card>
-
-      {/* Brand Assets */}
-      <Card className="p-4">
-        <h3 className="text-sm font-medium mb-4">Brand Assets</h3>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Logo URL */}
-          <div className="space-y-2">
-            <Label className="text-xs">Logo URL</Label>
-            <Input
-              value={brand.logoUrl || ''}
-              onChange={(e) => handleInputChange('logoUrl', e.target.value)}
-              placeholder="https://example.com/logo.svg"
-              className="h-8"
+        {/* LOGO_HORIZONTAL_SECTION */}
+        <AccordionItem value="logo-horizontal">
+          <AccordionTrigger style={{
+            fontFamily: 'var(--typography-h4-font-family)',
+            fontSize: 'var(--typography-h4-font-size)',
+            fontWeight: 'var(--typography-h4-font-weight)',
+            lineHeight: 'var(--typography-h4-line-height)',
+            letterSpacing: 'var(--typography-h4-letter-spacing)'
+          }} className="text-foreground">
+            Logo (V2) - Horizontal
+          </AccordionTrigger>
+          <AccordionContent>
+            <LogoUploadSection
+              title="Horizontal"
+              type="horizontal"
+              aspectRatio="3:1"
+              instructions="Sube tu logo en formato horizontal (3:1). Perfecto para headers y navegación principal."
+              logo={brand.logos.horizontal}
+              onLogoChange={(logo) => handleLogoChange('horizontal', logo)}
             />
-            {brand.logoUrl && (
-              <div className="mt-2">
-                <img 
-                  src={brand.logoUrl} 
-                  alt="Brand Logo" 
-                  className="h-8 w-auto border rounded"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                  }}
-                />
-              </div>
-            )}
-          </div>
+          </AccordionContent>
+        </AccordionItem>
 
-          {/* Favicon URL */}
-          <div className="space-y-2">
-            <Label className="text-xs">Favicon URL</Label>
-            <Input
-              value={brand.faviconUrl || ''}
-              onChange={(e) => handleInputChange('faviconUrl', e.target.value)}
-              placeholder="https://example.com/favicon.ico"
-              className="h-8"
+        {/* LOGO_VERTICAL_SECTION */}
+        <AccordionItem value="logo-vertical">
+          <AccordionTrigger style={{
+            fontFamily: 'var(--typography-h4-font-family)',
+            fontSize: 'var(--typography-h4-font-size)',
+            fontWeight: 'var(--typography-h4-font-weight)',
+            lineHeight: 'var(--typography-h4-line-height)',
+            letterSpacing: 'var(--typography-h4-letter-spacing)'
+          }} className="text-foreground">
+            Logo (V3) - Vertical
+          </AccordionTrigger>
+          <AccordionContent>
+            <LogoUploadSection
+              title="Vertical"
+              type="vertical"
+              aspectRatio="3:4"
+              instructions="Sube tu logo en formato vertical (3:4). Ideal para sidebars y espacios altos."
+              logo={brand.logos.vertical}
+              onLogoChange={(logo) => handleLogoChange('vertical', logo)}
             />
-            {brand.faviconUrl && (
-              <div className="mt-2">
-                <img 
-                  src={brand.faviconUrl} 
-                  alt="Favicon" 
-                  className="h-4 w-4 border rounded"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                  }}
-                />
-              </div>
-            )}
-          </div>
-        </div>
-      </Card>
+          </AccordionContent>
+        </AccordionItem>
 
-      {/* Brand Colors Reference */}
-      <Card className="p-4">
-        <h3 className="text-sm font-medium mb-4">Brand Color Guidelines</h3>
-        <div className="space-y-3">
-          <div className="text-xs text-muted-foreground">
-            Brand colors are defined in the Colors tab. Use this section to document color usage guidelines.
-          </div>
-          
-          <div className="space-y-2">
-            <Label className="text-xs">Color Usage Guidelines</Label>
-            <Textarea
-              value={brand.colorGuidelines || ''}
-              onChange={(e) => handleInputChange('colorGuidelines', e.target.value)}
-              placeholder="Describe how brand colors should be used..."
-              rows={4}
-              className="resize-none"
-            />
-          </div>
-        </div>
-      </Card>
-
-      {/* Brand Voice & Tone */}
-      <Card className="p-4">
-        <h3 className="text-sm font-medium mb-4">Brand Voice & Tone</h3>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label className="text-xs">Brand Voice</Label>
-            <Textarea
-              value={brand.voice || ''}
-              onChange={(e) => handleInputChange('voice', e.target.value)}
-              placeholder="Describe the brand's voice (e.g., friendly, professional, casual)"
-              rows={3}
-              className="resize-none"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label className="text-xs">Brand Tone</Label>
-            <Textarea
-              value={brand.tone || ''}
-              onChange={(e) => handleInputChange('tone', e.target.value)}
-              placeholder="Describe the brand's tone (e.g., encouraging, authoritative, playful)"
-              rows={3}
-              className="resize-none"
-            />
-          </div>
-        </div>
-      </Card>
+      </Accordion>
     </div>
   );
 }

@@ -37,9 +37,15 @@ export function ColorSection({
         className="w-full justify-between p-4 h-auto text-left hover:bg-muted/50"
       >
         <div className="flex flex-col items-start gap-1">
-          <span className="font-medium text-sm text-foreground">
+          <h5 style={{
+            fontFamily: 'var(--typography-h5-font-family)',
+            fontSize: 'var(--typography-h5-font-size)',
+            fontWeight: 'var(--typography-h5-font-weight)',
+            lineHeight: 'var(--typography-h5-line-height)',
+            letterSpacing: 'var(--typography-h5-letter-spacing)'
+          }} className="text-foreground">
             {section.title}
-          </span>
+          </h5>
           {section.description && (
             <span className="text-xs text-muted-foreground">
               {section.description}
@@ -65,9 +71,15 @@ export function ColorSection({
             return (
               <div key={colorKey} className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-medium text-foreground">
+                  <h5 style={{
+                    fontFamily: 'var(--typography-h5-font-family)',
+                    fontSize: 'var(--typography-h5-font-size)',
+                    fontWeight: 'var(--typography-h5-font-weight)',
+                    lineHeight: 'var(--typography-h5-line-height)',
+                    letterSpacing: 'var(--typography-h5-letter-spacing)'
+                  }} className="text-foreground">
                     {label}
-                  </label>
+                  </h5>
                 </div>
                 
                 <ColorInput

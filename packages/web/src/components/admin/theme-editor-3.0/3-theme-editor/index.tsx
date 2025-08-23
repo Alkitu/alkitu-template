@@ -9,6 +9,9 @@ import { Palette, Type, Building, Square, Grid, Zap, Scroll } from 'lucide-react
 import { ColorEditor } from './colors/ColorEditor';
 import { TypographyEditor } from './typography';
 import { BrandEditor } from './brand';
+import { BordersEditor } from './borders';
+import { SpacingEditor } from './spacing';
+import { ShadowsEditor } from './shadows';
 
 export function ThemeEditor() {
   const { state, setEditorSection } = useThemeEditor();
@@ -69,7 +72,34 @@ export function ThemeEditor() {
             </div>
           </TabsContent>
 
-          {sections.slice(3).map(({ id, label }) => (
+          <TabsContent value="borders" className="mt-4 flex-1 min-h-0 overflow-hidden">
+            <div className="h-full overflow-y-auto pr-2 pb-4 scrollbar-thin scrollbar-thumb-border scrollbar-track-background">
+              <BordersEditor 
+                borders={state.currentTheme.borders}
+                onBordersChange={themeUpdates.updateBorders}
+              />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="spacing" className="mt-4 flex-1 min-h-0 overflow-hidden">
+            <div className="h-full overflow-y-auto pr-2 pb-4 scrollbar-thin scrollbar-thumb-border scrollbar-track-background">
+              <SpacingEditor 
+                spacing={state.currentTheme.spacing}
+                onSpacingChange={themeUpdates.updateSpacing}
+              />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="shadows" className="mt-4 flex-1 min-h-0 overflow-hidden">
+            <div className="h-full overflow-y-auto pr-2 pb-4 scrollbar-thin scrollbar-thumb-border scrollbar-track-background">
+              <ShadowsEditor 
+                shadows={state.currentTheme.shadows}
+                onShadowsChange={themeUpdates.updateShadows}
+              />
+            </div>
+          </TabsContent>
+
+          {sections.slice(6).map(({ id, label }) => (
             <TabsContent key={id} value={id} className="mt-4 flex-1 min-h-0 overflow-hidden">
               <div className="h-full overflow-y-auto pr-2 pb-4 scrollbar-thin scrollbar-thumb-border scrollbar-track-background">
                 <div className="h-24 bg-muted/20 rounded border-2 border-dashed border-muted-foreground/20 flex items-center justify-center">

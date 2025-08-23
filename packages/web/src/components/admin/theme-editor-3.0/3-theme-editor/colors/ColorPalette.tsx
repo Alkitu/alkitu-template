@@ -49,7 +49,13 @@ export function ColorPalette({
     <div className={`space-y-4 ${className}`}>
       {COLOR_GROUPS.map(({ title, colors: groupColors }) => (
         <Card key={title} className="p-4">
-          <h4 className="text-sm font-medium mb-3">{title}</h4>
+          <h5 style={{
+            fontFamily: 'var(--typography-h5-font-family)',
+            fontSize: 'var(--typography-h5-font-size)',
+            fontWeight: 'var(--typography-h5-font-weight)',
+            lineHeight: 'var(--typography-h5-line-height)',
+            letterSpacing: 'var(--typography-h5-letter-spacing)'
+          }} className="text-foreground mb-3">{title}</h5>
           <div className="grid grid-cols-2 gap-2">
             {groupColors.map((colorKey) => {
               const colorToken = colors[colorKey];

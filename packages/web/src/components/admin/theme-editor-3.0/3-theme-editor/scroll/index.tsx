@@ -51,7 +51,13 @@ export function ScrollEditor({
     <div className={`space-y-6 ${className}`}>
       {/* Scroll Behavior */}
       <Card className="p-4">
-        <h3 className="text-sm font-medium mb-4">Scroll Behavior</h3>
+        <h5 style={{
+          fontFamily: 'var(--typography-h5-font-family)',
+          fontSize: 'var(--typography-h5-font-size)',
+          fontWeight: 'var(--typography-h5-font-weight)',
+          lineHeight: 'var(--typography-h5-line-height)',
+          letterSpacing: 'var(--typography-h5-letter-spacing)'
+        }} className="text-foreground mb-4">Scroll Behavior</h5>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Global Scroll Behavior */}
@@ -95,7 +101,13 @@ export function ScrollEditor({
 
       {/* Scrollbar Styling */}
       <Card className="p-4">
-        <h3 className="text-sm font-medium mb-4">Scrollbar Styling</h3>
+        <h5 style={{
+          fontFamily: 'var(--typography-h5-font-family)',
+          fontSize: 'var(--typography-h5-font-size)',
+          fontWeight: 'var(--typography-h5-font-weight)',
+          lineHeight: 'var(--typography-h5-line-height)',
+          letterSpacing: 'var(--typography-h5-letter-spacing)'
+        }} className="text-foreground mb-4">Scrollbar Styling</h5>
         
         <div className="space-y-4">
           {/* Scrollbar Width */}
@@ -143,7 +155,13 @@ export function ScrollEditor({
 
       {/* Scrollbar Preview */}
       <Card className="p-4">
-        <h3 className="text-sm font-medium mb-4">Scrollbar Preview</h3>
+        <h5 style={{
+          fontFamily: 'var(--typography-h5-font-family)',
+          fontSize: 'var(--typography-h5-font-size)',
+          fontWeight: 'var(--typography-h5-font-weight)',
+          lineHeight: 'var(--typography-h5-line-height)',
+          letterSpacing: 'var(--typography-h5-letter-spacing)'
+        }} className="text-foreground mb-4">Scrollbar Preview</h5>
         
         <div className="space-y-4">
           {/* Vertical Scrollbar Preview */}
@@ -228,7 +246,13 @@ export function ScrollEditor({
 
       {/* CSS Implementation */}
       <Card className="p-4">
-        <h3 className="text-sm font-medium mb-4">CSS Implementation</h3>
+        <h5 style={{
+          fontFamily: 'var(--typography-h5-font-family)',
+          fontSize: 'var(--typography-h5-font-size)',
+          fontWeight: 'var(--typography-h5-font-weight)',
+          lineHeight: 'var(--typography-h5-line-height)',
+          letterSpacing: 'var(--typography-h5-letter-spacing)'
+        }} className="text-foreground mb-4">CSS Implementation</h5>
         
         <div className="space-y-3">
           <div className="text-xs text-muted-foreground">
@@ -282,7 +306,13 @@ ${scroll.hide ? `
 
       {/* Usage Guidelines */}
       <Card className="p-4">
-        <h3 className="text-sm font-medium mb-4">Usage Guidelines</h3>
+        <h5 style={{
+          fontFamily: 'var(--typography-h5-font-family)',
+          fontSize: 'var(--typography-h5-font-size)',
+          fontWeight: 'var(--typography-h5-font-weight)',
+          lineHeight: 'var(--typography-h5-line-height)',
+          letterSpacing: 'var(--typography-h5-letter-spacing)'
+        }} className="text-foreground mb-4">Usage Guidelines</h5>
         
         <div className="space-y-3 text-xs text-muted-foreground">
           <div>

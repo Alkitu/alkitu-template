@@ -133,16 +133,16 @@ export function ColorPaletteSection({
       <Card className={`p-4 ${className}`}>
         {/* SECTION_TITLE */}
         <div className="flex items-center justify-between mb-4">
-          <h3 style={{
-            fontFamily: 'var(--typography-h4-font-family)',
-            fontSize: 'var(--typography-h4-font-size)',
-            fontWeight: 'var(--typography-h4-font-weight)',
-            lineHeight: 'var(--typography-h4-line-height)',
-            letterSpacing: 'var(--typography-h4-letter-spacing)'
+          <h5 style={{
+            fontFamily: 'var(--typography-h5-font-family)',
+            fontSize: 'var(--typography-h5-font-size)',
+            fontWeight: 'var(--typography-h5-font-weight)',
+            lineHeight: 'var(--typography-h5-line-height)',
+            letterSpacing: 'var(--typography-h5-letter-spacing)'
           }} className="text-foreground flex items-center gap-2">
             <Palette className="h-5 w-5" />
             Paleta de Colores Detectados
-          </h3>
+          </h5>
           <Button
             variant="ghost"
             size="sm"
@@ -271,15 +271,15 @@ export function ColorPaletteSection({
           <Card className="p-6 w-80 max-w-[90vw]">
             {/* MODAL_HEADER */}
             <div className="flex items-center justify-between mb-4">
-              <h3 style={{
-                fontFamily: 'var(--typography-h4-font-family)',
-                fontSize: 'var(--typography-h4-font-size)',
-                fontWeight: 'var(--typography-h4-font-weight)',
-                lineHeight: 'var(--typography-h4-line-height)',
-                letterSpacing: 'var(--typography-h4-letter-spacing)'
+              <h5 style={{
+                fontFamily: 'var(--typography-h5-font-family)',
+                fontSize: 'var(--typography-h5-font-size)',
+                fontWeight: 'var(--typography-h5-font-weight)',
+                lineHeight: 'var(--typography-h5-line-height)',
+                letterSpacing: 'var(--typography-h5-letter-spacing)'
               }} className="text-foreground">
                 Seleccionar Color
-              </h3>
+              </h5>
               <Button
                 variant="ghost"
                 size="sm"

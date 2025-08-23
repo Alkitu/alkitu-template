@@ -33,7 +33,13 @@ export function ColorsEditor() {
     <div className="h-full overflow-y-auto">
       <div className="p-4 space-y-4">
         <div className="space-y-2">
-          <h2 className="text-lg font-semibold">Colors</h2>
+          <h5 style={{
+            fontFamily: 'var(--typography-h5-font-family)',
+            fontSize: 'var(--typography-h5-font-size)',
+            fontWeight: 'var(--typography-h5-font-weight)',
+            lineHeight: 'var(--typography-h5-line-height)',
+            letterSpacing: 'var(--typography-h5-letter-spacing)'
+          }} className="text-foreground">Colors</h5>
           <p className="text-sm text-muted-foreground">
             Configure your theme colors using the OKLCH color space for modern, perceptually uniform colors.
           </p>

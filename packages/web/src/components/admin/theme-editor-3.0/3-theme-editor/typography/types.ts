@@ -7,6 +7,7 @@ export interface TypographyElement {
   letterSpacing: string;
   wordSpacing: string;
   textDecoration: string;
+  fontStyle: string;
 }
 
 // Typography elements configuration
@@ -30,7 +31,8 @@ export const DEFAULT_TYPOGRAPHY: TypographyElements = {
     lineHeight: '1.2',
     letterSpacing: '-0.02em',
     wordSpacing: '0px',
-    textDecoration: 'none'
+    textDecoration: 'none',
+    fontStyle: 'normal'
   },
   h2: {
     fontFamily: 'Poppins, ui-sans-serif, system-ui, sans-serif',
@@ -39,7 +41,8 @@ export const DEFAULT_TYPOGRAPHY: TypographyElements = {
     lineHeight: '1.3',
     letterSpacing: '-0.01em',
     wordSpacing: '0px',
-    textDecoration: 'none'
+    textDecoration: 'none',
+    fontStyle: 'normal'
   },
   h3: {
     fontFamily: 'Poppins, ui-sans-serif, system-ui, sans-serif',
@@ -48,7 +51,8 @@ export const DEFAULT_TYPOGRAPHY: TypographyElements = {
     lineHeight: '1.4',
     letterSpacing: '0em',
     wordSpacing: '0px',
-    textDecoration: 'none'
+    textDecoration: 'none',
+    fontStyle: 'normal'
   },
   h4: {
     fontFamily: 'Poppins, ui-sans-serif, system-ui, sans-serif',
@@ -57,16 +61,18 @@ export const DEFAULT_TYPOGRAPHY: TypographyElements = {
     lineHeight: '1.4',
     letterSpacing: '0em',
     wordSpacing: '0px',
-    textDecoration: 'none'
+    textDecoration: 'none',
+    fontStyle: 'normal'
   },
   h5: {
     fontFamily: 'Poppins, ui-sans-serif, system-ui, sans-serif',
-    fontSize: '1.125rem',
+    fontSize: '1.03rem',
     fontWeight: '500',
     lineHeight: '1.5',
     letterSpacing: '0em',
     wordSpacing: '0px',
-    textDecoration: 'none'
+    textDecoration: 'none',
+    fontStyle: 'normal'
   },
   paragraph: {
     fontFamily: 'Poppins, ui-sans-serif, system-ui, sans-serif',
@@ -75,16 +81,18 @@ export const DEFAULT_TYPOGRAPHY: TypographyElements = {
     lineHeight: '1.6',
     letterSpacing: '0em',
     wordSpacing: '0px',
-    textDecoration: 'none'
+    textDecoration: 'none',
+    fontStyle: 'normal'
   },
   quote: {
-    fontFamily: 'var(--font-serif)',
+    fontFamily: 'Poppins, ui-sans-serif, system-ui, sans-serif',
     fontSize: '1.125rem',
     fontWeight: '400',
     lineHeight: '1.7',
     letterSpacing: '0.01em',
     wordSpacing: '0px',
-    textDecoration: 'none'
+    textDecoration: 'none',
+    fontStyle: 'italic'
   },
   emphasis: {
     fontFamily: 'Poppins, ui-sans-serif, system-ui, sans-serif',
@@ -93,6 +101,7 @@ export const DEFAULT_TYPOGRAPHY: TypographyElements = {
     lineHeight: '1.5',
     letterSpacing: '0.02em',
     wordSpacing: '0px',
-    textDecoration: 'none'
+    textDecoration: 'none',
+    fontStyle: 'normal'
   }
 };

@@ -38,6 +38,13 @@ const TEXT_DECORATIONS = [
   { value: 'underline overline', label: 'Underline + Overline' }
 ];
 
+// Font style options
+const FONT_STYLES = [
+  { value: 'normal', label: 'Normal' },
+  { value: 'italic', label: 'Italic' },
+  { value: 'oblique', label: 'Oblique' }
+];
+
 export function TypographyElementEditor({
   element,
   onChange,
@@ -52,6 +59,7 @@ export function TypographyElementEditor({
     
     // Split by comma and take the first font, removing quotes and trimming
     const firstFont = fontFamily.split(',')[0]?.trim().replace(/['"]/g, '') || 'Poppins';
+    
     return firstFont;
   };
 
@@ -66,7 +74,7 @@ export function TypographyElementEditor({
       'Lato': 'Lato, ui-sans-serif, system-ui, sans-serif',
       'Montserrat': 'Montserrat, ui-sans-serif, system-ui, sans-serif',
       'Source Sans Pro': 'Source Sans Pro, ui-sans-serif, system-ui, sans-serif',
-      'Source Serif 4': 'Source Serif 4, ui-serif, Georgia, serif',
+      'Source Serif Pro': 'Source Serif Pro, ui-serif, Georgia, serif',
       'Georgia': 'Georgia, ui-serif, serif',
       'Times New Roman': 'Times New Roman, ui-serif, serif',
       'JetBrains Mono': 'JetBrains Mono, ui-monospace, monospace',
@@ -103,7 +111,8 @@ export function TypographyElementEditor({
           lineHeight: element.lineHeight,
           letterSpacing: element.letterSpacing,
           wordSpacing: element.wordSpacing,
-          textDecoration: element.textDecoration
+          textDecoration: element.textDecoration,
+          fontStyle: element.fontStyle
         }}
       >
         {previewText}
@@ -197,6 +206,17 @@ export function TypographyElementEditor({
             value={element.textDecoration}
             onValueChange={(value) => handleChange('textDecoration', value)}
             options={TEXT_DECORATIONS}
+            className="w-full mt-auto"
+          />
+        </div>
+
+        {/* Font Style */}
+        <div className="bg-muted/30 p-3 rounded-lg flex-1 min-w-[200px] flex flex-col justify-between">
+          <Label className="text-xs font-medium text-foreground self-start">Estilo</Label>
+          <KeyboardSelect
+            value={element.fontStyle}
+            onValueChange={(value) => handleChange('fontStyle', value)}
+            options={FONT_STYLES}
             className="w-full mt-auto"
           />
         </div>

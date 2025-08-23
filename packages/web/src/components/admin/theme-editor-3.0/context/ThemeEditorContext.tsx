@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
 import { ThemeData, ThemeWithCurrentColors, ThemeMode, EditorState, EditorSection, ViewportState, ViewportSize, PreviewState, PreviewSection } from '../types';
 import { DEFAULT_THEME, DEFAULT_THEMES } from '../constants/default-themes';
-import { applyThemeToRoot, applyThemeMode, applyModeSpecificColors, applyTypographyElements } from '../utils/css-variables';
+import { applyThemeToRoot, applyThemeMode, applyModeSpecificColors, applyTypographyElements, applyBorderElements } from '../utils/css-variables';
 import { applyScrollbarStyles } from '../utils/scrollbar-styles';
 import { DEFAULT_TYPOGRAPHY } from '../3-theme-editor/typography/types';
 
@@ -367,6 +367,13 @@ export function ThemeEditorProvider({ children }: ThemeEditorProviderProps) {
     applyThemeMode(state.themeMode);
     applyScrollbarStyles();
   }, [state.themeMode, state.baseTheme]);
+
+  // Apply borders when they change
+  useEffect(() => {
+    if (state.baseTheme.borders) {
+      applyBorderElements(state.baseTheme.borders);
+    }
+  }, [state.baseTheme.borders]);
 
   // Apply CSS changes when undo/redo affects the base theme (for immediate visual feedback)
   useEffect(() => {

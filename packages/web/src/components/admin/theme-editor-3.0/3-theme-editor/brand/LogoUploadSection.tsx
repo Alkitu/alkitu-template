@@ -7,7 +7,7 @@ import { Label } from '../../ui/label';
 import { Badge } from '../../ui/badge';
 import { Upload, X, AlertCircle, Info, RotateCcw, Lock, Unlock } from 'lucide-react';
 import { LogoVariant } from './types';
-import { detectColorsFromSVG, generateColorVariants, validateAspectRatio, readSVGContent, replaceColorInSVG, extractSVGMetadata, createDefaultModeConfig } from './utils';
+import { detectColorsFromSVG, generateColorVariants, validateAspectRatio, readSVGContent, replaceColorInSVG, extractSVGMetadata, createDefaultModeConfig as createDefaultModeConfigUtil } from './utils';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../../ui/accordion';
 import { Input } from '../../ui/input';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../../ui/tooltip';
@@ -147,8 +147,8 @@ export function LogoUploadSection({
 
       // Crear configuraciones para light y dark mode usando primary color
       const primaryColor = state.currentTheme.colors.primary.hex;
-      const lightModeConfig = createDefaultModeConfig(svgContent, detectedColors, primaryColor, false);
-      const darkModeConfig = createDefaultModeConfig(svgContent, detectedColors, primaryColor, true);
+      const lightModeConfig = createDefaultModeConfigUtil(svgContent, detectedColors, primaryColor, false);
+      const darkModeConfig = createDefaultModeConfigUtil(svgContent, detectedColors, primaryColor, true);
 
       // Crear LogoVariant con nueva estructura
       const logoVariant: LogoVariant = {
@@ -362,20 +362,9 @@ export function LogoUploadSection({
                 `}
               >
                 <div 
-                  className="w-full h-full flex items-center justify-center"
-                >
-                  <div 
-                    dangerouslySetInnerHTML={{ __html: logo.svgContent }}
-                    className="w-full h-full flex items-center justify-center"
-                    style={{ 
-                      maxWidth: '100%',
-                      maxHeight: '100%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}
-                  />
-                </div>
+                  dangerouslySetInnerHTML={{ __html: logo.svgContent }}
+                  className="w-full h-full flex items-center justify-center [&>svg]:max-w-full [&>svg]:max-h-full [&>svg]:object-contain"
+                />
               </div>
               
               {/* INFO_ICON */}
@@ -578,15 +567,15 @@ export function LogoUploadSection({
           <Card className="p-6 w-80 max-w-[90vw]">
             {/* MODAL_HEADER */}
             <div className="flex items-center justify-between mb-4">
-              <h3 style={{
-                fontFamily: 'var(--typography-h4-font-family)',
-                fontSize: 'var(--typography-h4-font-size)',
-                fontWeight: 'var(--typography-h4-font-weight)',
-                lineHeight: 'var(--typography-h4-line-height)',
-                letterSpacing: 'var(--typography-h4-letter-spacing)'
+              <h5 style={{
+                fontFamily: 'var(--typography-h5-font-family)',
+                fontSize: 'var(--typography-h5-font-size)',
+                fontWeight: 'var(--typography-h5-font-weight)',
+                lineHeight: 'var(--typography-h5-line-height)',
+                letterSpacing: 'var(--typography-h5-letter-spacing)'
               }} className="text-foreground">
                 Seleccionar Color
-              </h3>
+              </h5>
               <Button
                 variant="ghost"
                 size="sm"

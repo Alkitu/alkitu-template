@@ -90,7 +90,13 @@ export function ColorEditor() {
           >
             <AccordionTrigger className="text-left hover:no-underline">
               <div className="flex flex-col items-start">
-                <span className="font-medium text-foreground">{section.title}</span>
+                <h5 style={{
+                  fontFamily: 'var(--typography-h5-font-family)',
+                  fontSize: 'var(--typography-h5-font-size)',
+                  fontWeight: 'var(--typography-h5-font-weight)',
+                  lineHeight: 'var(--typography-h5-line-height)',
+                  letterSpacing: 'var(--typography-h5-letter-spacing)'
+                }} className="text-foreground">{section.title}</h5>
                 {section.description && (
                   <span className="text-xs text-muted-foreground mt-1">
                     {section.description}
@@ -120,9 +126,15 @@ export function ColorEditor() {
                     
                     return (
                       <div key={colorKey} className="space-y-2">
-                        <label className="text-sm font-medium text-foreground">
+                        <h5 style={{
+                          fontFamily: 'var(--typography-h5-font-family)',
+                          fontSize: 'var(--typography-h5-font-size)',
+                          fontWeight: 'var(--typography-h5-font-weight)',
+                          lineHeight: 'var(--typography-h5-line-height)',
+                          letterSpacing: 'var(--typography-h5-letter-spacing)'
+                        }} className="text-foreground">
                           {label}
-                        </label>
+                        </h5>
                         <ColorInput
                           color={defaultColorToken}
                           onChange={(newColor) => handleColorChange(colorKey, newColor)}
@@ -136,9 +148,15 @@ export function ColorEditor() {
                   
                   return (
                     <div key={colorKey} className="space-y-2">
-                      <label className="text-sm font-medium text-foreground">
+                      <h5 style={{
+                        fontFamily: 'var(--typography-h5-font-family)',
+                        fontSize: 'var(--typography-h5-font-size)',
+                        fontWeight: 'var(--typography-h5-font-weight)',
+                        lineHeight: 'var(--typography-h5-line-height)',
+                        letterSpacing: 'var(--typography-h5-letter-spacing)'
+                      }} className="text-foreground">
                         {label}
-                      </label>
+                      </h5>
                       <ColorInput
                         color={colorToken}
                         onChange={(newColor) => handleColorChange(colorKey, newColor)}

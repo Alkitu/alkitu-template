@@ -1,5 +1,5 @@
 // Theme Editor 3.0 - CSS Variables Management
-import { ThemeData, ThemeColors, OklchColor } from '../types/theme.types';
+import { ThemeData, ThemeColors, ThemeBorders, OklchColor } from '../types/theme.types';
 import { CSS_VARIABLE_MAP } from '../types/color-sections.types';
 import { oklchToHex } from './color-conversions';
 import { TypographyElements } from '../3-theme-editor/typography/types';
@@ -79,6 +79,20 @@ export function applyThemeToRoot(theme: ThemeData, mode: 'light' | 'dark' = 'lig
   // Apply borders
   root.style.setProperty('--radius', theme.borders.radius);
   
+  // Apply specific border radius variables if available
+  if (theme.borders.radiusButton) {
+    root.style.setProperty('--radius-button', theme.borders.radiusButton);
+  }
+  if (theme.borders.radiusCard) {
+    root.style.setProperty('--radius-card', theme.borders.radiusCard);
+  }
+  if (theme.borders.radiusButtonInner) {
+    root.style.setProperty('--radius-button-inner', theme.borders.radiusButtonInner);
+  }
+  if (theme.borders.radiusCardInner) {
+    root.style.setProperty('--radius-card-inner', theme.borders.radiusCardInner);
+  }
+  
   // Apply spacing
   root.style.setProperty('--spacing', theme.spacing.spacing);
   
@@ -114,6 +128,67 @@ export function applyTypographyElements(typography: TypographyElements): void {
     root.style.setProperty(`${prefix}-letter-spacing`, element.letterSpacing);
     root.style.setProperty(`${prefix}-word-spacing`, element.wordSpacing);
     root.style.setProperty(`${prefix}-text-decoration`, element.textDecoration);
+    root.style.setProperty(`${prefix}-font-style`, element.fontStyle);
+  });
+}
+
+/**
+ * Applies borders values to CSS root variables
+ */
+export function applyBorderElements(borders: ThemeBorders): void {
+  const root = document.documentElement;
+  
+  // Apply main radius
+  root.style.setProperty('--radius', borders.radius);
+  
+  // Apply specific border radius variables
+  if (borders.radiusButton) {
+    root.style.setProperty('--radius-button', borders.radiusButton);
+  }
+  if (borders.radiusCard) {
+    root.style.setProperty('--radius-card', borders.radiusCard);
+  }
+  if (borders.radiusButtonInner) {
+    root.style.setProperty('--radius-button-inner', borders.radiusButtonInner);
+  }
+  if (borders.radiusCardInner) {
+    root.style.setProperty('--radius-card-inner', borders.radiusCardInner);
+  }
+  if (borders.radiusSm) {
+    root.style.setProperty('--radius-sm', borders.radiusSm);
+  }
+  if (borders.radiusMd) {
+    root.style.setProperty('--radius-md', borders.radiusMd);
+  }
+  if (borders.radiusLg) {
+    root.style.setProperty('--radius-lg', borders.radiusLg);
+  }
+  if (borders.radiusXl) {
+    root.style.setProperty('--radius-xl', borders.radiusXl);
+  }
+}
+
+/**
+ * Applies spacing values to CSS root variables
+ */
+export function applySpacingElements(spacing: Record<string, string>): void {
+  const root = document.documentElement;
+  
+  // Apply each spacing value as CSS variables
+  Object.entries(spacing).forEach(([spacingKey, value]) => {
+    root.style.setProperty(`--spacing-${spacingKey}`, value);
+  });
+}
+
+/**
+ * Applies shadow values to CSS root variables
+ */
+export function applyShadowElements(shadows: Record<string, string>): void {
+  const root = document.documentElement;
+  
+  // Apply each shadow value as CSS variables
+  Object.entries(shadows).forEach(([shadowKey, value]) => {
+    root.style.setProperty(`--shadow-${shadowKey}`, value);
   });
 }
 

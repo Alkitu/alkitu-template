@@ -153,14 +153,33 @@ export interface ThemeBrand {
 
 export interface ThemeSpacing {
   spacing: string; // Base spacing value (0.25rem)
+  scale: Record<string, string>; // Individual spacing scale values
+}
+
+export interface BorderRadiusController {
+  value: number; // Base value in px
+  isLinked: boolean; // Whether it's linked to global radius
+  formula: string; // CSS calc formula for nested elements
 }
 
 export interface ThemeBorders {
-  radius: string; // Base radius value
+  // Global Controllers
+  globalRadius: BorderRadiusController;
+  cardsRadius: BorderRadiusController;
+  buttonsRadius: BorderRadiusController;
+  
+  // Computed CSS values (auto-generated from controllers)
+  radius: string; // Base radius value from globalRadius
   radiusSm: string; // calc(var(--radius) - 4px)
   radiusMd: string; // calc(var(--radius) - 2px)
   radiusLg: string; // var(--radius)
   radiusXl: string; // calc(var(--radius) + 4px)
+  
+  // Component-specific values
+  radiusCard: string; // From cardsRadius controller
+  radiusCardInner: string; // With automatic padding formula
+  radiusButton: string; // From buttonsRadius controller
+  radiusButtonInner: string; // With automatic padding formula
 }
 
 export interface ThemeShadows {

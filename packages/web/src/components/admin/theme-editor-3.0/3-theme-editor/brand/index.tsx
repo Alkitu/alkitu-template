@@ -47,11 +47,11 @@ export function BrandEditor({
         {/* LOGO_ICON_SECTION */}
         <AccordionItem value="logo-icon">
           <AccordionTrigger style={{
-            fontFamily: 'var(--typography-h4-font-family)',
-            fontSize: 'var(--typography-h4-font-size)',
-            fontWeight: 'var(--typography-h4-font-weight)',
-            lineHeight: 'var(--typography-h4-line-height)',
-            letterSpacing: 'var(--typography-h4-letter-spacing)'
+            fontFamily: 'var(--typography-h5-font-family)',
+            fontSize: 'var(--typography-h5-font-size)',
+            fontWeight: 'var(--typography-h5-font-weight)',
+            lineHeight: 'var(--typography-h5-line-height)',
+            letterSpacing: 'var(--typography-h5-letter-spacing)'
           }} className="text-foreground">
             Logo (V1) - Icono
           </AccordionTrigger>
@@ -70,11 +70,11 @@ export function BrandEditor({
         {/* LOGO_HORIZONTAL_SECTION */}
         <AccordionItem value="logo-horizontal">
           <AccordionTrigger style={{
-            fontFamily: 'var(--typography-h4-font-family)',
-            fontSize: 'var(--typography-h4-font-size)',
-            fontWeight: 'var(--typography-h4-font-weight)',
-            lineHeight: 'var(--typography-h4-line-height)',
-            letterSpacing: 'var(--typography-h4-letter-spacing)'
+            fontFamily: 'var(--typography-h5-font-family)',
+            fontSize: 'var(--typography-h5-font-size)',
+            fontWeight: 'var(--typography-h5-font-weight)',
+            lineHeight: 'var(--typography-h5-line-height)',
+            letterSpacing: 'var(--typography-h5-letter-spacing)'
           }} className="text-foreground">
             Logo (V2) - Horizontal
           </AccordionTrigger>
@@ -93,11 +93,11 @@ export function BrandEditor({
         {/* LOGO_VERTICAL_SECTION */}
         <AccordionItem value="logo-vertical">
           <AccordionTrigger style={{
-            fontFamily: 'var(--typography-h4-font-family)',
-            fontSize: 'var(--typography-h4-font-size)',
-            fontWeight: 'var(--typography-h4-font-weight)',
-            lineHeight: 'var(--typography-h4-line-height)',
-            letterSpacing: 'var(--typography-h4-letter-spacing)'
+            fontFamily: 'var(--typography-h5-font-family)',
+            fontSize: 'var(--typography-h5-font-size)',
+            fontWeight: 'var(--typography-h5-font-weight)',
+            lineHeight: 'var(--typography-h5-line-height)',
+            letterSpacing: 'var(--typography-h5-letter-spacing)'
           }} className="text-foreground">
             Logo (V3) - Vertical
           </AccordionTrigger>

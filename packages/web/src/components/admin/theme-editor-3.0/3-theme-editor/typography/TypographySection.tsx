@@ -95,9 +95,15 @@ export function TypographySection({
               className="w-full justify-between p-4 h-auto text-left hover:bg-muted/50"
             >
               <div className="flex flex-col items-start gap-1">
-                <span className="font-medium text-sm text-foreground">
+                <h5 style={{
+                  fontFamily: 'var(--typography-h5-font-family)',
+                  fontSize: 'var(--typography-h5-font-size)',
+                  fontWeight: 'var(--typography-h5-font-weight)',
+                  lineHeight: 'var(--typography-h5-line-height)',
+                  letterSpacing: 'var(--typography-h5-letter-spacing)'
+                }} className="text-foreground">
                   {config.label}
-                </span>
+                </h5>
                 {/* Mini preview */}
                 <div 
                   className="text-xs text-muted-foreground truncate max-w-[300px]"

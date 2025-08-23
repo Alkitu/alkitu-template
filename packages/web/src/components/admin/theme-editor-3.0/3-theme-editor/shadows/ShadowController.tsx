@@ -270,13 +270,12 @@ export function ShadowController({
       {/* PREVIEW */}
       <div className="flex items-center gap-3 pt-2">
         <div 
-          className="w-16 h-16 border border-gray-200 flex items-center justify-center rounded-md"
+          className="w-16 h-16 border border-border flex items-center justify-center rounded-md bg-background"
           style={{ 
-            backgroundColor: '#ffffff',
             boxShadow: value === 'none' ? 'none' : value
           }}
         >
-          <span className="text-xs font-mono text-gray-800 font-medium">
+          <span className="text-xs font-mono text-foreground font-medium">
             {shadowKey}
           </span>
         </div>

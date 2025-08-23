@@ -1,10 +1,19 @@
 // Theme Editor 3.0 - Scrollbar Styles Management
 
+// Cache to avoid unnecessary DOM modifications
+let scrollbarStylesApplied = false;
+
 /**
  * Applies custom scrollbar styles using CSS variables
  * This creates dynamic scrollbar theming based on theme colors
+ * Only applies once to prevent scroll position reset
  */
 export function applyScrollbarStyles(): void {
+  // Only apply styles once to prevent DOM manipulation that resets scroll
+  if (scrollbarStylesApplied) {
+    return;
+  }
+
   // Check if the style element already exists
   let styleElement = document.getElementById('theme-scrollbar-styles') as HTMLStyleElement;
   
@@ -13,88 +22,89 @@ export function applyScrollbarStyles(): void {
     styleElement = document.createElement('style');
     styleElement.id = 'theme-scrollbar-styles';
     document.head.appendChild(styleElement);
+
+    // CSS for custom scrollbar using theme variables
+    const scrollbarCSS = `
+      /* Webkit Scrollbar Styles */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      
+      ::-webkit-scrollbar-track {
+        background: var(--scrollbar-track);
+        border-radius: 4px;
+      }
+      
+      ::-webkit-scrollbar-thumb {
+        background: var(--scrollbar-thumb);
+        border-radius: 4px;
+        border: 1px solid var(--scrollbar-track);
+      }
+      
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--scrollbar-thumb);
+        opacity: 0.8;
+      }
+      
+      ::-webkit-scrollbar-corner {
+        background: var(--scrollbar-track);
+      }
+      
+      /* Firefox Scrollbar Styles */
+      * {
+        scrollbar-width: thin;
+        scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+      }
+      
+      /* Tailwind scrollbar utilities override */
+      .scrollbar-thin {
+        scrollbar-width: thin;
+        scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+      }
+      
+      .scrollbar-thin::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      
+      .scrollbar-thin::-webkit-scrollbar-track {
+        background: var(--scrollbar-track);
+        border-radius: 4px;
+      }
+      
+      .scrollbar-thin::-webkit-scrollbar-thumb {
+        background: var(--scrollbar-thumb);
+        border-radius: 4px;
+        border: 1px solid var(--scrollbar-track);
+      }
+      
+      .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+        background: var(--scrollbar-thumb);
+        opacity: 0.8;
+      }
+      
+      .scrollbar-thumb-border {
+        scrollbar-color: var(--border) var(--scrollbar-track);
+      }
+      
+      .scrollbar-thumb-border::-webkit-scrollbar-thumb {
+        background: var(--border);
+      }
+      
+      .scrollbar-track-background {
+        scrollbar-color: var(--scrollbar-thumb) var(--background);
+      }
+      
+      .scrollbar-track-background::-webkit-scrollbar-track {
+        background: var(--background);
+      }
+    `;
+
+    // Apply the CSS to the style element only once
+    styleElement.textContent = scrollbarCSS;
+    scrollbarStylesApplied = true;
   }
-
-  // CSS for custom scrollbar using theme variables
-  const scrollbarCSS = `
-    /* Webkit Scrollbar Styles */
-    ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-    
-    ::-webkit-scrollbar-track {
-      background: var(--scrollbar-track);
-      border-radius: 4px;
-    }
-    
-    ::-webkit-scrollbar-thumb {
-      background: var(--scrollbar-thumb);
-      border-radius: 4px;
-      border: 1px solid var(--scrollbar-track);
-    }
-    
-    ::-webkit-scrollbar-thumb:hover {
-      background: var(--scrollbar-thumb);
-      opacity: 0.8;
-    }
-    
-    ::-webkit-scrollbar-corner {
-      background: var(--scrollbar-track);
-    }
-    
-    /* Firefox Scrollbar Styles */
-    * {
-      scrollbar-width: thin;
-      scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
-    }
-    
-    /* Tailwind scrollbar utilities override */
-    .scrollbar-thin {
-      scrollbar-width: thin;
-      scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
-    }
-    
-    .scrollbar-thin::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-    
-    .scrollbar-thin::-webkit-scrollbar-track {
-      background: var(--scrollbar-track);
-      border-radius: 4px;
-    }
-    
-    .scrollbar-thin::-webkit-scrollbar-thumb {
-      background: var(--scrollbar-thumb);
-      border-radius: 4px;
-      border: 1px solid var(--scrollbar-track);
-    }
-    
-    .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-      background: var(--scrollbar-thumb);
-      opacity: 0.8;
-    }
-    
-    .scrollbar-thumb-border {
-      scrollbar-color: var(--border) var(--scrollbar-track);
-    }
-    
-    .scrollbar-thumb-border::-webkit-scrollbar-thumb {
-      background: var(--border);
-    }
-    
-    .scrollbar-track-background {
-      scrollbar-color: var(--scrollbar-thumb) var(--background);
-    }
-    
-    .scrollbar-track-background::-webkit-scrollbar-track {
-      background: var(--background);
-    }
-  `;
-
-  // Apply the CSS to the style element
-  styleElement.textContent = scrollbarCSS;
 }
 
 /**

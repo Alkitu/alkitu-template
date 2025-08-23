@@ -303,16 +303,17 @@ export function LogoUploadSection({
 
   return (
     <>
-      <div className={`space-y-4 flex flex-col items-center ${className}`}>
+      <div className={`flex flex-col gap-4 w-full items-center ${className}`}>
         
         {!logo ? (
           /* UPLOAD_STATE - Estado inicial para subir archivos */
           <div
             className={`
-              border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors relative outline outline-1 outline-muted
-              ${type === 'icon' ? 'aspect-[1/1] w-[240px] h-[240px]' : type === 'horizontal' ? 'aspect-[3/1] w-[360px] h-[120px]' : 'aspect-[1/2] w-[180px] h-[360px]'}
+              border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors relative outline outline-1 outline-muted flex flex-col items-center justify-center
+              ${type === 'icon' ? 'aspect-[1/1] w-full max-w-[240px] h-auto' : type === 'horizontal' ? 'aspect-[3/1] w-full max-w-[360px] h-auto' : 'aspect-[1/2] w-full max-w-[180px] h-auto'}
               ${isDragging ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}
               ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}
+              min-h-[120px] sm:min-h-[140px]
             `}
             onDrop={handleDrop}
             onDragOver={(e) => e.preventDefault()}
@@ -320,14 +321,14 @@ export function LogoUploadSection({
             onDragLeave={() => setIsDragging(false)}
             onClick={() => !isUploading && fileInputRef.current?.click()}
           >
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <Upload className="h-8 w-8 mb-2 text-muted-foreground" />
+            <div className="flex flex-col items-center justify-center h-full w-full p-2">
+              <Upload className="h-6 w-6 sm:h-8 sm:w-8 mb-2 text-muted-foreground flex-shrink-0" />
               <p style={{
                 fontFamily: 'var(--typography-emphasis-font-family)',
                 fontSize: 'var(--typography-emphasis-font-size)',
                 fontWeight: 'var(--typography-emphasis-font-weight)',
                 letterSpacing: 'var(--typography-emphasis-letter-spacing)'
-              }} className="text-foreground mb-1">
+              }} className="text-foreground mb-1 text-center text-sm sm:text-base">
                 {isUploading ? 'Procesando...' : 'Arrastra tu SVG aquí'}
               </p>
               <p style={{
@@ -336,7 +337,7 @@ export function LogoUploadSection({
                 fontWeight: 'var(--typography-paragraph-font-weight)',
                 lineHeight: 'var(--typography-paragraph-line-height)',
                 letterSpacing: 'var(--typography-paragraph-letter-spacing)'
-              }} className="text-muted-foreground">
+              }} className="text-muted-foreground text-center text-xs sm:text-sm">
                 o haz clic para seleccionar
               </p>
             </div>
@@ -354,11 +355,12 @@ export function LogoUploadSection({
           /* PREVIEW_STATE - Estado con logo subido */
           <>
             {/* LOGO_CONTAINER_WITH_INFO_AND_ACTIONS */}
-            <div className="relative">
+            <div className="relative w-full flex justify-center">
               <div 
                 className={`
-                  bg-muted/10 border rounded-lg p-4 relative overflow-hidden outline outline-1 outline-muted
-                  ${type === 'icon' ? 'aspect-[1/1] w-[240px] h-[240px]' : type === 'horizontal' ? 'aspect-[3/1] w-[360px] h-[120px]' : 'aspect-[1/2] w-[180px] h-[360px]'}
+                  bg-muted/10 border rounded-lg p-4 relative overflow-hidden outline outline-1 outline-muted flex items-center justify-center
+                  ${type === 'icon' ? 'aspect-[1/1] w-full max-w-[240px] h-auto' : type === 'horizontal' ? 'aspect-[3/1] w-full max-w-[360px] h-auto' : 'aspect-[1/2] w-full max-w-[180px] h-auto'}
+                  min-h-[120px] sm:min-h-[140px]
                 `}
               >
                 <div 
@@ -428,7 +430,7 @@ export function LogoUploadSection({
             </div>
 
             {/* REPLACE_IMAGE_LINK */}
-            <div className="flex justify-center mt-2">
+            <div className="flex justify-center mt-2 w-full">
               <button
                 onClick={removeLogo}
                 style={{
@@ -437,7 +439,7 @@ export function LogoUploadSection({
                   fontWeight: 'var(--typography-emphasis-font-weight)',
                   letterSpacing: 'var(--typography-emphasis-letter-spacing)'
                 }}
-                className="text-muted-foreground hover:text-foreground underline underline-offset-2 transition-colors cursor-pointer bg-transparent border-none p-0"
+                className="text-muted-foreground hover:text-foreground underline underline-offset-2 transition-colors cursor-pointer bg-transparent border-none p-2 text-sm sm:text-base"
               >
                 Cambiar imagen
               </button>
@@ -445,14 +447,14 @@ export function LogoUploadSection({
 
             {/* DETECTED_COLORS_CIRCLES */}
             {logo.detectedColors.length > 0 && (
-              <div className="flex justify-center mt-4">
-                <div className="flex gap-2 flex-wrap justify-center">
+              <div className="flex justify-center mt-4 w-full">
+                <div className="flex gap-2 flex-wrap justify-center max-w-full">
                   {logo.detectedColors.map((color, index) => (
                     <Button
                       key={`${logo.id}-color-${index}`}
                       variant="ghost"
                       size="sm"
-                      className="w-8 h-8 p-0 rounded-full border-2 border-border hover:border-primary transition-colors hover:scale-110"
+                      className="w-7 h-7 sm:w-8 sm:h-8 p-0 rounded-full border-2 border-border hover:border-primary transition-colors hover:scale-110 flex-shrink-0"
                       style={{ backgroundColor: color }}
                       onClick={() => openColorPicker(index, color)}
                       title={`Editar color ${color}`}
@@ -464,10 +466,10 @@ export function LogoUploadSection({
 
             {/* MONO_COLOR_SELECTOR */}
             {logo && (
-              <div className="mt-4 pt-4 border-t border-border">
-                <div className="flex items-center justify-center gap-2">
+              <div className="mt-4 pt-4 border-t border-border w-full">
+                <div className="flex items-center justify-center gap-2 flex-wrap">
                   {/* CLICKABLE_MONO_COLOR_PILL */}
-                  <div className="relative">
+                  <div className="relative flex-shrink-0">
                     <Badge 
                       variant="secondary" 
                       className="flex items-center gap-2 px-3 py-1 cursor-pointer hover:bg-secondary/80 transition-colors"
@@ -546,7 +548,7 @@ export function LogoUploadSection({
 
         {/* ERROR_MESSAGE */}
         {error && (
-          <div className="flex items-start gap-2 bg-destructive/10 border border-destructive/20 p-2 rounded-md">
+          <div className="flex items-start gap-2 bg-destructive/10 border border-destructive/20 p-3 rounded-md w-full max-w-md mx-auto">
             <AlertCircle className="h-4 w-4 text-destructive flex-shrink-0 mt-0.5" />
             <p style={{
               fontFamily: 'var(--typography-paragraph-font-family)',
@@ -563,8 +565,8 @@ export function LogoUploadSection({
 
       {/* COLOR_PICKER_MODAL */}
       {colorPicker.isOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <Card className="p-6 w-80 max-w-[90vw]">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <Card className="p-4 sm:p-6 w-full max-w-sm sm:max-w-md max-h-[90vh] overflow-auto">
             {/* MODAL_HEADER */}
             <div className="flex items-center justify-between mb-4">
               <h5 style={{
@@ -650,11 +652,11 @@ export function LogoUploadSection({
             </div>
 
             {/* MODAL_ACTIONS */}
-            <div className="flex justify-end gap-2 mt-4">
-              <Button variant="ghost" size="sm" onClick={cancelColorChange}>
+            <div className="flex flex-col sm:flex-row justify-end gap-2 mt-4">
+              <Button variant="ghost" size="sm" onClick={cancelColorChange} className="w-full sm:w-auto">
                 Cancelar
               </Button>
-              <Button size="sm" onClick={acceptColorChange}>
+              <Button size="sm" onClick={acceptColorChange} className="w-full sm:w-auto">
                 Aceptar
               </Button>
             </div>

@@ -41,21 +41,21 @@ export function BrandEditor({
 
 
   return (
-    <div className={className}>
-      <Accordion type="multiple" defaultValue={["logo-icon", "logo-horizontal", "logo-vertical"]} className="w-full">
+    <div className={`flex flex-col gap-4 w-full min-w-0 ${className}`}>
+      <Accordion type="multiple" defaultValue={["logo-icon", "logo-horizontal", "logo-vertical"]} className="w-full flex flex-col gap-2">
 
         {/* LOGO_ICON_SECTION */}
-        <AccordionItem value="logo-icon">
+        <AccordionItem value="logo-icon" className="border rounded-lg">
           <AccordionTrigger style={{
             fontFamily: 'var(--typography-h5-font-family)',
             fontSize: 'var(--typography-h5-font-size)',
             fontWeight: 'var(--typography-h5-font-weight)',
             lineHeight: 'var(--typography-h5-line-height)',
             letterSpacing: 'var(--typography-h5-letter-spacing)'
-          }} className="text-foreground">
-            Logo (V1) - Icono
+          }} className="text-foreground px-4 py-3 min-w-0">
+            <span className="flex-1 text-left truncate">Logo (V1) - Icono</span>
           </AccordionTrigger>
-          <AccordionContent>
+          <AccordionContent className="px-4 pb-4">
             <LogoUploadSection
               title="Icono"
               type="icon"
@@ -63,22 +63,23 @@ export function BrandEditor({
               instructions="Sube tu logo en formato cuadrado (1:1). Ideal para favicons, app icons y espacios reducidos."
               logo={brand.logos.icon}
               onLogoChange={(logo) => handleLogoChange('icon', logo)}
+              className="w-full"
             />
           </AccordionContent>
         </AccordionItem>
 
         {/* LOGO_HORIZONTAL_SECTION */}
-        <AccordionItem value="logo-horizontal">
+        <AccordionItem value="logo-horizontal" className="border rounded-lg">
           <AccordionTrigger style={{
             fontFamily: 'var(--typography-h5-font-family)',
             fontSize: 'var(--typography-h5-font-size)',
             fontWeight: 'var(--typography-h5-font-weight)',
             lineHeight: 'var(--typography-h5-line-height)',
             letterSpacing: 'var(--typography-h5-letter-spacing)'
-          }} className="text-foreground">
-            Logo (V2) - Horizontal
+          }} className="text-foreground px-4 py-3 min-w-0">
+            <span className="flex-1 text-left truncate">Logo (V2) - Horizontal</span>
           </AccordionTrigger>
-          <AccordionContent>
+          <AccordionContent className="px-4 pb-4">
             <LogoUploadSection
               title="Horizontal"
               type="horizontal"
@@ -86,22 +87,23 @@ export function BrandEditor({
               instructions="Sube tu logo en formato horizontal (3:1). Perfecto para headers y navegación principal."
               logo={brand.logos.horizontal}
               onLogoChange={(logo) => handleLogoChange('horizontal', logo)}
+              className="w-full"
             />
           </AccordionContent>
         </AccordionItem>
 
         {/* LOGO_VERTICAL_SECTION */}
-        <AccordionItem value="logo-vertical">
+        <AccordionItem value="logo-vertical" className="border rounded-lg">
           <AccordionTrigger style={{
             fontFamily: 'var(--typography-h5-font-family)',
             fontSize: 'var(--typography-h5-font-size)',
             fontWeight: 'var(--typography-h5-font-weight)',
             lineHeight: 'var(--typography-h5-line-height)',
             letterSpacing: 'var(--typography-h5-letter-spacing)'
-          }} className="text-foreground">
-            Logo (V3) - Vertical
+          }} className="text-foreground px-4 py-3 min-w-0">
+            <span className="flex-1 text-left truncate">Logo (V3) - Vertical</span>
           </AccordionTrigger>
-          <AccordionContent>
+          <AccordionContent className="px-4 pb-4">
             <LogoUploadSection
               title="Vertical"
               type="vertical"
@@ -109,6 +111,7 @@ export function BrandEditor({
               instructions="Sube tu logo en formato vertical (3:4). Ideal para sidebars y espacios altos."
               logo={brand.logos.vertical}
               onLogoChange={(logo) => handleLogoChange('vertical', logo)}
+              className="w-full"
             />
           </AccordionContent>
         </AccordionItem>

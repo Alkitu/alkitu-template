@@ -63,9 +63,13 @@ export interface ThemeColors {
   muted: ColorToken;
   mutedForeground: ColorToken;
   
-  // Destructive colors
+  // Alert colors (destructive, warning, success)
   destructive: ColorToken;
   destructiveForeground: ColorToken;
+  warning: ColorToken;
+  warningForeground: ColorToken;
+  success: ColorToken;
+  successForeground: ColorToken;
   
   // Border & Input colors
   border: ColorToken;

@@ -59,7 +59,7 @@ export function BrandBookPreview({
 
   if (validLogos.length === 0) {
     return (
-      <Card className={`p-6 ${className}`}>
+      <Card className={`p-4 sm:p-6 ${className}`}>
         {/* EMPTY_BRAND_BOOK */}
         <div className="text-center py-8">
           <BookOpen className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
@@ -87,7 +87,7 @@ export function BrandBookPreview({
   }
 
   return (
-    <Card className={`p-6 ${className}`}>
+    <Card className={`p-4 sm:p-6 ${className}`}>
       {/* BRAND_BOOK_HEADER */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
@@ -128,9 +128,9 @@ export function BrandBookPreview({
       {/* BRAND_BOOK_CONTENT */}
       <div className="space-y-8">
         {validLogos.map((logo) => (
-          <div key={logo.id} className="border border-border rounded-lg p-6">
+          <div key={logo.id} className="border border-border rounded-lg p-4 sm:p-6">
             {/* LOGO_TYPE_HEADER */}
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between mb-4 sm:mb-6">
               <div className="flex items-center gap-3">
                 <h4 style={{
                   fontFamily: 'var(--typography-h4-font-family)',
@@ -160,9 +160,12 @@ export function BrandBookPreview({
               </div>
             </div>
 
-            {/* COLOR_VARIANTS_GRID */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {(Object.entries(logo.variants) as [keyof typeof logo.variants, string][]).map(([variantKey, svgContent]) => (
+            {/* COLOR_VARIANTS_STACK */}
+            <div className="flex flex-col gap-6">
+              {(['original', 'white', 'black', 'gray'] as const).map((variantKey) => {
+                const svgContent = logo.variants[variantKey];
+                if (!svgContent) return null;
+                return (
                 <div key={`${logo.id}-${variantKey}`} className="space-y-4">
                   {/* VARIANT_HEADER */}
                   <div className="flex items-center justify-between">
@@ -202,7 +205,7 @@ export function BrandBookPreview({
                   </div>
 
                   {/* LOGO_SHOWCASE */}
-                  <div className={`rounded-lg border p-4 min-h-[120px] flex items-center justify-center ${VARIANT_BACKGROUNDS[variantKey]} relative overflow-hidden`}>
+                  <div className={`rounded-lg border p-3 sm:p-4 min-h-[100px] sm:min-h-[120px] flex items-center justify-center ${VARIANT_BACKGROUNDS[variantKey]} relative overflow-hidden`}>
                     <div className="svg-container flex items-center justify-center">
                       <div 
                         dangerouslySetInnerHTML={{ __html: svgContent }}
@@ -229,7 +232,7 @@ export function BrandBookPreview({
                     </p>
                     
                     {/* SIZES_SHOWCASE */}
-                    <div className={`rounded border p-3 flex items-center justify-center gap-3 flex-wrap ${VARIANT_BACKGROUNDS[variantKey]}`}>
+                    <div className={`rounded border p-2 sm:p-3 flex items-center justify-center gap-2 sm:gap-3 flex-wrap ${VARIANT_BACKGROUNDS[variantKey]}`}>
                       {(['xs', 'sm', 'md', 'lg'] as LogoSize[]).map((size) => (
                         <div key={size} className="flex flex-col items-center gap-1">
                           <div className="svg-container flex items-center justify-center">
@@ -257,7 +260,8 @@ export function BrandBookPreview({
                     </div>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
 
             {/* DETECTED_COLORS_INFO */}

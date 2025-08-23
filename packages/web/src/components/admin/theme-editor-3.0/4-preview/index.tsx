@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
@@ -12,10 +12,39 @@ import { Palette, Type, Building, Atom, Layers, Layout, Battery, Wifi, Signal } 
 import { ContrastChecker } from './colors/ContrastChecker';
 import { TypographyPreview } from './typography/TypographyPreview';
 import { BrandPreview } from './brand-preview';
-import { ButtonShowcase } from './atoms-showcase/ButtonShowcase';
+import { AtomsShowcase } from './atoms-showcase/AtomsShowcase';
+
+// Custom hook to preserve scroll positions
+function useScrollPreservation() {
+  const scrollPositions = useRef<Record<string, number>>({});
+  
+  const preserveScroll = (key: string, element: HTMLElement | null) => {
+    if (element) {
+      scrollPositions.current[key] = element.scrollTop;
+    }
+  };
+  
+  const restoreScroll = (key: string, element: HTMLElement | null) => {
+    if (element && scrollPositions.current[key] !== undefined) {
+      // Use requestAnimationFrame to ensure the element is rendered
+      requestAnimationFrame(() => {
+        element.scrollTop = scrollPositions.current[key] || 0;
+      });
+    }
+  };
+  
+  return { preserveScroll, restoreScroll };
+}
 
 export function Preview() {
   const { state, setPreviewSection } = useThemeEditor();
+  const { preserveScroll, restoreScroll } = useScrollPreservation();
+  
+  // Refs for scroll containers
+  const desktopScrollRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const tabletScrollRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const smartphoneScrollRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
 
   // Early return if theme is not loaded
   if (!state?.preview) {
@@ -132,7 +161,22 @@ export function Preview() {
           {(currentViewport === 'smartphone' || currentViewport === 'tablet') && (
             <Tabs 
               value={state.preview.activeSection} 
-              onValueChange={(value) => setPreviewSection(value as PreviewSection)}
+              onValueChange={(value) => {
+                // Preserve scroll before changing section for mobile devices
+                const activeSection = state.preview.activeSection;
+                if (currentViewport === 'smartphone') {
+                  const currentEl = smartphoneScrollRefs.current[activeSection];
+                  if (currentEl) {
+                    preserveScroll(`smartphone-${activeSection}`, currentEl);
+                  }
+                } else if (currentViewport === 'tablet') {
+                  const currentEl = tabletScrollRefs.current[activeSection];
+                  if (currentEl) {
+                    preserveScroll(`tablet-${activeSection}`, currentEl);
+                  }
+                }
+                setPreviewSection(value as PreviewSection);
+              }}
               className="w-full h-full flex flex-col"
             >
               <TabsList className="grid w-full grid-cols-3 gap-1 h-auto p-1 flex-shrink-0 mb-6">
@@ -193,10 +237,34 @@ export function Preview() {
     const activeSection = state.preview.activeSection;
     const isTV = currentViewport === 'tv';
     
+    // Create scroll preservation handlers for desktop/TV
+    const handleScrollRef = (section: string) => (el: HTMLDivElement | null) => {
+      if (el) {
+        // Preserve current scroll position before ref changes
+        const currentEl = desktopScrollRefs.current[section];
+        if (currentEl) {
+          preserveScroll(`desktop-${section}`, currentEl);
+        }
+        
+        // Set new ref
+        desktopScrollRefs.current[section] = el;
+        
+        // Restore scroll position
+        restoreScroll(`desktop-${section}`, el);
+      }
+    };
+    
     return (
       <Tabs 
         value={state.preview.activeSection} 
-        onValueChange={(value) => setPreviewSection(value as PreviewSection)}
+        onValueChange={(value) => {
+          // Preserve scroll before changing section
+          const currentEl = desktopScrollRefs.current[activeSection];
+          if (currentEl) {
+            preserveScroll(`desktop-${activeSection}`, currentEl);
+          }
+          setPreviewSection(value as PreviewSection);
+        }}
         className="w-full h-full flex flex-col"
       >
         {/* Internal navigation tabs - much larger for TV */}
@@ -215,7 +283,11 @@ export function Preview() {
 
         {/* Content with TV scaling - 30% larger text for ALL elements */}
         <TabsContent value="colors" className="mt-2 flex-1 min-h-0 overflow-hidden">
-          <div className={`h-full overflow-y-auto pb-4 scrollbar-thin scrollbar-thumb-border scrollbar-track-background ${isTV ? 'px-6' : 'px-2'}`}>
+          <div 
+            ref={handleScrollRef('colors')}
+            className={`h-full overflow-y-auto pb-4 scrollbar-thin scrollbar-thumb-border scrollbar-track-background ${isTV ? 'px-6' : 'px-2'}`}
+            style={{ scrollBehavior: 'auto' }} // Prevent smooth scrolling that might interfere
+          >
             <div className={isTV ? '[&_h1]:text-4xl [&_h2]:text-3xl [&_h3]:text-2xl [&_h4]:text-xl [&_p]:text-lg [&_.text-xs]:text-base [&_.text-sm]:text-lg [&_.text-base]:text-xl [&_.text-lg]:text-2xl [&_.text-2xl]:text-3xl [&_.h-3]:h-5 [&_.w-3]:w-5 [&_.h-2]:h-4 [&_.w-2]:w-4 [&_.h-6]:h-8 [&_.w-6]:w-8 [&_.h-24]:h-32 [&_.p-4]:p-6 [&_.gap-2]:gap-3 [&_.gap-1]:gap-2' : ''}>
               <ContrastChecker />
             </div>
@@ -223,7 +295,11 @@ export function Preview() {
         </TabsContent>
 
         <TabsContent value="typography" className="mt-2 flex-1 min-h-0 overflow-hidden">
-          <div className={`h-full overflow-y-auto pb-4 scrollbar-thin scrollbar-thumb-border scrollbar-track-background ${isTV ? 'px-6' : 'px-2'}`}>
+          <div 
+            ref={handleScrollRef('typography')}
+            className={`h-full overflow-y-auto pb-4 scrollbar-thin scrollbar-thumb-border scrollbar-track-background ${isTV ? 'px-6' : 'px-2'}`}
+            style={{ scrollBehavior: 'auto' }}
+          >
             <div className={isTV ? '[&_h1]:text-5xl [&_h2]:text-4xl [&_h3]:text-3xl [&_h4]:text-2xl [&_h5]:text-xl [&_p]:text-lg [&_.text-xs]:text-base [&_.text-sm]:text-lg [&_.text-base]:text-xl [&_.text-lg]:text-2xl [&_.text-xl]:text-3xl [&_.text-2xl]:text-4xl [&_.h-3]:h-5 [&_.w-3]:w-5 [&_.h-4]:h-6 [&_.w-4]:w-6 [&_.p-2]:p-3 [&_.p-3]:p-4 [&_.p-4]:p-6 [&_.gap-2]:gap-3 [&_.gap-3]:gap-4' : ''}>
               <TypographyPreview />
             </div>
@@ -231,7 +307,11 @@ export function Preview() {
         </TabsContent>
 
         <TabsContent value="brand" className="mt-2 flex-1 min-h-0 overflow-hidden">
-          <div className={`h-full overflow-y-auto pb-4 scrollbar-thin scrollbar-thumb-border scrollbar-track-background ${isTV ? 'px-6' : 'px-2'}`}>
+          <div 
+            ref={handleScrollRef('brand')}
+            className={`h-full overflow-y-auto pb-4 scrollbar-thin scrollbar-thumb-border scrollbar-track-background ${isTV ? 'px-6' : 'px-2'}`}
+            style={{ scrollBehavior: 'auto' }}
+          >
             <div className={isTV ? '[&_h1]:text-5xl [&_h2]:text-4xl [&_h3]:text-3xl [&_h4]:text-2xl [&_h5]:text-xl [&_p]:text-lg [&_.text-xs]:text-base [&_.text-sm]:text-lg [&_.text-base]:text-xl [&_.text-lg]:text-2xl [&_.text-xl]:text-3xl [&_.text-2xl]:text-4xl [&_.h-3]:h-5 [&_.w-3]:w-5 [&_.h-4]:h-6 [&_.w-4]:w-6 [&_.p-2]:p-3 [&_.p-3]:p-4 [&_.p-4]:p-6 [&_.gap-2]:gap-3 [&_.gap-3]:gap-4' : ''}>
               <BrandPreview brand={state.currentTheme.brand} />
             </div>
@@ -239,16 +319,24 @@ export function Preview() {
         </TabsContent>
 
         <TabsContent value="atomos" className="mt-2 flex-1 min-h-0 overflow-hidden">
-          <div className={`h-full overflow-y-auto pb-4 scrollbar-thin scrollbar-thumb-border scrollbar-track-background ${isTV ? 'px-6' : 'px-2'}`}>
+          <div 
+            ref={handleScrollRef('atomos')}
+            className={`h-full overflow-y-auto pb-4 scrollbar-thin scrollbar-thumb-border scrollbar-track-background ${isTV ? 'px-6' : 'px-2'}`}
+            style={{ scrollBehavior: 'auto' }}
+          >
             <div className={isTV ? '[&_h1]:text-5xl [&_h2]:text-4xl [&_h3]:text-3xl [&_h4]:text-2xl [&_h5]:text-xl [&_p]:text-lg [&_.text-xs]:text-base [&_.text-sm]:text-lg [&_.text-base]:text-xl [&_.text-lg]:text-2xl [&_.text-xl]:text-3xl [&_.text-2xl]:text-4xl [&_.h-3]:h-5 [&_.w-3]:w-5 [&_.h-4]:h-6 [&_.w-4]:w-6 [&_.p-2]:p-3 [&_.p-3]:p-4 [&_.p-4]:p-6 [&_.gap-2]:gap-3 [&_.gap-3]:gap-4' : ''}>
-              <ButtonShowcase />
+              <AtomsShowcase />
             </div>
           </div>
         </TabsContent>
 
         {sections.slice(4).map(({ id, label }) => (
           <TabsContent key={id} value={id} className="mt-2 flex-1 min-h-0 overflow-hidden">
-            <div className={`h-full overflow-y-auto pb-4 scrollbar-thin scrollbar-thumb-border scrollbar-track-background ${isTV ? 'px-6' : 'px-2'}`}>
+            <div 
+              ref={handleScrollRef(id)}
+              className={`h-full overflow-y-auto pb-4 scrollbar-thin scrollbar-thumb-border scrollbar-track-background ${isTV ? 'px-6' : 'px-2'}`}
+              style={{ scrollBehavior: 'auto' }}
+            >
               <Card className={isTV ? 'p-6' : 'p-4'}>
                 <div className={`bg-muted/20 rounded border-2 border-dashed border-muted-foreground/20 flex items-center justify-center ${isTV ? 'h-40' : 'h-24'}`}>
                   <span className={`text-muted-foreground text-center ${isTV ? 'text-2xl font-semibold' : 'text-xs'}`}>
@@ -266,6 +354,18 @@ export function Preview() {
   // Tablet-specific content component with status bar
   function TabletContent() {
     const activeSection = state.preview.activeSection;
+    
+    // Create scroll preservation handlers for tablet
+    const handleTabletScrollRef = (section: string) => (el: HTMLDivElement | null) => {
+      if (el) {
+        const currentEl = tabletScrollRefs.current[section];
+        if (currentEl) {
+          preserveScroll(`tablet-${section}`, currentEl);
+        }
+        tabletScrollRefs.current[section] = el;
+        restoreScroll(`tablet-${section}`, el);
+      }
+    };
     
     // Get current time for status bar
     const currentTime = new Date().toLocaleTimeString('en-US', { 
@@ -296,7 +396,11 @@ export function Preview() {
         {/* Content Area */}
         <div className="flex-1 min-h-0 px-2 pb-1 overflow-hidden">
           {activeSection === 'colors' && (
-            <div className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-background">
+            <div 
+              ref={handleTabletScrollRef('colors')}
+              className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-background"
+              style={{ scrollBehavior: 'auto' }}
+            >
               <div className="p-2 pb-[400px]">
                 <ContrastChecker />
               </div>
@@ -304,7 +408,11 @@ export function Preview() {
           )}
           
           {activeSection === 'typography' && (
-            <div className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-background">
+            <div 
+              ref={handleTabletScrollRef('typography')}
+              className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-background"
+              style={{ scrollBehavior: 'auto' }}
+            >
               <div className="p-2 pb-[400px]">
                 <TypographyPreview />
               </div>
@@ -312,7 +420,11 @@ export function Preview() {
           )}
 
           {activeSection === 'brand' && (
-            <div className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-background">
+            <div 
+              ref={handleTabletScrollRef('brand')}
+              className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-background"
+              style={{ scrollBehavior: 'auto' }}
+            >
               <div className="p-2 pb-[400px]">
                 <BrandPreview brand={state.currentTheme.brand} />
               </div>
@@ -320,9 +432,13 @@ export function Preview() {
           )}
 
           {activeSection === 'atomos' && (
-            <div className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-background">
+            <div 
+              ref={handleTabletScrollRef('atomos')}
+              className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-background"
+              style={{ scrollBehavior: 'auto' }}
+            >
               <div className="p-2 pb-[400px]">
-                <ButtonShowcase />
+                <AtomsShowcase />
               </div>
             </div>
           )}
@@ -346,6 +462,18 @@ export function Preview() {
   // Smartphone-specific content component with status bar
   function SmartphoneContent() {
     const activeSection = state.preview.activeSection;
+    
+    // Create scroll preservation handlers for smartphone
+    const handleSmartphoneScrollRef = (section: string) => (el: HTMLDivElement | null) => {
+      if (el) {
+        const currentEl = smartphoneScrollRefs.current[section];
+        if (currentEl) {
+          preserveScroll(`smartphone-${section}`, currentEl);
+        }
+        smartphoneScrollRefs.current[section] = el;
+        restoreScroll(`smartphone-${section}`, el);
+      }
+    };
     
     // Get current time for status bar
     const currentTime = new Date().toLocaleTimeString('en-US', { 
@@ -376,7 +504,11 @@ export function Preview() {
         {/* Content Area */}
         <div className="flex-1 min-h-0 px-1 pb-1 overflow-hidden">
           {activeSection === 'colors' && (
-            <div className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-background">
+            <div 
+              ref={handleSmartphoneScrollRef('colors')}
+              className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-background"
+              style={{ scrollBehavior: 'auto' }}
+            >
               <div className="p-1 pb-52">
                 <ContrastChecker />
               </div>
@@ -384,7 +516,11 @@ export function Preview() {
           )}
           
           {activeSection === 'typography' && (
-            <div className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-background">
+            <div 
+              ref={handleSmartphoneScrollRef('typography')}
+              className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-background"
+              style={{ scrollBehavior: 'auto' }}
+            >
               <div className="p-1 pb-52">
                 <TypographyPreview />
               </div>
@@ -392,7 +528,11 @@ export function Preview() {
           )}
 
           {activeSection === 'brand' && (
-            <div className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-background">
+            <div 
+              ref={handleSmartphoneScrollRef('brand')}
+              className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-background"
+              style={{ scrollBehavior: 'auto' }}
+            >
               <div className="p-1 pb-52">
                 <BrandPreview brand={state.currentTheme.brand} />
               </div>
@@ -400,9 +540,13 @@ export function Preview() {
           )}
 
           {activeSection === 'atomos' && (
-            <div className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-background">
+            <div 
+              ref={handleSmartphoneScrollRef('atomos')}
+              className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-background"
+              style={{ scrollBehavior: 'auto' }}
+            >
               <div className="p-1 pb-52">
-                <ButtonShowcase />
+                <AtomsShowcase />
               </div>
             </div>
           )}

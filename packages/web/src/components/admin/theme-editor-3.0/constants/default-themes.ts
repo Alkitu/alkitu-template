@@ -1,6 +1,7 @@
 // Theme Editor 3.0 - Default Themes V2 with Precise Colors
 import { ThemeData, ColorToken } from '../types/theme.types';
 import { createPreciseColorToken } from '../utils/color-conversions-v2';
+import { getDefaultBrandAssets } from '../3-theme-editor/brand/default-logos';
 
 // Legacy helper function (deprecated - use createPreciseColorToken instead)
 function createColorToken(name: string, value: string, l: number, c: number, h: number, description?: string): ColorToken {
@@ -40,9 +41,13 @@ const DEFAULT_LIGHT_COLORS: import('../types/theme.types').ThemeColors = {
   muted: createColorToken('muted', 'oklch(0.9700 0 0)', 0.9700, 0, 0),
   mutedForeground: createColorToken('muted-foreground', 'oklch(0.5560 0 0)', 0.5560, 0, 0),
   
-  // Destructive colors
+  // Alert colors (destructive, warning, success)
   destructive: createColorToken('destructive', 'oklch(0.5770 0.2450 27.3250)', 0.5770, 0.2450, 27.3250),
   destructiveForeground: createColorToken('destructive-foreground', 'oklch(1 0 0)', 1, 0, 0),
+  warning: createColorToken('warning', 'oklch(0.6800 0.2200 65.00)', 0.6800, 0.2200, 65.00), // Orange warning - better contrast with white
+  warningForeground: createColorToken('warning-foreground', 'oklch(1 0 0)', 1, 0, 0),
+  success: createColorToken('success', 'oklch(0.5600 0.2000 142.50)', 0.5600, 0.2000, 142.50), // Green success - better contrast with white
+  successForeground: createColorToken('success-foreground', 'oklch(1 0 0)', 1, 0, 0),
   
   // Border & Input colors
   border: createColorToken('border', 'oklch(0.9220 0 0)', 0.9220, 0, 0),
@@ -99,9 +104,13 @@ const DEFAULT_DARK_COLORS: import('../types/theme.types').ThemeColors = {
   muted: createColorToken('muted', 'oklch(0.2690 0 0)', 0.2690, 0, 0),
   mutedForeground: createColorToken('muted-foreground', 'oklch(0.7080 0 0)', 0.7080, 0, 0),
   
-  // Destructive colors
+  // Alert colors (destructive, warning, success) 
   destructive: createColorToken('destructive', 'oklch(0.7040 0.1910 22.2160)', 0.7040, 0.1910, 22.2160),
   destructiveForeground: createColorToken('destructive-foreground', 'oklch(0.9850 0 0)', 0.9850, 0, 0),
+  warning: createColorToken('warning', 'oklch(0.7500 0.2000 65.00)', 0.7500, 0.2000, 65.00), // Orange warning - darker and saturated for dark mode
+  warningForeground: createColorToken('warning-foreground', 'oklch(1 0 0)', 1, 0, 0),
+  success: createColorToken('success', 'oklch(0.6800 0.1800 142.50)', 0.6800, 0.1800, 142.50), // Green success - darker and more saturated for dark mode  
+  successForeground: createColorToken('success-foreground', 'oklch(1 0 0)', 1, 0, 0),
   
   // Border & Input colors
   border: createColorToken('border', 'oklch(0.2750 0 0)', 0.2750, 0, 0),
@@ -152,17 +161,13 @@ export const DEFAULT_THEME: ThemeData = {
     trackingNormal: '0em'
   },
   brand: {
-    name: 'Default Brand',
-    tagline: '',
-    description: '',
-    voice: '',
-    tone: '',
-    colorGuidelines: '',
-    logos: {
-      icon: null,
-      horizontal: null,
-      vertical: null
-    },
+    name: 'Alkitu Brand',
+    tagline: 'Empowering innovation through technology',
+    description: 'Modern, versatile, and professional brand identity for the Alkitu platform',
+    voice: 'Professional and approachable',
+    tone: 'Confident yet friendly',
+    colorGuidelines: 'Green (#2AB34B) represents growth and innovation, used as accent color throughout the design system',
+    logos: getDefaultBrandAssets('#2AB34B'),
     primaryColor: createColorToken('primary', 'oklch(0.2050 0 0)', 0.2050, 0, 0),  // Migrated from brand-primary
     secondaryColor: createColorToken('secondary', 'oklch(0.9700 0 0)', 0.9700, 0, 0)  // Migrated from brand-secondary
   },
@@ -237,6 +242,10 @@ export const AMBER_MINIMAL_THEME: ThemeData = {
     accentForeground: createColorToken('accent-foreground', 'oklch(0.4640 0.1050 28.62)', 0.4640, 0.1050, 28.62),
     destructive: createColorToken('destructive', 'oklch(0.6279 0.2574 27.33)', 0.6279, 0.2574, 27.33),
     destructiveForeground: createColorToken('destructive-foreground', 'oklch(1 0 0)', 1, 0, 0),
+    warning: createColorToken('warning', 'oklch(0.6800 0.2200 65.00)', 0.6800, 0.2200, 65.00),
+    warningForeground: createColorToken('warning-foreground', 'oklch(1 0 0)', 1, 0, 0),
+    success: createColorToken('success', 'oklch(0.5600 0.2000 142.50)', 0.5600, 0.2000, 142.50),
+    successForeground: createColorToken('success-foreground', 'oklch(1 0 0)', 1, 0, 0),
     border: createColorToken('border', 'oklch(0.8985 0.0044 272.31)', 0.8985, 0.0044, 272.31),
     input: createColorToken('input', 'oklch(0.8985 0.0044 272.31)', 0.8985, 0.0044, 272.31),
     ring: createColorToken('ring', 'oklch(0.6830 0.1468 55.4)', 0.6830, 0.1468, 55.4),
@@ -275,6 +284,10 @@ export const AMBER_MINIMAL_THEME: ThemeData = {
     accentForeground: createColorToken('accent-foreground', 'oklch(0.9445 0.0516 81.85)', 0.9445, 0.0516, 81.85),
     destructive: createColorToken('destructive', 'oklch(0.6279 0.2574 27.33)', 0.6279, 0.2574, 27.33),
     destructiveForeground: createColorToken('destructive-foreground', 'oklch(1 0 0)', 1, 0, 0),
+    warning: createColorToken('warning', 'oklch(0.7500 0.2000 65.00)', 0.7500, 0.2000, 65.00),
+    warningForeground: createColorToken('warning-foreground', 'oklch(1 0 0)', 1, 0, 0),
+    success: createColorToken('success', 'oklch(0.6800 0.1800 142.50)', 0.6800, 0.1800, 142.50),
+    successForeground: createColorToken('success-foreground', 'oklch(1 0 0)', 1, 0, 0),
     border: createColorToken('border', 'oklch(0.2518 0 0)', 0.2518, 0, 0),
     input: createColorToken('input', 'oklch(0.2518 0 0)', 0.2518, 0, 0),
     ring: createColorToken('ring', 'oklch(0.6830 0.1468 55.4)', 0.6830, 0.1468, 55.4),

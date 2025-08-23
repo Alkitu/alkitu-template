@@ -52,10 +52,10 @@ export const COLOR_SECTIONS: ColorSection[] = [
     colorKeys: ['muted', 'mutedForeground']
   },
   {
-    id: 'destructive',
-    title: 'Destructive Colors',
-    description: 'Colors for errors, warnings, and destructive actions',
-    colorKeys: ['destructive', 'destructiveForeground']
+    id: 'alert',
+    title: 'Alert Colors',
+    description: 'Colors for alerts, errors, warnings, and success states',
+    colorKeys: ['destructive', 'destructiveForeground', 'warning', 'warningForeground', 'success', 'successForeground']
   },
   {
     id: 'border-input',
@@ -113,6 +113,10 @@ export const CSS_VARIABLE_MAP: Record<keyof import('./theme.types').ThemeColors,
   mutedForeground: '--muted-foreground',
   destructive: '--destructive',
   destructiveForeground: '--destructive-foreground',
+  warning: '--warning',
+  warningForeground: '--warning-foreground',
+  success: '--success',
+  successForeground: '--success-foreground',
   border: '--border',
   input: '--input',
   ring: '--ring',
@@ -151,6 +155,10 @@ export const COLOR_LABELS: Record<keyof import('./theme.types').ThemeColors, str
   mutedForeground: 'Muted Foreground',
   destructive: 'Destructive',
   destructiveForeground: 'Destructive Foreground',
+  warning: 'Warning',
+  warningForeground: 'Warning Foreground',
+  success: 'Success',
+  successForeground: 'Success Foreground',
   border: 'Border',
   input: 'Input',
   ring: 'Ring',

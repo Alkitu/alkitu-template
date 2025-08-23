@@ -2,12 +2,19 @@
 
 import React, { useState, useMemo } from 'react';
 import { ChevronDown, ChevronRight, Search, X } from 'lucide-react';
-import { Input } from '../../ui/input';
+import { Input } from '../../atoms/Input';
 import { Button } from '../../ui/button';
 import { Badge } from '../../ui/badge';
 import { ButtonShowcase } from './ButtonShowcase';
 import { InputShowcase } from './InputShowcase';
 import { TextareaShowcase } from './TextareaShowcase';
+import { SelectShowcase } from './SelectShowcase';
+import { CheckboxShowcase } from './CheckboxShowcase';
+import { RadioButtonShowcase } from './RadioButtonShowcase';
+import { ToggleShowcase } from './ToggleShowcase';
+import { BadgeShowcase } from './BadgeShowcase';
+import { AvatarShowcase } from './AvatarShowcase';
+import { ProgressBarShowcase } from './ProgressBarShowcase';
 
 // Definición de categorías de átomos
 const ATOM_CATEGORIES = {
@@ -51,6 +58,55 @@ const AVAILABLE_ATOMS: AtomDefinition[] = [
     component: TextareaShowcase,
     category: 'form-inputs',
     keywords: ['textarea', 'form', 'text', 'multiline', 'message', 'description', 'comment', 'autosize']
+  },
+  {
+    id: 'select',
+    name: 'Select',
+    component: SelectShowcase,
+    category: 'form-inputs',
+    keywords: ['select', 'dropdown', 'form', 'options', 'choose', 'picker', 'menu', 'combobox']
+  },
+  {
+    id: 'checkbox',
+    name: 'Checkbox',
+    component: CheckboxShowcase,
+    category: 'form-inputs',
+    keywords: ['checkbox', 'form', 'check', 'select', 'multiple', 'toggle', 'boolean', 'validate']
+  },
+  {
+    id: 'radio',
+    name: 'Radio Button',
+    component: RadioButtonShowcase,
+    category: 'form-inputs',
+    keywords: ['radio', 'form', 'select', 'single', 'choice', 'option', 'group', 'exclusive']
+  },
+  {
+    id: 'toggle',
+    name: 'Toggle',
+    component: ToggleShowcase,
+    category: 'actions-controls',
+    keywords: ['toggle', 'switch', 'boolean', 'on', 'off', 'state', 'enable', 'disable']
+  },
+  {
+    id: 'badge',
+    name: 'Badge',
+    component: BadgeShowcase,
+    category: 'visual-structure',
+    keywords: ['badge', 'tag', 'label', 'status', 'notification', 'count', 'chip', 'pill']
+  },
+  {
+    id: 'avatar',
+    name: 'Avatar',
+    component: AvatarShowcase,
+    category: 'media-user',
+    keywords: ['avatar', 'profile', 'user', 'image', 'photo', 'initials', 'status', 'online']
+  },
+  {
+    id: 'progress',
+    name: 'Progress Bar',
+    component: ProgressBarShowcase,
+    category: 'feedback-state',
+    keywords: ['progress', 'bar', 'loading', 'percentage', 'completion', 'status', 'meter', 'indicator']
   }
   // Aquí se pueden añadir más átomos en el futuro
 ];
@@ -65,32 +121,32 @@ interface CollapsibleAtomTypeProps {
 
 function CollapsibleAtomType({ atomType, atoms, isOpen, onToggle }: CollapsibleAtomTypeProps) {
   return (
-    <div className="border border-border rounded-lg overflow-hidden">
+    <div className="border border-border rounded-lg overflow-visible">
       {/* Header del grupo */}
       <button
         onClick={onToggle}
-        className="w-full flex items-center justify-between p-4 bg-muted/30 hover:bg-muted/50 transition-colors"
+        className="w-full flex items-center justify-between p-4 bg-muted/30 hover:bg-muted/50 transition-colors min-w-0"
       >
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3 min-w-0 flex-1">
+          <div className="flex items-center gap-2 flex-shrink-0">
             {isOpen ? (
               <ChevronDown className="h-4 w-4 text-muted-foreground" />
             ) : (
               <ChevronRight className="h-4 w-4 text-muted-foreground" />
             )}
           </div>
-          <h3 className="text-lg font-semibold text-foreground">{atomType}</h3>
+          <h3 className="text-lg font-semibold text-foreground min-w-0 truncate">{atomType}</h3>
         </div>
       </button>
       
       {/* Contenido del grupo */}
       {isOpen && (
-        <div className="p-4 border-t border-border bg-card/30">
-          <div className="space-y-8">
+        <div className="p-4 border-t border-border bg-card/30 overflow-visible">
+          <div className="flex flex-col gap-8 overflow-visible">
             {atoms.map((atom) => {
               const AtomComponent = atom.component;
               return (
-                <div key={atom.id} className="space-y-4">
+                <div key={atom.id} className="flex flex-col gap-4 overflow-visible">
                   <AtomComponent />
                 </div>
               );
@@ -165,49 +221,37 @@ export function AtomsShowcase() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header del showcase */}
-      <div className="text-center">
-        <h2 
-          className="text-3xl font-bold mb-2 text-foreground"
-          style={{ 
-            fontFamily: 'var(--typography-h2-font-family)',
-            fontSize: 'var(--typography-h2-font-size)',
-            fontWeight: 'var(--typography-h2-font-weight)',
-            letterSpacing: 'var(--typography-h2-letter-spacing)'
-          }}
-        >
-          Átomos del Design System
-        </h2>
-      </div>
+    <div className="flex flex-col gap-6 w-full min-w-0 overflow-visible">
 
       {/* Buscador y filtros */}
-      <div className="space-y-4">
+      <div className="flex flex-col gap-4">
         {/* Barra de búsqueda */}
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <div className="flex relative w-full">
           <Input
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Buscar átomos por nombre o características..."
-            className="pl-10 pr-10"
+            className="w-full flex-1 min-w-0"
+            leftIcon={<Search className="h-4 w-4" />}
+            rightIcon={searchTerm ? (
+              <button
+                onClick={() => setSearchTerm('')}
+                className="text-muted-foreground hover:text-foreground"
+                type="button"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            ) : undefined}
           />
-          {searchTerm && (
-            <button
-              onClick={() => setSearchTerm('')}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          )}
         </div>
 
         {/* Filtros por categoría */}
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 justify-start items-center">
           <Button
             size="sm"
             variant={selectedCategory === 'all' ? 'default' : 'outline'}
             onClick={() => setSelectedCategory('all')}
+            className="flex-shrink-0"
           >
             Todas las categorías
           </Button>
@@ -217,6 +261,7 @@ export function AtomsShowcase() {
               size="sm"
               variant={selectedCategory === category ? 'default' : 'outline'}
               onClick={() => setSelectedCategory(category)}
+              className="flex-shrink-0"
             >
               {ATOM_CATEGORIES[category]}
             </Button>
@@ -225,11 +270,11 @@ export function AtomsShowcase() {
 
         {/* Indicador de filtros activos */}
         {(searchTerm || selectedCategory !== 'all') && (
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <span>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm text-muted-foreground">
+            <span className="flex-1 min-w-0">
               Mostrando {filteredAtoms.length} de {AVAILABLE_ATOMS.length} átomos
             </span>
-            <Button size="sm" variant="ghost" onClick={clearFilters}>
+            <Button size="sm" variant="ghost" onClick={clearFilters} className="flex-shrink-0">
               Limpiar filtros
             </Button>
           </div>
@@ -238,15 +283,16 @@ export function AtomsShowcase() {
 
       {/* Controles de grupos */}
       {groupedAtoms.size > 0 && (
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-muted-foreground">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <span className="text-sm text-muted-foreground flex-1 min-w-0">
             {groupedAtoms.size} {groupedAtoms.size === 1 ? 'tipo de átomo' : 'tipos de átomos'} encontrados
           </span>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-shrink-0">
             <Button
               size="sm"
               variant="outline"
               onClick={() => setOpenAtomTypes(new Set(Array.from(groupedAtoms.keys())))}
+              className="flex-1 sm:flex-initial"
             >
               Abrir todos
             </Button>
@@ -254,6 +300,7 @@ export function AtomsShowcase() {
               size="sm"
               variant="outline"
               onClick={() => setOpenAtomTypes(new Set())}
+              className="flex-1 sm:flex-initial"
             >
               Cerrar todos
             </Button>
@@ -262,13 +309,13 @@ export function AtomsShowcase() {
       )}
 
       {/* Grupos de átomos */}
-      <div className="space-y-4">
+      <div className="flex flex-col gap-4 w-full overflow-visible">
         {groupedAtoms.size === 0 ? (
-          <div className="text-center py-12">
-            <div className="text-muted-foreground">
-              <Search className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>No se encontraron átomos con los filtros aplicados</p>
-              <Button size="sm" variant="ghost" onClick={clearFilters} className="mt-2">
+          <div className="flex flex-col items-center justify-center py-12">
+            <div className="flex flex-col items-center text-muted-foreground">
+              <Search className="h-12 w-12 mb-4 opacity-50" />
+              <p className="text-center mb-2">No se encontraron átomos con los filtros aplicados</p>
+              <Button size="sm" variant="ghost" onClick={clearFilters}>
                 Limpiar filtros
               </Button>
             </div>

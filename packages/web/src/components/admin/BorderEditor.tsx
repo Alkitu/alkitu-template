@@ -6,8 +6,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion";
 import { Switch } from "../ui/switch";
 import { Label } from "../ui/label";
-import { Monitor, Tablet, Smartphone, Tv, Save, Download, RotateCcw } from "lucide-react";
+import { Monitor, Tablet, Smartphone, Tv, Save, Download, RotateCcw, Settings } from "lucide-react";
 import { SimpleRadiusEditor } from "./SimpleRadiusEditor";
+import { CheckboxRadiusModal } from "./theme-editor-3.0/modals/CheckboxRadiusModal";
 
 // Breakpoints
 const BREAKPOINTS = [
@@ -112,6 +113,9 @@ export const BorderEditor = ({ onChange, onSave }: BorderEditorProps) => {
   
   // Estado del radius desde SimpleRadiusEditor
   const [radiusState, setRadiusState] = useState<any>(null);
+  
+  // Estado para la modal de checkbox radius
+  const [isCheckboxRadiusModalOpen, setIsCheckboxRadiusModalOpen] = useState(false);
   
   // Estados para controlar qué propiedades incluir en el CSS
   const [includeProperties, setIncludeProperties] = useState({
@@ -909,6 +913,26 @@ export const BorderEditor = ({ onChange, onSave }: BorderEditorProps) => {
                     </AccordionContent>
                   </AccordionItem>
 
+                  {/* Checkbox Radius Modal Button */}
+                  <div className="p-4 border border-dashed border-muted-foreground/30 rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium">Checkbox Border Radius</span>
+                      <Button
+                        variant="default"
+                        size="sm"
+                        onClick={() => setIsCheckboxRadiusModalOpen(true)}
+                        className="flex items-center gap-1"
+                      >
+                        <Settings className="w-3 h-3" />
+                        Configure
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Open dedicated modal to customize checkbox border radius with live preview.
+                    </p>
+                  </div>
+                
+
                   {/* Width */}
                   <AccordionItem value="width">
                     <AccordionTrigger className="text-sm font-medium">
@@ -1605,6 +1629,12 @@ export const BorderEditor = ({ onChange, onSave }: BorderEditorProps) => {
           </Card>
         </TabsContent>
       </Tabs>
+      
+      {/* Checkbox Radius Modal */}
+      <CheckboxRadiusModal
+        open={isCheckboxRadiusModalOpen}
+        onOpenChange={setIsCheckboxRadiusModalOpen}
+      />
     </div>
   );
 };

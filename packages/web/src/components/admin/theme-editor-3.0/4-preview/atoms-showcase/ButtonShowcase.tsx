@@ -13,19 +13,19 @@ interface ButtonContainerProps {
 function ButtonContainer({ name, tokenId, children }: ButtonContainerProps) {
   return (
     <div 
-      className="border border-border p-3 bg-card/50"
+      className="border border-border p-3 bg-card/50 flex flex-col min-w-0"
       style={{ borderRadius: 'var(--radius)' }}
     >
-      <div className="mb-3">
-        <h4 className="text-sm font-medium text-foreground">{name}</h4>
+      <div className="flex flex-col gap-1 mb-3">
+        <h4 className="text-sm font-medium text-foreground min-w-0 truncate">{name}</h4>
         <code 
-          className="text-xs text-muted-foreground font-mono bg-muted px-1 py-0.5"
+          className="text-xs text-muted-foreground font-mono bg-muted px-1 py-0.5 self-start"
           style={{ borderRadius: 'calc(var(--radius) * 0.5)' }}
         >
           {tokenId}
         </code>
       </div>
-      <div className="flex items-center justify-center p-2">
+      <div className="flex items-center justify-center p-2 flex-1">
         {children}
       </div>
     </div>
@@ -34,11 +34,11 @@ function ButtonContainer({ name, tokenId, children }: ButtonContainerProps) {
 
 export function ButtonShowcase() {
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-6 w-full">
       {/* Título principal */}
-      <div className="text-center">
+      <div className="flex justify-center">
         <h2 
-          className="text-2xl font-bold mb-2 text-foreground"
+          className="text-2xl font-bold mb-2 text-foreground text-center"
           style={{ 
             fontFamily: 'var(--typography-h2-font-family)',
             fontSize: 'var(--typography-h2-font-size)',
@@ -50,52 +50,68 @@ export function ButtonShowcase() {
         </h2>
       </div>
 
-      {/* Grid de botones */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {/* Grid responsive de botones con flexbox */}
+      <div className="flex flex-wrap gap-4 justify-start">
         
         {/* Button Primary */}
-        <ButtonContainer name="Primary Button" tokenId="btn-primary">
-          <Button variant="default">Primary</Button>
-        </ButtonContainer>
+        <div className="flex-1 min-w-[280px] max-w-[350px]">
+          <ButtonContainer name="Primary Button" tokenId="btn-primary">
+            <Button variant="default">Primary</Button>
+          </ButtonContainer>
+        </div>
 
         {/* Button Outline */}
-        <ButtonContainer name="Outline Button" tokenId="btn-outline">
-          <Button variant="outline">Outline</Button>
-        </ButtonContainer>
+        <div className="flex-1 min-w-[280px] max-w-[350px]">
+          <ButtonContainer name="Outline Button" tokenId="btn-outline">
+            <Button variant="outline">Outline</Button>
+          </ButtonContainer>
+        </div>
 
         {/* Button Ghost */}
-        <ButtonContainer name="Ghost Button" tokenId="btn-ghost">
-          <Button variant="ghost">Ghost</Button>
-        </ButtonContainer>
+        <div className="flex-1 min-w-[280px] max-w-[350px]">
+          <ButtonContainer name="Ghost Button" tokenId="btn-ghost">
+            <Button variant="ghost">Ghost</Button>
+          </ButtonContainer>
+        </div>
 
         {/* Button Secondary */}
-        <ButtonContainer name="Secondary Button" tokenId="btn-secondary">
-          <Button variant="secondary">Secondary</Button>
-        </ButtonContainer>
+        <div className="flex-1 min-w-[280px] max-w-[350px]">
+          <ButtonContainer name="Secondary Button" tokenId="btn-secondary">
+            <Button variant="secondary">Secondary</Button>
+          </ButtonContainer>
+        </div>
 
         {/* Button Destructive */}
-        <ButtonContainer name="Destructive Button" tokenId="btn-destructive">
-          <Button variant="destructive">Destructive</Button>
-        </ButtonContainer>
+        <div className="flex-1 min-w-[280px] max-w-[350px]">
+          <ButtonContainer name="Destructive Button" tokenId="btn-destructive">
+            <Button variant="destructive">Destructive</Button>
+          </ButtonContainer>
+        </div>
 
         {/* Button Icon */}
-        <ButtonContainer name="Icon Button" tokenId="btn-icon">
-          <Button variant="icon" size="icon">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-            </svg>
-          </Button>
-        </ButtonContainer>
+        <div className="flex-1 min-w-[280px] max-w-[350px]">
+          <ButtonContainer name="Icon Button" tokenId="btn-icon">
+            <Button variant="icon" size="icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              </svg>
+            </Button>
+          </ButtonContainer>
+        </div>
 
         {/* Button Loading */}
-        <ButtonContainer name="Loading Button" tokenId="btn-loading">
-          <Button loading={true}>Loading</Button>
-        </ButtonContainer>
+        <div className="flex-1 min-w-[280px] max-w-[350px]">
+          <ButtonContainer name="Loading Button" tokenId="btn-loading">
+            <Button loading={true}>Loading</Button>
+          </ButtonContainer>
+        </div>
 
         {/* Button Disabled */}
-        <ButtonContainer name="Disabled Button" tokenId="btn-disabled">
-          <Button disabled>Disabled</Button>
-        </ButtonContainer>
+        <div className="flex-1 min-w-[280px] max-w-[350px]">
+          <ButtonContainer name="Disabled Button" tokenId="btn-disabled">
+            <Button disabled>Disabled</Button>
+          </ButtonContainer>
+        </div>
 
       </div>
 

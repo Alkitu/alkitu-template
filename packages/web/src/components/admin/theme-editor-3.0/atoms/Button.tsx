@@ -82,8 +82,8 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         case 'loading': // Loading button
           return 'bg-primary text-primary-foreground border-primary opacity-70 cursor-not-allowed';
 
-        case 'icon': // Icon button
-          return 'bg-muted text-muted-foreground border-border hover:bg-accent hover:text-accent-foreground';
+        case 'icon': // Icon button - same as primary
+          return 'bg-primary text-primary-foreground border-primary hover:bg-primary/90';
         
         default:
           return 'bg-primary text-primary-foreground border-primary hover:bg-primary/90';

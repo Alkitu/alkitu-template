@@ -38,9 +38,8 @@ export function ButtonShowcase() {
       {/* Título principal */}
       <div className="text-center">
         <h2 
-          className="text-2xl font-bold mb-2"
+          className="text-2xl font-bold mb-2 text-foreground"
           style={{ 
-            color: 'oklch(var(--foreground))',
             fontFamily: 'var(--typography-h2-font-family)',
             fontSize: 'var(--typography-h2-font-size)',
             fontWeight: 'var(--typography-h2-font-weight)',
@@ -49,9 +48,6 @@ export function ButtonShowcase() {
         >
           Buttons
         </h2>
-        <p className="text-sm text-muted-foreground">
-          Sistema de botones conectado al Theme Editor
-        </p>
       </div>
 
       {/* Grid de botones */}
@@ -103,19 +99,6 @@ export function ButtonShowcase() {
 
       </div>
 
-      {/* Separador para el siguiente átomo */}
-      <div className="pt-8">
-        <hr 
-          className="border-t" 
-          style={{ 
-            borderColor: 'oklch(var(--border))',
-            marginBottom: '2rem'
-          }} 
-        />
-        <div className="text-center text-sm text-muted-foreground mb-4">
-          Siguiente átomo
-        </div>
-      </div>
     </div>
   );
 }

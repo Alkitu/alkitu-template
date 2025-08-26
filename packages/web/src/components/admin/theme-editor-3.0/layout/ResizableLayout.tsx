@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { cn } from '../ui/utils';
+import { cn } from '../design-system/primitives/utils';
 
 interface ResizableLayoutProps {
   children: React.ReactNode;

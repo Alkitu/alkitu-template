@@ -8,10 +8,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '../ui/dialog';
-import { Button } from '../ui/button';
-import { Label } from '../ui/label';
-import { Checkbox } from '../atoms/Checkbox';
+} from '../design-system/primitives/dialog';
+import { Button } from '../design-system/primitives/button';
+import { Label } from '../design-system/primitives/label';
+import { Checkbox } from '../design-system/atoms/Checkbox';
 import { RotateCcw } from 'lucide-react';
 
 interface CheckboxRadiusModalProps {

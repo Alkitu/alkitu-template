@@ -34,7 +34,15 @@
       "Bash(npm run typecheck:*)",
       "Bash(mv:*)",
       "Bash(npx tsx:*)",
-      "Bash(open:*)"
+      "Bash(open:*)",
+      "Bash(for file in /Users/leonelperez/CODE PROJECTS/alkitu-template/packages/web/src/components/admin/theme-editor-3.0/theme-editor/editor/**/*.tsx)",
+      "Bash(do)",
+      "Bash(if [ -f \"$file\" ])",
+      "Bash(then)",
+      "Bash(sed:*)",
+      "Bash(echo \"Fixed: $file\")",
+      "Bash(fi)",
+      "Bash(done)"
     ],
     "deny": []
   }

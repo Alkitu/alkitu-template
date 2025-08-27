@@ -45,8 +45,8 @@ export function CardMolecule() {
         className="transition-all duration-300 hover:scale-[1.02]"
         style={{
           padding: smallSpacing, // Internal card padding
-          boxShadow: shadows?.shadowMd || '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-          borderRadius: 'var(--borders-radius, 8px)',
+          boxShadow: shadows?.shadowMd || 'var(--shadow-md)', // Connected to theme shadow system
+          borderRadius: 'var(--radius-card, 8px)',
           background: colors?.background?.value || 'var(--color-background)',
           border: `1px solid ${colors?.border?.value || 'var(--color-border)'}`
         }}
@@ -54,9 +54,9 @@ export function CardMolecule() {
         <div className="flex justify-between items-start" style={{ marginBottom: mediumSpacing }}>
           <div>
             <h3 style={{
-              fontFamily: 'var(--typography-h3-font-family)',
-              fontSize: 'var(--typography-h3-font-size)',
-              fontWeight: 'var(--typography-h3-font-weight)',
+              fontFamily: 'var(--typography-h4-font-family)',
+              fontSize: 'var(--typography-h4-font-size)',
+              fontWeight: 'var(--typography-h4-font-weight)',
               lineHeight: 'var(--typography-h3-line-height)',
               letterSpacing: 'var(--typography-h3-letter-spacing)',
               color: colors?.foreground?.value || 'var(--color-foreground)',
@@ -66,10 +66,10 @@ export function CardMolecule() {
               Feature Card
             </h3>
             <p style={{
-              fontFamily: 'var(--typography-p-font-family)',
-              fontSize: 'var(--typography-p-font-size)',
-              fontWeight: 'var(--typography-p-font-weight)',
-              lineHeight: 'var(--typography-p-line-height)',
+              fontFamily: 'var(--typography-paragraph-font-family)',
+              fontSize: 'var(--typography-paragraph-font-size)',
+              fontWeight: 'var(--typography-paragraph-font-weight)',
+              lineHeight: 'var(--typography-paragraph-line-height)',
               color: colors?.mutedForeground?.value || 'var(--color-muted-foreground)',
               margin: 0
             }}>
@@ -93,8 +93,8 @@ export function CardMolecule() {
         className="transition-all duration-300 hover:scale-[1.02]"
         style={{
           padding: smallSpacing,
-          boxShadow: shadows?.shadowLg || '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-          borderRadius: 'var(--borders-radius, 8px)',
+          boxShadow: shadows?.shadowMd || 'var(--shadow-md)', // Connected to theme shadow system
+          borderRadius: 'var(--radius-card, 8px)',
           background: colors?.background?.value || 'var(--color-background)',
           border: `1px solid ${colors?.border?.value || 'var(--color-border)'}`
         }}
@@ -102,9 +102,9 @@ export function CardMolecule() {
         <div style={{ marginBottom: mediumSpacing }}>
           <div className="flex justify-between items-start" style={{ marginBottom: mediumSpacing }}> {/* Medium spacing entre título y párrafo */}
             <h3 style={{
-              fontFamily: 'var(--typography-h3-font-family)',
-              fontSize: 'var(--typography-h3-font-size)',
-              fontWeight: 'var(--typography-h3-font-weight)',
+              fontFamily: 'var(--typography-h4-font-family)',
+              fontSize: 'var(--typography-h4-font-size)',
+              fontWeight: 'var(--typography-h4-font-weight)',
               color: colors?.foreground?.value || 'var(--color-foreground)',
               margin: 0
             }}>
@@ -114,8 +114,8 @@ export function CardMolecule() {
           </div>
           
           <p style={{
-            fontFamily: 'var(--typography-p-font-family)',
-            fontSize: 'var(--typography-p-font-size)',
+            fontFamily: 'var(--typography-paragraph-font-family)',
+            fontSize: 'var(--typography-paragraph-font-size)',
             color: colors?.mutedForeground?.value || 'var(--color-muted-foreground)',
             margin: 0,
             marginBottom: mediumSpacing // Medium spacing entre párrafo y badges
@@ -146,8 +146,8 @@ export function CardMolecule() {
           className="transition-all duration-300 hover:scale-[1.02]"
           style={{
             padding: smallSpacing,
-            boxShadow: shadows?.shadowSm || '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-            borderRadius: 'var(--borders-radius, 8px)',
+            boxShadow: shadows?.shadowMd || 'var(--shadow-md)', // Connected to theme shadow system
+            borderRadius: 'var(--radius-card, 8px)',
             background: colors?.background?.value || 'var(--color-background)',
             border: `1px solid ${colors?.border?.value || 'var(--color-border)'}`
           }}
@@ -164,8 +164,8 @@ export function CardMolecule() {
               Quick Action
             </h4>
             <p style={{
-              fontFamily: 'var(--typography-small-font-family)',
-              fontSize: 'var(--typography-small-font-size)',
+              fontFamily: 'var(--typography-emphasis-font-family)',
+              fontSize: 'var(--typography-emphasis-font-size)',
               color: colors?.mutedForeground?.value || 'var(--color-muted-foreground)',
               margin: 0
             }}>
@@ -181,8 +181,8 @@ export function CardMolecule() {
           className="transition-all duration-300 hover:scale-[1.02]"
           style={{
             padding: smallSpacing,
-            boxShadow: shadows?.shadow || '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
-            borderRadius: 'var(--borders-radius, 8px)',
+            boxShadow: shadows?.shadowMd || 'var(--shadow-md)', // Connected to theme shadow system
+            borderRadius: 'var(--radius-card, 8px)',
             background: colors?.background?.value || 'var(--color-background)',
             border: `1px solid ${colors?.border?.value || 'var(--color-border)'}`
           }}
@@ -199,8 +199,8 @@ export function CardMolecule() {
               Status Card
             </h4>
             <p style={{
-              fontFamily: 'var(--typography-small-font-family)',
-              fontSize: 'var(--typography-small-font-size)',
+              fontFamily: 'var(--typography-emphasis-font-family)',
+              fontSize: 'var(--typography-emphasis-font-size)',
               color: colors?.mutedForeground?.value || 'var(--color-muted-foreground)',
               margin: 0
             }}>

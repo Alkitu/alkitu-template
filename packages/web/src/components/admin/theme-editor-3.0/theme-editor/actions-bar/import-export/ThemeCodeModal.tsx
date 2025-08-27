@@ -283,7 +283,10 @@ ${Object.entries(lightColors).map(([key, value]) => `        '${key}': 'hsl(var(
 
             <div className="flex-1 min-h-0 overflow-hidden">
               <TabsContent value="css" className="h-full mt-0 data-[state=active]:flex data-[state=active]:flex-col">
-                <div className="bg-card border border-border rounded-lg flex flex-col shadow-inner h-full max-h-[calc(90vh-200px)]">
+                <div 
+                  className="bg-card border border-border flex flex-col shadow-inner h-full max-h-[calc(90vh-200px)]"
+                  style={{ borderRadius: 'var(--radius-card, 8px)' }}
+                >
                   <div className="flex items-center justify-between p-3 border-b border-border bg-muted/30 flex-shrink-0">
                     <span className="text-sm font-medium text-foreground">CSS Variables</span>
                     <Button
@@ -309,7 +312,10 @@ ${Object.entries(lightColors).map(([key, value]) => `        '${key}': 'hsl(var(
               </TabsContent>
 
               <TabsContent value="tailwind" className="h-full mt-0 data-[state=active]:flex data-[state=active]:flex-col">
-                <div className="bg-card border border-border rounded-lg flex flex-col shadow-inner h-full max-h-[calc(90vh-200px)]">
+                <div 
+                  className="bg-card border border-border flex flex-col shadow-inner h-full max-h-[calc(90vh-200px)]"
+                  style={{ borderRadius: 'var(--radius-card, 8px)' }}
+                >
                   <div className="flex items-center justify-between p-3 border-b border-border bg-muted/30 flex-shrink-0">
                     <span className="text-sm font-medium text-foreground">Tailwind Config</span>
                     <Button
@@ -335,7 +341,10 @@ ${Object.entries(lightColors).map(([key, value]) => `        '${key}': 'hsl(var(
               </TabsContent>
 
               <TabsContent value="json" className="h-full mt-0 data-[state=active]:flex data-[state=active]:flex-col">
-                <div className="bg-card border border-border rounded-lg flex flex-col shadow-inner h-full max-h-[calc(90vh-200px)]">
+                <div 
+                  className="bg-card border border-border flex flex-col shadow-inner h-full max-h-[calc(90vh-200px)]"
+                  style={{ borderRadius: 'var(--radius-card, 8px)' }}
+                >
                   <div className="flex items-center justify-between p-3 border-b border-border bg-muted/30 flex-shrink-0">
                     <span className="text-sm font-medium text-foreground">Theme JSON</span>
                     <Button

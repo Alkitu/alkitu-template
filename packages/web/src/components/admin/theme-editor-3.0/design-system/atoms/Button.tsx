@@ -28,30 +28,31 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       letterSpacing: 'var(--typography-paragraph-letter-spacing)',
       borderRadius: 'var(--radius-button, var(--radius))', // Usa --radius-button si está disponible, fallback a --radius
       
-      // Tamaños
+      // Tamaños (sin override de fontSize para que use el CSS variable)
       ...(size === 'sm' && {
         height: '36px',
         paddingLeft: '12px',
         paddingRight: '12px',
-        fontSize: '14px',
+        // fontSize se mantiene del CSS variable
       }),
       ...(size === 'default' && {
         height: '40px',
         paddingLeft: '16px',
         paddingRight: '16px',
-        fontSize: '14px',
+        // fontSize se mantiene del CSS variable
       }),
       ...(size === 'lg' && {
         height: '44px',
         paddingLeft: '20px',
         paddingRight: '20px',
-        fontSize: '16px',
+        // fontSize podría ser ligeramente mayor pero basado en variable
+        fontSize: 'calc(var(--typography-paragraph-font-size) * 1.1)',
       }),
       ...(size === 'icon' && {
         height: '40px',
         width: '40px',
         padding: '0',
-        fontSize: '16px',
+        // fontSize se mantiene del CSS variable para iconos también
       }),
       
       // Estados disabled

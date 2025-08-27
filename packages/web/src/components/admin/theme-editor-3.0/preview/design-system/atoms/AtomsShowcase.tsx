@@ -121,7 +121,10 @@ interface CollapsibleAtomTypeProps {
 
 function CollapsibleAtomType({ atomType, atoms, isOpen, onToggle }: CollapsibleAtomTypeProps) {
   return (
-    <div className="border border-border rounded-lg overflow-visible">
+    <div 
+      className="border border-border overflow-visible"
+      style={{ borderRadius: 'var(--radius-card, 8px)' }}
+    >
       {/* Header del grupo */}
       <button
         onClick={onToggle}

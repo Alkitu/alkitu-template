@@ -32,22 +32,22 @@ export function ShadowsEditor({
     onShadowsChange(updatedShadows);
   };
 
-  // Define the 3 main shadow sizes
+  // Define the 3 main shadow sizes - using correct ThemeShadows field names
   const shadowSizes = [
     {
-      key: 'small',
+      key: 'shadowSm',
       title: 'Small',
       description: 'Light shadows for cards and subtle elevation',
       defaultValue: '0 1px 3px 0 rgba(0, 0, 0, 0.1)'
     },
     {
-      key: 'medium',
+      key: 'shadowMd',
       title: 'Medium', 
       description: 'Standard shadows for most UI components',
       defaultValue: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
     },
     {
-      key: 'large',
+      key: 'shadowLg',
       title: 'Large',
       description: 'Strong shadows for modals and overlays', 
       defaultValue: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
@@ -59,7 +59,7 @@ export function ShadowsEditor({
       {shadowSizes.map((size, index) => {
         const value = shadows[size.key] || size.defaultValue;
         const label = `${size.title} Shadow`;
-        const description = `--shadow-${size.key}`;
+        const description = `--shadow-${size.key.replace('shadow', '').toLowerCase()}`;
 
         return (
           <div key={size.key}>

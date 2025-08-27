@@ -13,7 +13,10 @@ interface SelectContainerProps {
 
 function SelectContainer({ name, tokenId, children }: SelectContainerProps) {
   return (
-    <div className="flex flex-col gap-2 p-3 border border-border rounded-lg bg-background relative overflow-visible">
+    <div 
+      className="flex flex-col gap-2 p-3 border border-border bg-background relative overflow-visible"
+      style={{ borderRadius: 'var(--radius-card, 8px)' }}
+    >
       <div className="flex items-center justify-between">
         <span className="text-xs font-medium text-muted-foreground">
           {name}

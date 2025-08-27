@@ -201,9 +201,24 @@ export function applySpacingElements(spacing: Record<string, string>): void {
 export function applyShadowElements(shadows: Record<string, string>): void {
   const root = document.documentElement;
   
+  // Map shadow keys to CSS variable names
+  const shadowMap = {
+    'shadow2xs': '--shadow-2xs',
+    'shadowXs': '--shadow-xs', 
+    'shadowSm': '--shadow-sm',
+    'shadow': '--shadow',
+    'shadowMd': '--shadow-md',
+    'shadowLg': '--shadow-lg',
+    'shadowXl': '--shadow-xl',
+    'shadow2xl': '--shadow-2xl'
+  };
+  
   // Apply each shadow value as CSS variables
   Object.entries(shadows).forEach(([shadowKey, value]) => {
-    root.style.setProperty(`--shadow-${shadowKey}`, value);
+    const cssVar = shadowMap[shadowKey];
+    if (cssVar) {
+      root.style.setProperty(cssVar, value);
+    }
   });
 }
 

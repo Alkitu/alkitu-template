@@ -37,11 +37,11 @@ const getBadgeVariantClasses = (variant: string) => {
 const getBadgeSizeClasses = (size: string) => {
   switch (size) {
     case 'sm':
-      return 'px-2.5 py-1 text-xs';
+      return 'px-2.5 py-1';
     case 'lg':
-      return 'px-4 py-2 text-sm';
+      return 'px-4 py-2';
     default:
-      return 'px-3 py-1.5 text-xs';
+      return 'px-3 py-1.5';
   }
 };
 
@@ -77,6 +77,7 @@ export function Badge({
       `}
       style={{
         fontFamily: 'var(--typography-emphasis-font-family)',
+        fontSize: size === 'lg' ? 'var(--typography-emphasis-font-size)' : 'calc(var(--typography-emphasis-font-size) * 0.85)',
         letterSpacing: 'var(--typography-emphasis-letter-spacing)',
         borderRadius: 'var(--radius-badge, var(--radius))',
       }}

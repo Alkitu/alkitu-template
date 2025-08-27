@@ -27,13 +27,11 @@ export function ColorTabContent() {
     <div className="space-y-6">
       {/* Sección de Contraste WCAG */}
       <section>
-        <h2 className="text-2xl font-semibold mb-4">WCAG Contrast Checker</h2>
         <ContrastChecker />
       </section>
 
       {/* Sección de Sistema de Colores */}
       <section>
-        <h2 className="text-2xl font-semibold mb-4">Design System Colors</h2>
         <DesignSystemColorsShowcase colors={colors} />
       </section>
     </div>

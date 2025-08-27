@@ -14,7 +14,6 @@ export function BrandTabContent() {
   return (
     <div className="space-y-6">
       <section>
-        <h2 className="text-2xl font-semibold mb-4">Brand Identity</h2>
         <BrandPreview brand={state.currentTheme.brand} />
       </section>
     </div>

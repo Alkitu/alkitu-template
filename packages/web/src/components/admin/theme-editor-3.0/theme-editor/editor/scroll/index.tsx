@@ -21,6 +21,13 @@ const SCROLL_BEHAVIORS = [
   { value: 'instant', label: 'Instant' }
 ];
 
+const SCROLLBAR_WIDTHS = [
+  { value: '6px', label: 'Thin (6px)', class: 'scrollbar-thin' },
+  { value: '8px', label: 'Default (8px)', class: 'default' },
+  { value: '10px', label: 'Medium (10px)', class: 'scrollbar-medium' },
+  { value: '14px', label: 'Thick (14px)', class: 'scrollbar-thick' }
+];
+
 export function ScrollEditor({ 
   scroll, 
   onScrollChange, 
@@ -43,8 +50,13 @@ export function ScrollEditor({
     return match ? parseFloat(match[1]) : 8;
   };
 
-  const handleWidthChange = (value: number[]) => {
-    handlePropertyChange('width', `${value[0]}px`);
+
+  const handleTrackRadiusChange = (value: number[]) => {
+    handlePropertyChange('trackRadius', `${value[0]}px`);
+  };
+
+  const handleThumbRadiusChange = (value: number[]) => {
+    handlePropertyChange('thumbRadius', `${value[0]}px`);
   };
 
   return (
@@ -112,28 +124,78 @@ export function ScrollEditor({
         <div className="space-y-4">
           {/* Scrollbar Width */}
           <div className="space-y-2">
+            <Label className="text-xs">Scrollbar Width</Label>
+            <Select 
+              value={scroll.width} 
+              onValueChange={(value) => handlePropertyChange('width', value)}
+            >
+              <SelectTrigger className="h-8">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {SCROLLBAR_WIDTHS.map(option => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <div className="text-xs text-muted-foreground">
+              Current: {SCROLLBAR_WIDTHS.find(w => w.value === scroll.width)?.label || scroll.width}
+            </div>
+          </div>
+
+          {/* Track Border Radius */}
+          <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label className="text-xs">Scrollbar Width</Label>
+              <Label className="text-xs">Track Border Radius (Riel)</Label>
               <Input
                 type="number"
-                value={parsePixelValue(scroll.width)}
-                onChange={(e) => handleWidthChange([parseFloat(e.target.value) || 8])}
+                value={parsePixelValue(scroll.trackRadius || '0px')}
+                onChange={(e) => handleTrackRadiusChange([parseFloat(e.target.value) || 0])}
                 className="w-16 h-6 text-xs"
-                min="4"
-                max="20"
+                min="0"
+                max="16"
                 step="1"
               />
             </div>
             <Slider
-              value={[parsePixelValue(scroll.width)]}
-              onValueChange={handleWidthChange}
-              min={4}
-              max={20}
+              value={[parsePixelValue(scroll.trackRadius || '0px')]}
+              onValueChange={handleTrackRadiusChange}
+              min={0}
+              max={16}
               step={1}
               className="w-full"
             />
             <div className="text-xs text-muted-foreground">
-              Current: {scroll.width}
+              Current: {scroll.trackRadius || '0px'}
+            </div>
+          </div>
+
+          {/* Thumb Border Radius */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label className="text-xs">Thumb Border Radius (Deslizador)</Label>
+              <Input
+                type="number"
+                value={parsePixelValue(scroll.thumbRadius || '4px')}
+                onChange={(e) => handleThumbRadiusChange([parseFloat(e.target.value) || 4])}
+                className="w-16 h-6 text-xs"
+                min="0"
+                max="16"
+                step="1"
+              />
+            </div>
+            <Slider
+              value={[parsePixelValue(scroll.thumbRadius || '4px')]}
+              onValueChange={handleThumbRadiusChange}
+              min={0}
+              max={16}
+              step={1}
+              className="w-full"
+            />
+            <div className="text-xs text-muted-foreground">
+              Current: {scroll.thumbRadius || '4px'}
             </div>
           </div>
 
@@ -153,182 +215,8 @@ export function ScrollEditor({
         </div>
       </Card>
 
-      {/* Scrollbar Preview */}
-      <Card className="p-4">
-        <h5 style={{
-          fontFamily: 'var(--typography-h5-font-family)',
-          fontSize: 'var(--typography-h5-font-size)',
-          fontWeight: 'var(--typography-h5-font-weight)',
-          lineHeight: 'var(--typography-h5-line-height)',
-          letterSpacing: 'var(--typography-h5-letter-spacing)'
-        }} className="text-foreground mb-4">Scrollbar Preview</h5>
-        
-        <div className="space-y-4">
-          {/* Vertical Scrollbar Preview */}
-          <div className="space-y-2">
-            <h4 className="text-xs font-medium">Vertical Scrollbar</h4>
-            <div 
-              className="h-32 border rounded bg-background overflow-y-auto p-3"
-              style={{
-                scrollbarWidth: scroll.hide ? 'none' : 'thin',
-                msOverflowStyle: scroll.hide ? 'none' : 'auto',
-                ...(scroll.hide ? {
-                  '&::-webkit-scrollbar': {
-                    display: 'none'
-                  }
-                } : {
-                  '&::-webkit-scrollbar': {
-                    width: scroll.width
-                  },
-                  '&::-webkit-scrollbar-track': {
-                    background: 'hsl(var(--muted))'
-                  },
-                  '&::-webkit-scrollbar-thumb': {
-                    background: 'hsl(var(--muted-foreground))',
-                    borderRadius: '4px'
-                  },
-                  '&::-webkit-scrollbar-thumb:hover': {
-                    background: 'hsl(var(--foreground))'
-                  }
-                })
-              }}
-            >
-              <div className="text-xs text-muted-foreground space-y-2">
-                <p>This is a scrollable area to preview the scrollbar styling.</p>
-                <p>The scrollbar width is set to {scroll.width}.</p>
-                <p>Scroll behavior is set to "{scroll.behavior}".</p>
-                <p>Smooth scrolling is {scroll.smooth ? 'enabled' : 'disabled'}.</p>
-                <p>Scrollbars are {scroll.hide ? 'hidden' : 'visible'}.</p>
-                <p>This content extends beyond the container height to demonstrate scrolling.</p>
-                <p>You can adjust the settings above to see how they affect the scrollbar appearance.</p>
-                <p>The scrollbar styling uses CSS custom properties that integrate with your theme.</p>
-                <p>Additional content to ensure scrolling is necessary for the preview.</p>
-              </div>
-            </div>
-          </div>
 
-          {/* Horizontal Scrollbar Preview */}
-          <div className="space-y-2">
-            <h4 className="text-xs font-medium">Horizontal Scrollbar</h4>
-            <div 
-              className="w-full border rounded bg-background overflow-x-auto p-3"
-              style={{
-                scrollbarWidth: scroll.hide ? 'none' : 'thin',
-                msOverflowStyle: scroll.hide ? 'none' : 'auto',
-                ...(scroll.hide ? {
-                  '&::-webkit-scrollbar': {
-                    display: 'none'
-                  }
-                } : {
-                  '&::-webkit-scrollbar': {
-                    height: scroll.width
-                  },
-                  '&::-webkit-scrollbar-track': {
-                    background: 'hsl(var(--muted))'
-                  },
-                  '&::-webkit-scrollbar-thumb': {
-                    background: 'hsl(var(--muted-foreground))',
-                    borderRadius: '4px'
-                  },
-                  '&::-webkit-scrollbar-thumb:hover': {
-                    background: 'hsl(var(--foreground))'
-                  }
-                })
-              }}
-            >
-              <div className="w-96 text-xs text-muted-foreground whitespace-nowrap">
-                This is a horizontally scrollable area that demonstrates horizontal scrollbar styling with the current settings.
-              </div>
-            </div>
-          </div>
-        </div>
-      </Card>
 
-      {/* CSS Implementation */}
-      <Card className="p-4">
-        <h5 style={{
-          fontFamily: 'var(--typography-h5-font-family)',
-          fontSize: 'var(--typography-h5-font-size)',
-          fontWeight: 'var(--typography-h5-font-weight)',
-          lineHeight: 'var(--typography-h5-line-height)',
-          letterSpacing: 'var(--typography-h5-letter-spacing)'
-        }} className="text-foreground mb-4">CSS Implementation</h5>
-        
-        <div className="space-y-3">
-          <div className="text-xs text-muted-foreground">
-            The scroll settings generate the following CSS:
-          </div>
-          
-          <div className="bg-muted/50 p-3 rounded border font-mono text-xs overflow-x-auto">
-            <div className="whitespace-pre-wrap">
-{`html {
-  scroll-behavior: ${scroll.behavior};
-}
-
-${scroll.hide ? `
-/* Hide scrollbars */
-* {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-*::-webkit-scrollbar {
-  display: none;
-}` : `
-/* Custom scrollbars */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: hsl(var(--muted-foreground)) hsl(var(--muted));
-}
-
-*::-webkit-scrollbar {
-  width: ${scroll.width};
-  height: ${scroll.width};
-}
-
-*::-webkit-scrollbar-track {
-  background: hsl(var(--muted));
-}
-
-*::-webkit-scrollbar-thumb {
-  background: hsl(var(--muted-foreground));
-  border-radius: 4px;
-}
-
-*::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--foreground));
-}`}
-`}
-            </div>
-          </div>
-        </div>
-      </Card>
-
-      {/* Usage Guidelines */}
-      <Card className="p-4">
-        <h5 style={{
-          fontFamily: 'var(--typography-h5-font-family)',
-          fontSize: 'var(--typography-h5-font-size)',
-          fontWeight: 'var(--typography-h5-font-weight)',
-          lineHeight: 'var(--typography-h5-line-height)',
-          letterSpacing: 'var(--typography-h5-letter-spacing)'
-        }} className="text-foreground mb-4">Usage Guidelines</h5>
-        
-        <div className="space-y-3 text-xs text-muted-foreground">
-          <div>
-            <strong className="text-foreground">Smooth Scrolling:</strong> Enables smooth animation for programmatic scrolling (scrollIntoView, etc.)
-          </div>
-          <div>
-            <strong className="text-foreground">Scrollbar Width:</strong> Adjust based on your design needs. Thinner scrollbars (4-8px) are more modern.
-          </div>
-          <div>
-            <strong className="text-foreground">Hidden Scrollbars:</strong> Consider accessibility - some users rely on visible scrollbars for navigation.
-          </div>
-          <div>
-            <strong className="text-foreground">Browser Support:</strong> Webkit scrollbar styles work in Chrome/Safari. Firefox uses scrollbar-width and scrollbar-color.
-          </div>
-        </div>
-      </Card>
     </div>
   );
 }

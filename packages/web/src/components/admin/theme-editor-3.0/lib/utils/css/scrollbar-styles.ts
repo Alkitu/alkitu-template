@@ -1,18 +1,18 @@
 // Theme Editor 3.0 - Scrollbar Styles Management
+// WARNING: This is DEPRECATED - Use applyScrollElements() in css-variables.ts instead
 
 // Cache to avoid unnecessary DOM modifications
 let scrollbarStylesApplied = false;
 
 /**
- * Applies custom scrollbar styles using CSS variables
- * This creates dynamic scrollbar theming based on theme colors
- * Only applies once to prevent scroll position reset
+ * DEPRECATED: Use applyScrollElements() from css-variables.ts instead
+ * This function is disabled to prevent conflicts with the unified scrollbar system
  */
 export function applyScrollbarStyles(): void {
-  // Only apply styles once to prevent DOM manipulation that resets scroll
-  if (scrollbarStylesApplied) {
-    return;
-  }
+  // DISABLED: This static system conflicts with the dynamic Theme Editor scrollbar controls
+  // The unified scrollbar system in css-variables.ts handles all scrollbar styling now
+  console.warn('applyScrollbarStyles() is deprecated. Use applyScrollElements() instead.');
+  return;
 
   // Check if the style element already exists
   let styleElement = document.getElementById('theme-scrollbar-styles') as HTMLStyleElement;

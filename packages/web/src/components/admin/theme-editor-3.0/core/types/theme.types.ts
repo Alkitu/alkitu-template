@@ -120,6 +120,24 @@ export interface LogoVariant {
     black: string;
     gray: string;
   };
+  // Logo específico para modo oscuro (opcional)
+  darkModeVersion?: {
+    svgContent: string;
+    variants: {
+      original: string;
+      white: string;
+      black: string;
+      gray: string;
+    };
+    metadata: {
+      fileName: string;
+      fileSize: string;
+      dimensions: string;
+      viewBox: string;
+      colorCount: number;
+      hasGradients: boolean;
+    };
+  };
   metadata: {
     fileName: string;
     fileSize: string;
@@ -205,6 +223,10 @@ export interface ThemeScroll {
   behavior: 'auto' | 'smooth' | 'instant';
   smooth: boolean;
   hide: boolean;
+  
+  // Border radius controls for scrollbar elements
+  trackRadius: string;   // Border radius for scrollbar track (riel)
+  thumbRadius: string;   // Border radius for scrollbar thumb (deslizador)
 }
 
 export interface ThemeData {

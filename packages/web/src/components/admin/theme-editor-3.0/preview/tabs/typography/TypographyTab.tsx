@@ -11,7 +11,6 @@ export function TypographyTabContent() {
   return (
     <div className="space-y-6">
       <section>
-        <h2 className="text-2xl font-semibold mb-4">Typography Scale</h2>
         <TypographyPreview />
       </section>
     </div>

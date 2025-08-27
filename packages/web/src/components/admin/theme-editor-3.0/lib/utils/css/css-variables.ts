@@ -115,6 +115,9 @@ export function applyThemeToRoot(theme: ThemeData, mode: 'light' | 'dark' = 'lig
   }).forEach(([property, value]) => {
     root.style.setProperty(property, value);
   });
+  
+  // Apply scroll settings
+  applyScrollElements(theme.scroll);
 }
 
 /**
@@ -205,6 +208,143 @@ export function applyShadowElements(shadows: Record<string, string>): void {
 }
 
 /**
+ * Applies scroll values to CSS root variables and scrollbar styles
+ * UNIFIED SCROLLBAR SYSTEM - Replaces all other scrollbar styling
+ */
+export function applyScrollElements(scroll: { width: string; behavior: 'auto' | 'smooth' | 'instant'; smooth: boolean; hide: boolean; trackRadius?: string; thumbRadius?: string; }): void {
+  const root = document.documentElement;
+  
+  // Apply scroll behavior to html element
+  root.style.setProperty('scroll-behavior', scroll.behavior);
+  
+  // Apply scrollbar style variables for reference
+  root.style.setProperty('--scrollbar-width', scroll.width);
+  root.style.setProperty('--scrollbar-track-radius', scroll.trackRadius || '0px');
+  root.style.setProperty('--scrollbar-thumb-radius', scroll.thumbRadius || '4px');
+  
+  // DEBUG: Log current scrollbar settings to verify they exist
+  console.log('🎨 SCROLLBAR DEBUG CHECK:', {
+    trackColor: getComputedStyle(root).getPropertyValue('--scrollbar-track').trim(),
+    thumbColor: getComputedStyle(root).getPropertyValue('--scrollbar-thumb').trim(),
+    width: scroll.width,
+    trackRadius: scroll.trackRadius || '0px',
+    thumbRadius: scroll.thumbRadius || '4px'
+  });
+  
+  console.log('📏 SCROLLBAR WIDTH APPLYING:', {
+    widthValue: scroll.width,
+    cssRule: `*::-webkit-scrollbar { width: ${scroll.width} !important; height: ${scroll.width} !important; }`
+  });
+  
+  // Track radius logging for debugging
+  console.log('🔴 TRACK RADIUS VALUE:', scroll.trackRadius || '0px');
+  
+  // REMOVE OLD STYLE ELEMENTS FIRST to prevent conflicts
+  const oldStaticStyles = document.getElementById('theme-scrollbar-styles');
+  if (oldStaticStyles) {
+    oldStaticStyles.remove();
+  }
+  
+  // Apply scrollbar visibility and styling
+  if (scroll.hide) {
+    // Hide scrollbars completely
+    const style = `
+      /* Hide all scrollbars across all browsers */
+      * {
+        scrollbar-width: none !important;
+        -ms-overflow-style: none !important;
+      }
+      *::-webkit-scrollbar {
+        display: none !important;
+        width: 0px !important;
+        height: 0px !important;
+      }
+    `;
+    
+    // Apply hidden scrollbar styles
+    let scrollbarStyleElement = document.getElementById('unified-scrollbar-styles');
+    if (!scrollbarStyleElement) {
+      scrollbarStyleElement = document.createElement('style');
+      scrollbarStyleElement.id = 'unified-scrollbar-styles';
+      document.head.appendChild(scrollbarStyleElement);
+    }
+    scrollbarStyleElement.textContent = style;
+  } else {
+    // Show custom scrollbars - SIMPLIFIED VERSION focusing on colors first
+    const style = `
+      /* UNIFIED SCROLLBAR SYSTEM - STEP 1: COLORS ONLY */
+      
+      /* Firefox scrollbars - Simple colors */
+      * {
+        scrollbar-width: thin;
+        scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+      }
+      
+      /* Webkit scrollbars - Focus on width and colors */  
+      *::-webkit-scrollbar {
+        width: ${scroll.width} !important;
+        height: ${scroll.width} !important;
+      }
+      
+      *::-webkit-scrollbar-track {
+        background: var(--scrollbar-track);
+        border-radius: ${scroll.trackRadius || '0px'};
+      }
+      
+      *::-webkit-scrollbar-thumb {
+        background: var(--scrollbar-thumb);
+        border-radius: ${scroll.thumbRadius || '4px'};
+        border: 1px solid var(--scrollbar-track);
+      }
+      
+      *::-webkit-scrollbar-thumb:hover {
+        background: var(--scrollbar-thumb);
+        opacity: 0.8;
+      }
+      
+      /* Override static classes - INCLUDING WIDTH */
+      .scrollbar-thin::-webkit-scrollbar {
+        width: ${scroll.width} !important;
+        height: ${scroll.width} !important;
+      }
+      
+      .scrollbar-thin::-webkit-scrollbar-track {
+        background: var(--scrollbar-track) !important;
+      }
+      
+      .scrollbar-thin::-webkit-scrollbar-thumb {
+        background: var(--scrollbar-thumb) !important;
+      }
+      
+      /* Additional overrides for common scrollbar containers */
+      div::-webkit-scrollbar,
+      section::-webkit-scrollbar,
+      article::-webkit-scrollbar {
+        width: ${scroll.width} !important;
+        height: ${scroll.width} !important;
+      }
+    `;
+    
+    // Apply custom scrollbar styles
+    let scrollbarStyleElement = document.getElementById('unified-scrollbar-styles');
+    if (!scrollbarStyleElement) {
+      scrollbarStyleElement = document.createElement('style');
+      scrollbarStyleElement.id = 'unified-scrollbar-styles';
+      document.head.appendChild(scrollbarStyleElement);
+    }
+    scrollbarStyleElement.textContent = style;
+    
+    // DEBUG: Log the actual CSS being applied
+    console.log('💉 CSS INJECTED:', {
+      elementId: 'unified-scrollbar-styles',
+      cssContent: style,
+      elementExists: !!document.getElementById('unified-scrollbar-styles'),
+      headChildren: document.head.children.length
+    });
+  }
+}
+
+/**
  * Gets current CSS variable value from root
  */
 export function getCSSVariableValue(variableName: string): string {
@@ -218,6 +358,77 @@ export function getCSSVariableValue(variableName: string): string {
  */
 export function updateCSSVariable(variableName: string, value: string): void {
   document.documentElement.style.setProperty(variableName, value);
+}
+
+/**
+ * Applies ONLY scrollbar colors from theme colors
+ * This ensures scrollbar colors update immediately when changed in Theme Editor
+ */
+export function applyScrollbarColors(colors: import('../types/theme.types').ThemeColors): void {
+  const root = document.documentElement;
+  
+  if (colors.scrollbarTrack) {
+    const trackValue = colors.scrollbarTrack.oklchString || colors.scrollbarTrack.value;
+    root.style.setProperty('--scrollbar-track', trackValue);
+    console.log('🎯 Applied scrollbar-track:', trackValue);
+  }
+  
+  if (colors.scrollbarThumb) {
+    const thumbValue = colors.scrollbarThumb.oklchString || colors.scrollbarThumb.value;
+    root.style.setProperty('--scrollbar-thumb', thumbValue);
+    console.log('🎯 Applied scrollbar-thumb:', thumbValue);
+  }
+}
+
+/**
+ * SOLUTION 1: Apply scrollbar styling using CSS Custom Properties + Utility Classes
+ * This is more reliable than dynamic CSS injection
+ */
+export function applyScrollbarUtilityClass(scroll: { width: string; behavior: 'auto' | 'smooth' | 'instant'; smooth: boolean; hide: boolean; trackRadius?: string; thumbRadius?: string; }, colors: { scrollbarTrack?: { value: string }; scrollbarThumb?: { value: string } }): void {
+  const root = document.documentElement;
+  
+  console.log('🎯 SOLUTION 1 - APPLYING UTILITY CLASS METHOD:', {
+    width: scroll.width,
+    trackRadius: scroll.trackRadius || '0px',
+    thumbRadius: scroll.thumbRadius || '4px',
+    trackColor: colors.scrollbarTrack?.value || '#ffffff',
+    thumbColor: colors.scrollbarThumb?.value || '#cdcdcd'
+  });
+  
+  // Step 1: Add the utility class to body/html
+  if (!document.body.classList.contains('dynamic-scrollbar')) {
+    document.body.classList.add('dynamic-scrollbar');
+    console.log('✅ Added dynamic-scrollbar class to body');
+  }
+  
+  // Step 2: Update CSS custom properties
+  root.style.setProperty('--dynamic-scrollbar-width', scroll.width);
+  root.style.setProperty('--dynamic-scrollbar-track-radius', scroll.trackRadius || '0px');
+  root.style.setProperty('--dynamic-scrollbar-thumb-radius', scroll.thumbRadius || '4px');
+  root.style.setProperty('--dynamic-scrollbar-track-color', colors.scrollbarTrack?.value || '#ffffff');
+  root.style.setProperty('--dynamic-scrollbar-thumb-color', colors.scrollbarThumb?.value || '#cdcdcd');
+  
+  console.log('✅ CSS Variables Updated:', {
+    '--dynamic-scrollbar-width': scroll.width,
+    '--dynamic-scrollbar-track-radius': scroll.trackRadius || '0px',
+    '--dynamic-scrollbar-thumb-radius': scroll.thumbRadius || '4px',
+    '--dynamic-scrollbar-track-color': colors.scrollbarTrack?.value || '#ffffff',
+    '--dynamic-scrollbar-thumb-color': colors.scrollbarThumb?.value || '#cdcdcd'
+  });
+  
+  // Step 3: Apply scroll behavior
+  root.style.setProperty('scroll-behavior', scroll.behavior);
+  
+  // Step 4: Handle hide/show
+  if (scroll.hide) {
+    document.body.classList.add('scrollbar-hidden');
+    document.body.classList.remove('dynamic-scrollbar');
+    console.log('✅ Scrollbars hidden');
+  } else {
+    document.body.classList.remove('scrollbar-hidden');
+    document.body.classList.add('dynamic-scrollbar');
+    console.log('✅ Scrollbars visible with dynamic styling');
+  }
 }
 
 /**
@@ -236,12 +447,27 @@ export function resetThemeVariables(): void {
     '--font-sans', '--font-serif', '--font-mono', '--tracking-normal',
     '--radius', '--spacing',
     '--shadow-2xs', '--shadow-xs', '--shadow-sm', '--shadow',
-    '--shadow-md', '--shadow-lg', '--shadow-xl', '--shadow-2xl'
+    '--shadow-md', '--shadow-lg', '--shadow-xl', '--shadow-2xl',
+    '--scrollbar-width', '--scrollbar-track-radius', '--scrollbar-thumb-radius'
   ];
   
   themeVariables.forEach(variable => {
     root.style.removeProperty(variable);
   });
+  
+  // Remove scroll behavior and scrollbar styles
+  root.style.removeProperty('scroll-behavior');
+  
+  // Remove both old and new scrollbar style elements
+  const oldScrollbarStyleElement = document.getElementById('theme-scrollbar-styles');
+  if (oldScrollbarStyleElement) {
+    oldScrollbarStyleElement.remove();
+  }
+  
+  const unifiedScrollbarStyleElement = document.getElementById('unified-scrollbar-styles');
+  if (unifiedScrollbarStyleElement) {
+    unifiedScrollbarStyleElement.remove();
+  }
 }
 
 /**
@@ -283,6 +509,12 @@ export function generateThemeCSS(theme: ThemeData, includeLight = true, includeD
     css += `  --shadow-lg: ${theme.shadows.shadowLg};\n`;
     css += `  --shadow-xl: ${theme.shadows.shadowXl};\n`;
     css += `  --shadow-2xl: ${theme.shadows.shadow2xl};\n`;
+    
+    // Scroll settings
+    css += `  --scrollbar-width: ${theme.scroll.width};\n`;
+    css += `  --scrollbar-track-radius: ${theme.scroll.trackRadius || '0px'};\n`;
+    css += `  --scrollbar-thumb-radius: ${theme.scroll.thumbRadius || '4px'};\n`;
+    css += `  scroll-behavior: ${theme.scroll.behavior};\n`;
     
     css += `}\n\n`;
   }

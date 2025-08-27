@@ -11,7 +11,6 @@ export function AtomsTabContent() {
   return (
     <div className="space-y-6">
       <section>
-        <h2 className="text-2xl font-semibold mb-4">Atomic Components</h2>
         <AtomsShowcase />
       </section>
     </div>

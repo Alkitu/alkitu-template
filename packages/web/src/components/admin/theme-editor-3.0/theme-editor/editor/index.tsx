@@ -12,6 +12,7 @@ import { BrandEditor } from './brand';
 import { BordersEditor } from './borders';
 import { SpacingEditor } from './spacing';
 import { ShadowsEditor } from './shadows';
+import { ScrollEditor } from './scroll';
 
 export function ThemeEditor() {
   const { state, setEditorSection } = useThemeEditor();
@@ -83,15 +84,15 @@ export function ThemeEditor() {
           onValueChange={(value) => setEditorSection(value as EditorSection)}
           className="w-full h-full flex flex-col"
         >
-          <TabsList className="grid w-full grid-cols-4 gap-1 h-auto p-1 flex-shrink-0">
+          <TabsList className="grid w-full grid-cols-4 lg:grid-cols-7 gap-1 h-auto p-1 flex-shrink-0">
             {sections.map(({ id, label, icon: Icon }) => (
               <TabsTrigger 
                 key={id} 
                 value={id}
-                className="flex flex-col gap-1 h-12 text-xs"
+                className="flex flex-col gap-1 h-12 text-xs p-1"
               >
-                <Icon className="h-3 w-3" />
-                <span>{label}</span>
+                <Icon className="h-3 w-3 flex-shrink-0" />
+                <span className="truncate">{label}</span>
               </TabsTrigger>
             ))}
           </TabsList>
@@ -147,17 +148,14 @@ export function ThemeEditor() {
             </ScrollContainer>
           </TabsContent>
 
-          {sections.slice(6).map(({ id, label }) => (
-            <TabsContent key={id} value={id} className="mt-4 flex-1 min-h-0 overflow-hidden">
-              <ScrollContainer sectionId={id}>
-                <div className="h-24 bg-muted/20 rounded border-2 border-dashed border-muted-foreground/20 flex items-center justify-center">
-                  <span className="text-xs text-muted-foreground">
-                    {label} editor content will be here
-                  </span>
-                </div>
-              </ScrollContainer>
-            </TabsContent>
-          ))}
+          <TabsContent value="scroll" className="mt-4 flex-1 min-h-0 overflow-hidden">
+            <ScrollContainer sectionId="scroll">
+              <ScrollEditor 
+                scroll={state.currentTheme.scroll}
+                onScrollChange={themeUpdates.updateScroll}
+              />
+            </ScrollContainer>
+          </TabsContent>
         </Tabs>
       </div>
     </div>

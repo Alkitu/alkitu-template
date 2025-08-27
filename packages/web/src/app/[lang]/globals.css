@@ -2,6 +2,7 @@
 @import url('https://use.typekit.net/poc1qid.css');
 @import 'animate.css';
 @import 'tailwindcss';
+@import '../../styles/scrollbar-utilities.css';
 
 @layer base {
   :root {

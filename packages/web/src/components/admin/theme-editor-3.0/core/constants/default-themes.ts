@@ -195,7 +195,9 @@ export const DEFAULT_THEME: ThemeData = {
     width: '8px',
     behavior: 'smooth',
     smooth: true,
-    hide: false
+    hide: false,
+    trackRadius: '0px',
+    thumbRadius: '4px'
   },
   tags: ['default', 'clean', 'modern'],
   isPublic: true,
@@ -355,7 +357,9 @@ export const AMBER_MINIMAL_THEME: ThemeData = {
     width: '8px',
     behavior: 'smooth',
     smooth: true,
-    hide: false
+    hide: false,
+    trackRadius: '0px',
+    thumbRadius: '4px'
   },
   tags: ['amber', 'warm', 'minimal'],
   isPublic: true,
@@ -494,7 +498,9 @@ export const AMETHYST_HAZE_THEME: ThemeData = {
     width: '8px',
     behavior: 'smooth',
     smooth: true,
-    hide: false
+    hide: false,
+    trackRadius: '0px',
+    thumbRadius: '4px'
   },
   tags: ['purple', 'elegant', 'mystical'],
   isPublic: true,
@@ -625,7 +631,7 @@ export const BOLD_TECH_THEME: ThemeData = {
     shadowXl: '2px 2px 4px 0px hsl(255 86% 66% / 0.20), 2px 8px 10px -1px hsl(255 86% 66% / 0.20)',
     shadow2xl: '2px 2px 4px 0px hsl(255 86% 66% / 0.50)'
   },
-  scroll: { width: '8px', behavior: 'smooth', smooth: true, hide: false },
+  scroll: { width: '8px', behavior: 'smooth', smooth: true, hide: false, trackRadius: '0px', thumbRadius: '4px' },
   tags: ['blue', 'tech', 'bold'],
   isPublic: true,
   isFavorite: false
@@ -755,7 +761,7 @@ export const BUBBLEGUM_THEME: ThemeData = {
     shadowXl: '0 1px 3px 0px hsl(340 50% 70% / 0.10), 0 8px 10px -1px hsl(340 50% 70% / 0.10)',
     shadow2xl: '0 1px 3px 0px hsl(340 50% 70% / 0.25)'
   },
-  scroll: { width: '8px', behavior: 'smooth', smooth: true, hide: false },
+  scroll: { width: '8px', behavior: 'smooth', smooth: true, hide: false, trackRadius: '0px', thumbRadius: '4px' },
   tags: ['pink', 'playful', 'fun', 'vibrant', 'candy'],
   isPublic: true,
   isFavorite: false
@@ -856,7 +862,7 @@ export const CAFFEINE_THEME: ThemeData = {
   spacing: { spacing: '0.25rem' },
   borders: { radius: '0.5rem', radiusSm: 'calc(var(--radius) - 4px)', radiusMd: 'calc(var(--radius) - 2px)', radiusLg: 'var(--radius)', radiusXl: 'calc(var(--radius) + 4px)' },
   shadows: { shadow2xs: '0 1px 3px 0px hsl(0 0% 0% / 0.05)', shadowXs: '0 1px 3px 0px hsl(0 0% 0% / 0.05)', shadowSm: '0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10)', shadow: '0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10)', shadowMd: '0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 2px 4px -1px hsl(0 0% 0% / 0.10)', shadowLg: '0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 4px 6px -1px hsl(0 0% 0% / 0.10)', shadowXl: '0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 8px 10px -1px hsl(0 0% 0% / 0.10)', shadow2xl: '0 1px 3px 0px hsl(0 0% 0% / 0.25)' },
-  scroll: { width: '8px', behavior: 'smooth', smooth: true, hide: false },
+  scroll: { width: '8px', behavior: 'smooth', smooth: true, hide: false, trackRadius: '0px', thumbRadius: '4px' },
   tags: ['cyan', 'energetic', 'productivity'],
   isPublic: true,
   isFavorite: false
@@ -957,7 +963,7 @@ export const CANDYLAND_THEME: ThemeData = {
   spacing: { spacing: '0.25rem' },
   borders: { radius: '0.5rem', radiusSm: 'calc(var(--radius) - 4px)', radiusMd: 'calc(var(--radius) - 2px)', radiusLg: 'var(--radius)', radiusXl: 'calc(var(--radius) + 4px)' },
   shadows: { shadow2xs: '0 1px 3px 0px hsl(0 0% 0% / 0.05)', shadowXs: '0 1px 3px 0px hsl(0 0% 0% / 0.05)', shadowSm: '0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10)', shadow: '0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10)', shadowMd: '0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 2px 4px -1px hsl(0 0% 0% / 0.10)', shadowLg: '0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 4px 6px -1px hsl(0 0% 0% / 0.10)', shadowXl: '0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 8px 10px -1px hsl(0 0% 0% / 0.10)', shadow2xl: '0 1px 3px 0px hsl(0 0% 0% / 0.25)' },
-  scroll: { width: '8px', behavior: 'smooth', smooth: true, hide: false },
+  scroll: { width: '8px', behavior: 'smooth', smooth: true, hide: false, trackRadius: '0px', thumbRadius: '4px' },
   tags: ['orange', 'sweet', 'candy'],
   isPublic: true,
   isFavorite: false

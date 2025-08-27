@@ -5,7 +5,7 @@ import { Card } from '../../../design-system/primitives/card';
 import { Button } from '../../../design-system/primitives/button';
 import { Label } from '../../../design-system/primitives/label';
 import { Badge } from '../../../design-system/primitives/badge';
-import { Upload, X, AlertCircle, Info, RotateCcw, Lock, Unlock } from 'lucide-react';
+import { Upload, X, AlertCircle, Info, RotateCcw, Lock, Unlock, Moon } from 'lucide-react';
 import { LogoVariant } from './types';
 import { detectColorsFromSVG, generateColorVariants, validateAspectRatio, readSVGContent, replaceColorInSVG, extractSVGMetadata, createDefaultModeConfig as createDefaultModeConfigUtil } from './utils';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../../../design-system/primitives/accordion';
@@ -38,8 +38,10 @@ export function LogoUploadSection({
   const { state } = useThemeEditor();
   const isDarkMode = state.themeMode === 'dark';
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const darkModeFileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isUploadingDarkMode, setIsUploadingDarkMode] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Estado interno simplificado - ÚNICA FUENTE DE VERDAD
@@ -194,6 +196,77 @@ export function LogoUploadSection({
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
+    if (darkModeFileInputRef.current) {
+      darkModeFileInputRef.current.value = '';
+    }
+  };
+
+  // Nueva función para cargar logo específico para modo oscuro
+  const handleDarkModeFileSelect = async (file: File) => {
+    if (!logo) return; // Solo se puede cargar modo oscuro si ya hay un logo base
+    
+    setError(null);
+    setIsUploadingDarkMode(true);
+
+    try {
+      // Validar que es SVG
+      if (!file.type.includes('svg')) {
+        throw new Error('Solo se aceptan archivos SVG');
+      }
+
+      // Leer contenido
+      const svgContent = await readSVGContent(file);
+      
+      // Validar aspect ratio (debe ser similar al logo original)
+      if (!validateAspectRatio(svgContent, aspectRatio)) {
+        throw new Error(`El archivo debe mantener la proporción ${aspectRatio} para ${type}`);
+      }
+
+      // Detectar colores
+      const detectedColors = detectColorsFromSVG(svgContent);
+      const metadata = extractSVGMetadata(svgContent, file.name);
+
+      // Crear variantes de color para el logo modo oscuro
+      const primaryColor = state.currentTheme.colors.primary.hex;
+      const variants = generateColorVariants(svgContent, detectedColors, primaryColor, true);
+
+      // Actualizar el logo existente con la versión modo oscuro
+      const updatedLogo: LogoVariant = {
+        ...logo,
+        darkModeVersion: {
+          svgContent,
+          variants,
+          metadata
+        }
+      };
+
+      onLogoChange(updatedLogo);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al procesar el archivo para modo oscuro');
+    } finally {
+      setIsUploadingDarkMode(false);
+    }
+  };
+
+  const handleDarkModeFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      handleDarkModeFileSelect(files[0]);
+    }
+  };
+
+  const removeDarkModeVersion = () => {
+    if (!logo) return;
+    
+    const updatedLogo: LogoVariant = {
+      ...logo,
+      darkModeVersion: undefined
+    };
+    
+    onLogoChange(updatedLogo);
+    if (darkModeFileInputRef.current) {
+      darkModeFileInputRef.current.value = '';
+    }
   };
 
   const openColorPicker = (colorIndex: number, currentColor: string) => {
@@ -301,6 +374,19 @@ export function LogoUploadSection({
     });
   };
 
+  // Función para obtener el SVG correcto según el modo actual
+  const getCurrentSvgContent = (): string => {
+    if (!logo) return '';
+    
+    // Si está en modo oscuro y existe una versión específica para modo oscuro, usarla
+    if (isDarkMode && logo.darkModeVersion?.svgContent) {
+      return logo.darkModeVersion.svgContent;
+    }
+    
+    // Caso contrario, usar el logo original
+    return logo.svgContent;
+  };
+
   return (
     <>
       <div className={`flex flex-col gap-4 w-full items-center ${className}`}>
@@ -364,7 +450,7 @@ export function LogoUploadSection({
                 `}
               >
                 <div 
-                  dangerouslySetInnerHTML={{ __html: logo.svgContent }}
+                  dangerouslySetInnerHTML={{ __html: getCurrentSvgContent() }}
                   className="w-full h-full flex items-center justify-center [&>svg]:max-w-full [&>svg]:max-h-full [&>svg]:object-contain"
                 />
               </div>
@@ -430,7 +516,7 @@ export function LogoUploadSection({
             </div>
 
             {/* REPLACE_IMAGE_LINK */}
-            <div className="flex justify-center mt-2 w-full">
+            <div className="flex flex-col items-center gap-1 mt-2 w-full">
               <button
                 onClick={removeLogo}
                 style={{
@@ -443,6 +529,52 @@ export function LogoUploadSection({
               >
                 Cambiar imagen
               </button>
+              
+              {/* DARK MODE UPLOAD BUTTON - Solo visible en modo oscuro */}
+              {isDarkMode && (
+                <div className="flex flex-col items-center gap-1">
+                  {!logo.darkModeVersion ? (
+                    <button
+                      onClick={() => darkModeFileInputRef.current?.click()}
+                      disabled={isUploadingDarkMode}
+                      className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors cursor-pointer bg-transparent border-none p-1 text-xs"
+                      style={{
+                        fontFamily: 'var(--typography-paragraph-font-family)',
+                        fontSize: 'var(--typography-paragraph-font-size)',
+                        fontWeight: 'var(--typography-paragraph-font-weight)',
+                        letterSpacing: 'var(--typography-paragraph-letter-spacing)'
+                      }}
+                    >
+                      <Moon className="h-3 w-3" />
+                      {isUploadingDarkMode ? 'Cargando...' : 'Subir modo oscuro'}
+                    </button>
+                  ) : (
+                    <button
+                      onClick={removeDarkModeVersion}
+                      className="flex items-center gap-1 text-muted-foreground hover:text-destructive transition-colors cursor-pointer bg-transparent border-none p-1 text-xs"
+                      style={{
+                        fontFamily: 'var(--typography-paragraph-font-family)',
+                        fontSize: 'var(--typography-paragraph-font-size)',
+                        fontWeight: 'var(--typography-paragraph-font-weight)',
+                        letterSpacing: 'var(--typography-paragraph-letter-spacing)'
+                      }}
+                    >
+                      <X className="h-3 w-3" />
+                      Remover modo oscuro
+                    </button>
+                  )}
+                  
+                  {/* Hidden file input for dark mode */}
+                  <input
+                    ref={darkModeFileInputRef}
+                    type="file"
+                    accept=".svg,image/svg+xml"
+                    onChange={handleDarkModeFileInputChange}
+                    className="hidden"
+                    disabled={isUploadingDarkMode}
+                  />
+                </div>
+              )}
             </div>
 
             {/* DETECTED_COLORS_CIRCLES */}

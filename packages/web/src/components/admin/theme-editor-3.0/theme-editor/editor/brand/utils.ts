@@ -541,8 +541,23 @@ export const createDefaultModeConfig = (svgContent: string, detectedColors: stri
 
 // Función para obtener las variantes de color según el modo actual
 export const getCurrentModeVariants = (logo: LogoVariant, isDarkMode: boolean): LogoColorVariants => {
-  // Usar ÚNICAMENTE la configuración específica del modo
-  return isDarkMode ? logo.darkMode.variants : logo.lightMode.variants;
+  // Si está en modo oscuro y existe una versión específica, usarla
+  if (isDarkMode && logo.darkModeVersion?.variants) {
+    return logo.darkModeVersion.variants;
+  }
+  
+  // Usar ÚNICAMENTE la configuración específica del modo (estructura antigua como fallback)
+  if (logo.darkMode && logo.lightMode) {
+    return isDarkMode ? logo.darkMode.variants : logo.lightMode.variants;
+  }
+  
+  // Fallback a la estructura original si no hay configuraciones específicas
+  return logo.variants || {
+    original: logo.svgContent || '',
+    white: '',
+    black: '',
+    gray: ''
+  };
 };
 
 // Función para obtener el mono-color según el modo actual

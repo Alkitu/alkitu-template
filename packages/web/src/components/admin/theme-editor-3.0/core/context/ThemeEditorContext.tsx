@@ -3,8 +3,7 @@
 import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
 import { ThemeData, ThemeWithCurrentColors, ThemeMode, EditorState, EditorSection, ViewportState, ViewportSize, PreviewState, PreviewSection } from '../types';
 import { DEFAULT_THEME, DEFAULT_THEMES } from '../constants/default-themes';
-import { applyThemeToRoot, applyThemeMode, applyModeSpecificColors, applyTypographyElements, applyBorderElements } from '../../lib/utils/css/css-variables';
-import { applyScrollbarStyles } from '../../lib/utils/css/scrollbar-styles';
+import { applyThemeToRoot, applyThemeMode, applyModeSpecificColors, applyTypographyElements, applyBorderElements, applyScrollElements, applyScrollbarColors, applyScrollbarUtilityClass } from '../../lib/utils/css/css-variables';
 import { DEFAULT_TYPOGRAPHY } from '../../theme-editor/editor/typography/types';
 
 // History interface for undo/redo functionality
@@ -266,8 +265,8 @@ function themeEditorReducer(state: ThemeEditorState, action: ThemeEditorAction):
       
       return {
         ...state,
-        editor: { ...state.editor, activeSection: action.payload },
-        preview: { ...state.preview, activeSection: action.payload }
+        editor: { ...state.editor, activeSection: action.payload }
+        // Preview section remains independent - no automatic update
       };
     
     case 'SET_VIEWPORT':
@@ -386,7 +385,7 @@ export function ThemeEditorProvider({ children }: ThemeEditorProviderProps) {
     const initialColors = state.themeMode === 'dark' ? DEFAULT_THEME.darkColors : DEFAULT_THEME.lightColors;
     applyModeSpecificColors(initialColors);
     applyThemeMode(state.themeMode);
-    applyScrollbarStyles();
+    applyScrollElements(state.baseTheme.scroll);
     // Apply default typography elements so Preview works immediately
     applyTypographyElements(DEFAULT_TYPOGRAPHY);
   }, []);
@@ -403,8 +402,10 @@ export function ThemeEditorProvider({ children }: ThemeEditorProviderProps) {
   useEffect(() => {
     const currentColors = state.themeMode === 'dark' ? state.baseTheme.darkColors : state.baseTheme.lightColors;
     applyModeSpecificColors(currentColors);
+    // IMPORTANT: Apply scrollbar colors specifically to ensure they work
+    applyScrollbarColors(currentColors);
     applyThemeMode(state.themeMode);
-    applyScrollbarStyles();
+    applyScrollElements(state.baseTheme.scroll);
   }, [state.themeMode, state.baseTheme]);
 
   // Apply borders when they change
@@ -414,11 +415,25 @@ export function ThemeEditorProvider({ children }: ThemeEditorProviderProps) {
     }
   }, [state.baseTheme.borders]);
 
+  // Apply scroll settings when they change - SOLUTION 1
+  useEffect(() => {
+    if (state.baseTheme.scroll) {
+      const currentColors = state.themeMode === 'dark' ? state.baseTheme.darkColors : state.baseTheme.lightColors;
+      // Use SOLUTION 1: Utility Classes + CSS Variables
+      applyScrollbarUtilityClass(state.baseTheme.scroll, {
+        scrollbarTrack: currentColors.scrollbarTrack,
+        scrollbarThumb: currentColors.scrollbarThumb
+      });
+    }
+  }, [state.baseTheme.scroll, state.themeMode]);
+
   // Apply CSS changes when undo/redo affects the base theme (for immediate visual feedback)
   useEffect(() => {
     const currentColors = state.themeMode === 'dark' ? state.baseTheme.darkColors : state.baseTheme.lightColors;
     applyModeSpecificColors(currentColors);
-    applyScrollbarStyles();
+    // IMPORTANT: Apply scrollbar colors specifically to ensure they work
+    applyScrollbarColors(currentColors);
+    applyScrollElements(state.baseTheme.scroll);
   }, [state.baseTheme.lightColors, state.baseTheme.darkColors, state.themeMode]);
   
   // Helper actions
@@ -437,7 +452,11 @@ export function ThemeEditorProvider({ children }: ThemeEditorProviderProps) {
     });
     // Apply colors immediately for live preview
     applyModeSpecificColors(colors);
-    applyScrollbarStyles();
+    // SOLUTION 1: Apply scrollbar styling with new colors
+    applyScrollbarUtilityClass(state.baseTheme.scroll, {
+      scrollbarTrack: colors.scrollbarTrack,
+      scrollbarThumb: colors.scrollbarThumb
+    });
   };
   
   const setEditorSection = (section: EditorSection) => dispatch({ type: 'SET_EDITOR_SECTION', payload: section });

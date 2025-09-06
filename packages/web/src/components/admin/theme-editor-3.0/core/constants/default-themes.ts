@@ -172,7 +172,12 @@ export const DEFAULT_THEME: ThemeData = {
     secondaryColor: createColorToken('secondary', 'oklch(0.9700 0 0)', 0.9700, 0, 0)  // Migrated from brand-secondary
   },
   spacing: {
-    spacing: '0.25rem'
+    spacing: '2.2rem',
+    scale: {
+      'small': '1rem',    // 16px
+      'medium': '1.3rem', // ~21px
+      'large': '2rem'     // 32px
+    }
   },
   borders: {
     radius: '0.625rem',
@@ -334,7 +339,12 @@ export const AMBER_MINIMAL_THEME: ThemeData = {
     secondaryColor: createColorToken('secondary', 'oklch(0.9558 0.0044 106.78)', 0.9558, 0.0044, 106.78)  // Migrated from brand-secondary
   },
   spacing: {
-    spacing: '0.25rem'
+    spacing: '2.2rem',
+    scale: {
+      'small': '1rem',    // 16px
+      'medium': '1.3rem', // ~21px
+      'large': '2rem'     // 32px
+    }
   },
   borders: {
     radius: '0.375rem',
@@ -475,7 +485,12 @@ export const AMETHYST_HAZE_THEME: ThemeData = {
     secondaryColor: createColorToken('secondary', 'oklch(0.7610 0.0750 340.00)', 0.7610, 0.0750, 340.00)  // Migrated from brand-secondary
   },
   spacing: {
-    spacing: '0.25rem'
+    spacing: '2.2rem',
+    scale: {
+      'small': '1rem',    // 16px
+      'medium': '1.3rem', // ~21px
+      'large': '2rem'     // 32px
+    }
   },
   borders: {
     radius: '0.5rem',
@@ -613,7 +628,14 @@ export const BOLD_TECH_THEME: ThemeData = {
     primaryColor: createColorToken('primary', 'oklch(0.6330 0.1950 280.50)', 0.6330, 0.1950, 280.50),  // Migrated from brand-primary
     secondaryColor: createColorToken('secondary', 'oklch(0.8730 0.0750 210.00)', 0.8730, 0.0750, 210.00)  // Migrated from brand-secondary
   },
-  spacing: { spacing: '0.25rem' },
+  spacing: { 
+    spacing: '2.2rem',
+    scale: {
+      'small': '1rem',    // 16px
+      'medium': '1.3rem', // ~21px
+      'large': '2rem'     // 32px
+    }
+  },
   borders: {
     radius: '0.625rem',
     radiusSm: 'calc(var(--radius) - 4px)',
@@ -743,7 +765,14 @@ export const BUBBLEGUM_THEME: ThemeData = {
     primaryColor: createPreciseColorToken('primary', '#d04f99'),  // Migrated from brand-primary
     secondaryColor: createPreciseColorToken('secondary', '#8acfd1')  // Migrated from brand-secondary
   },
-  spacing: { spacing: '0.25rem' },
+  spacing: { 
+    spacing: '2.2rem',
+    scale: {
+      'small': '1rem',    // 16px
+      'medium': '1.3rem', // ~21px
+      'large': '2rem'     // 32px
+    }
+  },
   borders: {
     radius: '0.5rem',
     radiusSm: 'calc(var(--radius) - 4px)',
@@ -859,7 +888,14 @@ export const CAFFEINE_THEME: ThemeData = {
     primaryColor: createColorToken('primary', 'oklch(0.2980 0.0430 40.00)', 0.2980, 0.0430, 40.00), 
     secondaryColor: createColorToken('secondary', 'oklch(0.9130 0.0890 50.00)', 0.9130, 0.0890, 50.00) 
   },  // Migrated from brand-*
-  spacing: { spacing: '0.25rem' },
+  spacing: { 
+    spacing: '2.2rem',
+    scale: {
+      'small': '1rem',    // 16px
+      'medium': '1.3rem', // ~21px
+      'large': '2rem'     // 32px
+    }
+  },
   borders: { radius: '0.5rem', radiusSm: 'calc(var(--radius) - 4px)', radiusMd: 'calc(var(--radius) - 2px)', radiusLg: 'var(--radius)', radiusXl: 'calc(var(--radius) + 4px)' },
   shadows: { shadow2xs: '0 1px 3px 0px hsl(0 0% 0% / 0.05)', shadowXs: '0 1px 3px 0px hsl(0 0% 0% / 0.05)', shadowSm: '0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10)', shadow: '0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10)', shadowMd: '0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 2px 4px -1px hsl(0 0% 0% / 0.10)', shadowLg: '0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 4px 6px -1px hsl(0 0% 0% / 0.10)', shadowXl: '0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 8px 10px -1px hsl(0 0% 0% / 0.10)', shadow2xl: '0 1px 3px 0px hsl(0 0% 0% / 0.25)' },
   scroll: { width: '8px', behavior: 'smooth', smooth: true, hide: false, trackRadius: '0px', thumbRadius: '4px' },
@@ -960,7 +996,14 @@ export const CANDYLAND_THEME: ThemeData = {
     primaryColor: createColorToken('primary', 'oklch(0.8200 0.1110 350.00)', 0.8200, 0.1110, 350.00), 
     secondaryColor: createColorToken('secondary', 'oklch(0.7780 0.1050 205.00)', 0.7780, 0.1050, 205.00) 
   },  // Migrated from brand-*
-  spacing: { spacing: '0.25rem' },
+  spacing: { 
+    spacing: '2.2rem',
+    scale: {
+      'small': '1rem',    // 16px
+      'medium': '1.3rem', // ~21px
+      'large': '2rem'     // 32px
+    }
+  },
   borders: { radius: '0.5rem', radiusSm: 'calc(var(--radius) - 4px)', radiusMd: 'calc(var(--radius) - 2px)', radiusLg: 'var(--radius)', radiusXl: 'calc(var(--radius) + 4px)' },
   shadows: { shadow2xs: '0 1px 3px 0px hsl(0 0% 0% / 0.05)', shadowXs: '0 1px 3px 0px hsl(0 0% 0% / 0.05)', shadowSm: '0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10)', shadow: '0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10)', shadowMd: '0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 2px 4px -1px hsl(0 0% 0% / 0.10)', shadowLg: '0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 4px 6px -1px hsl(0 0% 0% / 0.10)', shadowXl: '0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 8px 10px -1px hsl(0 0% 0% / 0.10)', shadow2xl: '0 1px 3px 0px hsl(0 0% 0% / 0.25)' },
   scroll: { width: '8px', behavior: 'smooth', smooth: true, hide: false, trackRadius: '0px', thumbRadius: '4px' },

@@ -161,6 +161,13 @@ export function BrandPreview({ brand, className = "" }: BrandPreviewProps) {
   const { state } = useThemeEditor();
   const isDarkMode = state.themeMode === 'dark';
   
+  // Get spacing and shadows from theme system
+  const spacing = state.currentTheme?.spacing;
+  const shadows = state.currentTheme?.shadows;
+  const baseSpacing = spacing?.spacing || '2.2rem';
+  const baseValue = parseFloat(baseSpacing.replace('rem', '')) * 16;
+  const smallSpacing = `var(--spacing-small, ${baseValue}px)`;
+  
   // Get variant backgrounds based on current theme mode
   const variantBackgrounds = getVariantBackgrounds(isDarkMode);
   
@@ -299,7 +306,14 @@ export function BrandPreview({ brand, className = "" }: BrandPreviewProps) {
                         </div>
 
                         {/* LOGO_SHOWCASE */}
-                        <div className={`rounded-2xl border border-border p-4 min-h-[120px] flex items-center justify-center ${variantBackgrounds[variantKey as keyof typeof variantBackgrounds]} relative overflow-hidden`}>
+                        <div 
+                          className={`border border-border min-h-[120px] flex items-center justify-center ${variantBackgrounds[variantKey as keyof typeof variantBackgrounds]} relative overflow-hidden`}
+                          style={{ 
+                            borderRadius: 'var(--radius-card, 8px)',
+                            padding: smallSpacing, // Connected to spacing system
+                            boxShadow: shadows?.shadowSm || 'var(--shadow-sm)' // Small shadow for nested elements
+                          }}
+                        >
                           <div 
                             dangerouslySetInnerHTML={{ __html: svgContent }}
                             style={{ 
@@ -323,7 +337,14 @@ export function BrandPreview({ brand, className = "" }: BrandPreviewProps) {
                           </p>
                           
                           {/* FULL_SIZE_SHOWCASE */}
-                          <div className={`rounded border border-border p-3 flex items-center justify-center gap-3 flex-wrap ${variantBackgrounds[variantKey as keyof typeof variantBackgrounds]}`}>
+                          <div 
+                            className={`border border-border flex items-center justify-center gap-3 flex-wrap ${variantBackgrounds[variantKey as keyof typeof variantBackgrounds]}`}
+                            style={{ 
+                              borderRadius: 'var(--radius-card, 8px)',
+                              padding: smallSpacing, // Connected to spacing system
+                              boxShadow: shadows?.shadowSm || 'var(--shadow-sm)' // Small shadow for nested elements
+                            }}
+                          >
                             {(['s', 'm', 'l'] as LogoSize[]).map((size) => (
                               <div key={size} className="flex flex-col items-center gap-1">
                                 <div 

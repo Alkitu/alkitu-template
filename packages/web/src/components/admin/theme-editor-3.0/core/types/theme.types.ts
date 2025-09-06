@@ -174,7 +174,7 @@ export interface ThemeBrand {
 }
 
 export interface ThemeSpacing {
-  spacing: string; // Base spacing value (0.25rem)
+  spacing: string; // Base spacing value (2.2rem)
   scale: Record<string, string>; // Individual spacing scale values
 }
 

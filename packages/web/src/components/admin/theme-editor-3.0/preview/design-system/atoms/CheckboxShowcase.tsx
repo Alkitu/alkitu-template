@@ -2,33 +2,9 @@
 
 import React from 'react';
 import { Checkbox } from '../../../design-system/atoms/Checkbox';
+import { ShowcaseContainer } from './ShowcaseContainer';
 
-interface CheckboxContainerProps {
-  name: string;
-  tokenId: string;
-  children: React.ReactNode;
-}
-
-function CheckboxContainer({ name, tokenId, children }: CheckboxContainerProps) {
-  return (
-    <div 
-      className="flex flex-col gap-2 p-3 border border-border bg-background"
-      style={{ borderRadius: 'var(--radius-card, 8px)' }}
-    >
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-medium text-muted-foreground">
-          {name}
-        </span>
-        <span className="text-xs text-muted-foreground font-mono">
-          {tokenId}
-        </span>
-      </div>
-      <div className="flex items-center justify-center min-h-[40px]">
-        {children}
-      </div>
-    </div>
-  );
-}
+// Using universal ShowcaseContainer - no need for custom ShowcaseContainer
 
 export function CheckboxShowcase() {
   const [states, setStates] = React.useState({
@@ -45,30 +21,30 @@ export function CheckboxShowcase() {
     <div className="flex flex-wrap gap-4 justify-start">
       {/* Basic Checkbox */}
       <div className="flex-1 min-w-[280px] max-w-[350px]">
-        <CheckboxContainer name="Basic" tokenId="checkbox-basic">
+        <ShowcaseContainer name="Basic" tokenId="checkbox-basic">
           <Checkbox 
             id="basic-checkbox"
             checked={states.basic}
             onChange={handleStateChange('basic')}
           />
-        </CheckboxContainer>
+        </ShowcaseContainer>
       </div>
 
       {/* With Label */}
       <div className="flex-1 min-w-[280px] max-w-[350px]">
-        <CheckboxContainer name="With Label" tokenId="checkbox-label">
+        <ShowcaseContainer name="With Label" tokenId="checkbox-label">
           <Checkbox 
             id="label-checkbox"
             label="Accept terms"
             checked={states.withLabel}
             onChange={handleStateChange('withLabel')}
           />
-        </CheckboxContainer>
+        </ShowcaseContainer>
       </div>
 
       {/* Error State */}
       <div className="flex-1 min-w-[280px] max-w-[350px]">
-        <CheckboxContainer name="Error State" tokenId="checkbox-error">
+        <ShowcaseContainer name="Error State" tokenId="checkbox-error">
           <Checkbox 
             id="error-checkbox"
             label="Required field"
@@ -76,7 +52,7 @@ export function CheckboxShowcase() {
             checked={states.error}
             onChange={handleStateChange('error')}
           />
-        </CheckboxContainer>
+        </ShowcaseContainer>
       </div>
     </div>
   );

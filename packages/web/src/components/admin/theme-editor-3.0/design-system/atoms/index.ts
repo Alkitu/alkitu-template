@@ -1,11 +1,21 @@
 // Atomic components exports
+export { Alert } from './Alert';
 export { Avatar } from './Avatar';
 export { Badge } from './Badge'; 
+export { Breadcrumb } from './Breadcrumb';
 export { Button } from './Button';
 export { Checkbox } from './Checkbox';
+export { Chip } from './Chip';
+export { Icon } from './Icon';
 export { Input } from './Input';
+export { PreviewImage } from './PreviewImage';
 export { ProgressBar } from './ProgressBar';
 export { RadioButton } from './RadioButton';
 export { Select } from './Select';
+export { Separator } from './Separator';
+export { Slider } from './Slider';
+export { Spinner } from './Spinner';
 export { Textarea } from './Textarea';
 export { Toggle } from './Toggle';
+export { ToggleGroup } from './ToggleGroup';
+export { Tooltip } from './Tooltip';

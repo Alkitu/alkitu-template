@@ -142,7 +142,7 @@ export function Select({
       {isOpen && (
         <div
           ref={dropdownRef}
-          className="absolute z-[9999] w-full mt-1 bg-popover border border-border shadow-md max-h-60 overflow-auto"
+          className="absolute z-10 w-full mt-1 bg-popover border border-border shadow-md max-h-60 overflow-auto"
           style={{ borderRadius: 'var(--radius)' }}
           role="listbox"
         >

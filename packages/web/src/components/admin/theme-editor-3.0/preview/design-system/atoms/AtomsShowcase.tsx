@@ -15,6 +15,16 @@ import { ToggleShowcase } from './ToggleShowcase';
 import { BadgeShowcase } from './BadgeShowcase';
 import { AvatarShowcase } from './AvatarShowcase';
 import { ProgressBarShowcase } from './ProgressBarShowcase';
+import { IconShowcase } from './IconShowcase';
+import { PreviewImageShowcase } from './PreviewImageShowcase';
+import { SpinnerShowcase } from './SpinnerShowcase';
+import { TooltipShowcase } from './TooltipShowcase';
+import { ChipShowcase } from './ChipShowcase';
+import { BreadcrumbShowcase } from './BreadcrumbShowcase';
+import { AlertShowcase } from './AlertShowcase';
+import { SeparatorShowcase } from './SeparatorShowcase';
+import { SliderShowcase } from './SliderShowcase';
+import { ToggleGroupShowcase } from './ToggleGroupShowcase';
 
 // Definición de categorías de átomos
 const ATOM_CATEGORIES = {
@@ -38,6 +48,20 @@ interface AtomDefinition {
 }
 
 const AVAILABLE_ATOMS: AtomDefinition[] = [
+  {
+    id: 'icon',
+    name: 'Icon',
+    component: IconShowcase,
+    category: 'visual-structure',
+    keywords: ['icon', 'lucide', 'svg', 'symbol', 'graphic', 'visual', 'ui', 'interface', 'arrow', 'star', 'heart']
+  },
+  {
+    id: 'preview-image',
+    name: 'Preview Image',
+    component: PreviewImageShowcase,
+    category: 'media-user',
+    keywords: ['image', 'preview', 'aspect', 'ratio', 'responsive', 'picture', 'photo', 'media', 'visual', 'thumbnail']
+  },
   {
     id: 'button',
     name: 'Button',
@@ -107,6 +131,62 @@ const AVAILABLE_ATOMS: AtomDefinition[] = [
     component: ProgressBarShowcase,
     category: 'feedback-state',
     keywords: ['progress', 'bar', 'loading', 'percentage', 'completion', 'status', 'meter', 'indicator']
+  },
+  {
+    id: 'spinner',
+    name: 'Spinner',
+    component: SpinnerShowcase,
+    category: 'feedback-state',
+    keywords: ['spinner', 'loading', 'loader', 'circular', 'dots', 'pulse', 'animation', 'progress', 'wait']
+  },
+  {
+    id: 'tooltip',
+    name: 'Tooltip',
+    component: TooltipShowcase,
+    category: 'feedback-state',
+    keywords: ['tooltip', 'hover', 'popup', 'overlay', 'hint', 'help', 'contextual', 'information', 'placement']
+  },
+  {
+    id: 'chip',
+    name: 'Chip',
+    component: ChipShowcase,
+    category: 'visual-structure',
+    keywords: ['chip', 'tag', 'filter', 'removable', 'selectable', 'badge', 'label', 'category', 'pill']
+  },
+  {
+    id: 'breadcrumb',
+    name: 'Breadcrumb',
+    component: BreadcrumbShowcase,
+    category: 'navigation',
+    keywords: ['breadcrumb', 'navigation', 'path', 'hierarchy', 'trail', 'crumb', 'location', 'route']
+  },
+  {
+    id: 'alert',
+    name: 'Alert',
+    component: AlertShowcase,
+    category: 'feedback-state',
+    keywords: ['alert', 'notification', 'message', 'info', 'success', 'warning', 'error', 'dismissible', 'toast']
+  },
+  {
+    id: 'separator',
+    name: 'Separator',
+    component: SeparatorShowcase,
+    category: 'visual-structure',
+    keywords: ['separator', 'divider', 'line', 'horizontal', 'vertical', 'decorative', 'section', 'break']
+  },
+  {
+    id: 'slider',
+    name: 'Slider',
+    component: SliderShowcase,
+    category: 'form-inputs',
+    keywords: ['slider', 'range', 'input', 'numeric', 'value', 'thumb', 'track', 'control', 'adjust']
+  },
+  {
+    id: 'toggle-group',
+    name: 'Toggle Group',
+    component: ToggleGroupShowcase,
+    category: 'actions-controls',
+    keywords: ['toggle', 'group', 'button', 'selection', 'multiple', 'single', 'toolbar', 'tab', 'switch']
   }
   // Aquí se pueden añadir más átomos en el futuro
 ];
@@ -144,12 +224,12 @@ function CollapsibleAtomType({ atomType, atoms, isOpen, onToggle }: CollapsibleA
       
       {/* Contenido del grupo */}
       {isOpen && (
-        <div className="p-4 border-t border-border bg-card/30 overflow-visible">
-          <div className="flex flex-col gap-8 overflow-visible">
+        <div className="p-4 border-t border-border bg-card/30">
+          <div className="flex flex-col gap-6">
             {atoms.map((atom) => {
               const AtomComponent = atom.component;
               return (
-                <div key={atom.id} className="flex flex-col gap-4 overflow-visible">
+                <div key={atom.id} className="flex flex-col gap-4">
                   <AtomComponent />
                 </div>
               );
@@ -224,7 +304,7 @@ export function AtomsShowcase() {
   };
 
   return (
-    <div className="flex flex-col gap-6 w-full min-w-0 overflow-visible">
+    <div className="flex flex-col gap-6 w-full min-w-0">
 
       {/* Buscador y filtros */}
       <div className="flex flex-col gap-4">
@@ -312,7 +392,7 @@ export function AtomsShowcase() {
       )}
 
       {/* Grupos de átomos */}
-      <div className="flex flex-col gap-4 w-full overflow-visible">
+      <div className="flex flex-col gap-4 w-full">
         {groupedAtoms.size === 0 ? (
           <div className="flex flex-col items-center justify-center py-12">
             <div className="flex flex-col items-center text-muted-foreground">

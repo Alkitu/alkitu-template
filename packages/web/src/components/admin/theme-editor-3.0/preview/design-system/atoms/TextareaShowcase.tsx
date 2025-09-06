@@ -2,16 +2,17 @@
 
 import React from 'react';
 import { AutosizeTextarea } from '../../../design-system/atoms/Textarea';
+import { ShowcaseContainer } from './ShowcaseContainer';
 import { MessageSquare, FileText, AlertTriangle } from 'lucide-react';
 
 // Componente para mostrar cada textarea con su información
-interface TextareaContainerProps {
+interface ShowcaseContainerProps {
   name: string;
   tokenId: string;
   children: React.ReactNode;
 }
 
-function TextareaContainer({ name, tokenId, children }: TextareaContainerProps) {
+function ShowcaseContainer({ name, tokenId, children }: ShowcaseContainerProps) {
   return (
     <div 
       className="border border-border p-3 bg-card/50 flex flex-col min-w-0"
@@ -57,18 +58,18 @@ export function TextareaShowcase() {
         
         {/* Default Textarea */}
         <div className="flex-1 min-w-[320px] max-w-[450px]">
-          <TextareaContainer name="Default Textarea" tokenId="textarea-default">
+          <ShowcaseContainer name="Default Textarea" tokenId="textarea-default">
             <AutosizeTextarea 
               placeholder="Enter your message here..."
               minHeight={60}
               maxHeight={200}
             />
-          </TextareaContainer>
+          </ShowcaseContainer>
         </div>
 
         {/* Message Textarea */}
         <div className="flex-1 min-w-[320px] max-w-[450px]">
-          <TextareaContainer name="Message Textarea" tokenId="textarea-message">
+          <ShowcaseContainer name="Message Textarea" tokenId="textarea-message">
             <div className="relative">
               <MessageSquare className="absolute left-3 top-3 h-4 w-4 text-muted-foreground z-10" />
               <AutosizeTextarea 
@@ -78,46 +79,46 @@ export function TextareaShowcase() {
                 className="pl-10"
               />
             </div>
-          </TextareaContainer>
+          </ShowcaseContainer>
         </div>
 
         {/* Long Content Textarea */}
         <div className="flex-1 min-w-[320px] max-w-[450px]">
-          <TextareaContainer name="Long Content" tokenId="textarea-long">
+          <ShowcaseContainer name="Long Content" tokenId="textarea-long">
             <AutosizeTextarea 
               placeholder="Enter a long description..."
               minHeight={80}
               maxHeight={300}
               defaultValue="This is a textarea with some initial content that demonstrates how the autosize feature works. As you type more content, the textarea will automatically expand to fit the content, up to the maximum height specified."
             />
-          </TextareaContainer>
+          </ShowcaseContainer>
         </div>
 
         {/* Small Min Height */}
         <div className="flex-1 min-w-[320px] max-w-[450px]">
-          <TextareaContainer name="Small Textarea" tokenId="textarea-small">
+          <ShowcaseContainer name="Small Textarea" tokenId="textarea-small">
             <AutosizeTextarea 
               placeholder="Small textarea..."
               minHeight={40}
               maxHeight={120}
             />
-          </TextareaContainer>
+          </ShowcaseContainer>
         </div>
 
         {/* Large Min Height */}
         <div className="flex-1 min-w-[320px] max-w-[450px]">
-          <TextareaContainer name="Large Textarea" tokenId="textarea-large">
+          <ShowcaseContainer name="Large Textarea" tokenId="textarea-large">
             <AutosizeTextarea 
               placeholder="Large textarea for extensive content..."
               minHeight={100}
               maxHeight={400}
             />
-          </TextareaContainer>
+          </ShowcaseContainer>
         </div>
 
         {/* Disabled State */}
         <div className="flex-1 min-w-[320px] max-w-[450px]">
-          <TextareaContainer name="Disabled Textarea" tokenId="textarea-disabled">
+          <ShowcaseContainer name="Disabled Textarea" tokenId="textarea-disabled">
             <AutosizeTextarea 
               disabled
               placeholder="This textarea is disabled..."
@@ -125,12 +126,12 @@ export function TextareaShowcase() {
               maxHeight={200}
               defaultValue="This textarea is disabled and cannot be edited."
             />
-          </TextareaContainer>
+          </ShowcaseContainer>
         </div>
 
         {/* Read-only State */}
         <div className="flex-1 min-w-[320px] max-w-[450px]">
-          <TextareaContainer name="Read-only Textarea" tokenId="textarea-readonly">
+          <ShowcaseContainer name="Read-only Textarea" tokenId="textarea-readonly">
             <AutosizeTextarea 
               readOnly
               placeholder="This textarea is read-only..."
@@ -138,18 +139,18 @@ export function TextareaShowcase() {
               maxHeight={200}
               defaultValue="This textarea is read-only. You can select and copy the text, but you cannot edit it."
             />
-          </TextareaContainer>
+          </ShowcaseContainer>
         </div>
 
         {/* Fixed Height (No Autosize) */}
         <div className="flex-1 min-w-[320px] max-w-[450px]">
-          <TextareaContainer name="Fixed Height" tokenId="textarea-fixed">
+          <ShowcaseContainer name="Fixed Height" tokenId="textarea-fixed">
             <AutosizeTextarea 
               placeholder="Fixed height textarea..."
               minHeight={120}
               maxHeight={120}
             />
-          </TextareaContainer>
+          </ShowcaseContainer>
         </div>
 
       </div>

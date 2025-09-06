@@ -84,11 +84,19 @@ const DESIGN_SYSTEM_COLORS: ColorShowcaseItem[] = [
 
 const ColorCard = React.memo(function ColorCard({ item, colors }: { item: ColorShowcaseItem; colors: ThemeColors }) {
   const [copied, setCopied] = React.useState(false);
+  const { state } = useThemeEditor();
   
   // Memoize expensive calculations
   const colorToken = React.useMemo(() => colors[item.colorKey], [colors, item.colorKey]);
   const hexValue = React.useMemo(() => colorToken ? oklchToHex(colorToken.oklch) : '#000000', [colorToken]);
   const cssVariable = React.useMemo(() => CSS_VARIABLE_MAP[item.colorKey], [item.colorKey]);
+
+  // Get spacing and shadows from theme system
+  const spacing = state.currentTheme?.spacing;
+  const shadows = state.currentTheme?.shadows;
+  const baseSpacing = spacing?.spacing || '2.2rem';
+  const baseValue = parseFloat(baseSpacing.replace('rem', '')) * 16;
+  const smallSpacing = `var(--spacing-small, ${baseValue}px)`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(hexValue);
@@ -97,7 +105,13 @@ const ColorCard = React.memo(function ColorCard({ item, colors }: { item: ColorS
   };
 
   return (
-    <Card className="p-4 bg-card border-border hover:shadow-md transition-shadow">
+    <Card 
+      className="hover:shadow-lg transition-shadow"
+      style={{
+        padding: smallSpacing, // Connected to spacing system
+        boxShadow: shadows?.shadowMd || 'var(--shadow-md)' // Connected to shadow system
+      }}
+    >
       <div className="space-y-3">
         {/* Header */}
         <div>

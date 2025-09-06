@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Card } from '../../design-system/primitives/card';
+import { useThemeEditor } from '../../core/context/ThemeEditorContext';
 import { Button } from '../../design-system/primitives/button';
 import { Badge } from '../../design-system/primitives/badge';
 import { Ruler, RotateCcw, Eye, EyeOff } from 'lucide-react';
@@ -153,8 +154,24 @@ export function ScalabilityTest({
 
       {/* SCALABILITY_TESTS */}
       <div className="space-y-8">
-        {validLogos.map((logo) => (
-          <div key={logo.id} className="border border-border rounded-lg p-6">
+        {validLogos.map((logo) => {
+          const { state } = useThemeEditor();
+          const spacing = state.currentTheme?.spacing;
+          const shadows = state.currentTheme?.shadows;
+          
+          // Get spacing values for card system
+          const baseSpacing = spacing?.spacing || '2.2rem';
+          const baseValue = parseFloat(baseSpacing.replace('rem', '')) * 16;
+          const mediumSpacing = `var(--spacing-medium, ${baseValue * 2}px)`; // Component spacing
+
+          return (
+            <Card 
+              key={logo.id} 
+              style={{
+                padding: mediumSpacing, // Card padding using medium spacing
+                boxShadow: shadows?.shadowMd || 'var(--shadow-md)'
+              }}
+            >
             {/* LOGO_TEST_HEADER */}
             <div className="flex items-center justify-between mb-6">
               <h4 style={{
@@ -177,7 +194,14 @@ export function ScalabilityTest({
             </div>
 
             {/* SIZE_PROGRESSION_SHOWCASE */}
-            <div className={`rounded-lg border p-8 ${VARIANT_BACKGROUNDS[selectedVariant]} ${showGrid ? 'bg-grid-pattern' : ''}`}>
+            <div 
+              className={`border ${VARIANT_BACKGROUNDS[selectedVariant]} ${showGrid ? 'bg-grid-pattern' : ''}`}
+              style={{ 
+                borderRadius: 'var(--radius-card, 8px)',
+                padding: mediumSpacing, // Using connected spacing
+                boxShadow: shadows?.shadowSm || 'var(--shadow-sm)' // Small shadow for inner elements
+              }}
+            >
               <div className="flex items-end justify-center gap-8 flex-wrap min-h-[120px]">
                 {(['xs', 'sm', 'md', 'lg', 'xl'] as LogoSize[]).map((size) => (
                   <div key={size} className="flex flex-col items-center gap-3">
@@ -325,8 +349,9 @@ export function ScalabilityTest({
                 </div>
               </div>
             </div>
-          </div>
-        ))}
+            </Card>
+          );
+        })}
       </div>
 
       {/* SCALABILITY_FOOTER_NOTE */}

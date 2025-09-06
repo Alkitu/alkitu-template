@@ -2,36 +2,10 @@
 
 import React from 'react';
 import { Input } from '../../../design-system/atoms/Input';
+import { ShowcaseContainer } from './ShowcaseContainer';
 import { Search, Mail, Lock, User, Phone, Calendar } from 'lucide-react';
 
-// Componente para mostrar cada input con su información
-interface InputContainerProps {
-  name: string;
-  tokenId: string;
-  children: React.ReactNode;
-}
-
-function InputContainer({ name, tokenId, children }: InputContainerProps) {
-  return (
-    <div 
-      className="border border-border p-3 bg-card/50 flex flex-col min-w-0"
-      style={{ borderRadius: 'var(--radius)' }}
-    >
-      <div className="flex flex-col gap-1 mb-3">
-        <h4 className="text-sm font-medium text-foreground min-w-0 truncate">{name}</h4>
-        <code 
-          className="text-xs text-muted-foreground font-mono bg-muted px-1 py-0.5 self-start"
-          style={{ borderRadius: 'calc(var(--radius) * 0.5)' }}
-        >
-          {tokenId}
-        </code>
-      </div>
-      <div className="p-2 flex-1">
-        {children}
-      </div>
-    </div>
-  );
-}
+// Using universal ShowcaseContainer - no need for custom ShowcaseContainer
 
 export function InputShowcase() {
 
@@ -57,128 +31,128 @@ export function InputShowcase() {
         
         {/* Input Default */}
         <div className="flex-1 min-w-[280px] max-w-[350px]">
-          <InputContainer name="Default Input" tokenId="input-default">
+          <ShowcaseContainer name="Default Input" tokenId="input-default">
             <Input placeholder="Enter text..." />
-          </InputContainer>
+          </ShowcaseContainer>
         </div>
 
         {/* Input with Left Icon */}
         <div className="flex-1 min-w-[280px] max-w-[350px]">
-          <InputContainer name="Input with Icon" tokenId="input-with-icon">
+          <ShowcaseContainer name="Input with Icon" tokenId="input-with-icon">
             <Input 
               placeholder="Search..." 
               leftIcon={<Search className="h-4 w-4" />}
             />
-          </InputContainer>
+          </ShowcaseContainer>
         </div>
 
         {/* Email Input */}
         <div className="flex-1 min-w-[280px] max-w-[350px]">
-          <InputContainer name="Email Input" tokenId="input-email">
+          <ShowcaseContainer name="Email Input" tokenId="input-email">
             <Input 
               type="email"
               placeholder="Enter email..." 
               leftIcon={<Mail className="h-4 w-4" />}
             />
-          </InputContainer>
+          </ShowcaseContainer>
         </div>
 
         {/* Password Input */}
         <div className="flex-1 min-w-[280px] max-w-[350px]">
-          <InputContainer name="Password Input" tokenId="input-password">
+          <ShowcaseContainer name="Password Input" tokenId="input-password">
             <Input 
               placeholder="Enter password..." 
               leftIcon={<Lock className="h-4 w-4" />}
               showPasswordToggle={true}
             />
-          </InputContainer>
+          </ShowcaseContainer>
         </div>
 
         {/* Error State */}
         <div className="flex-1 min-w-[280px] max-w-[350px]">
-          <InputContainer name="Error Input" tokenId="input-error">
+          <ShowcaseContainer name="Error Input" tokenId="input-error">
             <Input 
               placeholder="Invalid input..."
               isInvalid={true}
               leftIcon={<User className="h-4 w-4" />}
             />
-          </InputContainer>
+          </ShowcaseContainer>
         </div>
 
         {/* Success State */}
         <div className="flex-1 min-w-[280px] max-w-[350px]">
-          <InputContainer name="Success Input" tokenId="input-success">
+          <ShowcaseContainer name="Success Input" tokenId="input-success">
             <Input 
               placeholder="Valid input..."
               isValid={true}
               leftIcon={<User className="h-4 w-4" />}
             />
-          </InputContainer>
+          </ShowcaseContainer>
         </div>
 
         {/* Ghost Variant */}
         <div className="flex-1 min-w-[280px] max-w-[350px]">
-          <InputContainer name="Ghost Input" tokenId="input-ghost">
+          <ShowcaseContainer name="Ghost Input" tokenId="input-ghost">
             <Input 
               variant="ghost"
               placeholder="Ghost variant..."
             />
-          </InputContainer>
+          </ShowcaseContainer>
         </div>
 
         {/* Filled Variant */}
         <div className="flex-1 min-w-[280px] max-w-[350px]">
-          <InputContainer name="Filled Input" tokenId="input-filled">
+          <ShowcaseContainer name="Filled Input" tokenId="input-filled">
             <Input 
               variant="filled"
               placeholder="Filled variant..."
             />
-          </InputContainer>
+          </ShowcaseContainer>
         </div>
 
         {/* Small Size */}
         <div className="flex-1 min-w-[280px] max-w-[350px]">
-          <InputContainer name="Small Input" tokenId="input-small">
+          <ShowcaseContainer name="Small Input" tokenId="input-small">
             <Input 
               inputSize="sm"
               placeholder="Small size..."
               leftIcon={<Phone className="h-3 w-3" />}
             />
-          </InputContainer>
+          </ShowcaseContainer>
         </div>
 
         {/* Large Size */}
         <div className="flex-1 min-w-[280px] max-w-[350px]">
-          <InputContainer name="Large Input" tokenId="input-large">
+          <ShowcaseContainer name="Large Input" tokenId="input-large">
             <Input 
               inputSize="lg"
               placeholder="Large size..."
               leftIcon={<Calendar className="h-5 w-5" />}
             />
-          </InputContainer>
+          </ShowcaseContainer>
         </div>
 
         {/* Disabled State */}
         <div className="flex-1 min-w-[280px] max-w-[350px]">
-          <InputContainer name="Disabled Input" tokenId="input-disabled">
+          <ShowcaseContainer name="Disabled Input" tokenId="input-disabled">
             <Input 
               disabled
               placeholder="Disabled input..."
               leftIcon={<User className="h-4 w-4" />}
             />
-          </InputContainer>
+          </ShowcaseContainer>
         </div>
 
         {/* Number Input */}
         <div className="flex-1 min-w-[280px] max-w-[350px]">
-          <InputContainer name="Number Input" tokenId="input-number">
+          <ShowcaseContainer name="Number Input" tokenId="input-number">
             <Input 
               type="number"
               placeholder="Enter number..."
               min="0"
               max="100"
             />
-          </InputContainer>
+          </ShowcaseContainer>
         </div>
 
       </div>

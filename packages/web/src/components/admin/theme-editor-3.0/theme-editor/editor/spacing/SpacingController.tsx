@@ -73,7 +73,7 @@ export function SpacingController({
       '0': '0',
       'px': '1px',
       '0.5': '0.125rem',
-      '1': '0.25rem',
+      '1': '2.2rem',
       '1.5': '0.375rem',
       '2': '0.5rem',
       '2.5': '0.625rem',

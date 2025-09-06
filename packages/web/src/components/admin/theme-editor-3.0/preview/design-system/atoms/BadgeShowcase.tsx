@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Badge } from '../../../design-system/atoms/Badge';
+import { ShowcaseContainer } from './ShowcaseContainer';
 import { 
   Star, 
   AlertCircle, 
@@ -15,58 +16,33 @@ import {
   Trash2
 } from 'lucide-react';
 
-interface BadgeContainerProps {
-  name: string;
-  tokenId: string;
-  children: React.ReactNode;
-}
-
-function BadgeContainer({ name, tokenId, children }: BadgeContainerProps) {
-  return (
-    <div 
-      className="flex flex-col gap-2 p-3 border border-border bg-background"
-      style={{ borderRadius: 'var(--radius-card, 8px)' }}
-    >
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-medium text-muted-foreground">
-          {name}
-        </span>
-        <span className="text-xs text-muted-foreground font-mono">
-          {tokenId}
-        </span>
-      </div>
-      <div className="flex items-center justify-center min-h-[40px]">
-        {children}
-      </div>
-    </div>
-  );
-}
+// Using universal ShowcaseContainer - no need for custom BadgeContainer
 
 export function BadgeShowcase() {
   return (
     <div className="flex flex-wrap gap-4 justify-start">
       {/* Basic Badge */}
       <div className="flex-1 min-w-[280px] max-w-[350px]">
-        <BadgeContainer name="Basic" tokenId="badge-basic">
+        <ShowcaseContainer name="Basic" tokenId="badge-basic">
           <Badge>Default</Badge>
-        </BadgeContainer>
+        </ShowcaseContainer>
       </div>
 
       {/* With Icon */}
       <div className="flex-1 min-w-[280px] max-w-[350px]">
-        <BadgeContainer name="With Icon" tokenId="badge-icon">
+        <ShowcaseContainer name="With Icon" tokenId="badge-icon">
           <Badge variant="primary" icon={<Star />}>Featured</Badge>
-        </BadgeContainer>
+        </ShowcaseContainer>
       </div>
 
       {/* Status Variants */}
       <div className="flex-1 min-w-[280px] max-w-[350px]">
-        <BadgeContainer name="Status" tokenId="badge-status">
+        <ShowcaseContainer name="Status" tokenId="badge-status">
           <div className="flex gap-2">
             <Badge variant="success">Success</Badge>
             <Badge variant="error">Error</Badge>
           </div>
-        </BadgeContainer>
+        </ShowcaseContainer>
       </div>
     </div>
   );

@@ -166,7 +166,12 @@ export const BUBBLEGUM_THEME: ThemeData = {
 
   // Spacing
   spacing: {
-    spacing: '0.25rem'
+    spacing: '2.2rem',
+    scale: {
+      'small': '1rem',    // 16px
+      'medium': '1.3rem', // ~21px
+      'large': '2rem'     // 32px
+    }
   },
 
   // Shadows

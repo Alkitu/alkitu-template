@@ -20,8 +20,8 @@ export function SpacingEditor({
 
   // Default spacing scale if not provided
   const defaultScale = {
-    'small': '0.5rem',  // 8px
-    'medium': '1rem',   // 16px
+    'small': '1rem',    // 16px
+    'medium': '1.3rem', // ~21px
     'large': '2rem'     // 32px
   };
 
@@ -50,13 +50,13 @@ export function SpacingEditor({
       key: 'small',
       title: 'Small',
       description: 'Small spacing for tight layouts',
-      defaultValue: '0.5rem' // 8px
+      defaultValue: '1rem' // 16px
     },
     {
       key: 'medium', 
       title: 'Medium',
       description: 'Medium spacing for standard layouts',
-      defaultValue: '1rem' // 16px
+      defaultValue: '1.3rem' // ~21px
     },
     {
       key: 'large',

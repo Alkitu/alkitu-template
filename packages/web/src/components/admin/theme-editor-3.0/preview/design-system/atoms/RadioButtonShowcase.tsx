@@ -2,33 +2,7 @@
 
 import React from 'react';
 import { RadioButton } from '../../../design-system/atoms/RadioButton';
-
-interface RadioContainerProps {
-  name: string;
-  tokenId: string;
-  children: React.ReactNode;
-}
-
-function RadioContainer({ name, tokenId, children }: RadioContainerProps) {
-  return (
-    <div 
-      className="flex flex-col gap-2 p-3 border border-border bg-background"
-      style={{ borderRadius: 'var(--radius-card, 8px)' }}
-    >
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-medium text-muted-foreground">
-          {name}
-        </span>
-        <span className="text-xs text-muted-foreground font-mono">
-          {tokenId}
-        </span>
-      </div>
-      <div className="flex items-center justify-center min-h-[40px]">
-        {children}
-      </div>
-    </div>
-  );
-}
+import { ShowcaseContainer } from './ShowcaseContainer';
 
 export function RadioButtonShowcase() {
   const [selectedBasic, setSelectedBasic] = React.useState<string>('option1');
@@ -39,7 +13,7 @@ export function RadioButtonShowcase() {
     <div className="flex flex-wrap gap-4 justify-start">
       {/* Basic Radio */}
       <div className="flex-1 min-w-[280px] max-w-[350px]">
-        <RadioContainer name="Basic" tokenId="radio-basic">
+        <ShowcaseContainer name="Basic" tokenId="radio-basic">
           <div className="flex flex-col gap-2 w-full">
             <RadioButton 
               id="basic-1"
@@ -56,12 +30,12 @@ export function RadioButtonShowcase() {
               onChange={setSelectedBasic}
             />
           </div>
-        </RadioContainer>
+        </ShowcaseContainer>
       </div>
 
       {/* With Labels */}
       <div className="flex-1 min-w-[280px] max-w-[350px]">
-        <RadioContainer name="With Labels" tokenId="radio-labels">
+        <ShowcaseContainer name="With Labels" tokenId="radio-labels">
           <div className="flex flex-col gap-3 w-full">
             <RadioButton 
               id="label-1"
@@ -88,12 +62,12 @@ export function RadioButtonShowcase() {
               onChange={setSelectedWithLabel}
             />
           </div>
-        </RadioContainer>
+        </ShowcaseContainer>
       </div>
 
       {/* Error State */}
       <div className="flex-1 min-w-[280px] max-w-[350px]">
-        <RadioContainer name="Error State" tokenId="radio-error">
+        <ShowcaseContainer name="Error State" tokenId="radio-error">
           <div className="flex flex-col gap-3 w-full">
             <RadioButton 
               id="error-1"
@@ -114,7 +88,7 @@ export function RadioButtonShowcase() {
               onChange={setSelectedError}
             />
           </div>
-        </RadioContainer>
+        </ShowcaseContainer>
       </div>
     </div>
   );

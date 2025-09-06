@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Exclude backend from Next.js compilation
-  transpilePackages: [],
+  transpilePackages: ['lucide-react'],
 
   // Completely skip TypeScript type checking during build
   typescript: {
@@ -40,6 +40,14 @@ const nextConfig = {
       include: [/packages\/api/, /\.\.\/api/],
       use: "ignore-loader",
     });
+
+    // Fix lucide-react bundling issues
+    if (!isServer) {
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        'lucide-react': 'lucide-react',
+      };
+    }
 
     return config;
   },

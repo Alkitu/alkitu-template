@@ -22,7 +22,7 @@ export function CardMolecule() {
 
   // Get spacing values - assuming spacing has small, medium, large properties
   // If not, calculate based on base spacing value
-  const baseSpacing = spacing?.spacing || '0.25rem';
+  const baseSpacing = spacing?.spacing || '2.2rem';
   const baseValue = parseFloat(baseSpacing.replace('rem', '')) * 16; // Convert to px
   
   // Spacing hierarchy

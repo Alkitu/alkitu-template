@@ -6,6 +6,7 @@ import { Badge } from '../../design-system/primitives/badge';
 import { BookOpen, Download, Copy, Check } from 'lucide-react';
 import { Button } from '../../design-system/primitives/button';
 import { LogoVariant, LOGO_SIZE_MAP, LogoSize } from '../../theme-editor/editor/brand/types';
+import { useThemeEditor } from '../../core/context/ThemeEditorContext';
 
 interface BrandBookPreviewProps {
   logos: (LogoVariant | null)[];
@@ -30,7 +31,15 @@ export function BrandBookPreview({
   logos, 
   className = ""
 }: BrandBookPreviewProps) {
+  const { state } = useThemeEditor();
   const [copiedStates, setCopiedStates] = React.useState<Record<string, boolean>>({});
+  
+  // Get spacing and shadows from theme system
+  const spacing = state.currentTheme?.spacing;
+  const shadows = state.currentTheme?.shadows;
+  const baseSpacing = spacing?.spacing || '2.2rem';
+  const baseValue = parseFloat(baseSpacing.replace('rem', '')) * 16;
+  const smallSpacing = `var(--spacing-small, ${baseValue}px)`;
 
   const handleCopySVG = async (svgContent: string, id: string) => {
     try {
@@ -128,7 +137,11 @@ export function BrandBookPreview({
       {/* BRAND_BOOK_CONTENT */}
       <div className="space-y-8">
         {validLogos.map((logo) => (
-          <div key={logo.id} className="border border-border rounded-lg p-4 sm:p-6">
+          <div 
+            key={logo.id} 
+            className="border border-border p-4 sm:p-6"
+            style={{ borderRadius: 'var(--radius-card, 8px)' }}
+          >
             {/* LOGO_TYPE_HEADER */}
             <div className="flex items-center justify-between mb-4 sm:mb-6">
               <div className="flex items-center gap-3">
@@ -205,7 +218,14 @@ export function BrandBookPreview({
                   </div>
 
                   {/* LOGO_SHOWCASE */}
-                  <div className={`rounded-lg border p-3 sm:p-4 min-h-[100px] sm:min-h-[120px] flex items-center justify-center ${VARIANT_BACKGROUNDS[variantKey]} relative overflow-hidden`}>
+                  <div 
+                    className={`border min-h-[100px] sm:min-h-[120px] flex items-center justify-center ${VARIANT_BACKGROUNDS[variantKey]} relative overflow-hidden`}
+                    style={{ 
+                      borderRadius: 'var(--radius-card, 8px)',
+                      padding: smallSpacing, // Connected to spacing system
+                      boxShadow: shadows?.shadowSm || 'var(--shadow-sm)' // Small shadow for nested elements
+                    }}
+                  >
                     <div className="svg-container flex items-center justify-center">
                       <div 
                         dangerouslySetInnerHTML={{ __html: svgContent }}
@@ -232,7 +252,14 @@ export function BrandBookPreview({
                     </p>
                     
                     {/* SIZES_SHOWCASE */}
-                    <div className={`rounded border p-2 sm:p-3 flex items-center justify-center gap-2 sm:gap-3 flex-wrap ${VARIANT_BACKGROUNDS[variantKey]}`}>
+                    <div 
+                      className={`border flex items-center justify-center gap-2 sm:gap-3 flex-wrap ${VARIANT_BACKGROUNDS[variantKey]}`}
+                      style={{ 
+                        borderRadius: 'var(--radius-card, 8px)',
+                        padding: smallSpacing, // Connected to spacing system
+                        boxShadow: shadows?.shadowSm || 'var(--shadow-sm)' // Small shadow for nested elements
+                      }}
+                    >
                       {(['xs', 'sm', 'md', 'lg'] as LogoSize[]).map((size) => (
                         <div key={size} className="flex flex-col items-center gap-1">
                           <div className="svg-container flex items-center justify-center">

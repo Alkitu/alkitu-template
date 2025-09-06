@@ -2,33 +2,9 @@
 
 import React from 'react';
 import { Toggle } from '../../../design-system/atoms/Toggle';
+import { ShowcaseContainer } from './ShowcaseContainer';
 
-interface ToggleContainerProps {
-  name: string;
-  tokenId: string;
-  children: React.ReactNode;
-}
-
-function ToggleContainer({ name, tokenId, children }: ToggleContainerProps) {
-  return (
-    <div 
-      className="flex flex-col gap-2 p-3 border border-border bg-background"
-      style={{ borderRadius: 'var(--radius-card, 8px)' }}
-    >
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-medium text-muted-foreground">
-          {name}
-        </span>
-        <span className="text-xs text-muted-foreground font-mono">
-          {tokenId}
-        </span>
-      </div>
-      <div className="flex items-center justify-center min-h-[40px]">
-        {children}
-      </div>
-    </div>
-  );
-}
+// Using universal ShowcaseContainer - no need for custom container
 
 export function ToggleShowcase() {
   const [states, setStates] = React.useState({
@@ -45,18 +21,18 @@ export function ToggleShowcase() {
     <div className="flex flex-wrap gap-4 justify-start">
       {/* Basic Toggle */}
       <div className="flex-1 min-w-[280px] max-w-[350px]">
-        <ToggleContainer name="Basic" tokenId="toggle-basic">
+        <ShowcaseContainer name="Basic" tokenId="toggle-basic">
           <Toggle 
             id="basic-toggle"
             checked={states.basic}
             onChange={handleStateChange('basic')}
           />
-        </ToggleContainer>
+        </ShowcaseContainer>
       </div>
 
       {/* With Label */}
       <div className="flex-1 min-w-[280px] max-w-[350px]">
-        <ToggleContainer name="With Label" tokenId="toggle-label">
+        <ShowcaseContainer name="With Label" tokenId="toggle-label">
           <Toggle 
             id="label-toggle"
             label="Enable feature"
@@ -64,12 +40,12 @@ export function ToggleShowcase() {
             checked={states.withLabel}
             onChange={handleStateChange('withLabel')}
           />
-        </ToggleContainer>
+        </ShowcaseContainer>
       </div>
 
       {/* Error State */}
       <div className="flex-1 min-w-[280px] max-w-[350px]">
-        <ToggleContainer name="Error State" tokenId="toggle-error">
+        <ShowcaseContainer name="Error State" tokenId="toggle-error">
           <Toggle 
             id="error-toggle"
             label="Debug mode"
@@ -78,7 +54,7 @@ export function ToggleShowcase() {
             checked={states.error}
             onChange={handleStateChange('error')}
           />
-        </ToggleContainer>
+        </ShowcaseContainer>
       </div>
     </div>
   );

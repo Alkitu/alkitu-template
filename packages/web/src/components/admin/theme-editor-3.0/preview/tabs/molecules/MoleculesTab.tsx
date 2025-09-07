@@ -1,7 +1,9 @@
 'use client';
 
 import React from 'react';
-import { CardMolecule } from '../../design-system/molecules/CardMolecule';
+// Import the showcase from preview/design-system/molecules
+import { MoleculesShowcase } from '../../design-system/molecules/MoleculesShowcase';
+import { ToastProvider } from '../../../design-system/molecules/SonnerMolecule';
 
 /**
  * Contenido del tab de Moléculas
@@ -9,10 +11,12 @@ import { CardMolecule } from '../../design-system/molecules/CardMolecule';
  */
 export function MoleculesTabContent() {
   return (
-    <div className="space-y-6">
-      <section>
-        <CardMolecule />
-      </section>
-    </div>
+    <ToastProvider>
+      <div className="space-y-6">
+        <section>
+          <MoleculesShowcase />
+        </section>
+      </div>
+    </ToastProvider>
   );
 }

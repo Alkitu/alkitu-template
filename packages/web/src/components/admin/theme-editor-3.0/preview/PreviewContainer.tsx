@@ -1,6 +1,6 @@
 'use client';
 
-import React, { Suspense } from 'react';
+import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../design-system/primitives/tabs';
 import { Badge } from '../design-system/primitives/badge';
 import { useThemeEditor } from '../core/context/ThemeEditorContext';
@@ -10,8 +10,8 @@ import { VIEWPORT_CONFIGS } from '../core/types/viewport.types';
 import { Loader2 } from 'lucide-react';
 
 /**
- * Contenedor principal del Preview con tabs lazy-loaded
- * Cada tab es independiente y se carga bajo demanda
+ * Contenedor principal del Preview con tabs directos
+ * Cada tab se carga directamente para mejor rendimiento
  */
 export function PreviewContainer() {
   const { state, setPreviewSection } = useThemeEditor();
@@ -32,12 +32,7 @@ export function PreviewContainer() {
   const availableTabs = getTabsForViewport(currentViewport);
   const isDesktopOrTV = currentViewport === 'desktop' || currentViewport === 'tv';
 
-  // Loading fallback para lazy components
-  const TabLoadingFallback = () => (
-    <div className="flex items-center justify-center h-64">
-      <Loader2 className="h-6 w-6 animate-spin" />
-    </div>
-  );
+  // Components are now directly loaded, no lazy loading needed
 
   return (
     <div className="h-full bg-card flex flex-col">
@@ -88,7 +83,7 @@ export function PreviewContainer() {
               })}
             </TabsList>
 
-            {/* Tab content - lazy loaded */}
+            {/* Tab content - directly loaded */}
             <div className="flex-1 min-h-0">
               {availableTabs.map(tab => {
                 const TabComponent = tab.component;
@@ -98,9 +93,7 @@ export function PreviewContainer() {
                     value={tab.id} 
                     className="h-full"
                   >
-                    <Suspense fallback={<TabLoadingFallback />}>
-                      <TabComponent />
-                    </Suspense>
+                    <TabComponent />
                   </TabsContent>
                 );
               })}

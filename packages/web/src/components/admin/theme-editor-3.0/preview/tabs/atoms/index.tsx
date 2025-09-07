@@ -6,7 +6,7 @@ import { AtomsTabContent } from './AtomsTab';
 
 /**
  * Tab de Átomos - Componente principal
- * Lazy-loaded desde tabs.config.ts
+ * Direct import from tabs.config.ts
  */
 export default function AtomsTab() {
   return (

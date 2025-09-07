@@ -1,7 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Exclude backend from Next.js compilation
+  // Force transpilation of problematic packages
   transpilePackages: ['lucide-react'],
+  
+  // Optimize bundling
+  experimental: {
+    optimizeCss: false,
+  },
 
   // Completely skip TypeScript type checking during build
   typescript: {
@@ -41,12 +46,25 @@ const nextConfig = {
       use: "ignore-loader",
     });
 
-    // Fix lucide-react bundling issues
-    if (!isServer) {
-      config.resolve.alias = {
-        ...config.resolve.alias,
-        'lucide-react': 'lucide-react',
-      };
+    // Fix lucide-react bundling issues for both server and client
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      'lucide-react': 'lucide-react',
+    };
+
+    // Fix module resolution for external packages
+    config.resolve.modules = [
+      'node_modules',
+      ...config.resolve.modules || []
+    ];
+
+    // Force bundling of lucide-react instead of externalizing
+    if (isServer) {
+      config.externals = config.externals || [];
+      // Remove lucide-react from externals if it exists
+      if (Array.isArray(config.externals)) {
+        config.externals = config.externals.filter(ext => ext !== 'lucide-react');
+      }
     }
 
     return config;

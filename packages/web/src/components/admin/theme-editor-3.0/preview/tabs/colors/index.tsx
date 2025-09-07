@@ -6,7 +6,7 @@ import { ColorTabContent } from './ColorTab';
 
 /**
  * Tab de Colors - Componente principal
- * Lazy-loaded desde tabs.config.ts
+ * Direct import from tabs.config.ts
  */
 export default function ColorsTab() {
   return (

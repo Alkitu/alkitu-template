@@ -6,7 +6,7 @@ import { MoleculesTabContent } from './MoleculesTab';
 
 /**
  * Tab de Moléculas - Componente principal
- * Lazy-loaded desde tabs.config.ts
+ * Direct import from tabs.config.ts
  */
 export default function MoleculesTab() {
   return (

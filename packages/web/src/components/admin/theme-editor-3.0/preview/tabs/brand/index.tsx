@@ -6,7 +6,7 @@ import { BrandTabContent } from './BrandTab';
 
 /**
  * Tab de Brand - Componente principal
- * Lazy-loaded desde tabs.config.ts
+ * Direct import from tabs.config.ts
  */
 export default function BrandTab() {
   return (

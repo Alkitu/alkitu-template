@@ -6,7 +6,7 @@ import { TypographyTabContent } from './TypographyTab';
 
 /**
  * Tab de Typography - Componente principal
- * Lazy-loaded desde tabs.config.ts
+ * Direct import from tabs.config.ts
  */
 export default function TypographyTab() {
   return (

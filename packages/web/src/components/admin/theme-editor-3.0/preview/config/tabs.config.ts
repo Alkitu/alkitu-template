@@ -3,14 +3,22 @@
  * Cada tab es independiente y lazy-loaded para mejor performance
  */
 
-import { lazy } from 'react';
+import React from 'react';
 import { Palette, Type, Building, Atom, Layers, Layout, LucideIcon } from 'lucide-react';
+
+// Direct imports instead of lazy loading to avoid ChunkLoadError
+import ColorsTabContent from '../tabs/colors';
+import TypographyTabContent from '../tabs/typography';
+import BrandTabContent from '../tabs/brand';
+import AtomsTabContent from '../tabs/atoms';
+import MoleculesTabContent from '../tabs/molecules';
+import OrganismsTabContent from '../tabs/organisms';
 
 export interface TabConfig {
   id: string;
   label: string;
   icon: LucideIcon;
-  component: React.LazyExoticComponent<any>;
+  component: React.ComponentType<any>;
   description?: string;
   order: number;
   permissions?: string[];
@@ -26,13 +34,13 @@ export interface TabConfig {
   };
 }
 
-// Lazy load cada componente de tab para mejor performance
+// Direct component references to avoid ChunkLoadError
 export const PREVIEW_TABS: TabConfig[] = [
   {
     id: 'colors',
     label: 'Colors',
     icon: Palette,
-    component: lazy(() => import('../tabs/colors')),
+    component: ColorsTabContent,
     description: 'Visualiza paletas de colores y contraste WCAG',
     order: 1,
     features: {
@@ -49,7 +57,7 @@ export const PREVIEW_TABS: TabConfig[] = [
     id: 'typography',
     label: 'Typography',
     icon: Type,
-    component: lazy(() => import('../tabs/typography')),
+    component: TypographyTabContent,
     description: 'Previsualiza estilos tipográficos y escalas',
     order: 2,
     features: {
@@ -65,7 +73,7 @@ export const PREVIEW_TABS: TabConfig[] = [
     id: 'brand',
     label: 'Brand',
     icon: Building,
-    component: lazy(() => import('../tabs/brand')),
+    component: BrandTabContent,
     description: 'Identidad visual y elementos de marca',
     order: 3,
     features: {
@@ -82,7 +90,7 @@ export const PREVIEW_TABS: TabConfig[] = [
     id: 'atoms',
     label: 'Átomos',
     icon: Atom,
-    component: lazy(() => import('../tabs/atoms')),
+    component: AtomsTabContent,
     description: 'Componentes atómicos del design system',
     order: 4,
     features: {
@@ -97,7 +105,7 @@ export const PREVIEW_TABS: TabConfig[] = [
     id: 'molecules',
     label: 'Moléculas',
     icon: Layers,
-    component: lazy(() => import('../tabs/molecules')),
+    component: MoleculesTabContent,
     description: 'Componentes moleculares compuestos',
     order: 5,
     features: {
@@ -112,7 +120,7 @@ export const PREVIEW_TABS: TabConfig[] = [
     id: 'organisms',
     label: 'Organismos',
     icon: Layout,
-    component: lazy(() => import('../tabs/organisms')),
+    component: OrganismsTabContent,
     description: 'Componentes complejos y secciones',
     order: 6,
     features: {

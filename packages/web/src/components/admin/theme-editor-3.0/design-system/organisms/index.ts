@@ -1,7 +1,7 @@
 // Organisms - Complex components built from atoms and molecules
 
-// Form Builder - Advanced form builder (simplified version)
-export { FormBuilderOrganism, FormBuilderOrganismShowcase, type FormBuilderOrganismProps, type FormField, type FormFieldType } from './FormBuilderOrganismSimple';
+// Form Builder - Advanced form builder with theme integration
+export { FormBuilderOrganism, FormBuilderOrganismShowcase, type FormBuilderOrganismProps, type FormField, type FormFieldType } from './FormBuilderOrganism';
 
 // Calendar Organism - Multi-mode calendar with events
 export { CalendarOrganism, CalendarOrganismShowcase } from './CalendarOrganism';

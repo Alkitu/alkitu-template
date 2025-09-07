@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { useThemeEditor } from '../../core/context/ThemeEditorContext';
 
 export interface SeparatorProps {
   /**
@@ -67,20 +66,17 @@ export function Separator({
   customStyle = {},
   ...props
 }: SeparatorProps) {
-  const { state } = useThemeEditor();
-  const colors = state.themeMode === 'dark' ? state.currentTheme?.darkColors : state.currentTheme?.lightColors;
-
   // Get color based on variant
   const getColor = (): string => {
     switch (variant) {
       case 'muted':
-        return colors?.muted?.hex || 'var(--color-muted)';
+        return 'var(--color-muted)';
       case 'primary':
-        return colors?.primary?.hex || 'var(--color-primary)';
+        return 'var(--color-primary)';
       case 'secondary':
-        return colors?.secondary?.hex || 'var(--color-secondary)';
+        return 'var(--color-secondary)';
       default:
-        return colors?.border?.hex || 'var(--color-border)';
+        return 'var(--color-border)';
     }
   };
 
@@ -152,7 +148,7 @@ export function Separator({
         />
         <span
           style={{
-            color: colors?.mutedForeground?.hex || 'var(--color-muted-foreground)',
+            color: 'var(--color-muted-foreground)',
             fontSize: '14px',
             fontWeight: '500',
             whiteSpace: 'nowrap',

@@ -5,8 +5,8 @@ import { TabLayout } from '../../layouts/TabLayout';
 import { OrganismsTabContent } from './OrganismsTab';
 
 /**
- * Tab de Organismos - Componente principal
- * Direct import from tabs.config.ts
+ * Tab de Organismos - Componente principal  
+ * Muestra todos los organismos nuevos creados con shadcn/ui
  */
 export default function OrganismsTab() {
   return (

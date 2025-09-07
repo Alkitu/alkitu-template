@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { ShowcaseContainer } from './ShowcaseContainer';
-import { Chip } from '../../../design-system/atoms/Chip';
+import { ChipMolecule as Chip } from '../../../design-system/molecules/ChipMolecule';
 import { User, Star, Tag, Settings, Heart } from 'lucide-react';
 
 /**

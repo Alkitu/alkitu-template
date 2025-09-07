@@ -6,8 +6,8 @@ import { Button } from '../atoms/Button';
 
 export interface CalendarProps {
   mode?: 'single' | 'multiple' | 'range';
-  selected?: Date | Date[] | undefined;
-  onSelect?: (date: Date | Date[] | undefined) => void;
+  selected?: Date | Date[] | { from?: Date; to?: Date } | undefined;
+  onSelect?: (date: Date | Date[] | { from?: Date; to?: Date } | undefined) => void;
   disabled?: boolean | ((date: Date) => boolean);
   fromDate?: Date;
   toDate?: Date;
@@ -57,7 +57,38 @@ export function Calendar({
     if (fromDate && clickedDate < fromDate) return;
     if (toDate && clickedDate > toDate) return;
 
-    onSelect?.(clickedDate);
+    if (mode === 'single') {
+      onSelect?.(clickedDate);
+    } else if (mode === 'multiple') {
+      const currentSelected = (selected as Date[]) || [];
+      const isAlreadySelected = currentSelected.some(date => 
+        date.toDateString() === clickedDate.toDateString()
+      );
+      
+      if (isAlreadySelected) {
+        // Remove if already selected
+        const newSelected = currentSelected.filter(date => 
+          date.toDateString() !== clickedDate.toDateString()
+        );
+        onSelect?.(newSelected);
+      } else {
+        // Add to selection
+        onSelect?.([...currentSelected, clickedDate]);
+      }
+    } else if (mode === 'range') {
+      const currentRange = selected as { from?: Date; to?: Date } | undefined;
+      
+      if (!currentRange?.from || currentRange?.to) {
+        // Start new range
+        onSelect?.({ from: clickedDate, to: undefined });
+      } else if (clickedDate < currentRange.from) {
+        // New start date
+        onSelect?.({ from: clickedDate, to: undefined });
+      } else {
+        // Complete range
+        onSelect?.({ from: currentRange.from, to: clickedDate });
+      }
+    }
   };
 
   const handlePrevMonth = () => {
@@ -77,8 +108,17 @@ export function Calendar({
       day
     );
 
-    if (selected instanceof Date) {
+    if (mode === 'single' && selected instanceof Date) {
       return selected.toDateString() === checkDate.toDateString();
+    } else if (mode === 'multiple' && Array.isArray(selected)) {
+      return selected.some(date => date.toDateString() === checkDate.toDateString());
+    } else if (mode === 'range' && selected && typeof selected === 'object' && !Array.isArray(selected)) {
+      const range = selected as { from?: Date; to?: Date };
+      if (range.from && range.to) {
+        return checkDate >= range.from && checkDate <= range.to;
+      } else if (range.from) {
+        return checkDate.toDateString() === range.from.toDateString();
+      }
     }
     
     return false;

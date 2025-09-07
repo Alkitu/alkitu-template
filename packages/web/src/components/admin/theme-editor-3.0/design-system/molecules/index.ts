@@ -27,3 +27,13 @@ export type { NavigationMenuMoleculeProps, NavigationItem } from './NavigationMe
 
 export { SonnerMolecule, ToastProvider, useToast, toast } from './SonnerMolecule';
 export type { Toast } from './SonnerMolecule';
+
+export { PreviewImageMolecule } from './PreviewImageMolecule';
+export type { PreviewImageMoleculeProps } from './PreviewImageMolecule';
+
+// Moved from atoms to molecules (proper architectural classification)
+export { BreadcrumbMolecule } from './BreadcrumbMolecule';
+export type { BreadcrumbMoleculeProps } from './BreadcrumbMolecule';
+
+export { ChipMolecule } from './ChipMolecule';
+export type { ChipMoleculeProps } from './ChipMolecule';

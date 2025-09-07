@@ -14,8 +14,8 @@ import { Calendar } from '../primitives/calendar-local';
 import { useThemeEditor } from '../../core/context/ThemeEditorContext';
 
 export interface DatePickerMoleculeProps {
-  value?: Date;
-  onChange?: (date: Date | undefined) => void;
+  value?: Date | { from?: Date; to?: Date };
+  onChange?: (date: Date | { from?: Date; to?: Date } | undefined) => void;
   placeholder?: string;
   format?: string;
   variant?: 'default' | 'inline' | 'range' | 'datetime';
@@ -77,8 +77,28 @@ export function DatePickerMolecule({
   // Refs
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Native date formatting helper
-  const formatDate = (date: Date, format: string = 'PPP') => {
+  // Enhanced date formatting helper with range support
+  const formatDate = (dateValue: Date | { from?: Date; to?: Date } | undefined, format: string = 'PPP') => {
+    if (!dateValue) return '';
+
+    // Handle range values
+    if (typeof dateValue === 'object' && 'from' in dateValue) {
+      const range = dateValue as { from?: Date; to?: Date };
+      if (!range.from) return '';
+      
+      const fromFormatted = formatSingleDate(range.from, format);
+      if (range.to) {
+        const toFormatted = formatSingleDate(range.to, format);
+        return `${fromFormatted} - ${toFormatted}`;
+      }
+      return fromFormatted + ' (Select end date)';
+    }
+
+    // Handle single date
+    return formatSingleDate(dateValue as Date, format);
+  };
+
+  const formatSingleDate = (date: Date, format: string = 'PPP') => {
     if (!date || isNaN(date.getTime())) return '';
     
     try {
@@ -113,45 +133,55 @@ export function DatePickerMolecule({
     }
   };
 
-  // Update input value when external value changes
+  // Update input value when external value changes - Enhanced for range support
   useEffect(() => {
-    if (value && !isNaN(value.getTime())) {
-      const formatted = formatDate(value, dateFormat);
-      setInputValue(formatted);
-      
-      if (variant === 'datetime') {
+    const formatted = formatDate(value, dateFormat);
+    setInputValue(formatted);
+    
+    // Handle datetime for single dates only
+    if (variant === 'datetime' && value && typeof value === 'object' && 'getTime' in value) {
+      const date = value as Date;
+      if (!isNaN(date.getTime())) {
         setTime({
-          hours: value.getHours().toString().padStart(2, '0'),
-          minutes: value.getMinutes().toString().padStart(2, '0')
+          hours: date.getHours().toString().padStart(2, '0'),
+          minutes: date.getMinutes().toString().padStart(2, '0')
         });
       }
-    } else {
-      setInputValue('');
     }
   }, [value, dateFormat, variant]);
 
-  // Handle date selection from calendar
-  const handleDateSelect = (selectedDate: Date | undefined) => {
-    if (!selectedDate) {
+  // Enhanced date selection handler with range support
+  const handleDateSelect = (selected: Date | { from?: Date; to?: Date } | undefined) => {
+    if (!selected) {
       onChange?.(undefined);
       setInputValue('');
       setIsOpen(false);
       return;
     }
 
-    let finalDate = selectedDate;
+    if (variant === 'range') {
+      onChange?.(selected as { from?: Date; to?: Date });
+      // Keep popover open until range is complete
+      const range = selected as { from?: Date; to?: Date };
+      if (range.from && range.to && variant !== 'inline') {
+        setIsOpen(false);
+      }
+    } else {
+      const selectedDate = selected as Date;
+      let finalDate = selectedDate;
 
-    // Add time for datetime variant
-    if (variant === 'datetime') {
-      finalDate = new Date(selectedDate);
-      finalDate.setHours(parseInt(time.hours), parseInt(time.minutes));
-    }
+      // Add time for datetime variant
+      if (variant === 'datetime') {
+        finalDate = new Date(selectedDate);
+        finalDate.setHours(parseInt(time.hours), parseInt(time.minutes));
+      }
 
-    onChange?.(finalDate);
-    
-    // Close popover for non-inline variants
-    if (variant !== 'inline') {
-      setIsOpen(false);
+      onChange?.(finalDate);
+      
+      // Close popover for non-inline variants
+      if (variant !== 'inline') {
+        setIsOpen(false);
+      }
     }
   };
 
@@ -227,7 +257,8 @@ export function DatePickerMolecule({
     border: `1px solid ${colors?.border?.value || 'var(--color-border)'}`,
     borderRadius: 'var(--radius-popover, 12px)',
     boxShadow: `${shadows?.shadowLg || 'var(--shadow-lg)'}, 0 0 0 1px ${colors?.border?.value || 'var(--color-border)'}20`,
-    minWidth: variant === 'datetime' ? '340px' : '300px',
+    minWidth: variant === 'datetime' ? 'min(340px, calc(100vw - 40px))' : 'min(300px, calc(100vw - 40px))',
+    maxWidth: 'calc(100vw - 20px)',
     backdropFilter: 'blur(8px)',
     background: `${colors?.popover?.value || 'var(--color-popover)'}f8`,
     animation: 'slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -253,8 +284,8 @@ export function DatePickerMolecule({
     if (variant !== 'datetime') return null;
 
     return (
-      <div style={getTimeInputStyles()}>
-        <Clock className="h-4 w-4" style={{ color: colors?.mutedForeground?.value || 'var(--color-muted-foreground)' }} />
+      <div style={getTimeInputStyles()} className="max-sm:flex-col max-sm:items-stretch max-sm:gap-2">
+        <Clock className="h-4 w-4 max-sm:self-center" style={{ color: colors?.mutedForeground?.value || 'var(--color-muted-foreground)' }} />
         <div style={{ 
           display: 'flex', 
           flexDirection: 'column' as const, 
@@ -357,9 +388,9 @@ export function DatePickerMolecule({
           background: colors?.background?.value || 'var(--color-background)'
         }}>
           <Calendar
-            mode="single"
+            mode={variant === 'range' ? 'range' : 'single'}
             selected={value}
-            onSelect={handleDateSelect}
+            onSelect={handleDateSelect as any}
             disabled={disabled}
             fromDate={minDate}
             toDate={maxDate}
@@ -488,9 +519,9 @@ export function DatePickerMolecule({
           
           <PopoverContent style={getPopoverContentStyles()}>
             <Calendar
-              mode="single"
+              mode={variant === 'range' ? 'range' : 'single'}
               selected={value}
-              onSelect={handleDateSelect}
+              onSelect={handleDateSelect as any}
               fromDate={minDate}
               toDate={maxDate}
               initialFocus
@@ -574,7 +605,7 @@ export function DatePickerMolecule({
   );
 }
 
-// Export preset configurations
+// Export preset configurations - Enhanced with proper range support
 export const DatePickerPresets = {
   basic: {
     variant: 'default' as const,
@@ -597,7 +628,8 @@ export const DatePickerPresets = {
   
   range: {
     variant: 'range' as const,
+    placeholder: 'Select date range...',
     clearable: true,
-    showToday: false
+    showToday: true
   }
 };

@@ -63,6 +63,15 @@ export function TabsMolecule({
   className = '',
   maxTabs = 10
 }: TabsMoleculeProps) {
+  // DEBUG: Log tabs to identify the issue
+  console.log('TabsMolecule received tabs:', tabs);
+  
+  // Early return if no tabs provided
+  if (!tabs || tabs.length === 0) {
+    console.log('TabsMolecule: No tabs provided, returning fallback');
+    return <div className="text-muted-foreground">No tabs available</div>;
+  }
+
   const { state } = useThemeEditor();
   
   // Theme integration
@@ -80,7 +89,7 @@ export function TabsMolecule({
   const largeSpacing = `var(--spacing-large, ${baseValue * 4}px)`;
 
   // Local state
-  const [activeTab, setActiveTab] = useState(value || defaultValue || tabs[0]?.id);
+  const [activeTab, setActiveTab] = useState(value || defaultValue || (tabs && tabs.length > 0 ? tabs[0].id : ''));
   const [scrollPosition, setScrollPosition] = useState(0);
   const tabsListRef = useRef<HTMLDivElement>(null);
 
@@ -156,14 +165,16 @@ export function TabsMolecule({
     maxWidth: scrollable ? 'calc(100% - 120px)' : '100%',
     scrollBehavior: 'smooth' as const,
     backdropFilter: variant === 'pills' ? 'blur(8px)' : 'none',
-    border: variant === 'pills' ? `1px solid ${colors?.border?.value || 'var(--color-border)'}40` : 'none'
+    border: variant === 'pills' ? `1px solid ${colors?.border?.value || 'var(--color-border)'}40` : 'none',
+    // Responsive smartphone adaptation
+    width: '100%'
   });
 
   const getTabTriggerStyles = (tabId: string, isActive: boolean) => ({
     display: 'flex',
     alignItems: 'center',
-    gap: '8px',
-    padding: `10px ${smallSpacing}`,
+    gap: '6px',
+    padding: `8px ${smallSpacing}`,
     background: variant === 'pills' && isActive
       ? `linear-gradient(135deg, ${colors?.background?.value || 'var(--color-background)'}, ${colors?.accent?.value || 'var(--color-accent)'}20)`
       : isActive && variant !== 'underline'
@@ -184,18 +195,19 @@ export function TabsMolecule({
     cursor: 'pointer',
     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
     fontFamily: 'var(--typography-paragraph-font-family)',
-    fontSize: '14px',
+    fontSize: '13px',
     fontWeight: isActive ? 600 : 450,
     whiteSpace: 'nowrap' as const,
     minWidth: 'fit-content',
-    minHeight: '40px',
+    minHeight: '36px',
     position: 'relative' as const,
     overflow: 'hidden' as const,
     boxShadow: variant === 'pills' && isActive
       ? `${shadows?.shadowMd || 'var(--shadow-md)'}, 0 0 0 1px ${colors?.primary?.value || 'var(--color-primary)'}20`
       : isActive && variant !== 'underline' && variant !== 'pills'
         ? `inset 0 -1px 0 ${colors?.primary?.value || 'var(--color-primary)'}`
-        : 'none'
+        : 'none',
+    // Responsive smartphone adaptation handled by CSS classes
   });
 
   const getTabContentStyles = () => ({
@@ -223,7 +235,7 @@ export function TabsMolecule({
         orientation={orientation}
         activationMode={activationMode}
       >
-        <div style={getTabsListContainerStyles()}>
+        <div style={getTabsListContainerStyles()} className="flex items-center gap-2 max-sm:flex-col max-sm:items-stretch max-sm:gap-1">
           {/* Scroll left button */}
           {scrollable && (
             <Button
@@ -242,7 +254,7 @@ export function TabsMolecule({
               }}
               className={`
                 ${!canScrollLeft ? 'opacity-50' : 'hover:bg-accent/60 hover:scale-105 hover:shadow-md active:scale-95'}
-                transition-all duration-300 ease-out
+                transition-all duration-300 ease-out max-sm:hidden
               `}
             >
               <ChevronLeft 
@@ -253,7 +265,6 @@ export function TabsMolecule({
                     ? (colors?.mutedForeground?.value || 'var(--color-muted-foreground)') 
                     : (colors?.foreground?.value || 'var(--color-foreground)')
                 }}
-                className="group-hover:scale-110"
               />
             </Button>
           )}
@@ -262,7 +273,7 @@ export function TabsMolecule({
           <TabsList 
             ref={tabsListRef}
             style={getTabsListStyles()}
-            className={scrollable ? 'overflow-x-auto scrollbar-hide' : ''}
+            className={`${scrollable ? 'overflow-x-auto scrollbar-hide' : ''} w-full flex max-sm:flex-col max-sm:w-full`}
           >
             {tabs.map((tab) => {
               const isActive = currentValue === tab.id;
@@ -280,6 +291,7 @@ export function TabsMolecule({
                     ${isActive ? 'shadow-sm' : ''}
                     ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}
                     transition-all duration-300 ease-out
+                    max-sm:w-full max-sm:justify-center max-sm:text-sm max-sm:py-2 max-sm:px-3
                   `}
                 >
                   {/* Enhanced Tab icon */}
@@ -387,6 +399,7 @@ export function TabsMolecule({
               onClick={() => scrollTabs('right')}
               disabled={!canScrollRight}
               style={{ flexShrink: 0 }}
+              className="max-sm:hidden"
             >
               <ChevronRight className="h-4 w-4" />
             </Button>
@@ -399,8 +412,10 @@ export function TabsMolecule({
               size="sm"
               onClick={handleTabAdd}
               style={{ flexShrink: 0 }}
+              className="max-sm:w-full max-sm:mt-2"
             >
               <Plus className="h-4 w-4" />
+              <span className="ml-2 max-sm:inline hidden">Add Tab</span>
             </Button>
           )}
 
@@ -410,8 +425,10 @@ export function TabsMolecule({
               variant="ghost"
               size="sm"
               style={{ flexShrink: 0 }}
+              className="max-sm:w-full max-sm:mt-2"
             >
               <MoreHorizontal className="h-4 w-4" />
+              <span className="ml-2 max-sm:inline hidden">More</span>
             </Button>
           )}
         </div>

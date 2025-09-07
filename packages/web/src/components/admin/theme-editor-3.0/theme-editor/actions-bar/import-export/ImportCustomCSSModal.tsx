@@ -291,13 +291,18 @@ export function ImportCustomCSSModal({
                 value={themeName}
                 onChange={(e) => setThemeName(e.target.value)}
                 placeholder="Enter theme name (e.g., My Custom Theme)"
+                style={{ 
+                  backgroundColor: 'hsl(var(--background))',
+                  borderColor: 'hsl(var(--border))',
+                  color: 'hsl(var(--foreground))'
+                }}
                 disabled={isImporting}
               />
             </div>
             
             <div className="space-y-2">
               <Label htmlFor="css-content">CSS Content</Label>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm" style={{ color: 'hsl(var(--muted-foreground))' }}>
                 Paste your CSS file below to customize the theme colors. Make sure to include variables like --primary, --background, etc.
               </p>
               <Textarea
@@ -305,19 +310,30 @@ export function ImportCustomCSSModal({
                 value={cssContent}
                 onChange={(e) => setCssContent(e.target.value)}
                 placeholder={`:root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.15 0 0);
-  --primary: #3e2723;
-  /* And more... */
+  --background: 0 0% 100%;
+  --foreground: 240 10% 3.9%;
+  --primary: 240 5.9% 10%;
+  --secondary: 240 4.8% 95.9%;
+  --muted: 240 4.8% 95.9%;
+  --accent: 240 4.8% 95.9%;
+  /* And more variables... */
 }
 
 .dark {
-  --background: oklch(0.09 0 0);
-  --foreground: oklch(0.98 0 0);
-  --primary: rgb(46, 125, 50);
-  /* And more... */
+  --background: 240 10% 3.9%;
+  --foreground: 0 0% 98%;
+  --primary: 0 0% 98%;
+  --secondary: 240 3.7% 15.9%;
+  --muted: 240 3.7% 15.9%;
+  --accent: 240 3.7% 15.9%;
+  /* And more variables... */
 }`}
                 className="min-h-[200px] font-mono text-sm"
+                style={{ 
+                  backgroundColor: 'hsl(var(--background))',
+                  borderColor: 'hsl(var(--border))',
+                  color: 'hsl(var(--foreground))'
+                }}
                 disabled={isImporting}
               />
             </div>
@@ -330,7 +346,7 @@ export function ImportCustomCSSModal({
             )}
           </div>
           
-          <div className="flex justify-end gap-2 pt-4 border-t">
+          <div className="flex justify-end gap-2 pt-4" style={{ borderTop: '1px solid hsl(var(--border))' }}>
             <Button
               variant="outline"
               onClick={handleClose}

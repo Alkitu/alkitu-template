@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { ShowcaseContainer } from './ShowcaseContainer';
-import { PreviewImage } from '../../../design-system/atoms/PreviewImage';
+import { PreviewImageMolecule as PreviewImage } from '../../../design-system/molecules/PreviewImageMolecule';
 
 /**
  * Preview Image Showcase Component

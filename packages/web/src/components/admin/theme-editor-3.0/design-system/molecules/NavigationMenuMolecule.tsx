@@ -88,11 +88,14 @@ export function NavigationMenuMolecule({
 
   const getContentStyles = () => ({
     background: colors?.popover?.value || 'var(--color-popover)',
-    border: `1px solid ${colors?.border?.value || 'var(--color-border)'}`,
+    borderTop: `1px solid ${colors?.border?.value || 'var(--color-border)'}`,
+    borderRight: `1px solid ${colors?.border?.value || 'var(--color-border)'}`,
+    borderLeft: `1px solid ${colors?.border?.value || 'var(--color-border)'}`,
     borderRadius: 'var(--radius-popover, 12px)',
     boxShadow: `${shadows?.shadowLg || 'var(--shadow-lg)'}, 0 0 0 1px ${colors?.border?.value || 'var(--color-border)'}20`,
     padding: `${mediumSpacing} ${smallSpacing}`,
-    minWidth: variant === 'featured' ? '640px' : '420px',
+    minWidth: variant === 'featured' ? 'min(640px, calc(100vw - 40px))' : 'min(420px, calc(100vw - 40px))',
+    maxWidth: 'calc(100vw - 20px)',
     backdropFilter: 'blur(8px)',
     background: `${colors?.popover?.value || 'var(--color-popover)'}f8`,
     animation: 'slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -279,7 +282,7 @@ export function NavigationMenuMolecule({
               display: 'grid', 
               gridTemplateColumns: 'repeat(2, 1fr)', 
               gap: mediumSpacing 
-            }}>
+            }} className="max-sm:grid-cols-1 max-sm:gap-4">
               {/* Featured items */}
               <div>
                 <h4 style={{
@@ -526,11 +529,14 @@ export function NavigationMenuMolecule({
   return (
     <div className={className} style={getContainerStyles()}>
       <NavigationMenu orientation={orientation}>
-        <NavigationMenuList style={{
-          flexDirection: orientation === 'vertical' ? 'column' : 'row',
-          alignItems: orientation === 'vertical' ? 'flex-start' : 'center',
-          gap: orientation === 'vertical' ? '8px' : '16px'
-        }}>
+        <NavigationMenuList 
+          style={{
+            flexDirection: orientation === 'vertical' ? 'column' : 'row',
+            alignItems: orientation === 'vertical' ? 'flex-start' : 'center',
+            gap: orientation === 'vertical' ? '8px' : '16px'
+          }}
+          className="max-sm:flex-wrap max-sm:justify-center max-sm:gap-2"
+        >
           {items.map(renderNavigationItem)}
         </NavigationMenuList>
       </NavigationMenu>

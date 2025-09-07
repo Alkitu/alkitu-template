@@ -7,6 +7,15 @@ const nextConfig = {
   experimental: {
     optimizeCss: false,
   },
+  
+  // HMR and development server configuration
+  devIndicators: {
+    buildActivity: false,
+  },
+  
+  // Force production-like behavior for HMR
+  generateEtags: false,
+  poweredByHeader: false,
 
   // Completely skip TypeScript type checking during build
   typescript: {
@@ -18,7 +27,22 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
 
-  webpack: (config, { isServer }) => {
+  webpack: (config, { dev, isServer }) => {
+    // Enhanced HMR configuration for development
+    if (dev && !isServer) {
+      config.devtool = 'eval-source-map';
+      
+      // Store original entry function to avoid recursion
+      const originalEntry = config.entry;
+      config.entry = async () => {
+        const entry = typeof originalEntry === 'function' ? await originalEntry() : originalEntry;
+        if (entry['main.js'] && !entry['main.js'].includes('webpack-hot-middleware/client')) {
+          entry['main.js'].unshift('webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000&reload=true');
+        }
+        return entry;
+      };
+    }
+    
     // Completely ignore API directory
     config.watchOptions = {
       ...config.watchOptions,
@@ -28,6 +52,8 @@ const nextConfig = {
         "**/api/**",
         "**/../api/**",
       ],
+      poll: false,
+      aggregateTimeout: 300,
     };
 
     // Add resolve fallbacks

@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { useThemeEditor } from '../../core/context/ThemeEditorContext';
 
 export interface TooltipProps {
   /**
@@ -72,9 +71,6 @@ export function Tooltip({
   className = '',
   style = {},
 }: TooltipProps) {
-  const { state } = useThemeEditor();
-  const colors = state.themeMode === 'dark' ? state.currentTheme?.darkColors : state.currentTheme?.lightColors;
-  const borders = state.currentTheme?.borders;
   
   const [isVisible, setIsVisible] = useState(false);
   const [position, setPosition] = useState({ top: 0, left: 0 });
@@ -182,8 +178,8 @@ export function Tooltip({
   // Get arrow styles
   const getArrowStyles = () => {
     const arrowSize = 6;
-    const arrowColor = colors?.popover?.hex || 'var(--color-popover)';
-    const borderColor = colors?.border?.hex || 'var(--color-border)';
+    const arrowColor = 'var(--color-popover)';
+    const borderColor = 'var(--color-border)';
 
     const baseArrow = {
       position: 'absolute' as const,
@@ -270,10 +266,10 @@ export function Tooltip({
               top: position.top,
               left: position.left,
               zIndex: trigger === 'click' ? 1000 : 999,
-              backgroundColor: colors?.popover?.hex || 'var(--color-popover)',
-              color: colors?.popoverForeground?.hex || 'var(--color-popover-foreground)',
-              border: `1px solid ${colors?.border?.hex || 'var(--color-border)'}`,
-              borderRadius: borders?.radiusSm || '4px',
+              backgroundColor: 'var(--color-popover)',
+              color: 'var(--color-popover-foreground)',
+              border: '1px solid var(--color-border)',
+              borderRadius: 'var(--radius-sm)',
               padding: '8px 12px',
               fontSize: '14px',
               fontWeight: '500',

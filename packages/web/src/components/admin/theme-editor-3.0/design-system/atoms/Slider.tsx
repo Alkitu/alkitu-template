@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { useThemeEditor } from '../../core/context/ThemeEditorContext';
 
 export interface SliderProps {
   /**
@@ -121,9 +120,6 @@ export function Slider({
   'aria-label': ariaLabel,
   ...props
 }: SliderProps) {
-  const { state } = useThemeEditor();
-  const colors = state.themeMode === 'dark' ? state.currentTheme?.darkColors : state.currentTheme?.lightColors;
-  const borders = state.currentTheme?.borders;
   
   // Internal state for uncontrolled mode
   const [internalValue, setInternalValue] = useState(defaultValue);
@@ -173,21 +169,21 @@ export function Slider({
     switch (variant) {
       case 'primary':
         return {
-          track: colors?.primary?.hex || 'var(--color-primary)',
-          thumb: colors?.primary?.hex || 'var(--color-primary)',
-          thumbBorder: colors?.primaryForeground?.hex || 'var(--color-primary-foreground)',
+          track: 'var(--color-primary)',
+          thumb: 'var(--color-primary)',
+          thumbBorder: 'var(--color-primary-foreground)',
         };
       case 'secondary':
         return {
-          track: colors?.secondary?.hex || 'var(--color-secondary)',
-          thumb: colors?.secondary?.hex || 'var(--color-secondary)',
-          thumbBorder: colors?.secondaryForeground?.hex || 'var(--color-secondary-foreground)',
+          track: 'var(--color-secondary)',
+          thumb: 'var(--color-secondary)',
+          thumbBorder: 'var(--color-secondary-foreground)',
         };
       default:
         return {
-          track: colors?.accent?.hex || 'var(--color-accent)',
-          thumb: colors?.accent?.hex || 'var(--color-accent)',
-          thumbBorder: colors?.accentForeground?.hex || 'var(--color-accent-foreground)',
+          track: 'var(--color-accent)',
+          thumb: 'var(--color-accent)',
+          thumbBorder: 'var(--color-accent-foreground)',
         };
     }
   };
@@ -349,8 +345,8 @@ export function Slider({
   // Track styles
   const trackStyles: React.CSSProperties = {
     position: 'relative',
-    backgroundColor: colors?.muted?.hex || 'var(--color-muted)',
-    borderRadius: borders?.radius || '3px',
+    backgroundColor: 'var(--color-muted)',
+    borderRadius: 'var(--radius)',
     cursor: disabled ? 'not-allowed' : 'pointer',
     ...(orientation === 'horizontal' ? {
       width: sizeStyles.trackWidth,
@@ -407,7 +403,7 @@ export function Slider({
     const labelStyles: React.CSSProperties = {
       fontSize: sizeStyles.fontSize,
       fontWeight: '500',
-      color: colors?.foreground?.hex || 'var(--color-foreground)',
+      color: 'var(--color-foreground)',
       minWidth: '40px',
       textAlign: 'center',
     };
@@ -452,7 +448,7 @@ export function Slider({
                 position: 'absolute',
                 width: '2px',
                 height: orientation === 'horizontal' ? '8px' : '2px',
-                backgroundColor: colors?.border?.hex || 'var(--color-border)',
+                backgroundColor: 'var(--color-border)',
                 ...(orientation === 'horizontal' ? {
                   left: `${tick.percentage}%`,
                   top: '50%',

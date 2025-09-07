@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useThemeEditor } from '../../core/context/ThemeEditorContext';
 
 export interface ToggleGroupItem {
   value: string;
@@ -98,9 +97,6 @@ export function ToggleGroup({
   'aria-label': ariaLabel,
   ...props
 }: ToggleGroupProps) {
-  const { state } = useThemeEditor();
-  const colors = state.themeMode === 'dark' ? state.currentTheme?.darkColors : state.currentTheme?.lightColors;
-  const borders = state.currentTheme?.borders;
   
   // Internal state for uncontrolled mode
   const [internalValue, setInternalValue] = useState(() => {
@@ -146,39 +142,39 @@ export function ToggleGroup({
     switch (variant) {
       case 'primary':
         return {
-          background: colors?.card?.hex || 'var(--color-card)',
-          backgroundHover: colors?.accent?.hex || 'var(--color-accent)',
-          backgroundActive: colors?.primary?.hex || 'var(--color-primary)',
-          border: colors?.primary?.hex || 'var(--color-primary)',
-          text: colors?.cardForeground?.hex || 'var(--color-card-foreground)',
-          textActive: colors?.primaryForeground?.hex || 'var(--color-primary-foreground)',
+          background: 'var(--color-card)',
+          backgroundHover: 'var(--color-accent)',
+          backgroundActive: 'var(--color-primary)',
+          border: 'var(--color-primary)',
+          text: 'var(--color-card-foreground)',
+          textActive: 'var(--color-primary-foreground)',
         };
       case 'secondary':
         return {
-          background: colors?.card?.hex || 'var(--color-card)',
-          backgroundHover: colors?.accent?.hex || 'var(--color-accent)',
-          backgroundActive: colors?.secondary?.hex || 'var(--color-secondary)',
-          border: colors?.secondary?.hex || 'var(--color-secondary)',
-          text: colors?.cardForeground?.hex || 'var(--color-card-foreground)',
-          textActive: colors?.secondaryForeground?.hex || 'var(--color-secondary-foreground)',
+          background: 'var(--color-card)',
+          backgroundHover: 'var(--color-accent)',
+          backgroundActive: 'var(--color-secondary)',
+          border: 'var(--color-secondary)',
+          text: 'var(--color-card-foreground)',
+          textActive: 'var(--color-secondary-foreground)',
         };
       case 'outline':
         return {
           background: 'transparent',
-          backgroundHover: colors?.accent?.hex || 'var(--color-accent)',
-          backgroundActive: colors?.accent?.hex || 'var(--color-accent)',
-          border: colors?.border?.hex || 'var(--color-border)',
-          text: colors?.foreground?.hex || 'var(--color-foreground)',
-          textActive: colors?.accentForeground?.hex || 'var(--color-accent-foreground)',
+          backgroundHover: 'var(--color-accent)',
+          backgroundActive: 'var(--color-accent)',
+          border: 'var(--color-border)',
+          text: 'var(--color-foreground)',
+          textActive: 'var(--color-accent-foreground)',
         };
       default:
         return {
-          background: colors?.muted?.hex || 'var(--color-muted)',
-          backgroundHover: colors?.accent?.hex || 'var(--color-accent)',
-          backgroundActive: colors?.accent?.hex || 'var(--color-accent)',
-          border: colors?.border?.hex || 'var(--color-border)',
-          text: colors?.mutedForeground?.hex || 'var(--color-muted-foreground)',
-          textActive: colors?.accentForeground?.hex || 'var(--color-accent-foreground)',
+          background: 'var(--color-muted)',
+          backgroundHover: 'var(--color-accent)',
+          backgroundActive: 'var(--color-accent)',
+          border: 'var(--color-border)',
+          text: 'var(--color-muted-foreground)',
+          textActive: 'var(--color-accent-foreground)',
         };
     }
   };
@@ -225,23 +221,23 @@ export function ToggleGroup({
     const isItemSelected = isSelected(item.value);
     const isItemDisabled = disabled || item.disabled;
     
-    let borderRadius = borders?.radius || '6px';
+    let borderRadius = 'var(--radius, 6px)';
     
     // Handle connected borders
     if (connected && items.length > 1) {
       if (orientation === 'horizontal') {
         if (index === 0) {
-          borderRadius = `${borders?.radius || '6px'} 0 0 ${borders?.radius || '6px'}`;
+          borderRadius = `var(--radius, 6px) 0 0 var(--radius, 6px)`;
         } else if (index === items.length - 1) {
-          borderRadius = `0 ${borders?.radius || '6px'} ${borders?.radius || '6px'} 0`;
+          borderRadius = `0 var(--radius, 6px) var(--radius, 6px) 0`;
         } else {
           borderRadius = '0';
         }
       } else {
         if (index === 0) {
-          borderRadius = `${borders?.radius || '6px'} ${borders?.radius || '6px'} 0 0`;
+          borderRadius = `var(--radius, 6px) var(--radius, 6px) 0 0`;
         } else if (index === items.length - 1) {
-          borderRadius = `0 0 ${borders?.radius || '6px'} ${borders?.radius || '6px'}`;
+          borderRadius = `0 0 var(--radius, 6px) var(--radius, 6px)`;
         } else {
           borderRadius = '0';
         }

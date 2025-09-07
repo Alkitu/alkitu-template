@@ -179,8 +179,8 @@ export function PaginationMolecule({
   // Compact variant
   if (variant === 'compact') {
     return (
-      <div className={className} style={getContainerStyles()}>
-        <div style={getControlsStyles()}>
+      <div className={`${className} flex flex-col items-center gap-4`} style={getContainerStyles()}>
+        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-1" style={getControlsStyles()}>
           <Button
             variant="outline"
             size="sm"
@@ -198,6 +198,7 @@ export function PaginationMolecule({
               group relative overflow-hidden
               ${!disabled && currentPage !== 1 ? 'hover:bg-accent/60 hover:scale-105 hover:shadow-md active:scale-95' : ''}
               transition-all duration-300 ease-out
+              sm:min-w-8 sm:h-8 sm:p-1
             `}
           >
             <ChevronLeft 
@@ -227,7 +228,7 @@ export function PaginationMolecule({
               transition: 'all 0.3s ease',
               backdropFilter: 'blur(4px)'
             }}
-            className="hover:scale-105 hover:shadow-sm"
+            className="hover:scale-105 hover:shadow-sm sm:text-xs sm:px-2 sm:py-1"
           >
             <span style={{ color: colors?.primary?.value || 'var(--color-primary)' }}>
               {currentPage}
@@ -258,6 +259,7 @@ export function PaginationMolecule({
               group relative overflow-hidden
               ${!disabled && currentPage !== totalPages ? 'hover:bg-accent/60 hover:scale-105 hover:shadow-md active:scale-95' : ''}
               transition-all duration-300 ease-out
+              sm:min-w-8 sm:h-8 sm:p-1
             `}
           >
             <ChevronRight 
@@ -279,9 +281,9 @@ export function PaginationMolecule({
   // Simple variant
   if (variant === 'simple') {
     return (
-      <div className={className} style={getContainerStyles()}>
+      <div className={`${className} flex flex-col items-center gap-4`} style={getContainerStyles()}>
         <Pagination>
-          <PaginationContent>
+          <PaginationContent className="flex items-center gap-1 sm:gap-0.5">
             <PaginationItem>
               <PaginationPrevious
                 onClick={() => handlePageChange(currentPage - 1)}
@@ -289,7 +291,7 @@ export function PaginationMolecule({
               />
             </PaginationItem>
             <PaginationItem>
-              <span style={getInfoStyles()}>
+              <span className="text-sm sm:text-xs px-3 py-1 sm:px-2" style={getInfoStyles()}>
                 Página {currentPage} de {totalPages}
               </span>
             </PaginationItem>
@@ -307,17 +309,18 @@ export function PaginationMolecule({
 
   // Default and detailed variants
   return (
-    <div className={className} style={getContainerStyles()}>
+    <div className={`${className} flex flex-col items-center gap-4`} style={getContainerStyles()}>
       {/* Total items info */}
       {(showTotal && totalItems) && (
-        <div style={getInfoStyles()}>
-          Mostrando {startItem} a {endItem} de {totalItems.toLocaleString()} resultados
+        <div className="text-sm sm:text-xs px-4 py-2 sm:px-2 sm:py-1 text-center" style={getInfoStyles()}>
+          <span className="sm:hidden">Mostrando {startItem} a {endItem} de {totalItems.toLocaleString()} resultados</span>
+          <span className="hidden sm:inline">{startItem}-{endItem} de {totalItems.toLocaleString()}</span>
         </div>
       )}
 
       {/* Main pagination */}
       <Pagination>
-        <PaginationContent>
+        <PaginationContent className="flex flex-wrap items-center justify-center gap-1 sm:gap-0.5 sm:scale-90">
           {/* First page button */}
           {showFirstLast && currentPage > boundaryCount + 1 && (
             <PaginationItem>
@@ -339,6 +342,7 @@ export function PaginationMolecule({
                   group relative overflow-hidden
                   ${!disabled ? 'hover:bg-primary/10 hover:scale-105 hover:shadow-md active:scale-95' : ''}
                   transition-all duration-300 ease-out
+                  sm:min-w-8 sm:h-8 sm:p-1 sm:hidden
                 `}
               >
                 <ChevronsLeft 
@@ -397,6 +401,7 @@ export function PaginationMolecule({
                 onClick={() => handlePageChange(totalPages)}
                 disabled={disabled}
                 style={{ padding: smallSpacing }}
+                className="sm:hidden"
               >
                 <ChevronsRight className="h-4 w-4" />
               </Button>
@@ -407,12 +412,13 @@ export function PaginationMolecule({
 
       {/* Page size selector */}
       {showPageSize && variant === 'detailed' && (
-        <div style={getPageSizeStyles()}>
-          <span>Mostrar:</span>
+        <div className="flex flex-col sm:flex-row items-center gap-2 text-sm sm:text-xs" style={getPageSizeStyles()}>
+          <span className="sm:hidden">Mostrar:</span>
           <select
             value={pageSize}
             onChange={(e) => handlePageSizeChange(Number(e.target.value))}
             disabled={disabled}
+            className="text-sm sm:text-xs px-2 py-1"
             style={{
               padding: '4px 8px',
               border: `1px solid ${colors?.border?.value || 'var(--color-border)'}`,
@@ -429,17 +435,17 @@ export function PaginationMolecule({
               </option>
             ))}
           </select>
-          <span>por página</span>
+          <span className="sm:hidden">por página</span>
         </div>
       )}
 
       {/* Additional info for detailed variant */}
       {variant === 'detailed' && totalItems && (
-        <div style={getInfoStyles()}>
-          <Badge variant="outline" style={{ marginRight: '8px' }}>
+        <div className="flex flex-col sm:flex-row items-center gap-2 text-center" style={getInfoStyles()}>
+          <Badge variant="outline" className="text-xs sm:text-xs px-2 py-1" style={{ marginRight: '4px' }}>
             Total: {totalItems.toLocaleString()}
           </Badge>
-          <Badge variant="outline">
+          <Badge variant="outline" className="text-xs sm:text-xs px-2 py-1">
             Páginas: {totalPages}
           </Badge>
         </div>

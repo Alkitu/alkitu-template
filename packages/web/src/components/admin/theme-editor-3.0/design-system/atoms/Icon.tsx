@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { LucideIcon } from 'lucide-react';
-import { useThemeEditor } from '../../core/context/ThemeEditorContext';
 
 export interface IconProps {
   /**
@@ -68,9 +67,6 @@ export function Icon({
   'aria-label': ariaLabel,
   ...props
 }: IconProps) {
-  const { state } = useThemeEditor();
-  const colors = state.themeMode === 'dark' ? state.currentTheme?.darkColors : state.currentTheme?.lightColors;
-
   // Size mapping (in pixels)
   const getSizeValue = (): number => {
     if (customSize) return customSize;
@@ -93,22 +89,22 @@ export function Icon({
     
     switch (variant) {
       case 'primary':
-        return colors?.primary?.hex || 'var(--color-primary)';
+        return 'var(--color-primary)';
       case 'secondary':
-        return colors?.secondary?.hex || 'var(--color-secondary)';
+        return 'var(--color-secondary)';
       case 'accent':
-        return colors?.accent?.hex || 'var(--color-accent)';
+        return 'var(--color-accent)';
       case 'muted':
-        return colors?.mutedForeground?.hex || 'var(--color-muted-foreground)';
+        return 'var(--color-muted-foreground)';
       case 'destructive':
-        return colors?.destructive?.hex || 'var(--color-destructive)';
+        return 'var(--color-destructive)';
       case 'warning':
-        return colors?.warning?.hex || 'var(--color-warning)';
+        return 'var(--color-warning)';
       case 'success':
-        return colors?.success?.hex || 'var(--color-success)';
+        return 'var(--color-success)';
       case 'default':
       default:
-        return colors?.foreground?.hex || 'var(--color-foreground)';
+        return 'var(--color-foreground)';
     }
   };
 

@@ -42,7 +42,9 @@
       "Bash(sed:*)",
       "Bash(echo \"Fixed: $file\")",
       "Bash(fi)",
-      "Bash(done)"
+      "Bash(done)",
+      "Bash(taskkill:*)",
+      "Bash(cmd /c:*)"
     ],
     "deny": []
   }

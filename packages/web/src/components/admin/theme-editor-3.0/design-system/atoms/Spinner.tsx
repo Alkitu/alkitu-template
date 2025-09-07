@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { useThemeEditor } from '../../core/context/ThemeEditorContext';
 
 export interface SpinnerProps {
   /**
@@ -67,8 +66,6 @@ export function Spinner({
   'aria-label': ariaLabel = 'Loading...',
   ...props
 }: SpinnerProps) {
-  const { state } = useThemeEditor();
-  const colors = state.themeMode === 'dark' ? state.currentTheme?.darkColors : state.currentTheme?.lightColors;
 
   // Get size value
   const getSizeValue = (): number => {
@@ -92,22 +89,22 @@ export function Spinner({
     
     switch (variant) {
       case 'primary':
-        return colors?.primary?.hex || 'var(--color-primary)';
+        return 'var(--color-primary)';
       case 'secondary':
-        return colors?.secondary?.hex || 'var(--color-secondary)';
+        return 'var(--color-secondary)';
       case 'accent':
-        return colors?.accent?.hex || 'var(--color-accent)';
+        return 'var(--color-accent)';
       case 'muted':
-        return colors?.mutedForeground?.hex || 'var(--color-muted-foreground)';
+        return 'var(--color-muted-foreground)';
       case 'destructive':
-        return colors?.destructive?.hex || 'var(--color-destructive)';
+        return 'var(--color-destructive)';
       case 'warning':
-        return colors?.warning?.hex || 'var(--color-warning)';
+        return 'var(--color-warning)';
       case 'success':
-        return colors?.success?.hex || 'var(--color-success)';
+        return 'var(--color-success)';
       case 'default':
       default:
-        return colors?.foreground?.hex || 'var(--color-foreground)';
+        return 'var(--color-foreground)';
     }
   };
 
@@ -152,7 +149,7 @@ export function Spinner({
             cx="12"
             cy="12"
             r="10"
-            stroke={colors?.border?.hex || 'var(--color-border)'}
+            stroke="var(--color-border)"
             strokeWidth="2"
             opacity="0.25"
           />

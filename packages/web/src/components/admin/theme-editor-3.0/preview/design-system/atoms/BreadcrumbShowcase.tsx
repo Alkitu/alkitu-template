@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { ShowcaseContainer } from './ShowcaseContainer';
-import { Breadcrumb, BreadcrumbItem } from '../../../design-system/atoms/Breadcrumb';
+import { BreadcrumbMolecule as Breadcrumb, BreadcrumbMoleculeProps as BreadcrumbItem } from '../../../design-system/molecules/BreadcrumbMolecule';
 import { Home, Folder, File, Settings, User, ShoppingBag } from 'lucide-react';
 
 /**

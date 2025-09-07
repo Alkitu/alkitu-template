@@ -139,7 +139,7 @@ export function CardMolecule({
   return (
     <CardWrapper {...wrapperProps} className={className} style={{ textDecoration: 'none' }}>
       <Card 
-        className={`text-foreground ${variant === 'interactive' ? 'hover:shadow-lg hover:scale-[1.02] transition-all duration-300' : ''}`}
+        className={`text-foreground max-sm:mx-2 max-sm:max-w-[calc(100vw-1rem)] ${variant === 'interactive' ? 'hover:shadow-lg hover:scale-[1.02] transition-all duration-300' : ''}`}
         style={getVariantStyles()}
       >
         {/* Loading Overlay */}
@@ -295,13 +295,16 @@ export function CardMolecule({
 
         {/* Actions Section */}
         {actions && actions.length > 0 && (
-          <CardFooter style={{ 
-            padding: smallSpacing,
-            paddingTop: 0,
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: '8px'
-          }}>
+          <CardFooter 
+            style={{ 
+              padding: smallSpacing,
+              paddingTop: 0,
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '8px'
+            }}
+            className="max-sm:flex-col max-sm:gap-2"
+          >
             {actions.map((action, index) => (
               <Button
                 key={index}
@@ -317,6 +320,7 @@ export function CardMolecule({
                   flex: actions.length <= 2 ? 1 : 'none',
                   minWidth: actions.length > 2 ? '100px' : undefined
                 }}
+                className="max-sm:w-full max-sm:flex-1"
               >
                 {action.icon && <span style={{ marginRight: '4px' }}>{action.icon}</span>}
                 {action.label}

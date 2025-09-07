@@ -1,74 +1,110 @@
 'use client';
 
-import React from 'react';
-import { Card } from '../../../design-system/primitives/card';
-import { Button } from '../../../design-system/primitives/button';
-import { Badge } from '../../../design-system/primitives/badge';
+import React, { useState } from 'react';
+import { FormBuilderOrganismShowcase } from '../../../design-system/organisms';
+import { CalendarOrganismShowcase } from '../../../design-system/organisms/CalendarOrganism';
+import { SkeletonOrganismShowcase } from '../../../design-system/organisms/SkeletonOrganism';
+import { SidebarOrganismShowcase } from '../../../design-system/organisms/SidebarOrganism';
+import { CarouselOrganismShowcase } from '../../../design-system/organisms/CarouselOrganism';
+import { ChartOrganismShowcase } from '../../../design-system/organisms/ChartOrganism';
+import { DataTableOrganismShowcase } from '../../../design-system/organisms/DataTableOrganism';
+import { DialogOrganismShowcase } from '../../../design-system/organisms/DialogOrganism';
+import { useThemeEditor } from '../../../core/context/ThemeEditorContext';
 
 /**
- * Contenido del tab de Organismos
- * Muestra componentes complejos y secciones completas
+ * OrganismsTabContent - NUEVOS Organismos shadcn/ui con integración de tema
+ * Muestra TODOS los organismos nuevos creados: FormBuilder, Calendar, Skeleton, Sidebar, Carousel, Chart, DataTable, Dialog
  */
 export function OrganismsTabContent() {
-  return (
-    <div className="space-y-6">
-      <section>
-        <h2 className="text-2xl font-semibold mb-4">Organism Components</h2>
-        
-        {/* Header Organism */}
-        <Card className="p-6 mb-4">
-          <div className="flex justify-between items-center mb-4">
-            <div>
-              <h3 className="text-lg font-semibold">Navigation Header</h3>
-              <p className="text-sm text-muted-foreground">Complete header organism</p>
-            </div>
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm">Settings</Button>
-              <Button size="sm">Profile</Button>
-            </div>
-          </div>
-          <div className="flex gap-2">
-            <Badge>Dashboard</Badge>
-            <Badge variant="secondary">Analytics</Badge>
-            <Badge variant="outline">Reports</Badge>
-          </div>
-        </Card>
+  console.log('🚀 OrganismsTabContent: Rendering NEW organisms showcase');
+  const { state } = useThemeEditor();
+  
+  // Theme integration
+  const colors = state.themeMode === 'dark' 
+    ? state.currentTheme?.darkColors 
+    : state.currentTheme?.lightColors;
+  const spacing = state.currentTheme?.spacing;
 
-        {/* Hero Section */}
-        <Card className="p-8 text-center">
-          <h3 className="text-2xl font-bold mb-2">Hero Section</h3>
-          <p className="text-muted-foreground mb-4">
-            Example of a complete hero organism with multiple elements
-          </p>
-          <div className="flex justify-center gap-3">
-            <Button size="lg">Get Started</Button>
-            <Button variant="outline" size="lg">Learn More</Button>
-          </div>
-        </Card>
+  // Spacing system
+  const baseSpacing = spacing?.spacing || '2.2rem';
+  const baseValue = parseFloat(baseSpacing.replace('rem', '')) * 16;
+  const mediumSpacing = `var(--spacing-medium, ${baseValue * 2}px)`;
+  const largeSpacing = `var(--spacing-large, ${baseValue * 4}px)`;
+
+  const getSectionStyles = () => ({
+    marginBottom: largeSpacing,
+    padding: mediumSpacing,
+    borderRadius: 'var(--radius-card, 12px)',
+    border: `1px solid ${colors?.border?.value || 'var(--color-border)'}20`,
+    background: `${colors?.background?.value || 'var(--color-background)'}f8`,
+    backdropFilter: 'blur(4px)'
+  });
+
+  const getSectionHeaderStyles = () => ({
+    fontFamily: 'var(--typography-h2-font-family)',
+    fontSize: 'var(--typography-h2-font-size)',
+    fontWeight: 'var(--typography-h2-font-weight)',
+    color: colors?.foreground?.value || 'var(--color-foreground)',
+    marginBottom: mediumSpacing,
+    paddingBottom: '8px',
+    borderBottom: `2px solid ${colors?.primary?.value || 'var(--color-primary)'}20`
+  });
+
+  return (
+    <div className="flex flex-col gap-6 w-full min-w-0 px-4 overflow-x-hidden">
+      {/* Form Builder Organism - FIRST */}
+      <section style={getSectionStyles()}>
+        <h2 style={getSectionHeaderStyles()}>🚀 Form Builder Organism</h2>
+        <p style={{
+          fontSize: '14px',
+          color: colors?.mutedForeground?.value || 'var(--color-muted-foreground)',
+          marginBottom: mediumSpacing
+        }}>
+          Advanced drag-and-drop form builder with validation, preview mode, and JSON export
+        </p>
+        <FormBuilderOrganismShowcase />
       </section>
 
-      {/* Footer Organism */}
-      <section>
-        <h3 className="text-lg font-semibold mb-3">Footer Section</h3>
-        <Card className="p-6">
-          <div className="grid grid-cols-3 gap-4">
-            <div>
-              <h4 className="font-semibold mb-2">Company</h4>
-              <p className="text-sm text-muted-foreground">About Us</p>
-              <p className="text-sm text-muted-foreground">Careers</p>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-2">Resources</h4>
-              <p className="text-sm text-muted-foreground">Documentation</p>
-              <p className="text-sm text-muted-foreground">Blog</p>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-2">Legal</h4>
-              <p className="text-sm text-muted-foreground">Privacy</p>
-              <p className="text-sm text-muted-foreground">Terms</p>
-            </div>
-          </div>
-        </Card>
+      {/* Calendar Organism */}
+      <section style={getSectionStyles()}>
+        <h2 style={getSectionHeaderStyles()}>Calendar Organism</h2>
+        <CalendarOrganismShowcase />
+      </section>
+
+      {/* Skeleton Organism */}
+      <section style={getSectionStyles()}>
+        <h2 style={getSectionHeaderStyles()}>Skeleton Organism</h2>
+        <SkeletonOrganismShowcase />
+      </section>
+
+      {/* Sidebar Organism */}
+      <section style={getSectionStyles()}>
+        <h2 style={getSectionHeaderStyles()}>Sidebar Organism</h2>
+        <SidebarOrganismShowcase />
+      </section>
+
+      {/* Carousel Organism */}
+      <section style={getSectionStyles()}>
+        <h2 style={getSectionHeaderStyles()}>Carousel Organism</h2>
+        <CarouselOrganismShowcase />
+      </section>
+
+      {/* Chart Organism */}
+      <section style={getSectionStyles()}>
+        <h2 style={getSectionHeaderStyles()}>Chart Organism</h2>
+        <ChartOrganismShowcase />
+      </section>
+
+      {/* Data Table Organism */}
+      <section style={getSectionStyles()}>
+        <h2 style={getSectionHeaderStyles()}>Data Table Organism</h2>
+        <DataTableOrganismShowcase />
+      </section>
+
+      {/* Dialog Organism */}
+      <section style={getSectionStyles()}>
+        <h2 style={getSectionHeaderStyles()}>Dialog Organism</h2>
+        <DialogOrganismShowcase />
       </section>
     </div>
   );

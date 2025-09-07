@@ -255,7 +255,7 @@ export function ToastProvider({
       display: 'flex',
       flexDirection: 'column' as const,
       gap: '8px',
-      maxWidth: '400px',
+      maxWidth: 'min(400px, calc(100vw - 40px))',
       padding: mediumSpacing
     };
 
@@ -286,8 +286,8 @@ export function ToastProvider({
         style={{
           ...typeStyles,
           padding: `${smallSpacing} ${smallSpacing}`,
-          minWidth: '320px',
-          maxWidth: '420px',
+          minWidth: 'min(320px, calc(100vw - 40px))',
+          maxWidth: 'min(420px, calc(100vw - 20px))',
           display: 'flex',
           alignItems: 'flex-start',
           gap: '14px',

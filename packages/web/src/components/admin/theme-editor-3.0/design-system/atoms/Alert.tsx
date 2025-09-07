@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { useThemeEditor } from '../../core/context/ThemeEditorContext';
 import { Icon } from './Icon';
 import { AlertCircle, CheckCircle, AlertTriangle, Info, X } from 'lucide-react';
 
@@ -75,52 +74,48 @@ export function Alert({
   style = {},
   ...props
 }: AlertProps) {
-  const { state } = useThemeEditor();
-  const colors = state.themeMode === 'dark' ? state.currentTheme?.darkColors : state.currentTheme?.lightColors;
-  const borders = state.currentTheme?.borders;
-
-  // Get variant config
+  // Get variant config using only CSS variables
   const getVariantConfig = () => {
     switch (variant) {
       case 'info':
         return {
           icon: Info,
-          backgroundColor: colors?.primary?.hex ? `${colors.primary.hex}15` : 'var(--color-primary/10)',
-          borderColor: colors?.primary?.hex || 'var(--color-primary)',
-          textColor: colors?.foreground?.hex || 'var(--color-foreground)',
-          iconColor: colors?.primary?.hex || 'var(--color-primary)',
+          backgroundColor: 'color-mix(in srgb, var(--color-primary) 10%, transparent)',
+          borderColor: 'var(--color-primary)',
+          textColor: 'var(--color-foreground)',
+          iconColor: 'var(--color-primary)',
         };
       case 'success':
         return {
           icon: CheckCircle,
-          backgroundColor: colors?.success?.hex ? `${colors.success.hex}15` : 'var(--color-success/10)',
-          borderColor: colors?.success?.hex || 'var(--color-success)',
-          textColor: colors?.foreground?.hex || 'var(--color-foreground)',
-          iconColor: colors?.success?.hex || 'var(--color-success)',
+          backgroundColor: 'color-mix(in srgb, var(--color-success) 10%, transparent)',
+          borderColor: 'var(--color-success)',
+          textColor: 'var(--color-foreground)',
+          iconColor: 'var(--color-success)',
         };
       case 'warning':
         return {
           icon: AlertTriangle,
-          backgroundColor: colors?.warning?.hex ? `${colors.warning.hex}15` : 'var(--color-warning/10)',
-          borderColor: colors?.warning?.hex || 'var(--color-warning)',
-          textColor: colors?.foreground?.hex || 'var(--color-foreground)',
-          iconColor: colors?.warning?.hex || 'var(--color-warning)',
+          backgroundColor: 'color-mix(in srgb, var(--color-warning) 10%, transparent)',
+          borderColor: 'var(--color-warning)',
+          textColor: 'var(--color-foreground)',
+          iconColor: 'var(--color-warning)',
         };
       case 'error':
         return {
           icon: AlertCircle,
-          backgroundColor: colors?.destructive?.hex ? `${colors.destructive.hex}15` : 'var(--color-destructive/10)',
-          borderColor: colors?.destructive?.hex || 'var(--color-destructive)',
-          textColor: colors?.foreground?.hex || 'var(--color-foreground)',
-          iconColor: colors?.destructive?.hex || 'var(--color-destructive)',
+          backgroundColor: 'color-mix(in srgb, var(--color-destructive) 10%, transparent)',
+          borderColor: 'var(--color-destructive)',
+          textColor: 'var(--color-foreground)',
+          iconColor: 'var(--color-destructive)',
         };
       default:
         return {
           icon: Info,
-          backgroundColor: colors?.muted?.hex || 'var(--color-muted)',
-          borderColor: colors?.border?.hex || 'var(--color-border)',
-          textColor: colors?.foreground?.hex || 'var(--color-foreground)',
-          iconColor: colors?.mutedForeground?.hex || 'var(--color-muted-foreground)',
+          backgroundColor: 'var(--color-muted)',
+          borderColor: 'var(--color-border)',
+          textColor: 'var(--color-foreground)',
+          iconColor: 'var(--color-muted-foreground)',
         };
     }
   };
@@ -172,7 +167,7 @@ export function Alert({
         padding: sizeStyles.padding,
         backgroundColor: variantConfig.backgroundColor,
         border: `1px solid ${variantConfig.borderColor}`,
-        borderRadius: borders?.radius || '8px',
+        borderRadius: 'var(--radius-alert, var(--radius, 8px))',
         color: variantConfig.textColor,
         fontSize: sizeStyles.fontSize,
         lineHeight: '1.5',

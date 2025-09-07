@@ -3,14 +3,17 @@ const nextConfig = {
   // Force transpilation of problematic packages
   transpilePackages: ['lucide-react'],
   
-  // Optimize bundling
+  // Optimize bundling and worker processes
   experimental: {
     optimizeCss: false,
+    workerThreads: false,
+    cpus: 1,
   },
   
   // HMR and development server configuration
   devIndicators: {
-    buildActivity: false,
+    buildActivity: true,
+    buildActivityPosition: 'bottom-right',
   },
   
   // Force production-like behavior for HMR
@@ -31,19 +34,9 @@ const nextConfig = {
     // Enhanced HMR configuration for development
     if (dev && !isServer) {
       config.devtool = 'eval-source-map';
-      
-      // Store original entry function to avoid recursion
-      const originalEntry = config.entry;
-      config.entry = async () => {
-        const entry = typeof originalEntry === 'function' ? await originalEntry() : originalEntry;
-        if (entry['main.js'] && !entry['main.js'].includes('webpack-hot-middleware/client')) {
-          entry['main.js'].unshift('webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000&reload=true');
-        }
-        return entry;
-      };
     }
     
-    // Completely ignore API directory
+    // Optimize watch options to reduce memory usage
     config.watchOptions = {
       ...config.watchOptions,
       ignored: [
@@ -51,6 +44,9 @@ const nextConfig = {
         "**/packages/api/**",
         "**/api/**",
         "**/../api/**",
+        "**/.stryker-tmp/**",
+        "**/stryker-tmp/**",
+        "**/coverage/**",
       ],
       poll: false,
       aggregateTimeout: 300,

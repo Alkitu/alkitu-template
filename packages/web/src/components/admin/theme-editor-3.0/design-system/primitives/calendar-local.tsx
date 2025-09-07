@@ -115,8 +115,8 @@ export function Calendar({
         disabled={disabled === true}
         className={`
           p-2 text-center rounded hover:bg-accent hover:text-accent-foreground
-          ${selected ? 'bg-primary text-primary-foreground' : ''}
-          ${today && !selected ? 'font-bold' : ''}
+          ${selected ? 'bg-primary text-primary-foreground' : 'text-foreground'}
+          ${today && !selected ? 'font-bold text-foreground' : ''}
           ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
         `}
         style={{
@@ -141,7 +141,7 @@ export function Calendar({
           <ChevronLeft className="h-4 w-4" />
         </Button>
         
-        <div style={{
+        <div className="text-foreground" style={{
           fontFamily: 'var(--typography-emphasis-font-family)',
           fontSize: 'var(--typography-emphasis-font-size)',
           fontWeight: 'var(--typography-emphasis-font-weight)'

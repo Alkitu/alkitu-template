@@ -19,7 +19,7 @@ import {
   PaginationNext,
   PaginationPrevious,
   PaginationEllipsis
-} from '../primitives/pagination';
+} from '../primitives/pagination-local';
 import { useThemeEditor } from '../../core/context/ThemeEditorContext';
 
 export interface PaginationMoleculeProps {

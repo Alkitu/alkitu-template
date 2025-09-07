@@ -9,10 +9,9 @@ import { PreviewImage } from '../../../design-system/atoms/PreviewImage';
  * Demonstrates all Preview Image atom variants with different aspect ratios and states
  */
 export function PreviewImageShowcase() {
-  // Sample image URLs
-  const sampleImage = 'https://images.unsplash.com/photo-1516796181074-bf453fbfa3e6?w=400&h=400&fit=crop';
+  // Sample image URL - using the same landscape image for all examples
   const landscapeImage = 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop';
-  const portraitImage = 'https://images.unsplash.com/photo-1549880338-65ddcdfd017b?w=600&h=800&fit=crop';
+  const sampleImage = landscapeImage; // Use the same image for all samples
 
   return (
     <div className="space-y-6">
@@ -65,7 +64,7 @@ export function PreviewImageShowcase() {
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 w-full max-w-3xl">
           <div className="text-center">
             <PreviewImage
-              src={portraitImage}
+              src={sampleImage}
               alt="Cover fit"
               aspectRatio="16:9"
               size="md"
@@ -75,7 +74,7 @@ export function PreviewImageShowcase() {
           </div>
           <div className="text-center">
             <PreviewImage
-              src={portraitImage}
+              src={sampleImage}
               alt="Contain fit"
               aspectRatio="16:9"
               size="md"
@@ -85,7 +84,7 @@ export function PreviewImageShowcase() {
           </div>
           <div className="text-center">
             <PreviewImage
-              src={portraitImage}
+              src={sampleImage}
               alt="Fill fit"
               aspectRatio="16:9"
               size="md"

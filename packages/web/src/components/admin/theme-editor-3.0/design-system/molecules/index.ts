@@ -4,6 +4,9 @@
 export { AccordionMolecule, AccordionPresets } from './AccordionMolecule';
 export type { AccordionMoleculeProps, AccordionItem } from './AccordionMolecule';
 
+export { CardMolecule, CardPresets } from './CardMolecule';
+export type { CardMoleculeProps, CardAction } from './CardMolecule';
+
 export { DatePickerMolecule, DatePickerPresets } from './DatePickerMolecule';
 export type { DatePickerMoleculeProps } from './DatePickerMolecule';
 

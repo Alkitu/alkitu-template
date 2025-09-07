@@ -17,6 +17,7 @@ import {
   Check 
 } from 'lucide-react';
 import { AccordionMolecule } from '../../../design-system/molecules/AccordionMolecule';
+import { CardMolecule } from '../../../design-system/molecules/CardMolecule';
 import { DatePickerMolecule } from '../../../design-system/molecules/DatePickerMolecule';
 import { PaginationMolecule } from '../../../design-system/molecules/PaginationMolecule';
 import { DropdownMenuMolecule, ExampleMenuItems } from '../../../design-system/molecules/DropdownMenuMolecule';
@@ -296,6 +297,76 @@ export function MoleculesShowcase() {
           variant="card"
           animated={true}
         />
+      </section>
+
+      {/* Card Molecule */}
+      <section style={getSectionStyles()}>
+        <h2 style={getSectionHeaderStyles()}>Card Molecule</h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: mediumSpacing }}>
+          {/* Basic Card */}
+          <CardMolecule
+            title="Card Básica"
+            description="Esta es una card básica con título y descripción"
+            content="El contenido de la card puede incluir cualquier elemento React o texto simple."
+            actions={[
+              { label: 'Acción Principal', onClick: () => console.log('Primary action') },
+              { label: 'Secundaria', onClick: () => console.log('Secondary action'), variant: 'outline' }
+            ]}
+          />
+          
+          {/* Card with Image */}
+          <CardMolecule
+            variant="interactive"
+            title="Card con Imagen"
+            description="Card interactiva con imagen"
+            image="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=400&fit=crop"
+            imageAlt="Preview image"
+            badge={{ text: 'Nuevo', variant: 'default' }}
+            content="Las cards con imágenes son perfectas para mostrar contenido visual."
+            actions={[
+              { label: 'Ver más', onClick: () => console.log('View more'), icon: <ExternalLink className="h-4 w-4" /> }
+            ]}
+          />
+          
+          {/* Featured Card */}
+          <CardMolecule
+            variant="featured"
+            title="Card Destacada"
+            description="Esta card tiene un estilo destacado especial"
+            content="Perfecta para resaltar contenido importante o promociones especiales."
+            badge={{ text: 'Featured', variant: 'default' }}
+            closeable={true}
+            onClose={() => console.log('Card closed')}
+            footer="Última actualización: hace 2 horas"
+          />
+          
+          {/* Compact Card */}
+          <CardMolecule
+            variant="compact"
+            title="Card Compacta"
+            description="Versión compacta con menos padding"
+            actions={[
+              { label: 'Acción', onClick: () => console.log('Action') }
+            ]}
+          />
+          
+          {/* Elevated Card */}
+          <CardMolecule
+            variant="elevated"
+            title="Card Elevada"
+            description="Card con sombra elevada"
+            content="Esta variante crea una sensación de profundidad con sombras más pronunciadas."
+            badge={{ text: 'Premium', variant: 'secondary' }}
+          />
+          
+          {/* Card with Loading State */}
+          <CardMolecule
+            title="Card con Loading"
+            description="Esta card está en estado de carga"
+            content="El contenido se está cargando..."
+            loading={true}
+          />
+        </div>
       </section>
 
       {/* Date Picker Molecule */}

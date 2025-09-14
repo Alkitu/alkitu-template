@@ -15,6 +15,10 @@ interface CheckboxProps {
   description?: string;
   onChange?: (checked: boolean) => void;
   className?: string;
+  // Accessibility props (NEW - additive only)
+  'aria-label'?: string;
+  'aria-describedby'?: string;
+  'aria-required'?: boolean;
 }
 
 const getCheckboxVariantClasses = (variant: string, disabled: boolean) => {
@@ -67,7 +71,10 @@ export function Checkbox({
   label,
   description,
   onChange,
-  className = ''
+  className = '',
+  'aria-label': ariaLabel,
+  'aria-describedby': ariaDescribedby,
+  'aria-required': ariaRequired
 }: CheckboxProps) {
   const [internalChecked, setInternalChecked] = React.useState(checked);
   
@@ -108,6 +115,9 @@ export function Checkbox({
         role="checkbox"
         aria-checked={indeterminate ? 'mixed' : internalChecked}
         aria-disabled={disabled}
+        aria-label={ariaLabel || (label ? undefined : 'Checkbox')}
+        aria-describedby={ariaDescribedby || (description ? `${id}-description` : undefined)}
+        aria-required={ariaRequired ? 'true' : undefined}
         tabIndex={disabled ? -1 : 0}
         onClick={handleChange}
         onKeyDown={(e) => {
@@ -115,6 +125,20 @@ export function Checkbox({
             e.preventDefault();
             handleChange();
           }
+        }}
+        onFocus={(e) => {
+          // Enhanced focus ring for accessibility
+          const focusColor = variant === 'error'
+            ? 'var(--colors-destructive, #DC2626)'
+            : variant === 'success'
+            ? 'var(--colors-success, #16A34A)'
+            : 'var(--colors-primary, #0066CC)';
+          e.currentTarget.style.outline = `2px solid ${focusColor}`;
+          e.currentTarget.style.outlineOffset = '2px';
+        }}
+        onBlur={(e) => {
+          // Remove focus ring
+          e.currentTarget.style.outline = 'none';
         }}
         className={`${checkboxClasses} ${sizeClasses} ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'} focus:outline-none relative ${
           internalChecked ? 'bg-primary border-primary' : 'bg-background'

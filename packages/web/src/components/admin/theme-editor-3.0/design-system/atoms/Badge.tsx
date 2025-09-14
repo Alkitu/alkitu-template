@@ -11,6 +11,10 @@ interface BadgeProps {
   icon?: React.ReactNode;
   className?: string;
   onRemove?: () => void;
+  // Accessibility props (NEW - additive only)
+  'aria-label'?: string;
+  'aria-describedby'?: string;
+  role?: string;
 }
 
 const getBadgeVariantClasses = (variant: string) => {
@@ -63,14 +67,33 @@ export function Badge({
   removable = false,
   icon,
   className = '',
-  onRemove
+  onRemove,
+  'aria-label': ariaLabel,
+  'aria-describedby': ariaDescribedby,
+  role = 'status'
 }: BadgeProps) {
   const variantClasses = getBadgeVariantClasses(variant);
   const sizeClasses = getBadgeSizeClasses(size);
   const iconSizeClasses = getIconSize(size);
 
+  // Accessibility enhancements (NEW - additive only)
+  const getAccessibilityProps = () => {
+    const accessibilityProps: Record<string, any> = {
+      role,
+      'aria-label': ariaLabel || (typeof children === 'string' ? `Badge: ${children}` : 'Badge'),
+      'aria-describedby': ariaDescribedby,
+    };
+
+    // Add semantic meaning based on variant
+    if (variant === 'error' || variant === 'warning') {
+      accessibilityProps['aria-live'] = 'polite';
+    }
+
+    return accessibilityProps;
+  };
+
   return (
-    <span 
+    <span
       className={`
         inline-flex items-center gap-1.5 rounded-full font-medium transition-colors duration-200
         ${variantClasses} ${sizeClasses} ${className}
@@ -81,6 +104,7 @@ export function Badge({
         letterSpacing: 'var(--typography-emphasis-letter-spacing)',
         borderRadius: 'var(--radius-badge, var(--radius))',
       }}
+      {...getAccessibilityProps()}
     >
       {/* Icon */}
       {icon && (
@@ -104,12 +128,30 @@ export function Badge({
             e.stopPropagation();
             onRemove();
           }}
+          onKeyDown={(e) => {
+            // Enhanced keyboard accessibility
+            if ((e.key === 'Enter' || e.key === ' ') && e.currentTarget === e.target) {
+              e.preventDefault();
+              e.stopPropagation();
+              onRemove();
+            }
+          }}
+          onFocus={(e) => {
+            // Enhanced focus ring for accessibility
+            e.currentTarget.style.outline = '2px solid var(--colors-primary, #0066CC)';
+            e.currentTarget.style.outlineOffset = '1px';
+          }}
+          onBlur={(e) => {
+            // Remove focus ring
+            e.currentTarget.style.outline = 'none';
+          }}
           className={`
-            ${iconSizeClasses} flex-shrink-0 rounded-full 
-            hover:bg-black/10 dark:hover:bg-white/10 
+            ${iconSizeClasses} flex-shrink-0 rounded-full
+            hover:bg-black/10 dark:hover:bg-white/10
             transition-colors duration-200
           `}
-          aria-label="Remove"
+          aria-label={`Remove ${typeof children === 'string' ? children : 'badge'}`}
+          tabIndex={0}
         >
           <X className={iconSizeClasses} />
         </button>

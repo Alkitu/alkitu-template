@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react'; // Añadido para useMemo y useCallback
 import { useThemeEditor } from '../context/ThemeEditorContext';
 import { 
   ThemeColors, 
@@ -26,56 +27,59 @@ import {
 export function useThemeUpdates() {
   const { state, updateTheme } = useThemeEditor();
 
-  const updateColors: ColorsChangeHandler = (colors: ThemeColors) => {
+  // Performance Optimization (NEW - ETAPA 3: Performance Optimization)
+  // useCallback para estabilizar referencias de funciones y evitar re-renders innecesarios
+  const updateColors: ColorsChangeHandler = React.useCallback((colors: ThemeColors) => {
     updateTheme({
       ...state.currentTheme,
       colors
     });
-  };
+  }, [state.currentTheme, updateTheme]);
 
-  const updateTypography: TypographyChangeHandler = (typography: ThemeTypography) => {
+  const updateTypography: TypographyChangeHandler = React.useCallback((typography: ThemeTypography) => {
     updateTheme({
       ...state.currentTheme,
       typography
     });
-  };
+  }, [state.currentTheme, updateTheme]);
 
-  const updateBrand: BrandChangeHandler = (brand: ThemeBrand) => {
+  const updateBrand: BrandChangeHandler = React.useCallback((brand: ThemeBrand) => {
     updateTheme({
       ...state.currentTheme,
       brand
     });
-  };
+  }, [state.currentTheme, updateTheme]);
 
-  const updateBorders: BordersChangeHandler = (borders: ThemeBorders) => {
+  const updateBorders: BordersChangeHandler = React.useCallback((borders: ThemeBorders) => {
     updateTheme({
       ...state.currentTheme,
       borders
     });
-  };
+  }, [state.currentTheme, updateTheme]);
 
-  const updateSpacing: SpacingChangeHandler = (spacing: ThemeSpacing) => {
+  const updateSpacing: SpacingChangeHandler = React.useCallback((spacing: ThemeSpacing) => {
     updateTheme({
       ...state.currentTheme,
       spacing
     });
-  };
+  }, [state.currentTheme, updateTheme]);
 
-  const updateShadows: ShadowsChangeHandler = (shadows: ThemeShadows) => {
+  const updateShadows: ShadowsChangeHandler = React.useCallback((shadows: ThemeShadows) => {
     updateTheme({
       ...state.currentTheme,
       shadows
     });
-  };
+  }, [state.currentTheme, updateTheme]);
 
-  const updateScroll: ScrollChangeHandler = (scroll: ThemeScroll) => {
+  const updateScroll: ScrollChangeHandler = React.useCallback((scroll: ThemeScroll) => {
     updateTheme({
       ...state.currentTheme,
       scroll
     });
-  };
+  }, [state.currentTheme, updateTheme]);
 
-  return {
+  // useMemo para estabilizar el objeto de retorno y evitar re-creates
+  return React.useMemo(() => ({
     updateColors,
     updateTypography,
     updateBrand,
@@ -83,5 +87,13 @@ export function useThemeUpdates() {
     updateSpacing,
     updateShadows,
     updateScroll
-  };
+  }), [
+    updateColors,
+    updateTypography,
+    updateBrand,
+    updateBorders,
+    updateSpacing,
+    updateShadows,
+    updateScroll
+  ]);
 }

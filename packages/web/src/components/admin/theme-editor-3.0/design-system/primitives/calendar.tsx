@@ -1,2 +1,1 @@
-// Re-export from main UI components
-export * from '@/components/ui/calendar';
+export * from './calendar-local';

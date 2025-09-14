@@ -12,6 +12,11 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
   showPasswordToggle?: boolean;
+  // Accessibility props (NEW - additive only)
+  'aria-label'?: string;
+  'aria-describedby'?: string;
+  'aria-invalid'?: boolean;
+  'aria-required'?: boolean;
 }
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
@@ -124,12 +129,37 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       zIndex: 1,
     });
 
-    // Determine the final right icon
+    // Accessibility enhancements (NEW - additive only)
+    const getAccessibilityProps = () => {
+      const accessibilityProps: Record<string, any> = {
+        // Enhanced focus indicators
+        'data-focus-visible': true,
+        // Validation state accessibility
+        'aria-invalid': isInvalid || props['aria-invalid'] ? 'true' : 'false',
+        'aria-required': props.required || props['aria-required'] ? 'true' : undefined,
+      };
+
+      // Auto-generate aria-label for common input types
+      if (!props['aria-label'] && !props.placeholder) {
+        if (type === 'email') accessibilityProps['aria-label'] = 'Email address';
+        else if (type === 'password') accessibilityProps['aria-label'] = 'Password';
+        else if (type === 'search') accessibilityProps['aria-label'] = 'Search';
+        else if (type === 'tel') accessibilityProps['aria-label'] = 'Phone number';
+        else if (type === 'url') accessibilityProps['aria-label'] = 'Website URL';
+        else accessibilityProps['aria-label'] = 'Text input';
+      }
+
+      return accessibilityProps;
+    };
+
+    // Determine the final right icon with accessibility
     const finalRightIcon = showPasswordToggle ? (
       <button
         type="button"
         onClick={() => setShowPassword(!showPassword)}
         className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+        aria-label={showPassword ? 'Hide password' : 'Show password'}
+        tabIndex={-1} // Remove from tab order, focus should stay on input
       >
         {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
       </button>
@@ -155,7 +185,30 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           style={{
             ...baseStyles,
             ...style,
+            // Enhanced focus indicators (CSS only) - NEW accessibility enhancement
+            '--focus-ring-color': isInvalid
+              ? 'var(--colors-destructive, #DC2626)'
+              : isWarning
+              ? 'var(--colors-warning, #D97706)'
+              : isValid
+              ? 'var(--colors-success, #16A34A)'
+              : 'var(--colors-primary, #0066CC)',
           }}
+          // Enhanced focus handlers (additive enhancement)
+          onFocus={(e) => {
+            // Enhanced focus ring for accessibility
+            e.currentTarget.style.outline = '2px solid var(--focus-ring-color)';
+            e.currentTarget.style.outlineOffset = '2px';
+            // Call original onFocus if provided
+            if (props.onFocus) props.onFocus(e);
+          }}
+          onBlur={(e) => {
+            // Remove focus ring
+            e.currentTarget.style.outline = 'none';
+            // Call original onBlur if provided
+            if (props.onBlur) props.onBlur(e);
+          }}
+          {...getAccessibilityProps()}
           {...props}
         />
         
@@ -174,4 +227,37 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
 );
 
 Input.displayName = 'Input';
+
+// Performance Optimization Wrapper (NEW - ETAPA 3: Performance Optimization)
+// React.memo wrapper optimizado para Input component
+export const MemoizedInput = React.memo(Input, (prevProps, nextProps) => {
+  // Optimización específica para inputs - evitar re-renders por cambios mínimos
+
+  // Props críticas que requieren re-render
+  const criticalProps = [
+    'type', 'value', 'defaultValue', 'placeholder', 'disabled',
+    'variant', 'inputSize', 'isInvalid', 'isValid', 'isWarning'
+  ];
+
+  // Verificar cambios en props críticas
+  for (const prop of criticalProps) {
+    if (prevProps[prop] !== nextProps[prop]) return false;
+  }
+
+  // Verificar cambios en iconos (pueden ser ReactNode complejos)
+  if (prevProps.leftIcon !== nextProps.leftIcon) return false;
+  if (prevProps.rightIcon !== nextProps.rightIcon) return false;
+  if (prevProps.showPasswordToggle !== nextProps.showPasswordToggle) return false;
+
+  // Verificar handlers de eventos (cambios de referencia)
+  if (prevProps.onChange !== nextProps.onChange) return false;
+  if (prevProps.onFocus !== nextProps.onFocus) return false;
+  if (prevProps.onBlur !== nextProps.onBlur) return false;
+
+  return true; // Props iguales, evitar re-render
+});
+
+MemoizedInput.displayName = 'MemoizedInput';
+
+export default Input;
 

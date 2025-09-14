@@ -44,7 +44,12 @@
       "Bash(fi)",
       "Bash(done)",
       "Bash(taskkill:*)",
-      "Bash(cmd /c:*)"
+      "Bash(cmd /c:*)",
+      "Bash(npx vitest run:*)",
+      "Bash(npx storybook@latest init:*)",
+      "Bash(chmod:*)",
+      "Bash(./copy-ui-components.sh:*)",
+      "Bash(awk:*)"
     ],
     "deny": []
   }

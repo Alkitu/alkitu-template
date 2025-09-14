@@ -16,7 +16,7 @@
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
     "clean": "rm -rf .next dist out",
-    "storybook": "storybook dev -p 6006 --ci --no-open --host 0.0.0.0",
+    "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
   "dependencies": {
@@ -127,6 +127,7 @@
     "@types/uuid": "^9.0.8",
     "@types/web-push": "^3.6.4",
     "@vitejs/plugin-react": "^4.3.4",
+    "@vitest/coverage-v8": "^3.2.4",
     "autoprefixer": "^10.0.1",
     "chromatic": "^11.3.0",
     "cross-fetch": "^4.1.0",

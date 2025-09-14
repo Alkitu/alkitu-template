@@ -7,6 +7,10 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   size?: 'default' | 'sm' | 'lg' | 'icon';
   loading?: boolean;
   icon?: React.ReactNode;
+  // Accessibility props (NEW - additive only)
+  'aria-label'?: string;
+  'aria-describedby'?: string;
+  'aria-live'?: 'off' | 'polite' | 'assertive';
 }
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -91,6 +95,29 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       }
     };
 
+    // Accessibility enhancements (NEW - additive only)
+    const getAccessibilityProps = () => {
+      const accessibilityProps: Record<string, any> = {
+        // Enhanced focus indicators
+        'data-focus-visible': true,
+        // Loading state accessibility
+        'aria-busy': loading ? 'true' : undefined,
+        'aria-disabled': (props.disabled || loading) ? 'true' : undefined,
+      };
+
+      // Add aria-label for icon-only buttons
+      if (variant === 'icon' && !props.children && !props['aria-label']) {
+        accessibilityProps['aria-label'] = 'Button';
+      }
+
+      // Add aria-live for loading state changes
+      if (loading && !props['aria-live']) {
+        accessibilityProps['aria-live'] = 'polite';
+      }
+
+      return accessibilityProps;
+    };
+
     return (
       <button
         ref={ref}
@@ -98,8 +125,42 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         style={{
           ...baseStyles,
           ...style,
+          // Enhanced focus indicators (CSS only) - NEW accessibility enhancement
+          outline: '2px solid transparent',
+          outlineOffset: '2px',
+          // Focus ring with high contrast for accessibility
+          '--focus-ring-color': 'var(--colors-primary, #0066CC)',
+          // Enhanced focus visibility
+          boxShadow: loading ? 'none' : undefined,
+        }}
+        // CSS focus-visible handler (additive enhancement)
+        onFocus={(e) => {
+          // Enhanced focus ring for accessibility
+          e.currentTarget.style.outline = '2px solid var(--focus-ring-color)';
+          e.currentTarget.style.outlineOffset = '2px';
+          // Call original onFocus if provided
+          if (props.onFocus) props.onFocus(e);
+        }}
+        onBlur={(e) => {
+          // Remove focus ring
+          e.currentTarget.style.outline = '2px solid transparent';
+          // Call original onBlur if provided
+          if (props.onBlur) props.onBlur(e);
+        }}
+        // Keyboard accessibility (additive enhancement)
+        onKeyDown={(e) => {
+          // Support Enter and Space key activation for enhanced accessibility
+          if ((e.key === 'Enter' || e.key === ' ') && !props.disabled && !loading) {
+            e.preventDefault();
+            if (props.onClick) {
+              props.onClick(e as any); // Type cast needed for keyboard to mouse event
+            }
+          }
+          // Call original onKeyDown if provided
+          if (props.onKeyDown) props.onKeyDown(e);
         }}
         disabled={props.disabled || loading}
+        {...getAccessibilityProps()}
         {...props}
       >
         {loading && (
@@ -136,3 +197,33 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 );
 
 Button.displayName = 'Button';
+
+// Performance Optimization Wrapper (NEW - ETAPA 3: Performance Optimization)
+// React.memo wrapper para prevenir re-renders innecesarios
+// NO modifica el componente original - solo añade optimización como wrapper
+export const MemoizedButton = React.memo(Button, (prevProps, nextProps) => {
+  // Custom comparison para optimizar re-renders específicos del Button
+
+  // Si el loading state cambia, siempre re-renderizar
+  if (prevProps.loading !== nextProps.loading) return false;
+
+  // Si el disabled state cambia, siempre re-renderizar
+  if (prevProps.disabled !== nextProps.disabled) return false;
+
+  // Si las props básicas cambian, re-renderizar
+  if (prevProps.variant !== nextProps.variant) return false;
+  if (prevProps.size !== nextProps.size) return false;
+  if (prevProps.className !== nextProps.className) return false;
+
+  // Comparación profunda para children (puede ser ReactNode complejo)
+  if (JSON.stringify(prevProps.children) !== JSON.stringify(nextProps.children)) return false;
+
+  // Si todas las props críticas son iguales, evitar re-render
+  return true;
+});
+
+MemoizedButton.displayName = 'MemoizedButton';
+
+// Mantener exportación original para compatibilidad total
+// Los usuarios pueden optar por usar MemoizedButton para mejor rendimiento
+export default Button;

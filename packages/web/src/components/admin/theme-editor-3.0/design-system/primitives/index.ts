@@ -1,54 +1,45 @@
-// Export barrel for all UI components
-// This makes the theme-editor-3.0 module self-contained
+/**
+ * Theme Editor 3.0 - Primitives Index
+ *
+ * PREPARACIÓN PRE-ETAPA 7: Local Components Export
+ *
+ * Centralized exports for all local UI components
+ */
 
-export * from './button';
-export * from './input';
-export * from './label';
-export * from './card';
-export * from './dialog';
-export * from './popover';
-export * from './select';
-export * from './tabs';
-export * from './separator';
-export * from './badge';
-export * from './accordion';
-export * from './alert';
-export * from './slider';
-export * from './switch';
-export * from './scroll-area';
-export * from './textarea';
-export * from './avatar';
-export * from './checkbox';
-export * from './progress';
-export * from './calendar';
-export * from './carousel';
-export * from './command';
-export * from './dropdown-menu';
-export * from './form';
-export * from './hover-card';
-export * from './menubar';
-export * from './navigation-menu';
-export * from './pagination';
-export * from './radio-group';
-export * from './resizable';
-export * from './sheet';
-export * from './sidebar';
-export * from './skeleton';
-export * from './sonner';
-export * from './table';
-export * from './toast';
-export * from './toaster';
-export * from './toggle';
-export * from './toggle-group';
-export * from './tooltip';
-export * from './alert-dialog';
-export * from './aspect-ratio';
-export * from './breadcrumb';
-export * from './collapsible';
-export * from './context-menu';
-export * from './drawer';
-export * from './input-otp';
-export * from './enhanced-color-picker';
-export * from './simple-color-picker';
-export * from './password-input';
-export * from './utils';
+// Dialog
+export * from './dialog-local';
+
+// Popover
+export * from './popover-local';
+
+// Tabs
+export * from './tabs-local';
+
+// Form components
+export * from './textarea-local';
+export * from './slider-local';
+export * from './switch-local';
+export * from './progress-local';
+export * from './radio-group-local';
+export * from './toggle-local';
+export * from './toggle-group-local';
+
+// Layout components
+export * from './table-local';
+export * from './separator-local';
+export * from './skeleton-local';
+
+// Interactive components
+export * from './tooltip-local';
+export * from './dropdown-menu-local';
+export * from './context-menu-local';
+export * from './command-local';
+
+// Toast system
+export * from './toast-local';
+export * from './toaster-local';
+export * from './sonner-local';
+
+// Color pickers
+export * from './enhanced-color-picker-local';
+export * from './simple-color-picker-local';

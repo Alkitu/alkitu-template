@@ -1,2 +1,1 @@
-// Re-export from main UI components
-export * from '@/components/ui/pagination';
+export * from './pagination-local';

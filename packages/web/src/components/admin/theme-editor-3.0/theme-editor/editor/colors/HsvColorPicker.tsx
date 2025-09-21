@@ -3,6 +3,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Input } from '../../../design-system/primitives/input';
 import { Label } from '../../../design-system/primitives/label';
+import { ChevronDown, ChevronRight } from 'lucide-react';
+import { Button } from '../../../design-system/primitives/button';
 import { ColorToken } from '../../../core/types/theme.types';
 import { 
   // Legacy imports (still needed for some functions)
@@ -35,6 +37,7 @@ export function HsvColorPicker({ colorToken, onChange, className }: HsvColorPick
   const [isEditingHex, setIsEditingHex] = useState(false);
   const [isDraggingHue, setIsDraggingHue] = useState(false);
   const [isDraggingSatVal, setIsDraggingSatVal] = useState(false);
+  const [showColorValues, setShowColorValues] = useState(false);
   
   const hueBarRef = useRef<HTMLDivElement>(null);
   const satValRef = useRef<HTMLDivElement>(null);
@@ -268,116 +271,140 @@ export function HsvColorPicker({ colorToken, onChange, className }: HsvColorPick
         </div>
       </div>
 
-      {/* Hex Input */}
+      {/* Collapsible Color Values Section */}
       <div className="space-y-2">
-        <Label className="text-xs text-muted-foreground">
-          Hex Color
-        </Label>
-        <Input
-          value={hexInput}
-          onChange={(e) => handleHexChange(e.target.value)}
-          onFocus={handleHexFocus}
-          onBlur={handleHexBlur}
-          onKeyDown={handleHexKeyDown}
-          className="font-mono text-sm text-foreground bg-input border-border"
-          placeholder="#000000"
-        />
-      </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setShowColorValues(!showColorValues)}
+          className="w-full justify-start p-2 h-auto text-xs text-muted-foreground hover:text-foreground"
+        >
+          {showColorValues ? (
+            <ChevronDown className="h-3 w-3 mr-2" />
+          ) : (
+            <ChevronRight className="h-3 w-3 mr-2" />
+          )}
+          Color Values
+          <span className="ml-auto text-xs">
+            {showColorValues ? 'Hide' : 'Show'} detailed values
+          </span>
+        </Button>
 
-      {/* RGB Inputs */}
-      <div className="space-y-2">
-        <Label className="text-xs text-muted-foreground">
-          RGB Values
-        </Label>
-        <div className="grid grid-cols-3 gap-2">
-          <div className="space-y-1">
-            <Label className="text-xs text-center block">R</Label>
-            <Input
-              type="number"
-              min="0"
-              max="255"
-              value={rgb?.r || 0}
-              onChange={(e) => handleRgbChange('r', e.target.value)}
-              className="text-center text-sm text-foreground bg-input border-border"
-            />
-          </div>
-          <div className="space-y-1">
-            <Label className="text-xs text-center block">G</Label>
-            <Input
-              type="number"
-              min="0"
-              max="255"
-              value={rgb?.g || 0}
-              onChange={(e) => handleRgbChange('g', e.target.value)}
-              className="text-center text-sm text-foreground bg-input border-border"
-            />
-          </div>
-          <div className="space-y-1">
-            <Label className="text-xs text-center block">B</Label>
-            <Input
-              type="number"
-              min="0"
-              max="255"
-              value={rgb?.b || 0}
-              onChange={(e) => handleRgbChange('b', e.target.value)}
-              className="text-center text-sm text-foreground bg-input border-border"
-            />
-          </div>
-        </div>
-      </div>
+        {showColorValues && (
+          <div className="space-y-4 pl-4 border-l-2 border-muted">
+            {/* Hex Input */}
+            <div className="space-y-2">
+              <Label className="text-xs text-muted-foreground">
+                Hex Color
+              </Label>
+              <Input
+                value={hexInput}
+                onChange={(e) => handleHexChange(e.target.value)}
+                onFocus={handleHexFocus}
+                onBlur={handleHexBlur}
+                onKeyDown={handleHexKeyDown}
+                className="font-mono text-sm text-foreground bg-input border-border"
+                placeholder="#000000"
+              />
+            </div>
 
-      {/* HSV Values (Read-only display) */}
-      <div className="space-y-2">
-        <Label className="text-xs text-muted-foreground">
-          HSV Values
-        </Label>
-        <div className="grid grid-cols-3 gap-2">
-          <div className="text-center">
-            <Label className="text-xs block">H</Label>
-            <div className="text-sm font-mono text-foreground bg-muted/30 px-2 py-1 rounded">
-              {(hsv?.h || 0).toFixed(1)}°
+            {/* RGB Inputs */}
+            <div className="space-y-2">
+              <Label className="text-xs text-muted-foreground">
+                RGB Values
+              </Label>
+              <div className="grid grid-cols-3 gap-2">
+                <div className="space-y-1">
+                  <Label className="text-xs text-center block">R</Label>
+                  <Input
+                    type="number"
+                    min="0"
+                    max="255"
+                    value={rgb?.r || 0}
+                    onChange={(e) => handleRgbChange('r', e.target.value)}
+                    className="text-center text-sm text-foreground bg-input border-border"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs text-center block">G</Label>
+                  <Input
+                    type="number"
+                    min="0"
+                    max="255"
+                    value={rgb?.g || 0}
+                    onChange={(e) => handleRgbChange('g', e.target.value)}
+                    className="text-center text-sm text-foreground bg-input border-border"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs text-center block">B</Label>
+                  <Input
+                    type="number"
+                    min="0"
+                    max="255"
+                    value={rgb?.b || 0}
+                    onChange={(e) => handleRgbChange('b', e.target.value)}
+                    className="text-center text-sm text-foreground bg-input border-border"
+                  />
+                </div>
+              </div>
             </div>
-          </div>
-          <div className="text-center">
-            <Label className="text-xs block">S</Label>
-            <div className="text-sm font-mono text-foreground bg-muted/30 px-2 py-1 rounded">
-              {(hsv?.s || 0).toFixed(1)}%
-            </div>
-          </div>
-          <div className="text-center">
-            <Label className="text-xs block">V</Label>
-            <div className="text-sm font-mono text-foreground bg-muted/30 px-2 py-1 rounded">
-              {(hsv?.v || 0).toFixed(1)}%
-            </div>
-          </div>
-        </div>
-      </div>
 
-      {/* 🆕 NUEVA SECCIÓN: OKLCH Values (Source of Truth) */}
-      <div className="space-y-2">
-        <Label className="text-xs text-muted-foreground">
-          OKLCH Values (Source of Truth)
-        </Label>
-        <div className="grid grid-cols-3 gap-2">
-          <div className="text-center">
-            <Label className="text-xs block">L</Label>
-            <div className="text-sm font-mono text-foreground bg-primary/10 px-2 py-1 rounded border border-primary/20">
-              {(colorToken?.oklch?.l || 0).toFixed(4)}
+            {/* HSV Values (Read-only display) */}
+            <div className="space-y-2">
+              <Label className="text-xs text-muted-foreground">
+                HSV Values
+              </Label>
+              <div className="grid grid-cols-3 gap-2">
+                <div className="text-center">
+                  <Label className="text-xs block">H</Label>
+                  <div className="text-sm font-mono text-foreground bg-muted/30 px-2 py-1 rounded">
+                    {(hsv?.h || 0).toFixed(1)}°
+                  </div>
+                </div>
+                <div className="text-center">
+                  <Label className="text-xs block">S</Label>
+                  <div className="text-sm font-mono text-foreground bg-muted/30 px-2 py-1 rounded">
+                    {(hsv?.s || 0).toFixed(1)}%
+                  </div>
+                </div>
+                <div className="text-center">
+                  <Label className="text-xs block">V</Label>
+                  <div className="text-sm font-mono text-foreground bg-muted/30 px-2 py-1 rounded">
+                    {(hsv?.v || 0).toFixed(1)}%
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* OKLCH Values (Source of Truth) */}
+            <div className="space-y-2">
+              <Label className="text-xs text-muted-foreground">
+                OKLCH Values (Source of Truth)
+              </Label>
+              <div className="grid grid-cols-3 gap-2">
+                <div className="text-center">
+                  <Label className="text-xs block">L</Label>
+                  <div className="text-sm font-mono text-foreground bg-primary/10 px-2 py-1 rounded border border-primary/20">
+                    {(colorToken?.oklch?.l || 0).toFixed(4)}
+                  </div>
+                </div>
+                <div className="text-center">
+                  <Label className="text-xs block">C</Label>
+                  <div className="text-sm font-mono text-foreground bg-primary/10 px-2 py-1 rounded border border-primary/20">
+                    {(colorToken?.oklch?.c || 0).toFixed(4)}
+                  </div>
+                </div>
+                <div className="text-center">
+                  <Label className="text-xs block">H</Label>
+                  <div className="text-sm font-mono text-foreground bg-primary/10 px-2 py-1 rounded border border-primary/20">
+                    {(colorToken?.oklch?.h || 0).toFixed(2)}°
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-          <div className="text-center">
-            <Label className="text-xs block">C</Label>
-            <div className="text-sm font-mono text-foreground bg-primary/10 px-2 py-1 rounded border border-primary/20">
-              {(colorToken?.oklch?.c || 0).toFixed(4)}
-            </div>
-          </div>
-          <div className="text-center">
-            <Label className="text-xs block">H</Label>
-            <div className="text-sm font-mono text-foreground bg-primary/10 px-2 py-1 rounded border border-primary/20">
-              {(colorToken?.oklch?.h || 0).toFixed(2)}°
-            </div>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );

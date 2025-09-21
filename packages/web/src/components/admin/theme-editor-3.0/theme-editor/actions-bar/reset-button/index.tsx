@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Button } from '../../../design-system/primitives/button';
+import { Icon } from '../../../design-system/atoms/Icon';
 import { RotateCcw } from 'lucide-react';
 
 interface ResetButtonProps {
@@ -19,12 +20,17 @@ export function ResetButton({
     <Button
       variant="outline"
       size="sm"
-      className={`h-8 w-8 p-0 ${className}`}
+      className={`h-8 aspect-square flex items-center justify-center ${className}`}
       onClick={onReset}
       disabled={!hasChanges}
       title="Reset theme to original values"
     >
-      <RotateCcw className="h-3 w-3" />
+      <Icon
+        icon={RotateCcw}
+        size="sm"
+        variant={!hasChanges ? 'muted' : 'default'}
+        className={!hasChanges ? 'text-muted-foreground/50' : 'text-current'}
+      />
     </Button>
   );
 }

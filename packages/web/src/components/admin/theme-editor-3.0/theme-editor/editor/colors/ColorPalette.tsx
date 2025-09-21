@@ -71,7 +71,7 @@ export function ColorPalette({
                   }`}
                   onClick={() => onColorSelect(colorKey, colorToken)}
                 >
-                  <div 
+                  <div
                     className="w-6 h-6 rounded border shadow-sm flex-shrink-0"
                     style={{ backgroundColor: colorToken.value }}
                     title={colorToken.value}

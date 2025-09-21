@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Button } from '../../../design-system/primitives/button';
+import { Icon } from '../../../design-system/atoms/Icon';
 import { Save, Heart, Check } from 'lucide-react';
 import { ThemeData } from '../../../core/types/theme.types';
 import { SaveThemeDialog } from './SaveThemeDialog';
@@ -48,9 +49,15 @@ export function SaveButton({
   };
 
   const getIcon = () => {
-    if (justSaved) return <Check className="h-3 w-3" />;
-    if (theme.isFavorite) return <Heart className="h-3 w-3 fill-current" />;
-    return <Save className="h-3 w-3" />;
+    if (justSaved) return (
+      <Icon icon={Check} size="sm" variant="default" className="text-primary-foreground" />
+    );
+    if (theme.isFavorite) return (
+      <Icon icon={Heart} size="sm" variant="default" className="fill-current text-current" />
+    );
+    return (
+      <Icon icon={Save} size="sm" variant="default" className="text-current" />
+    );
   };
 
   const getVariant = () => {
@@ -70,7 +77,7 @@ export function SaveButton({
       <Button
         variant={getVariant()}
         size="sm"
-        className={`h-8 w-8 p-0 ${className} ${justSaved ? 'bg-primary hover:bg-primary/90 text-primary-foreground' : ''}`}
+        className={`h-8 aspect-square flex items-center justify-center ${className} ${justSaved ? 'bg-primary hover:bg-primary/90 text-primary-foreground' : ''}`}
         onClick={handleSaveClick}
         disabled={isSaving}
         title={getTitle()}

@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Button } from '../../../design-system/primitives/button';
+import { Icon } from '../../../design-system/atoms/Icon';
 import { Upload } from 'lucide-react';
 import { ThemeData } from '../../../core/types/theme.types';
 import { ImportCustomCSSModal } from './ImportCustomCSSModal';
@@ -34,11 +35,16 @@ export function ImportButton({ onImport, onError, existingThemes, className = ""
       <Button
         variant="outline"
         size="sm"
-        className={`h-8 w-8 p-0 ${className}`}
+        className={`h-8 aspect-square flex items-center justify-center ${className}`}
         onClick={handleClick}
         title="Import theme from CSS"
       >
-        <Upload className="h-3 w-3" />
+        <Icon
+          icon={Upload}
+          size="sm"
+          variant="default"
+          className="text-current"
+        />
       </Button>
       
       <ImportCustomCSSModal

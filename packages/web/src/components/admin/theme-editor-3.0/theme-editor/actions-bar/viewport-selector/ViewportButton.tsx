@@ -3,6 +3,7 @@
 import React from 'react';
 import { Button } from '../../../design-system/primitives/button';
 import { ViewportSize } from '../../../core/types/viewport.types';
+import { Icon } from '../../../design-system/atoms/Icon';
 import { Monitor, Tv, Tablet, Smartphone } from 'lucide-react';
 
 interface ViewportButtonProps {
@@ -21,24 +22,37 @@ const VIEWPORT_ICONS = {
 
 const VIEWPORT_LABELS = {
   tv: 'TV',
-  desktop: 'Desktop', 
+  desktop: 'Desktop',
   tablet: 'Tablet',
   smartphone: 'Phone'
 } as const;
 
 export function ViewportButton({ viewport, isActive, onClick, className = '' }: ViewportButtonProps) {
-  const Icon = VIEWPORT_ICONS[viewport];
+  const IconComponent = VIEWPORT_ICONS[viewport];
   const label = VIEWPORT_LABELS[viewport];
-  
+
   return (
     <Button
       variant={isActive ? 'default' : 'outline'}
       size="sm"
-      className={`h-8 w-8 p-0 ${className}`}
+      className={`p-0 flex items-center justify-center ${className}`}
+      style={{
+        width: '32px',
+        height: '32px',
+        minWidth: '32px',
+        minHeight: '32px',
+        maxWidth: '32px',
+        maxHeight: '32px'
+      }}
       onClick={onClick}
       title={`Switch to ${label} view`}
     >
-      <Icon className="h-3 w-3" />
+      <Icon
+        icon={IconComponent}
+        size="sm"
+        variant={isActive ? 'default' : 'muted'}
+        className={isActive ? 'text-primary-foreground' : ''}
+      />
     </Button>
   );
 }

@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Button } from '../../../design-system/primitives/button';
+import { Icon } from '../../../design-system/atoms/Icon';
 import { Undo } from 'lucide-react';
 
 interface UndoButtonProps {
@@ -21,12 +22,17 @@ export function UndoButton({
     <Button
       variant="outline"
       size="sm"
-      className={`h-8 w-8 p-0 ${className}`}
+      className={`h-8 aspect-square flex items-center justify-center ${className}`}
       onClick={onUndo}
       disabled={!canUndo}
       title={`Undo ${undoCount > 0 ? `(${undoCount} available)` : '(no changes)'}`}
     >
-      <Undo className="h-3 w-3" />
+      <Icon
+        icon={Undo}
+        size="sm"
+        variant={!canUndo ? 'muted' : 'default'}
+        className={!canUndo ? 'text-muted-foreground/50' : 'text-current'}
+      />
     </Button>
   );
 }

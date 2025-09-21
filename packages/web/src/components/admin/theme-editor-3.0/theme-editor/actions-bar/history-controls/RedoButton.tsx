@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Button } from '../../../design-system/primitives/button';
+import { Icon } from '../../../design-system/atoms/Icon';
 import { Redo } from 'lucide-react';
 
 interface RedoButtonProps {
@@ -21,12 +22,17 @@ export function RedoButton({
     <Button
       variant="outline"
       size="sm"
-      className={`h-8 w-8 p-0 ${className}`}
+      className={`h-8 aspect-square flex items-center justify-center ${className}`}
       onClick={onRedo}
       disabled={!canRedo}
       title={`Redo ${redoCount > 0 ? `(${redoCount} available)` : '(no changes)'}`}
     >
-      <Redo className="h-3 w-3" />
+      <Icon
+        icon={Redo}
+        size="sm"
+        variant={!canRedo ? 'muted' : 'default'}
+        className={!canRedo ? 'text-muted-foreground/50' : 'text-current'}
+      />
     </Button>
   );
 }

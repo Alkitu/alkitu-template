@@ -99,9 +99,15 @@ export function ColorInput({
         <PopoverTrigger asChild>
           <Button
             variant="outline"
-            className="w-8 h-8 p-0 rounded border border-input"
+            className="p-0 flex items-center justify-center rounded border border-input"
             style={{
-              backgroundColor: getColorPreview()
+              backgroundColor: getColorPreview(),
+              width: '32px',
+              height: '32px',
+              minWidth: '32px',
+              minHeight: '32px',
+              maxWidth: '32px',
+              maxHeight: '32px'
             }}
           >
             <span className="sr-only">Pick color</span>

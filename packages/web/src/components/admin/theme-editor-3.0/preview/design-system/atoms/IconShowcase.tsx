@@ -19,7 +19,7 @@ export function IconShowcase() {
     <ShowcaseContainer name="Icon Library" tokenId="icon-library">
       <div className="w-full">
         <p className="text-sm text-muted-foreground mb-4">
-          {iconEntries.length} essential system icons • Primary color theme
+          {iconEntries.length} essential system icons • 16px standard size • Theme Editor icons included
         </p>
         
         {/* Responsive Icon Grid */}

@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Button } from '../../../design-system/primitives/button';
+import { Icon } from '../../../design-system/atoms/Icon';
 import { Code } from 'lucide-react';
 import { ThemeWithCurrentColors, ThemeExportFormat } from '../../../core/types/theme.types';
 import { ThemeCodeModal } from './ThemeCodeModal';
@@ -28,11 +29,16 @@ export function CodeButton({ theme, onExport, className = "" }: CodeButtonProps)
       <Button
         variant="outline"
         size="sm"
-        className={`h-8 w-8 p-0 text-muted-foreground hover:text-foreground border-border hover:bg-muted ${className}`}
+        className={`h-8 aspect-square flex items-center justify-center text-muted-foreground hover:text-foreground border-border hover:bg-muted ${className}`}
         onClick={handleOpenModal}
         title="Export theme code"
       >
-        <Code className="h-3 w-3" />
+        <Icon
+          icon={Code}
+          size="sm"
+          variant="default"
+          className="text-current"
+        />
       </Button>
 
       <ThemeCodeModal

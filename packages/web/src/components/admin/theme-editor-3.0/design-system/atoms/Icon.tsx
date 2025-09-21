@@ -83,39 +83,39 @@ export function Icon({
     return sizeMap[size];
   };
 
-  // Color variant mapping
-  const getColorValue = (): string => {
-    if (customColor) return customColor;
-    
+  // Color variant class mapping (use CSS classes instead of direct color)
+  const getColorClass = (): string => {
+    if (customColor) return ''; // Use direct color only when custom color is provided
+
     switch (variant) {
       case 'primary':
-        return 'var(--color-primary)';
+        return 'text-primary';
       case 'secondary':
-        return 'var(--color-secondary)';
+        return 'text-secondary';
       case 'accent':
-        return 'var(--color-accent)';
+        return 'text-accent';
       case 'muted':
-        return 'var(--color-muted-foreground)';
+        return 'text-muted-foreground';
       case 'destructive':
-        return 'var(--color-destructive)';
+        return 'text-destructive';
       case 'warning':
-        return 'var(--color-warning)';
+        return 'text-warning';
       case 'success':
-        return 'var(--color-success)';
+        return 'text-success';
       case 'default':
       default:
-        return 'var(--color-foreground)';
+        return 'text-foreground';
     }
   };
 
   const iconSize = getSizeValue();
-  const iconColor = getColorValue();
+  const colorClass = getColorClass();
 
   return (
     <IconComponent
       size={iconSize}
-      color={iconColor}
-      className={`icon-atom ${onClick ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''} ${className}`}
+      color={customColor} // Only use direct color for custom colors
+      className={`icon-atom ${colorClass} ${onClick ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''} ${className}`}
       style={{
         flexShrink: 0, // Prevent icon from shrinking in flex containers
         ...style

@@ -250,8 +250,8 @@ export function HsvColorPicker({ colorToken, onChange, className }: HsvColorPick
       {/* Color Preview with OKLCH */}
       <div className="flex items-center gap-3">
         <div
-          className="w-12 h-8 rounded shadow-inner"
-          style={{ 
+          className="w-10 h-10 rounded shadow-inner"
+          style={{
             backgroundColor: colorToken?.hex || '#000000',
             border: '1px solid rgba(0,0,0,0.2)'
           }}

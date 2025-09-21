@@ -10,6 +10,7 @@ interface ShowcaseContainerProps {
   children: React.ReactNode;
   className?: string;
   style?: React.CSSProperties;
+  actionButton?: React.ReactNode;
 }
 
 /**
@@ -17,12 +18,13 @@ interface ShowcaseContainerProps {
  * Connected to complete Card system: radius + spacing + shadows
  * Uses atoms and follows spacing hierarchy
  */
-export function ShowcaseContainer({ 
-  name, 
-  tokenId, 
-  children, 
+export function ShowcaseContainer({
+  name,
+  tokenId,
+  children,
   className = '',
-  style = {}
+  style = {},
+  actionButton
 }: ShowcaseContainerProps) {
   const { state } = useThemeEditor();
   const spacing = state.currentTheme?.spacing;
@@ -45,18 +47,21 @@ export function ShowcaseContainer({
     >
       {/* Header with typography atoms */}
       <div className="flex items-center justify-between">
-        <span 
-          className="text-muted-foreground"
-          style={{
-            fontFamily: 'var(--typography-emphasis-font-family)',
-            fontSize: 'calc(var(--typography-emphasis-font-size) * 0.75)', // Smaller than emphasis
-            fontWeight: 'var(--typography-emphasis-font-weight)',
-            letterSpacing: 'var(--typography-emphasis-letter-spacing)'
-          }}
-        >
-          {name}
-        </span>
-        <span 
+        <div className="flex items-center gap-2">
+          <span
+            className="text-muted-foreground"
+            style={{
+              fontFamily: 'var(--typography-emphasis-font-family)',
+              fontSize: 'calc(var(--typography-emphasis-font-size) * 0.75)', // Smaller than emphasis
+              fontWeight: 'var(--typography-emphasis-font-weight)',
+              letterSpacing: 'var(--typography-emphasis-letter-spacing)'
+            }}
+          >
+            {name}
+          </span>
+          {actionButton}
+        </div>
+        <span
           className="text-muted-foreground font-mono"
           style={{
             fontFamily: 'var(--typography-emphasis-font-family)',

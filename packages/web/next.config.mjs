@@ -12,8 +12,7 @@ const nextConfig = {
   
   // HMR and development server configuration
   devIndicators: {
-    buildActivity: true,
-    buildActivityPosition: 'bottom-right',
+    position: 'bottom-left',
   },
   
   // Force production-like behavior for HMR
@@ -33,7 +32,7 @@ const nextConfig = {
   webpack: (config, { dev, isServer }) => {
     // Enhanced HMR configuration for development
     if (dev && !isServer) {
-      config.devtool = 'eval-source-map';
+      config.devtool = false;
     }
     
     // Optimize watch options to reduce memory usage

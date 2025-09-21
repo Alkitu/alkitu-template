@@ -49,7 +49,9 @@
       "Bash(npx storybook@latest init:*)",
       "Bash(chmod:*)",
       "Bash(./copy-ui-components.sh:*)",
-      "Bash(awk:*)"
+      "Bash(awk:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)"
     ],
     "deny": []
   }

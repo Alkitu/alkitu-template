@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { FormBuilderOrganismShowcase } from '../../../design-system/organisms';
 import { CalendarOrganismShowcase } from '../../../design-system/organisms/CalendarOrganism';
 import { SkeletonOrganismShowcase } from '../../../design-system/organisms/SkeletonOrganism';
@@ -10,6 +10,24 @@ import { ChartOrganismShowcase } from '../../../design-system/organisms/ChartOrg
 import { DataTableOrganismShowcase } from '../../../design-system/organisms/DataTableOrganism';
 import { DialogOrganismShowcase } from '../../../design-system/organisms/DialogOrganism';
 import { useThemeEditor } from '../../../core/context/ThemeEditorContext';
+import { ComponentSearchFilter, SearchableItem, CategoryMapping } from '../../../design-system/components/ComponentSearchFilter';
+
+// Organism categories
+const ORGANISM_CATEGORIES: CategoryMapping = {
+  'forms': 'Formularios y Entradas',
+  'data-display': 'Visualización de Datos',
+  'navigation': 'Navegación',
+  'feedback': 'Feedback y Estados',
+  'layout': 'Diseño y Estructura'
+} as const;
+
+type OrganismCategory = keyof typeof ORGANISM_CATEGORIES;
+
+// Organism definitions
+interface OrganismDefinition extends SearchableItem {
+  category: OrganismCategory;
+  renderContent: () => React.ReactNode;
+}
 
 /**
  * OrganismsTabContent - NUEVOS Organismos shadcn/ui con integración de tema
@@ -20,92 +38,133 @@ export function OrganismsTabContent() {
   const { state } = useThemeEditor();
   
   // Theme integration
-  const colors = state.themeMode === 'dark' 
-    ? state.currentTheme?.darkColors 
+  const colors = state.themeMode === 'dark'
+    ? state.currentTheme?.darkColors
     : state.currentTheme?.lightColors;
-  const spacing = state.currentTheme?.spacing;
 
-  // Spacing system
-  const baseSpacing = spacing?.spacing || '2.2rem';
-  const baseValue = parseFloat(baseSpacing.replace('rem', '')) * 16;
-  const mediumSpacing = `var(--spacing-medium, ${baseValue * 2}px)`;
-  const largeSpacing = `var(--spacing-large, ${baseValue * 4}px)`;
+  // Search state
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<OrganismCategory | 'all'>('all');
+  const [openOrganisms, setOpenOrganisms] = useState<Set<string>>(new Set());
 
-  const getSectionStyles = () => ({
-    marginBottom: largeSpacing,
-    padding: mediumSpacing,
-    borderRadius: 'var(--radius-card, 12px)',
-    border: `1px solid ${colors?.border?.value || 'var(--color-border)'}20`,
-    background: `${colors?.background?.value || 'var(--color-background)'}f8`,
-    backdropFilter: 'blur(4px)'
-  });
 
-  const getSectionHeaderStyles = () => ({
-    fontFamily: 'var(--typography-h2-font-family)',
-    fontSize: 'var(--typography-h2-font-size)',
-    fontWeight: 'var(--typography-h2-font-weight)',
-    color: colors?.foreground?.value || 'var(--color-foreground)',
-    marginBottom: mediumSpacing,
-    paddingBottom: '8px',
-    borderBottom: `2px solid ${colors?.primary?.value || 'var(--color-primary)'}20`
-  });
+  // Available organisms definitions
+  const AVAILABLE_ORGANISMS: OrganismDefinition[] = useMemo(() => [
+    {
+      id: 'form-builder',
+      name: 'Form Builder',
+      category: 'forms',
+      keywords: ['form', 'builder', 'drag', 'drop', 'validation', 'fields', 'preview', 'json'],
+      renderContent: () => (
+        <div>
+          <p style={{
+            fontSize: '14px',
+            color: colors?.mutedForeground?.value || 'var(--color-muted-foreground)',
+            marginBottom: '1rem'
+          }}>
+            Advanced drag-and-drop form builder with validation, preview mode, and JSON export
+          </p>
+          <FormBuilderOrganismShowcase />
+        </div>
+      )
+    },
+    {
+      id: 'calendar',
+      name: 'Calendar',
+      category: 'data-display',
+      keywords: ['calendar', 'date', 'schedule', 'events', 'month', 'year', 'time'],
+      renderContent: () => <CalendarOrganismShowcase />
+    },
+    {
+      id: 'skeleton',
+      name: 'Skeleton',
+      category: 'feedback',
+      keywords: ['skeleton', 'loading', 'placeholder', 'shimmer', 'content', 'animation'],
+      renderContent: () => <SkeletonOrganismShowcase />
+    },
+    {
+      id: 'sidebar',
+      name: 'Sidebar',
+      category: 'navigation',
+      keywords: ['sidebar', 'navigation', 'menu', 'collapsible', 'drawer', 'panel'],
+      renderContent: () => <SidebarOrganismShowcase />
+    },
+    {
+      id: 'carousel',
+      name: 'Carousel',
+      category: 'data-display',
+      keywords: ['carousel', 'slider', 'images', 'gallery', 'swipe', 'navigation', 'autoplay'],
+      renderContent: () => <CarouselOrganismShowcase />
+    },
+    {
+      id: 'chart',
+      name: 'Chart',
+      category: 'data-display',
+      keywords: ['chart', 'graph', 'visualization', 'data', 'analytics', 'bar', 'line', 'pie'],
+      renderContent: () => <ChartOrganismShowcase />
+    },
+    {
+      id: 'data-table',
+      name: 'Data Table',
+      category: 'data-display',
+      keywords: ['table', 'data', 'grid', 'sorting', 'filtering', 'pagination', 'rows', 'columns'],
+      renderContent: () => <DataTableOrganismShowcase />
+    },
+    {
+      id: 'dialog',
+      name: 'Dialog',
+      category: 'feedback',
+      keywords: ['dialog', 'modal', 'popup', 'overlay', 'confirmation', 'alert', 'form'],
+      renderContent: () => <DialogOrganismShowcase />
+    }
+  ], [colors]);
+
+  // Search filter functions
+  const handleToggleOrganism = (organismName: string) => {
+    setOpenOrganisms(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(organismName)) {
+        newSet.delete(organismName);
+      } else {
+        newSet.add(organismName);
+      }
+      return newSet;
+    });
+  };
+
+  const handleOpenAllOrganisms = () => {
+    setOpenOrganisms(new Set(AVAILABLE_ORGANISMS.map(o => o.name)));
+  };
+
+  const handleCloseAllOrganisms = () => {
+    setOpenOrganisms(new Set());
+  };
+
+  // Render organism function
+  const renderOrganism = (organism: OrganismDefinition) => {
+    return (
+      <div>
+        {organism.renderContent()}
+      </div>
+    );
+  };
 
   return (
-    <div className="flex flex-col gap-6 w-full min-w-0 px-4 overflow-x-hidden">
-      {/* Form Builder Organism - FIRST */}
-      <section style={getSectionStyles()}>
-        <h2 style={getSectionHeaderStyles()}>🚀 Form Builder Organism</h2>
-        <p style={{
-          fontSize: '14px',
-          color: colors?.mutedForeground?.value || 'var(--color-muted-foreground)',
-          marginBottom: mediumSpacing
-        }}>
-          Advanced drag-and-drop form builder with validation, preview mode, and JSON export
-        </p>
-        <FormBuilderOrganismShowcase />
-      </section>
-
-      {/* Calendar Organism */}
-      <section style={getSectionStyles()}>
-        <h2 style={getSectionHeaderStyles()}>Calendar Organism</h2>
-        <CalendarOrganismShowcase />
-      </section>
-
-      {/* Skeleton Organism */}
-      <section style={getSectionStyles()}>
-        <h2 style={getSectionHeaderStyles()}>Skeleton Organism</h2>
-        <SkeletonOrganismShowcase />
-      </section>
-
-      {/* Sidebar Organism */}
-      <section style={getSectionStyles()}>
-        <h2 style={getSectionHeaderStyles()}>Sidebar Organism</h2>
-        <SidebarOrganismShowcase />
-      </section>
-
-      {/* Carousel Organism */}
-      <section style={getSectionStyles()}>
-        <h2 style={getSectionHeaderStyles()}>Carousel Organism</h2>
-        <CarouselOrganismShowcase />
-      </section>
-
-      {/* Chart Organism */}
-      <section style={getSectionStyles()}>
-        <h2 style={getSectionHeaderStyles()}>Chart Organism</h2>
-        <ChartOrganismShowcase />
-      </section>
-
-      {/* Data Table Organism */}
-      <section style={getSectionStyles()}>
-        <h2 style={getSectionHeaderStyles()}>Data Table Organism</h2>
-        <DataTableOrganismShowcase />
-      </section>
-
-      {/* Dialog Organism */}
-      <section style={getSectionStyles()}>
-        <h2 style={getSectionHeaderStyles()}>Dialog Organism</h2>
-        <DialogOrganismShowcase />
-      </section>
-    </div>
+    <ComponentSearchFilter
+      items={AVAILABLE_ORGANISMS}
+      categories={ORGANISM_CATEGORIES}
+      searchTerm={searchTerm}
+      selectedCategory={selectedCategory}
+      onSearchChange={setSearchTerm}
+      onCategoryChange={setSelectedCategory}
+      openGroups={openOrganisms}
+      onToggleGroup={handleToggleOrganism}
+      onOpenAllGroups={handleOpenAllOrganisms}
+      onCloseAllGroups={handleCloseAllOrganisms}
+      renderItem={renderOrganism}
+      searchPlaceholder="Buscar organismos por nombre o características..."
+      noResultsMessage="No se encontraron organismos con los filtros aplicados"
+      className="px-4"
+    />
   );
 }

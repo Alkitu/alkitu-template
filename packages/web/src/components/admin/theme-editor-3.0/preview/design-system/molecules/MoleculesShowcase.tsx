@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { 
   Settings, 
   User, 
@@ -27,6 +27,24 @@ import { NavigationMenuMolecule } from '../../../design-system/molecules/Navigat
 import { SonnerMolecule, useToast } from '../../../design-system/molecules/SonnerMolecule';
 import { Button } from '../../../design-system/atoms/Button';
 import { useThemeEditor } from '../../../core/context/ThemeEditorContext';
+import { ComponentSearchFilter, SearchableItem, CategoryMapping } from '../../../design-system/components/ComponentSearchFilter';
+
+// Molecule categories
+const MOLECULE_CATEGORIES: CategoryMapping = {
+  'data-collection': 'Recolección de Datos',
+  'data-display': 'Visualización de Datos',
+  'navigation': 'Navegación',
+  'feedback': 'Feedback y Notificaciones',
+  'layout': 'Diseño y Estructura'
+} as const;
+
+type MoleculeCategory = keyof typeof MOLECULE_CATEGORIES;
+
+// Molecule definitions
+interface MoleculeDefinition extends SearchableItem {
+  category: MoleculeCategory;
+  renderContent: () => React.ReactNode;
+}
 
 /**
  * MoleculesShowcase - Showcase component for all molecule components
@@ -53,6 +71,11 @@ export function MoleculesShowcase() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [comboboxValue, setComboboxValue] = useState<string | string[]>('');
   const [multiSelectValue, setMultiSelectValue] = useState<string[]>([]);
+
+  // Search state
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<MoleculeCategory | 'all'>('all');
+  const [openMolecules, setOpenMolecules] = useState<Set<string>>(new Set());
 
   // Sample data
   const accordionItems = [
@@ -263,6 +286,227 @@ export function MoleculesShowcase() {
     });
   };
 
+  // Available molecules definitions
+  const AVAILABLE_MOLECULES: MoleculeDefinition[] = useMemo(() => [
+    {
+      id: 'accordion',
+      name: 'Accordion',
+      category: 'data-display',
+      keywords: ['accordion', 'collapse', 'expandable', 'faq', 'sections', 'panels'],
+      renderContent: () => (
+        <AccordionMolecule
+          items={accordionItems}
+          variant="card"
+          animated={true}
+        />
+      )
+    },
+    {
+      id: 'card',
+      name: 'Card',
+      category: 'layout',
+      keywords: ['card', 'container', 'panel', 'surface', 'content', 'image', 'featured', 'compact'],
+      renderContent: () => (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: mediumSpacing }}>
+          <CardMolecule
+            title="Card Básica"
+            description="Esta es una card básica con título y descripción"
+            content="El contenido de la card puede incluir cualquier elemento React o texto simple."
+            actions={[
+              { label: 'Acción Principal', onClick: () => console.log('Primary action') },
+              { label: 'Secundaria', onClick: () => console.log('Secondary action'), variant: 'outline' }
+            ]}
+          />
+          <CardMolecule
+            variant="interactive"
+            title="Card con Imagen"
+            description="Card interactiva con imagen"
+            image="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=400&fit=crop"
+            imageAlt="Preview image"
+            badge={{ text: 'Nuevo', variant: 'default' }}
+            content="Las cards con imágenes son perfectas para mostrar contenido visual."
+            actions={[
+              { label: 'Ver más', onClick: () => console.log('View more'), icon: <ExternalLink className="h-4 w-4" /> }
+            ]}
+          />
+        </div>
+      )
+    },
+    {
+      id: 'datepicker',
+      name: 'Date Picker',
+      category: 'data-collection',
+      keywords: ['date', 'picker', 'calendar', 'datetime', 'time', 'form', 'input'],
+      renderContent: () => (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: mediumSpacing }}>
+          <DatePickerMolecule
+            value={selectedDate}
+            onChange={setSelectedDate}
+            label="Fecha básica"
+            placeholder="Selecciona una fecha"
+          />
+          <DatePickerMolecule
+            value={selectedDate}
+            onChange={setSelectedDate}
+            variant="datetime"
+            label="Fecha y hora"
+            placeholder="Selecciona fecha y hora"
+          />
+        </div>
+      )
+    },
+    {
+      id: 'pagination',
+      name: 'Pagination',
+      category: 'navigation',
+      keywords: ['pagination', 'pages', 'navigation', 'items', 'table', 'list'],
+      renderContent: () => (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: mediumSpacing }}>
+          <PaginationMolecule
+            currentPage={currentPage}
+            totalPages={10}
+            onPageChange={setCurrentPage}
+            variant="detailed"
+            showTotal={true}
+            totalItems={250}
+            showPageSize={true}
+            pageSize={25}
+          />
+          <PaginationMolecule
+            currentPage={currentPage}
+            totalPages={10}
+            onPageChange={setCurrentPage}
+            variant="compact"
+          />
+        </div>
+      )
+    },
+    {
+      id: 'dropdown-menu',
+      name: 'Dropdown Menu',
+      category: 'navigation',
+      keywords: ['dropdown', 'menu', 'context', 'actions', 'user', 'popover'],
+      renderContent: () => (
+        <div style={{ display: 'flex', gap: mediumSpacing, flexWrap: 'wrap' }}>
+          <DropdownMenuMolecule
+            items={ExampleMenuItems.userMenu}
+            variant="user"
+          />
+          <DropdownMenuMolecule
+            items={ExampleMenuItems.actionsMenu}
+            variant="actions"
+          />
+        </div>
+      )
+    },
+    {
+      id: 'tabs',
+      name: 'Tabs',
+      category: 'navigation',
+      keywords: ['tabs', 'navigation', 'panels', 'sections', 'toggle'],
+      renderContent: () => (
+        <TabsMolecule
+          tabs={tabItems}
+          variant="underline"
+          addable={true}
+          onTabAdd={() => console.log('Añadir tab')}
+          onTabClose={(tabId) => console.log('Cerrar tab:', tabId)}
+        />
+      )
+    },
+    {
+      id: 'combobox',
+      name: 'Combobox',
+      category: 'data-collection',
+      keywords: ['combobox', 'select', 'autocomplete', 'search', 'dropdown', 'multiple'],
+      renderContent: () => (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: mediumSpacing }}>
+          <ComboboxMolecule
+            options={comboboxOptions}
+            value={comboboxValue}
+            onChange={setComboboxValue}
+            placeholder="Selecciona un framework..."
+            searchPlaceholder="Buscar frameworks..."
+          />
+          <ComboboxMolecule
+            options={comboboxOptions}
+            value={multiSelectValue}
+            onChange={setMultiSelectValue}
+            variant="multiple"
+            placeholder="Selecciona múltiples..."
+            maxSelections={3}
+          />
+        </div>
+      )
+    },
+    {
+      id: 'navigation-menu',
+      name: 'Navigation Menu',
+      category: 'navigation',
+      keywords: ['navigation', 'menu', 'header', 'navbar', 'featured'],
+      renderContent: () => (
+        <NavigationMenuMolecule
+          items={navigationItems}
+          variant="featured"
+        />
+      )
+    },
+    {
+      id: 'toast',
+      name: 'Toast (Sonner)',
+      category: 'feedback',
+      keywords: ['toast', 'notification', 'sonner', 'alert', 'message', 'success', 'error'],
+      renderContent: () => (
+        <div style={{ display: 'flex', gap: mediumSpacing, flexWrap: 'wrap' }}>
+          <Button variant="default" onClick={showSuccessToast}>
+            <Check className="h-4 w-4" />
+            Toast Éxito
+          </Button>
+          <Button variant="destructive" onClick={showErrorToast}>
+            Toast Error
+          </Button>
+          <Button variant="outline" onClick={showWarningToast}>
+            Toast Advertencia
+          </Button>
+          <Button variant="secondary" onClick={showInfoToast}>
+            <Info className="h-4 w-4" />
+            Toast Info
+          </Button>
+        </div>
+      )
+    }
+  ], [accordionItems, selectedDate, setSelectedDate, currentPage, setCurrentPage, comboboxValue, setComboboxValue, multiSelectValue, setMultiSelectValue, comboboxOptions, tabItems, navigationItems, mediumSpacing, showSuccessToast, showErrorToast, showWarningToast, showInfoToast]);
+
+  // Search filter functions
+  const handleToggleMolecule = (moleculeName: string) => {
+    setOpenMolecules(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(moleculeName)) {
+        newSet.delete(moleculeName);
+      } else {
+        newSet.add(moleculeName);
+      }
+      return newSet;
+    });
+  };
+
+  const handleOpenAllMolecules = () => {
+    setOpenMolecules(new Set(AVAILABLE_MOLECULES.map(m => m.name)));
+  };
+
+  const handleCloseAllMolecules = () => {
+    setOpenMolecules(new Set());
+  };
+
+  // Render molecule function
+  const renderMolecule = (molecule: MoleculeDefinition) => {
+    return (
+      <div>
+        {molecule.renderContent()}
+      </div>
+    );
+  };
+
   // Styles
   const getContainerStyles = () => ({
     display: 'flex',
@@ -288,231 +532,21 @@ export function MoleculesShowcase() {
   });
 
   return (
-    <div style={getContainerStyles()}>
-      {/* Accordion Molecule */}
-      <section style={getSectionStyles()}>
-        <h2 style={getSectionHeaderStyles()}>Accordion Molecule</h2>
-        <AccordionMolecule 
-          items={accordionItems}
-          variant="card"
-          animated={true}
-        />
-      </section>
-
-      {/* Card Molecule */}
-      <section style={getSectionStyles()}>
-        <h2 style={getSectionHeaderStyles()}>Card Molecule</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: mediumSpacing }}>
-          {/* Basic Card */}
-          <CardMolecule
-            title="Card Básica"
-            description="Esta es una card básica con título y descripción"
-            content="El contenido de la card puede incluir cualquier elemento React o texto simple."
-            actions={[
-              { label: 'Acción Principal', onClick: () => console.log('Primary action') },
-              { label: 'Secundaria', onClick: () => console.log('Secondary action'), variant: 'outline' }
-            ]}
-          />
-          
-          {/* Card with Image */}
-          <CardMolecule
-            variant="interactive"
-            title="Card con Imagen"
-            description="Card interactiva con imagen"
-            image="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=400&fit=crop"
-            imageAlt="Preview image"
-            badge={{ text: 'Nuevo', variant: 'default' }}
-            content="Las cards con imágenes son perfectas para mostrar contenido visual."
-            actions={[
-              { label: 'Ver más', onClick: () => console.log('View more'), icon: <ExternalLink className="h-4 w-4" /> }
-            ]}
-          />
-          
-          {/* Featured Card */}
-          <CardMolecule
-            variant="featured"
-            title="Card Destacada"
-            description="Esta card tiene un estilo destacado especial"
-            content="Perfecta para resaltar contenido importante o promociones especiales."
-            badge={{ text: 'Featured', variant: 'default' }}
-            closeable={true}
-            onClose={() => console.log('Card closed')}
-            footer="Última actualización: hace 2 horas"
-          />
-          
-          {/* Compact Card */}
-          <CardMolecule
-            variant="compact"
-            title="Card Compacta"
-            description="Versión compacta con menos padding"
-            actions={[
-              { label: 'Acción', onClick: () => console.log('Action') }
-            ]}
-          />
-          
-          {/* Elevated Card */}
-          <CardMolecule
-            variant="elevated"
-            title="Card Elevada"
-            description="Card con sombra elevada"
-            content="Esta variante crea una sensación de profundidad con sombras más pronunciadas."
-            badge={{ text: 'Premium', variant: 'secondary' }}
-          />
-          
-          {/* Card with Loading State */}
-          <CardMolecule
-            title="Card con Loading"
-            description="Esta card está en estado de carga"
-            content="El contenido se está cargando..."
-            loading={true}
-          />
-        </div>
-      </section>
-
-      {/* Date Picker Molecule */}
-      <section style={getSectionStyles()}>
-        <h2 style={getSectionHeaderStyles()}>Date Picker Molecule</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: mediumSpacing }}>
-          <DatePickerMolecule
-            value={selectedDate}
-            onChange={setSelectedDate}
-            label="Fecha básica"
-            placeholder="Selecciona una fecha"
-          />
-          <DatePickerMolecule
-            value={selectedDate}
-            onChange={setSelectedDate}
-            variant="datetime"
-            label="Fecha y hora"
-            placeholder="Selecciona fecha y hora"
-          />
-          <DatePickerMolecule
-            value={selectedDate}
-            onChange={setSelectedDate}
-            variant="inline"
-            label="Calendario inline"
-            clearable={true}
-          />
-        </div>
-      </section>
-
-      {/* Pagination Molecule */}
-      <section style={getSectionStyles()}>
-        <h2 style={getSectionHeaderStyles()}>Pagination Molecule</h2>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: mediumSpacing }}>
-          <PaginationMolecule
-            currentPage={currentPage}
-            totalPages={10}
-            onPageChange={setCurrentPage}
-            variant="detailed"
-            showTotal={true}
-            totalItems={250}
-            showPageSize={true}
-            pageSize={25}
-          />
-          <PaginationMolecule
-            currentPage={currentPage}
-            totalPages={10}
-            onPageChange={setCurrentPage}
-            variant="compact"
-          />
-        </div>
-      </section>
-
-      {/* Dropdown Menu Molecule */}
-      <section style={getSectionStyles()}>
-        <h2 style={getSectionHeaderStyles()}>Dropdown Menu Molecule</h2>
-        <div style={{ display: 'flex', gap: mediumSpacing, flexWrap: 'wrap' }}>
-          <DropdownMenuMolecule
-            items={ExampleMenuItems.userMenu}
-            variant="user"
-          />
-          <DropdownMenuMolecule
-            items={ExampleMenuItems.actionsMenu}
-            variant="actions"
-          />
-          <DropdownMenuMolecule
-            items={[
-              { id: 'new', label: 'Nuevo documento', icon: <FileText className="h-4 w-4" />, type: 'item' as const },
-              { id: 'separator1', label: '', type: 'separator' as const },
-              { id: 'recent1', label: 'Documento 1', type: 'checkbox' as const, checked: true },
-              { id: 'recent2', label: 'Documento 2', type: 'checkbox' as const },
-              { id: 'recent3', label: 'Documento 3', type: 'checkbox' as const }
-            ]}
-            variant="default"
-            trigger={
-              <Button variant="outline">
-                <FileText className="h-4 w-4" />
-                Documentos
-              </Button>
-            }
-          />
-        </div>
-      </section>
-
-      {/* Tabs Molecule */}
-      <section style={getSectionStyles()}>
-        <h2 style={getSectionHeaderStyles()}>Tabs Molecule</h2>
-        <TabsMolecule
-          tabs={tabItems}
-          variant="underline"
-          addable={true}
-          onTabAdd={() => console.log('Añadir tab')}
-          onTabClose={(tabId) => console.log('Cerrar tab:', tabId)}
-        />
-      </section>
-
-      {/* Combobox Molecule */}
-      <section style={getSectionStyles()}>
-        <h2 style={getSectionHeaderStyles()}>Combobox Molecule</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: mediumSpacing }}>
-          <ComboboxMolecule
-            options={comboboxOptions}
-            value={comboboxValue}
-            onChange={setComboboxValue}
-            placeholder="Selecciona un framework..."
-            searchPlaceholder="Buscar frameworks..."
-          />
-          <ComboboxMolecule
-            options={comboboxOptions}
-            value={multiSelectValue}
-            onChange={setMultiSelectValue}
-            variant="multiple"
-            placeholder="Selecciona múltiples..."
-            maxSelections={3}
-          />
-        </div>
-      </section>
-
-      {/* Navigation Menu Molecule */}
-      <section style={getSectionStyles()}>
-        <h2 style={getSectionHeaderStyles()}>Navigation Menu Molecule</h2>
-        <NavigationMenuMolecule
-          items={navigationItems}
-          variant="featured"
-        />
-      </section>
-
-      {/* Sonner (Toast) Molecule */}
-      <section style={getSectionStyles()}>
-        <h2 style={getSectionHeaderStyles()}>Sonner (Toast) Molecule</h2>
-        <div style={{ display: 'flex', gap: mediumSpacing, flexWrap: 'wrap' }}>
-          <Button variant="default" onClick={showSuccessToast}>
-            <Check className="h-4 w-4" />
-            Toast Éxito
-          </Button>
-          <Button variant="destructive" onClick={showErrorToast}>
-            Toast Error
-          </Button>
-          <Button variant="outline" onClick={showWarningToast}>
-            Toast Advertencia
-          </Button>
-          <Button variant="secondary" onClick={showInfoToast}>
-            <Info className="h-4 w-4" />
-            Toast Info
-          </Button>
-        </div>
-      </section>
-    </div>
+    <ComponentSearchFilter
+      items={AVAILABLE_MOLECULES}
+      categories={MOLECULE_CATEGORIES}
+      searchTerm={searchTerm}
+      selectedCategory={selectedCategory}
+      onSearchChange={setSearchTerm}
+      onCategoryChange={setSelectedCategory}
+      openGroups={openMolecules}
+      onToggleGroup={handleToggleMolecule}
+      onOpenAllGroups={handleOpenAllMolecules}
+      onCloseAllGroups={handleCloseAllMolecules}
+      renderItem={renderMolecule}
+      searchPlaceholder="Buscar moléculas por nombre o características..."
+      noResultsMessage="No se encontraron moléculas con los filtros aplicados"
+      className="w-full"
+    />
   );
 }

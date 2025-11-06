@@ -74,25 +74,19 @@
     "footer": {
       "title": "Alkitu Template",
       "description": "La plantilla de Next.js más completa para desarrolladores modernos.",
-      "product": {
-        "title": "Producto",
-        "features": "Características",
-        "pricing": "Precios",
-        "demo": "Demo"
-      },
-      "support": {
-        "title": "Soporte",
-        "documentation": "Documentación",
-        "contact": "Contacto",
-        "faq": "FAQ"
-      },
-      "legal": {
-        "title": "Legal",
-        "privacy": "Privacidad",
-        "terms": "Términos",
-        "license": "Licencia",
-        "copyright": "© 2024 Alkitu Template. Todos los derechos reservados."
-      }
+      "product": "Producto",
+      "features": "Características",
+      "pricing": "Precios",
+      "demo": "Demo",
+      "support": "Soporte",
+      "documentation": "Documentación",
+      "contact": "Contacto",
+      "faq": "FAQ",
+      "legal": "Legal",
+      "privacy": "Privacidad",
+      "terms": "Términos",
+      "license": "Licencia",
+      "copyright": "© 2024 Alkitu Template. Todos los derechos reservados."
     }
   },
   "navbar": {

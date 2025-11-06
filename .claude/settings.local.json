@@ -51,7 +51,18 @@
       "Bash(./copy-ui-components.sh:*)",
       "Bash(awk:*)",
       "Bash(netstat:*)",
-      "Bash(findstr:*)"
+      "Bash(findstr:*)",
+      "Bash(git config:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(git submodule add:*)",
+      "Bash(git rm:*)",
+      "Bash(git submodule:*)",
+      "Bash(/dev/null)",
+      "Bash(mongosh --version:*)",
+      "Bash(mongo:*)",
+      "Bash(lsof:*)",
+      "Bash(npm run dev:web:*)",
+      "Bash(cd:*)"
     ],
     "deny": []
   }

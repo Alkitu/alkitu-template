@@ -74,25 +74,19 @@
     "footer": {
       "title": "Alkitu Template",
       "description": "The most complete Next.js template for modern developers.",
-      "product": {
-        "title": "Product",
-        "features": "Features",
-        "pricing": "Pricing",
-        "demo": "Demo"
-      },
-      "support": {
-        "title": "Support",
-        "documentation": "Documentation",
-        "contact": "Contact",
-        "faq": "FAQ"
-      },
-      "legal": {
-        "title": "Legal",
-        "privacy": "Privacy",
-        "terms": "Terms",
-        "license": "License",
-        "copyright": "© 2024 Alkitu Template. All rights reserved."
-      }
+      "product": "Product",
+      "features": "Features",
+      "pricing": "Pricing",
+      "demo": "Demo",
+      "support": "Support",
+      "documentation": "Documentation",
+      "contact": "Contact",
+      "faq": "FAQ",
+      "legal": "Legal",
+      "privacy": "Privacy",
+      "terms": "Terms",
+      "license": "License",
+      "copyright": "© 2024 Alkitu Template. All rights reserved."
     }
   },
   "navbar": {

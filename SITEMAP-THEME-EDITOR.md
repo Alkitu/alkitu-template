@@ -6,6 +6,8 @@ Este documento describe la arquitectura completa del **Theme Editor 3.0**, un si
 
 El Theme Editor 3.0 está dividido en 4 bloques principales que conforman la interfaz de usuario:
 
+ok 
+
 1. **🟢 THEME SELECTOR** - Selector y navegación de temas (lado izquierdo superior)
 2. **🔴 ACTIONS BAR** - Controles y acciones del editor (lado derecho superior)  
 3. **🔵 THEME EDITOR** - Editor de propiedades del tema (lado izquierdo inferior)

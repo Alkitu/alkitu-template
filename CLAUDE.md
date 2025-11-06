@@ -2,6 +2,37 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## CRITICAL DEVELOPMENT RULES - MUST FOLLOW
+
+⚠️ **IMPORTANT**: These rules MUST be followed for EVERY code change:
+
+1. **NEVER DELETE**: Do not delete ANY code until you are 100% certain it is not essential or being used elsewhere
+2. **NEVER CREATE**: Do not create ANY new component/file until you verify a similar one doesn't already exist
+3. **ALWAYS REUSE**: Always try to reuse existing code and update it when possible
+4. **MAINTAIN COMPATIBILITY**: Any updates MUST be backward compatible - never break existing functionality
+5. **COMMUNICATE FIRST**: Always explain what you're going to do BEFORE making any changes
+6. **NO EXTERNAL DEPENDENCIES**: Do NOT install any external dependencies unless EXTREMELY necessary
+
+### Dependency Management Rules:
+- 🚫 **NEVER** install new packages without checking existing dependencies first
+- 📦 **ALWAYS** review `package.json` files (root and all workspaces) before suggesting new dependencies
+- ✅ **VERIFY** if functionality can be achieved with existing packages
+- 🔍 **CHECK** all these locations before installing anything:
+  - `/package.json` (root)
+  - `/packages/api/package.json`
+  - `/packages/web/package.json`
+  - `/packages/mobile/package.json`
+  - `/packages/shared/package.json`
+- ⚠️ Only install new dependencies when absolutely no alternative exists
+
+### Before Making ANY Changes:
+- ✅ Check if the component/function already exists
+- ✅ Verify the code is not being used elsewhere
+- ✅ Ensure changes are backward compatible
+- ✅ Review existing dependencies before suggesting new ones
+- ✅ Explain the planned changes to the user first
+- ✅ Get confirmation before proceeding with significant changes
+
 ## Project Overview
 
 This is **Alkitu Template** - an enterprise-grade TypeScript monorepo for building SaaS applications. It uses npm workspaces and follows SOLID principles with AI-driven development workflows.

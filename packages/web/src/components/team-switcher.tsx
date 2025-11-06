@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { ChevronsUpDown, Plus, LucideIcon } from "lucide-react"
+import { ChevronsUpDown, Plus, LucideIcon, Palette } from "lucide-react"
 
 import {
   DropdownMenu,
@@ -18,6 +18,8 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import Link from "next/link"
 
 import type { Team } from "@/types"
 import { IconType } from "react-icons"
@@ -41,15 +43,18 @@ interface TeamSwitcherProps {
 }
 
 export function TeamSwitcher({ teams, onTeamChange }: TeamSwitcherProps) {
-  const { isMobile } = useSidebar()
+  const { isMobile, state } = useSidebar()
   const [activeTeam, setActiveTeam] = React.useState(teams[0])
 
   const handleTeamChange = (team: typeof teams[0]) => {
     onTeamChange?.(team.name)
   }
 
+  const isCollapsed = state === "collapsed"
+
   return (
-    <SidebarMenu>
+    <>
+      <SidebarMenu>
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -102,5 +107,31 @@ export function TeamSwitcher({ teams, onTeamChange }: TeamSwitcherProps) {
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
+      
+      {/* Theme Editor Quick Access - Solo visible cuando sidebar está colapsado */}
+      {isCollapsed && (
+        <div className="mt-2">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link href="/es/admin/settings/themes-3.0">
+                  <SidebarMenuButton
+                    size="lg"
+                    className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors duration-200 group-data-[collapsible=icon]:justify-center"
+                  >
+                    <div className="flex aspect-square size-6 items-center justify-center rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 text-white group-data-[collapsible=icon]:size-6">
+                      <Palette className="size-3 group-data-[collapsible=icon]:size-3" />
+                    </div>
+                  </SidebarMenuButton>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent side="right" sideOffset={4}>
+                <p>Personalizar Tema V3</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+      )}
+    </>
   )
 }

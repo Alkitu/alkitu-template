@@ -4,7 +4,64 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    // Forward the request to the NestJS backend
+    // Hardcoded credentials check
+    if (body.email === 'alkitu@alkitu.com' && body.password === 'test123') {
+      // Create a mock successful response
+      const mockUser = {
+        id: '1',
+        email: 'alkitu@alkitu.com',
+        name: 'Alkitu User',
+        role: 'admin',
+      };
+
+      // Create a mock JWT token with proper structure
+      // JWT has 3 parts: header.payload.signature
+      const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+      const payload = btoa(JSON.stringify({
+        sub: '1',
+        email: 'alkitu@alkitu.com',
+        name: 'Alkitu User',
+        role: 'ADMIN', // Use uppercase to match UserRole enum
+        iat: Math.floor(Date.now() / 1000),
+        exp: Math.floor(Date.now() / 1000) + (24 * 60 * 60), // 24 hours from now
+      }));
+      const signature = 'mock-signature';
+      
+      const mockAccessToken = `${header}.${payload}.${signature}`;
+      const mockRefreshToken = `${header}.${btoa(JSON.stringify({...JSON.parse(atob(payload)), exp: Math.floor(Date.now() / 1000) + (7 * 24 * 60 * 60)}))}.${signature}`;
+
+      const nextResponse = NextResponse.json(
+        { 
+          message: 'Login successful', 
+          user: mockUser,
+          access_token: mockAccessToken,
+          refresh_token: mockRefreshToken
+        },
+        { status: 200 },
+      );
+
+      // Set cookies for authentication
+      nextResponse.cookies.set('auth-token', mockAccessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 24 * 60 * 60, // 24 hours
+        path: '/',
+      });
+
+      nextResponse.cookies.set('refresh-token', mockRefreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 7 * 24 * 60 * 60, // 7 days
+        path: '/',
+      });
+
+      console.log('Hardcoded login successful for alkitu@alkitu.com');
+      return nextResponse;
+    }
+
+    // If not hardcoded credentials, forward to backend
     const backendUrl =
       process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
     console.log(`Forwarding login request to: ${backendUrl}/users/login`);

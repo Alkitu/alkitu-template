@@ -1,12 +1,12 @@
 'use client';
 
 import React from 'react';
-import { ThemeEditorProvider } from './context/ThemeEditorContext';
+import { ThemeEditorProvider } from './core/context/ThemeEditorContext';
 import { ResizableLayout } from './layout/ResizableLayout';
-import { ThemeSelector } from './1-theme-selector';
-import { ActionsBar } from './2-actions-bar';
-import { ThemeEditor as ThemeEditorPanel } from './3-theme-editor';
-import { Preview } from './4-preview';
+import { ThemeSelector } from './theme-editor/theme-selector';
+import { ActionsBar } from './theme-editor/actions-bar';
+import { ThemeEditor as ThemeEditorPanel } from './theme-editor/editor';
+import { Preview } from './preview';
 
 // Main Theme Editor 3.0 component
 export function ThemeEditor() {

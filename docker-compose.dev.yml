@@ -70,7 +70,7 @@ services:
   api:
     build:
       context: .
-      dockerfile: packages/api/Dockerfile.dev
+      dockerfile: infrastructure/docker/api.dev.Dockerfile
     container_name: alkitu-api-dev
     restart: unless-stopped
     ports:
@@ -82,6 +82,8 @@ services:
       - shared_node_modules:/app/packages/shared/node_modules
     networks:
       - alkitu-network
+    env_file:
+      - .env
     environment:
       - NODE_ENV=development
       - DATABASE_URL=mongodb://mongodb:27017/alkitu?replicaSet=rs0&directConnection=true
@@ -94,7 +96,7 @@ services:
       mongo-setup:
         condition: service_completed_successfully
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3001/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -103,7 +105,7 @@ services:
   web:
     build:
       context: .
-      dockerfile: packages/web/Dockerfile.dev
+      dockerfile: infrastructure/docker/web.dev.Dockerfile
     container_name: alkitu-web-dev
     restart: unless-stopped
     ports:

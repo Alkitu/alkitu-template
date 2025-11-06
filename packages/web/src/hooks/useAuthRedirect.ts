@@ -16,7 +16,7 @@ export function useAuthRedirect() {
     if (redirectUrl) {
       // Decodificar y usar la URL de redirect
       const decodedUrl = decodeURIComponent(redirectUrl);
-      console.log('Redirecting to:', decodedUrl);
+      console.log('Redirecting to redirect URL:', decodedUrl);
       
       // Si la URL no tiene idioma, agregarlo
       if (!decodedUrl.startsWith('/es/') && !decodedUrl.startsWith('/en/')) {
@@ -25,9 +25,14 @@ export function useAuthRedirect() {
         router.push(decodedUrl);
       }
     } else {
-      // Redirección por defecto al dashboard con idioma
-      console.log('Redirecting to default dashboard:', `/${currentLocale}/dashboard`);
-      router.push(`/${currentLocale}/dashboard`);
+      // Redirección por defecto al admin dashboard con idioma
+      const adminDashboardUrl = `/${currentLocale}/admin/dashboard`;
+      console.log('Redirecting to default admin dashboard:', adminDashboardUrl);
+      
+      // Use window.location for more reliable redirect after login
+      setTimeout(() => {
+        window.location.href = adminDashboardUrl;
+      }, 100);
     }
   };
 

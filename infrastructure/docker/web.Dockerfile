@@ -15,12 +15,14 @@ FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+# Copy Prisma schema specifically
+COPY packages/web/prisma ./packages/web/prisma
 
 # Install all dependencies (including dev dependencies)
 RUN npm ci
 
 # Generate Prisma client
-RUN npx prisma generate
+RUN cd packages/web && npx prisma generate
 
 # Build the application
 RUN npm run build

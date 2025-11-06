@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import { usePathname } from 'next/navigation';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '../ui/sidebar';
 import {
   Home,
@@ -30,14 +31,15 @@ import { Button } from '../ui/button';
 import { Separator } from '../ui/separator';
 import { Progress } from '../ui/progress';
 import { useTranslations } from '@/context/TranslationContext';
+import { getCurrentLocalizedRoute } from '@/lib/locale';
 
 // Navigation structure with improved UX/UI organization
-const getTransformedData = (t: any) => ({
+const getTransformedData = (t: any, pathname: string) => ({
   navMain: [
     // RESUMEN SECTION
     {
       title: t?.('nav.dashboard') || 'Dashboard',
-      url: '/dashboard',
+      url: '/admin/dashboard',
       icon: Home,
       items: [],
       section: 'overview',
@@ -46,33 +48,33 @@ const getTransformedData = (t: any) => ({
     // GESTIÓN SECTION
     {
       title: t?.('nav.users') || 'Usuarios',
-      url: '/dashboard/users',
+      url: '/admin/users',
       icon: Users,
       section: 'management',
       items: [
         {
           title: t?.('nav.userList') || 'Lista de Usuarios',
-          url: '/dashboard/users',
+          url: '/admin/users',
         },
         {
           title: t?.('nav.createUser') || 'Crear Usuario',
-          url: '/dashboard/users/create',
+          url: '/admin/users/create',
         },
       ],
     },
     {
       title: t?.('nav.companies') || 'Empresas',
-      url: '/dashboard/companies',
+      url: '/admin/companies',
       icon: Building2,
       section: 'management',
       items: [
         {
           title: t?.('nav.companiesList') || 'Todas las Empresas',
-          url: '/dashboard/companies',
+          url: '/admin/companies',
         },
         {
           title: t?.('nav.createCompany') || 'Nueva Empresa',
-          url: '/dashboard/companies/create',
+          url: '/admin/companies/create',
         },
       ],
     },
@@ -80,81 +82,104 @@ const getTransformedData = (t: any) => ({
     // COMUNICACIÓN SECTION
     {
       title: t?.('nav.chat') || 'Chat',
-      url: '/dashboard/chat',
+      url: '/admin/chat',
       icon: MessageCircle,
       section: 'communication',
       items: [
         {
           title: t?.('nav.conversations') || 'Conversaciones',
-          url: '/dashboard/chat',
+          url: '/admin/chat',
         },
         {
           title: t?.('nav.chatAnalytics') || 'Analíticas Chat',
-          url: '/dashboard/chat/analytics',
+          url: '/admin/chat/analytics',
         },
       ],
     },
     {
       title: t?.('nav.notifications') || 'Notificaciones',
-      url: '/dashboard/notifications',
+      url: '/admin/notifications',
       icon: Bell,
       section: 'communication',
       items: [
         {
           title: t?.('nav.allNotifications') || 'Todas las Notificaciones',
-          url: '/dashboard/notifications',
+          url: '/admin/notifications',
         },
         {
           title: t?.('nav.notificationAnalytics') || 'Analíticas',
-          url: '/dashboard/notifications/analytics',
+          url: '/admin/notifications/analytics',
         },
         {
           title: t?.('nav.notificationPreferences') || 'Preferencias',
-          url: '/dashboard/notifications/preferences',
+          url: '/admin/notifications/preferences',
         },
       ],
     },
-
-    // ANALÍTICAS SECTION
     {
-      title: t?.('nav.analytics') || 'Analíticas',
-      url: '/dashboard/analytics',
-      icon: BarChart,
-      section: 'analytics',
-      items: [
-        {
-          title: t?.('nav.reports') || 'Reportes',
-          url: '/dashboard/analytics/reports',
-        },
-        {
-          title: t?.('nav.insights') || 'Insights',
-          url: '/dashboard/analytics/insights',
-        },
-      ],
+      title: t?.('nav.messaging') || 'Mensajería',
+      url: '/admin/messaging',
+      icon: MessageCircle,
+      section: 'communication',
+      items: [],
+    },
+    {
+      title: t?.('nav.emailManagement') || 'Gestión de Email',
+      url: '/admin/email-management',
+      icon: FileText,
+      section: 'communication',
+      items: [],
+    },
+
+    // SEGURIDAD Y PRIVACIDAD SECTION
+    {
+      title: t?.('nav.security') || 'Seguridad',
+      url: '/admin/security',
+      icon: Settings,
+      section: 'security',
+      items: [],
+    },
+    {
+      title: t?.('nav.dataProtection') || 'Protección de Datos',
+      url: '/admin/data-protection',
+      icon: Settings,
+      section: 'security',
+      items: [],
+    },
+
+    // FACTURACIÓN SECTION
+    {
+      title: t?.('nav.billing') || 'Facturación',
+      url: '/admin/billing',
+      icon: CreditCard,
+      section: 'billing',
+      items: [],
     },
 
     // CONFIGURACIÓN SECTION
     {
       title: t?.('nav.settings') || 'Configuración',
-      url: '/dashboard/settings',
+      url: '/admin/settings',
       icon: Settings,
       section: 'settings',
       items: [
         {
-          title: t?.('nav.themes') || 'Temas y Apariencia',
-          url: '/dashboard/settings/themes',
+          title: 'Personalizar Tema v3',
+          url: getCurrentLocalizedRoute('/admin/settings/themes-3.0', pathname),
         },
         {
-          title: t?.('nav.chatbot') || 'Chatbot',
-          url: '/dashboard/settings/chatbot',
-        },
-        {
-          title: t?.('nav.billing') || 'Facturación',
-          url: '/dashboard/billing',
-        },
-        {
-          title: t?.('nav.profile') || 'Mi Perfil',
-          url: '/dashboard/settings/profile',
+          title: 'Old Versions',
+          url: '#',
+          items: [
+            {
+              title: t?.('nav.themes') || 'Temas y Apariencia',
+              url: '/admin/settings/themes',
+            },
+            {
+              title: t?.('nav.chatbot') || 'Chatbot',
+              url: '/admin/settings/chatbot',
+            },
+          ],
         },
       ],
     },
@@ -208,10 +233,11 @@ interface DashboardProps {
 
 function Dashboard({ children, showWelcome = false }: DashboardProps) {
   const t = useTranslations('dashboard');
-  const transformedData = getTransformedData(t);
+  const pathname = usePathname();
+  const transformedData = getTransformedData(t, pathname);
 
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={false}>
       <AppSidebar {...transformedData} />
 
       <SidebarInset className="flex flex-col min-h-screen overflow-hidden">

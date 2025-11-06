@@ -81,8 +81,14 @@ export function LandingNavbar() {
             ))}
           </div>
 
-          {/* Desktop Language Selector */}
+          {/* Desktop Auth & Language */}
           <div className="hidden md:flex md:items-center md:space-x-4">
+            <Button variant="ghost" asChild>
+              <Link href="/auth/login">Iniciar Sesión</Link>
+            </Button>
+            <Button asChild>
+              <Link href="/auth/register">Registrarse</Link>
+            </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon">
@@ -136,6 +142,20 @@ export function LandingNavbar() {
                         {route.name}
                       </Link>
                     ))}
+                  </div>
+
+                  {/* Mobile Auth Buttons */}
+                  <div className="border-t pt-4 space-y-3">
+                    <Button variant="ghost" className="w-full justify-start" asChild>
+                      <Link href="/auth/login" onClick={() => setIsOpen(false)}>
+                        Iniciar Sesión
+                      </Link>
+                    </Button>
+                    <Button className="w-full" asChild>
+                      <Link href="/auth/register" onClick={() => setIsOpen(false)}>
+                        Registrarse
+                      </Link>
+                    </Button>
                   </div>
 
                   {/* Mobile Language Selector */}

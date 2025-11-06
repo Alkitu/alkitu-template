@@ -65,10 +65,10 @@ export const apiAuthPrefix = '/api/auth';
 /**
  * Get the default redirect path after successful login
  * @param locale - Current locale ('es' | 'en')
- * @returns Localized dashboard route
+ * @returns Localized admin dashboard route
  */
 export const getDefaultLoginRedirect = (locale: 'es' | 'en' = 'es'): string => {
-  return getLocalizedRoute('/dashboard', locale);
+  return getLocalizedRoute('/admin/dashboard', locale);
 };
 
 /**
@@ -85,7 +85,7 @@ export const getDefaultAuthRedirect = (locale: 'es' | 'en' = 'es'): string => {
  * The default redirect path after successful login
  * @type {string}
  */
-export const DEFAULT_LOGIN_REDIRECT = '/dashboard';
+export const DEFAULT_LOGIN_REDIRECT = '/admin/dashboard';
 
 /**
  * @deprecated Use getDefaultAuthRedirect() instead

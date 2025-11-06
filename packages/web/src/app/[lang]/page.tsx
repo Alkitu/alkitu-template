@@ -49,9 +49,6 @@ export default function Home() {
             {t('homepage.hero.subtitle')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
-            <Button size="lg" className="text-lg px-8 py-6" asChild>
-              <Link href="#pricing">{t('homepage.hero.getTemplate')}</Link>
-            </Button>
             <Button
               size="lg"
               variant="outline"
@@ -88,6 +85,7 @@ export default function Home() {
           </div>
         </div>
       </TailwindGrid>
+
 
       {/* Features Section */}
       <section id="features" className="py-16 sm:py-24 bg-secondary/10">

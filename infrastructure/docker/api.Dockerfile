@@ -15,12 +15,14 @@ FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+# Copy Prisma schema specifically
+COPY packages/api/prisma ./packages/api/prisma
 
 # Install all dependencies (including dev dependencies)
 RUN npm ci
 
 # Generate Prisma client
-RUN npx prisma generate
+RUN cd packages/api && npx prisma generate
 
 # Build the application
 RUN npm run build
@@ -38,7 +40,7 @@ RUN adduser --system --uid 1001 nestjs
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/packages/api/prisma ./packages/api/prisma
 
 USER nestjs
 

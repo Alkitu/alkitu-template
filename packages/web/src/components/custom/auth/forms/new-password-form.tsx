@@ -26,9 +26,9 @@ export const NewPasswordForm = () => {
     if (tokenParam) {
       setToken(tokenParam);
     } else {
-      setError('Invalid or missing reset token');
+      setError(t('auth.newPassword.invalidToken'));
     }
-  }, [searchParams]);
+  }, [searchParams, t]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,13 +37,13 @@ export const NewPasswordForm = () => {
     setSuccess('');
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setError(t('auth.newPassword.passwordMismatch'));
       setIsLoading(false);
       return;
     }
 
     if (!token) {
-      setError('Invalid or missing reset token');
+      setError(t('auth.newPassword.invalidToken'));
       setIsLoading(false);
       return;
     }
@@ -63,10 +63,7 @@ export const NewPasswordForm = () => {
         throw new Error(data.message || 'Failed to reset password');
       }
 
-      setSuccess(
-        t('auth.newPassword.success', {}, 'auth') ||
-          'Password reset successfully!',
-      );
+      setSuccess(t('auth.newPassword.success'));
 
       // Redirect to login with proper locale
       setTimeout(() => {
@@ -77,11 +74,7 @@ export const NewPasswordForm = () => {
         window.location.href = localizedLoginRoute;
       }, 2000);
     } catch (err: any) {
-      setError(
-        err.message ||
-          t('auth.newPassword.error', {}, 'auth') ||
-          'Failed to reset password',
-      );
+      setError(err.message || t('auth.newPassword.error'));
     } finally {
       setIsLoading(false);
     }
@@ -121,7 +114,7 @@ export const NewPasswordForm = () => {
       <FormSuccess message={success} />
 
       <Button type="submit" className="w-full" disabled={isLoading || !token}>
-        {isLoading ? t('Common.general.loading') : 'Reset Password'}
+        {isLoading ? t('Common.general.loading') : t('auth.newPassword.submit')}
       </Button>
     </form>
   );

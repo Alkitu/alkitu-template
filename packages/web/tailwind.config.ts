@@ -1,5 +1,4 @@
 import type { Config } from "tailwindcss";
-const { nextui } = require("@nextui-org/react");
 
 const config = {
   content: [
@@ -7,7 +6,6 @@ const config = {
     "./components/**/*.{ts,tsx}",
     "./app/**/*.{ts,tsx}",
     "./src/**/*.{ts,tsx}",
-    "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
   ],
   prefix: "",
   theme: {
@@ -142,8 +140,7 @@ const config = {
     },
   },
   plugins: [
-    require("tailwindcss-animate"), 
-    nextui(), 
+    require("tailwindcss-animate"),
     require("@tailwindcss/typography"),
     // Custom plugin for theme-aware utilities
     function ({ addUtilities }: any) {

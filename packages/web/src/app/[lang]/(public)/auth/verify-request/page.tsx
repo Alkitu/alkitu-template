@@ -1,6 +1,6 @@
 'use client';
 
-import { AuthCardWrapper } from '@/components/custom/auth/card/auth-card-wrapper';
+import { AuthPageOrganism } from '@/components/atomic-design/organisms';
 import { useTranslations } from '@/context/TranslationContext';
 import { Typography } from '@/components/atomic-design/atoms/typography';
 
@@ -8,9 +8,9 @@ export default function VerifyRequestPage() {
   const t = useTranslations();
 
   return (
-    <AuthCardWrapper
+    <AuthPageOrganism
       headerLabel={t('auth.verifyRequest.title')}
-      backButtonLabel="Back to Login"
+      backButtonLabel={t('auth.backToLogin')}
       backButtonHref="/auth/login"
     >
       <Typography variant="p" className="text-center text-muted-foreground">
@@ -18,6 +18,6 @@ export default function VerifyRequestPage() {
         <br />
         {t('auth.verifyRequest.message2')}
       </Typography>
-    </AuthCardWrapper>
+    </AuthPageOrganism>
   );
 }

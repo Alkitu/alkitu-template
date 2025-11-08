@@ -1,7 +1,8 @@
 'use client';
 
 import { ResetPasswordForm } from '@/components/custom/auth/forms/reset-password-form';
-import { AuthCardWrapper } from '@/components/custom/auth/card/auth-card-wrapper';
+import { AuthPageOrganism } from '@/components/atomic-design/organisms';
+import { Typography } from '@/components/atomic-design/atoms/typography';
 import { useTranslations } from '@/context/TranslationContext';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
@@ -13,32 +14,34 @@ function ResetPasswordContent() {
 
   if (!token) {
     return (
-      <AuthCardWrapper
-        headerLabel={t('auth.resetPassword.invalidToken') || 'Token Inválido'}
-        backButtonLabel={t('auth.resetPassword.backToLogin') || 'Volver al Login'}
+      <AuthPageOrganism
+        headerLabel={t('auth.resetPassword.invalidToken')}
+        backButtonLabel={t('auth.backToLogin')}
         backButtonHref="/auth/login"
       >
-        <div className="text-center text-muted-foreground">
-          {t('auth.resetPassword.tokenMissing') || 'Token de reseteo no encontrado o inválido.'}
-        </div>
-      </AuthCardWrapper>
+        <Typography variant="p" className="text-center text-muted-foreground">
+          {t('auth.resetPassword.tokenMissing')}
+        </Typography>
+      </AuthPageOrganism>
     );
   }
 
   return (
-    <AuthCardWrapper
-      headerLabel={t('auth.resetPassword.title') || 'Restablecer Contraseña'}
-      backButtonLabel={t('auth.resetPassword.backToLogin') || 'Volver al Login'}
+    <AuthPageOrganism
+      headerLabel={t('auth.resetPassword.title')}
+      backButtonLabel={t('auth.backToLogin')}
       backButtonHref="/auth/login"
     >
       <ResetPasswordForm token={token} />
-    </AuthCardWrapper>
+    </AuthPageOrganism>
   );
 }
 
 export default function ResetPasswordPage() {
+  const t = useTranslations();
+
   return (
-    <Suspense fallback={<div>Cargando...</div>}>
+    <Suspense fallback={<div>{t('auth.resetPassword.loading')}</div>}>
       <ResetPasswordContent />
     </Suspense>
   );

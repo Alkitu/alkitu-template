@@ -1,19 +1,19 @@
 'use client';
 
 import { EmailCodeRequestForm } from '@/components/custom/auth/forms/email-code-request-form';
-import { AuthCardWrapper } from '@/components/custom/auth/card/auth-card-wrapper';
+import { AuthPageOrganism } from '@/components/atomic-design/organisms';
 import { useTranslations } from '@/context/TranslationContext';
 
 export default function EmailLoginPage() {
   const t = useTranslations();
 
   return (
-    <AuthCardWrapper
-      headerLabel={t('auth.emailCode.title') || 'Acceso con código de email'}
-      backButtonLabel={t('auth.emailCode.backToLogin') || 'Volver al Login'}
+    <AuthPageOrganism
+      headerLabel={t('auth.emailLogin.title')}
+      backButtonLabel={t('auth.backToLogin')}
       backButtonHref="/auth/login"
     >
       <EmailCodeRequestForm />
-    </AuthCardWrapper>
+    </AuthPageOrganism>
   );
 }

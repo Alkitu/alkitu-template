@@ -1,20 +1,30 @@
 'use client';
 
+import { AuthPageOrganism } from '@/components/atomic-design/organisms';
 import { RegisterForm } from '@/components/custom/auth/forms/register-form';
-import { AuthCardWrapper } from '@/components/custom/auth/card/auth-card-wrapper';
 import { useTranslations } from '@/context/TranslationContext';
 
+/**
+ * Register Page
+ *
+ * User registration page following Atomic Design principles.
+ * Demonstrates the proper pattern for auth pages with translations.
+ *
+ * @see /docs/00-conventions/atomic-design-architecture.md for architecture details
+ */
 export default function RegisterPage() {
   const t = useTranslations();
 
   return (
-    <AuthCardWrapper
+    <AuthPageOrganism
       headerLabel={t('auth.register.title')}
-      backButtonLabel="Back to Login"
+      backButtonLabel={t('auth.backToLogin')}
       backButtonHref="/auth/login"
       showSocial
+      socialDividerText={t('auth.socialDivider')}
+      socialPlaceholderText={t('auth.socialPlaceholder')}
     >
       <RegisterForm />
-    </AuthCardWrapper>
+    </AuthPageOrganism>
   );
 }

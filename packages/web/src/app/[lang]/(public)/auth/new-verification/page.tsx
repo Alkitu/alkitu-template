@@ -1,19 +1,19 @@
 'use client';
 
 import { NewVerificationForm } from '@/components/custom/auth/forms/new-verification-form';
-import { AuthCardWrapper } from '@/components/custom/auth/card/auth-card-wrapper';
+import { AuthPageOrganism } from '@/components/atomic-design/organisms';
 import { useTranslations } from '@/context/TranslationContext';
 
 export default function NewVerificationPage() {
   const t = useTranslations();
 
   return (
-    <AuthCardWrapper
-      headerLabel="Email Verification"
-      backButtonLabel="Back to Login"
+    <AuthPageOrganism
+      headerLabel={t('auth.newVerification.title')}
+      backButtonLabel={t('auth.backToLogin')}
       backButtonHref="/auth/login"
     >
       <NewVerificationForm />
-    </AuthCardWrapper>
+    </AuthPageOrganism>
   );
 }

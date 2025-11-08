@@ -107,6 +107,10 @@
     "contactDescription": "Get in touch with us"
   },
   "auth": {
+    "backToHome": "Back to Home",
+    "backToLogin": "Back to Login",
+    "socialDivider": "Or continue with",
+    "socialPlaceholder": "OAuth providers will be configured with backend",
     "login": {
       "title": "Sign In",
       "subtitle": "Enter your account details to continue",
@@ -115,7 +119,10 @@
       "submit": "Sign in with email",
       "newPassword": "Enter a new password",
       "backToLogin": "Back to login page",
-      "success": "Login successful"
+      "success": "Login successful",
+      "forgotPassword": "Forgot your password?",
+      "emailLogin": "sign in with email code",
+      "error": "Login failed"
     },
     "register": {
       "title": "Create an account",
@@ -126,7 +133,11 @@
       "name": "Name",
       "lastName": "Last Name",
       "phone": "Contact number",
-      "submit": "Register with email"
+      "submit": "Register with email",
+      "terms": "I accept the terms and conditions",
+      "termsRequired": "You must accept the terms and conditions",
+      "success": "Registration successful!",
+      "error": "Registration failed"
     },
     "verifyRequest": {
       "title": "Check your email",
@@ -135,8 +146,74 @@
     },
     "newVerification": {
       "title": "Verify your email",
-      "message": "Verifying your email..."
+      "message": "Verifying your email...",
+      "success": "Email verified successfully!",
+      "error": "Email verification failed",
+      "invalidToken": "Invalid or missing token",
+      "resendEmail": "Resend verification email",
+      "redirecting": "Redirecting to login page..."
     },
+    "forgotPassword": {
+      "title": "Forgot your password?",
+      "description": "Enter your email address and we'll send you a link to reset your password",
+      "emailLabel": "Email address",
+      "emailPlaceholder": "your@email.com",
+      "submit": "Send reset link",
+      "error": "Error sending reset email",
+      "success": "Reset instructions sent to your email"
+    },
+    "newPassword": {
+      "title": "New Password",
+      "description": "Enter your new password",
+      "submit": "Reset password",
+      "success": "Password reset successfully!",
+      "error": "Failed to reset password",
+      "invalidToken": "Invalid or missing token",
+      "passwordMismatch": "Passwords do not match"
+    },
+    "resetPassword": {
+      "title": "Reset Password",
+      "description": "Enter your new password",
+      "invalidToken": "The reset link is invalid or has expired",
+      "tokenMissing": "Reset token not found",
+      "loading": "Verifying link...",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm password",
+      "passwordPlaceholder": "Minimum 6 characters",
+      "confirmPasswordPlaceholder": "Repeat your new password",
+      "passwordMismatch": "Passwords do not match",
+      "passwordTooShort": "Password must be at least 6 characters",
+      "submit": "Update password",
+      "error": "Error updating password",
+      "success": "Password updated successfully"
+    },
+    "verifyLoginCode": {
+      "title": "Verify Login Code",
+      "description": "We've sent a 6-digit code to:",
+      "emailMissing": "Email address not found",
+      "loading": "Verifying email...",
+      "codeLabel": "Verification code",
+      "submit": "Verify code",
+      "error": "Error verifying code",
+      "success": "Code verified successfully!",
+      "resendCode": "Resend code",
+      "resendIn": "Resend code in",
+      "useOtherEmail": "Use another email",
+      "invalidCode": "Invalid or expired code",
+      "codeRequired": "Please enter the complete 6-digit code"
+    },
+    "emailLogin": {
+      "title": "Sign In with Email",
+      "description": "Enter your email address to receive a sign in code",
+      "emailLabel": "Email address",
+      "emailPlaceholder": "your@email.com",
+      "submit": "Send access code",
+      "error": "Error sending access code",
+      "success": "Access code sent to your email",
+      "noAccount": "Don't have an account?",
+      "registerHere": "Register here"
+    },
+    "loading": "Loading...",
     "error": {
       "title": "Authentication Error",
       "message": "Something went wrong. Please try again."
@@ -649,5 +726,40 @@
     "billing": "Billing",
     "notifications": "Notifications",
     "logout": "Log out"
+  },
+  "themeEditor": {
+    "selector": {
+      "search": "Search themes...",
+      "dropdown": "Select theme",
+      "previous": "Previous theme",
+      "next": "Next theme",
+      "random": "Random theme"
+    },
+    "actions": {
+      "save": "Save",
+      "reset": "Reset",
+      "export": "Export",
+      "import": "Import",
+      "undo": "Undo",
+      "redo": "Redo",
+      "viewportMobile": "Mobile",
+      "viewportTablet": "Tablet",
+      "viewportDesktop": "Desktop",
+      "themeLight": "Light Mode",
+      "themeDark": "Dark Mode"
+    },
+    "editor": {
+      "colors": "Colors",
+      "typography": "Typography",
+      "brand": "Brand",
+      "borders": "Borders",
+      "spacing": "Spacing",
+      "shadows": "Shadows",
+      "scroll": "Scroll"
+    },
+    "preview": {
+      "title": "Preview",
+      "loading": "Loading preview..."
+    }
   }
 }

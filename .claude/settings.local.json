@@ -62,7 +62,17 @@
       "Bash(mongo:*)",
       "Bash(lsof:*)",
       "Bash(npm run dev:web:*)",
-      "Bash(cd:*)"
+      "Bash(cd:*)",
+      "Bash(npm cache clean:*)",
+      "Bash(dir:*)",
+      "Bash(npm audit fix:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(npm outdated:*)",
+      "Bash(npm run dev:api:*)",
+      "Bash(npx kill-port:*)",
+      "Bash(timeout:*)",
+      "Bash(mongosh:*)",
+      "Bash(npm run db:test:*)"
     ],
     "deny": []
   }

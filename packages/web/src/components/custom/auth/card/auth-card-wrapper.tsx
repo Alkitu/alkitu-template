@@ -18,6 +18,8 @@ interface AuthCardWrapperProps {
   backButtonLabel?: string;
   backButtonHref?: string;
   showSocial?: boolean;
+  socialDividerText?: string;
+  socialPlaceholderText?: string;
 }
 
 export const AuthCardWrapper = ({
@@ -26,6 +28,8 @@ export const AuthCardWrapper = ({
   backButtonLabel,
   backButtonHref,
   showSocial,
+  socialDividerText = 'Or continue with',
+  socialPlaceholderText = 'OAuth providers will be configured with backend',
 }: AuthCardWrapperProps) => {
   const pathname = usePathname();
 
@@ -70,12 +74,12 @@ export const AuthCardWrapper = ({
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
                   <span className="bg-background px-2 text-muted-foreground">
-                    Or continue with
+                    {socialDividerText}
                   </span>
                 </div>
               </div>
               <Button variant="outline" className="w-full" disabled>
-                OAuth providers will be configured with backend
+                {socialPlaceholderText}
               </Button>
             </div>
           )}

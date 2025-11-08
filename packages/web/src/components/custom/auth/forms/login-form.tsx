@@ -42,7 +42,7 @@ export const LoginForm = () => {
         throw new Error(data.message || 'Login failed');
       }
 
-      setSuccess(t('auth.login.success') || 'Login successful!');
+      setSuccess(t('auth.login.success'));
 
       // Remove client-side cookie setting - API route handles httpOnly cookies
       // The /api/auth/login route already sets the httpOnly cookies properly
@@ -55,7 +55,7 @@ export const LoginForm = () => {
         redirectAfterLogin();
       }, 100);
     } catch (err: any) {
-      setError(err.message || t('auth.login.error') || 'Login failed');
+      setError(err.message || t('auth.login.error'));
     } finally {
       setIsLoading(false);
     }
@@ -100,20 +100,20 @@ export const LoginForm = () => {
       </Button>
 
       <div className="text-center space-y-2">
-        <Link 
-          href="/auth/forgot-password" 
+        <Link
+          href="/auth/forgot-password"
           className="text-sm text-muted-foreground hover:text-primary underline-offset-4 hover:underline block"
         >
-          {t('auth.login.forgotPassword') || '¿Olvidaste tu contraseña?'}
+          {t('auth.login.forgotPassword')}
         </Link>
-        
+
         <div className="text-sm text-muted-foreground">
           o{' '}
-          <Link 
-            href="/auth/email-login" 
+          <Link
+            href="/auth/email-login"
             className="text-primary hover:underline"
           >
-            {t('auth.login.emailLogin') || 'accede con código de email'}
+            {t('auth.login.emailLogin')}
           </Link>
         </div>
       </div>

@@ -10,3 +10,12 @@ export type { PricingCardProps } from './pricing-card';
 
 export { Footer } from './footer';
 export type { FooterProps, FooterBrand, FooterSection, FooterLink } from './footer';
+
+export { ThemeEditorOrganism } from './theme-editor';
+export type { ThemeEditorOrganismProps, ThemeEditorLabels } from './theme-editor';
+
+export { AuthPageOrganism } from './auth';
+export type { AuthPageOrganismProps } from './auth';
+
+export { UnauthorizedOrganism } from './unauthorized';
+export type { UnauthorizedOrganismProps } from './unauthorized';

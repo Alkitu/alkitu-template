@@ -1,25 +1,31 @@
 'use client';
 
-import { AuthCardWrapper } from '@/components/custom/auth/card/auth-card-wrapper';
+import { AuthPageOrganism } from '@/components/atomic-design/organisms';
+import { Typography } from '@/components/atomic-design/atoms';
 import { useTranslations } from '@/context/TranslationContext';
-import { Typography } from '@/components/atomic-design/atoms/typography';
 
+/**
+ * Auth Error Page
+ *
+ * Displays authentication error messages following Atomic Design principles.
+ *
+ * @see /docs/00-conventions/atomic-design-architecture.md for architecture details
+ */
 export default function AuthErrorPage() {
   const t = useTranslations();
 
   return (
-    <AuthCardWrapper
-      headerLabel="Authentication Error"
-      backButtonLabel="Back to Login"
+    <AuthPageOrganism
+      headerLabel={t('auth.error.title')}
+      backButtonLabel={t('auth.backToLogin')}
       backButtonHref="/auth/login"
     >
       <Typography
         variant="p"
         className="text-destructive text-center"
-        migrated={true}
       >
-        Something went wrong during authentication. Please try again.
+        {t('auth.error.message')}
       </Typography>
-    </AuthCardWrapper>
+    </AuthPageOrganism>
   );
 }

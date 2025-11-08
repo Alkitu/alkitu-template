@@ -31,9 +31,7 @@ export const RegisterForm = () => {
   const registerMutation = trpc.user.register.useMutation({
     // TODO: Implement this
     onSuccess: (data) => {
-      setSuccess(
-        t('auth.register.success', {}, 'auth') || 'Registration successful!',
-      );
+      setSuccess(t('auth.register.success'));
 
       // Redirect to login with proper locale
       setTimeout(() => {
@@ -64,12 +62,12 @@ export const RegisterForm = () => {
 
     // Validation
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+      setError(t('auth.newPassword.passwordMismatch'));
       return;
     }
 
     if (!formData.terms) {
-      setError('You must accept the terms and conditions');
+      setError(t('auth.register.termsRequired'));
       return;
     }
 
@@ -179,7 +177,7 @@ export const RegisterForm = () => {
           disabled={isLoading}
         />
         <Label htmlFor="terms" className="text-sm">
-          I accept the terms and conditions
+          {t('auth.register.terms')}
         </Label>
       </div>
 

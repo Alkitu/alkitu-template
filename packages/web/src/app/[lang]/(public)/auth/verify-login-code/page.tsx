@@ -1,7 +1,8 @@
 'use client';
 
 import { VerifyLoginCodeForm } from '@/components/custom/auth/forms/verify-login-code-form';
-import { AuthCardWrapper } from '@/components/custom/auth/card/auth-card-wrapper';
+import { AuthPageOrganism } from '@/components/atomic-design/organisms';
+import { Typography } from '@/components/atomic-design/atoms/typography';
 import { useTranslations } from '@/context/TranslationContext';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
@@ -13,32 +14,34 @@ function VerifyLoginCodeContent() {
 
   if (!email) {
     return (
-      <AuthCardWrapper
-        headerLabel={t('auth.verifyCode.invalidEmail') || 'Email requerido'}
-        backButtonLabel={t('auth.verifyCode.backToEmailLogin') || 'Volver a login con email'}
+      <AuthPageOrganism
+        headerLabel={t('auth.verifyLoginCode.title')}
+        backButtonLabel={t('auth.backToLogin')}
         backButtonHref="/auth/email-login"
       >
-        <div className="text-center text-muted-foreground">
-          {t('auth.verifyCode.emailMissing') || 'Email no encontrado. Por favor solicita un nuevo código.'}
-        </div>
-      </AuthCardWrapper>
+        <Typography variant="p" className="text-center text-muted-foreground">
+          {t('auth.verifyLoginCode.emailMissing')}
+        </Typography>
+      </AuthPageOrganism>
     );
   }
 
   return (
-    <AuthCardWrapper
-      headerLabel={t('auth.verifyCode.title') || 'Verifica tu código'}
-      backButtonLabel={t('auth.verifyCode.backToEmailLogin') || 'Usar otro email'}
+    <AuthPageOrganism
+      headerLabel={t('auth.verifyLoginCode.title')}
+      backButtonLabel={t('auth.backToLogin')}
       backButtonHref="/auth/email-login"
     >
       <VerifyLoginCodeForm email={email} />
-    </AuthCardWrapper>
+    </AuthPageOrganism>
   );
 }
 
 export default function VerifyLoginCodePage() {
+  const t = useTranslations();
+
   return (
-    <Suspense fallback={<div>Cargando...</div>}>
+    <Suspense fallback={<div>{t('auth.verifyLoginCode.loading')}</div>}>
       <VerifyLoginCodeContent />
     </Suspense>
   );

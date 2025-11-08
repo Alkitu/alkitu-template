@@ -12,6 +12,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 4. **MAINTAIN COMPATIBILITY**: Any updates MUST be backward compatible - never break existing functionality
 5. **COMMUNICATE FIRST**: Always explain what you're going to do BEFORE making any changes
 6. **NO EXTERNAL DEPENDENCIES**: Do NOT install any external dependencies unless EXTREMELY necessary
+7. **DOCUMENT CONVENTIONS**: When solving a problem that establishes a new pattern or convention, ALWAYS create documentation in `/docs/00-conventions/` with a descriptive filename
+
+### Documentation Convention Rules:
+- 📝 **ALWAYS** create convention documentation in `/docs/00-conventions/` when establishing new patterns
+- 📄 **USE** descriptive, kebab-case filenames (e.g., `api-design-patterns.md`)
+- ✅ **INCLUDE** clear rules, examples, and anti-patterns in documentation
+- 🔗 **REFERENCE** important conventions from this CLAUDE.md file
+- 📚 See `/docs/00-conventions/documentation-guidelines.md` for complete documentation standards
 
 ### Dependency Management Rules:
 - 🚫 **NEVER** install new packages without checking existing dependencies first
@@ -32,6 +40,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - ✅ Review existing dependencies before suggesting new ones
 - ✅ Explain the planned changes to the user first
 - ✅ Get confirmation before proceeding with significant changes
+
+### Atomic Design Architecture Rules:
+- 🏗️ **FOLLOW ATOMIC DESIGN**: All UI components MUST follow Atomic Design methodology (Atoms → Molecules → Organisms → Templates → Pages)
+- 📁 **USE CORRECT STRUCTURE**: Place components in `/packages/web/src/components/atomic-design/` with proper hierarchy
+- 📝 **INCLUDE TYPE FILES**: Every component MUST have `.tsx`, `.types.ts`, and `index.ts` files
+- 🌍 **TRANSLATIONS IN PAGES**: Pages MUST use `useTranslations()` hook and pass translated props to organisms
+- ❌ **NO UI IN PAGES**: Page components should ONLY handle configuration and composition, NOT UI implementation
+- 🔗 **REFERENCE GUIDE**: See `/docs/00-conventions/atomic-design-architecture.md` for complete guidelines
 
 ## Project Overview
 
@@ -106,6 +122,17 @@ npm run docker:logs     # View container logs
 npm run docker:restart  # Restart services
 ```
 
+### Faster CLI Commands
+
+For improved performance and developer experience, use these modern alternatives:
+- **fd** - Faster alternative to `find` command
+- **rg** (ripgrep) - Faster alternative to `grep` command
+- **tree** - Display directory structures
+- **ast-grep** - AST-based code searching and refactoring
+- **fzf** - Fuzzy finder for command-line
+- **jq** - JSON processor for parsing and manipulating JSON
+- **yq** - YAML/JSON processor
+
 ## Architecture & Code Organization
 
 ### Monorepo Structure
@@ -130,11 +157,13 @@ packages/
 
 ### Frontend Architecture (packages/web/)
 - **Framework**: Next.js v15 with App Router
+- **Component Architecture**: Atomic Design methodology (Atoms → Molecules → Organisms → Templates → Pages)
 - **State Management**: Zustand + React Query for server state
 - **API Integration**: tRPC client with React Query
-- **UI Components**: Radix UI primitives + NextUI + custom components
+- **UI Components**: Radix UI primitives + NextUI + custom Atomic Design components
 - **Styling**: Tailwind CSS v4 with CSS variables, OKLCH color space
 - **Theme System**: Dynamic theming with Culori color library
+- **Internationalization**: useTranslations() hook pattern for multi-language support
 - **Testing**: Vitest + React Testing Library + Storybook
 
 ### Shared Package (packages/shared/)
@@ -227,6 +256,7 @@ Refer to `docs/03-ai-agents/` for agent-specific protocols and workflows.
 - `packages/web/vitest.config.ts` - Vitest configuration for frontend
 
 ### Important Directories
+- `docs/00-conventions/` - Project conventions and guidelines (START HERE for standards)
 - `docs/` - Comprehensive project documentation
 - `infrastructure/docker/` - Docker configurations for all services
 - `packages/api/test/` - Testing utilities, factories, and mocks

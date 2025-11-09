@@ -49,6 +49,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - ❌ **NO UI IN PAGES**: Page components should ONLY handle configuration and composition, NOT UI implementation
 - 🔗 **REFERENCE GUIDE**: See `/docs/00-conventions/atomic-design-architecture.md` for complete guidelines
 
+### Component Testing Rules:
+- ✅ **CO-LOCATE TESTS**: Place `Component.test.tsx` NEXT TO `Component.tsx` (NOT in `__tests__/` folders)
+- 📊 **COVERAGE REQUIREMENTS**: Atoms (95%+), Molecules (90%+), Organisms (95%+)
+- 🧪 **UNIT TESTS**: Use Vitest + Testing Library for component testing
+- 🎭 **E2E TESTS**: Use Playwright ONLY for complete user flows (auth, checkout)
+- 📸 **VISUAL TESTS**: Use Storybook + Chromatic for visual regression
+- 🔗 **REFERENCE GUIDES**:
+  - Component structure: `/docs/00-conventions/component-structure-and-testing.md`
+  - Testing frameworks: `/docs/00-conventions/testing-strategy-and-frameworks.md`
+  - Frontend testing: `/docs/05-testing/frontend-testing-guide.md`
+  - Backend testing: `/docs/05-testing/backend-testing-guide.md`
+
 ## Project Overview
 
 This is **Alkitu Template** - an enterprise-grade TypeScript monorepo for building SaaS applications. It uses npm workspaces and follows SOLID principles with AI-driven development workflows.
@@ -80,18 +92,32 @@ npm run dev:web      # Next.js frontend on :3000
 # Run all tests across packages
 npm run test
 
-# API testing (comprehensive suite)
+# Backend testing (Jest + Stryker)
 cd packages/api
 npm run test:cov        # Coverage reports (95%+ required)
 npm run test:mutation   # Mutation testing (85%+ score required)
 npm run test:solid      # SOLID principles validation
 npm run test:tdd        # TDD watch mode
 npm run test:e2e        # End-to-end tests
+npm run quality:gates   # All quality checks
 
-# Frontend testing
+# Frontend unit testing (Vitest)
 cd packages/web
-npm run test:watch      # Vitest watch mode
-npm run test:ui         # Vitest UI
+npm run test            # Run all tests once
+npm run test:watch      # Watch mode
+npm run test:ui         # Vitest UI mode
+npm run test:coverage   # Coverage report
+
+# Frontend E2E testing (Playwright)
+npm run test:e2e        # Run E2E tests
+npm run test:e2e:ui     # Interactive UI mode
+npm run test:e2e:debug  # Debug mode
+npm run test:e2e:codegen  # Generate tests with codegen
+
+# Visual regression (Storybook + Chromatic)
+npm run storybook       # Dev mode (port 6006)
+npm run build-storybook # Build for production
+npm run test:visual     # Run Chromatic
 ```
 
 ### Database Operations
@@ -190,6 +216,12 @@ Test SOLID compliance with: `npm run test:solid`
 - **Mutation Testing**: 85%+ mutation score using Stryker
 - **Test Categories**: Unit, Integration, E2E, Performance, Contract
 - **Quality Gates**: Automated in CI/CD pipeline
+- **Testing Frameworks**:
+  - **Backend**: Jest (unit) + Stryker (mutation) + Supertest (API)
+  - **Frontend Unit**: Vitest + Testing Library
+  - **Frontend E2E**: Playwright (multi-browser, MCP integration)
+  - **Visual Regression**: Storybook + Chromatic
+  - **Accessibility**: jest-axe (embedded in unit tests)
 
 ### API Development
 - **tRPC**: Primary API layer with type-safe client integration
@@ -240,10 +272,35 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 
 This project uses AI-driven development with specialized agents:
 - **Architecture Agent**: SOLID principles and system design
-- **Backend Agent**: NestJS and API development  
+- **Backend Agent**: NestJS and API development
 - **Frontend Agent**: Next.js and UI development
-- **Testing Agent**: TDD methodology and quality assurance
+- **Frontend Component Builder**: Creates Atomic Design components automatically (`.claude/agents/frontend-component-builder.md`)
+- **Frontend Testing Expert**: Vitest/Playwright/Storybook test generation (`.claude/agents/frontend-testing-expert.md`)
+- **Backend Testing Expert**: Jest/Stryker TDD workflow (`.claude/agents/backend-testing-expert.md`)
+- **Component Migration Coordinator**: Orchestrates complete migration workflow (`.claude/agents/component-migration-coordinator.md`)
+- **Component Verification Agent**: Automated component migration verification
 - **Documentation Agent**: Maintains comprehensive documentation
+
+### Workflows
+
+#### Component Creation Workflow (New Components)
+```
+User request → frontend-component-builder → frontend-testing-expert → Complete component
+```
+
+#### Component Migration Workflow (Existing Components)
+```
+/migrate-component → component-migration-coordinator
+  ├─ Analyzes original component
+  ├─ Invokes frontend-component-builder
+  ├─ Migrates code logic
+  ├─ Verifies quality gates
+  └─ Updates tracking document automatically
+```
+
+**Quick Start Commands**:
+- `/migrate-component` - Start automated migration workflow with tracking
+- Invoke `frontend-component-builder` - Create new component from scratch
 
 Refer to `docs/03-ai-agents/` for agent-specific protocols and workflows.
 
@@ -257,10 +314,30 @@ Refer to `docs/03-ai-agents/` for agent-specific protocols and workflows.
 
 ### Important Directories
 - `docs/00-conventions/` - Project conventions and guidelines (START HERE for standards)
-- `docs/` - Comprehensive project documentation
+  - `documentation-guidelines.md` - How to write documentation
+  - `atomic-design-architecture.md` - Component structure rules
+  - `component-structure-and-testing.md` - Component file structure and testing conventions
+  - `testing-strategy-and-frameworks.md` - Which framework to use when
+- `docs/02-components/` - Component templates for creation (used by frontend-component-builder agent)
+  - `component-atom-template.md` - Atom component template (buttons, inputs, icons)
+  - `component-molecule-template.md` - Molecule component template (form fields, cards)
+  - `component-organism-template.md` - Organism component template (forms, complex features)
+- `docs/05-testing/` - Testing guides and strategies
+  - `frontend-testing-guide.md` - Complete frontend testing guide
+  - `backend-testing-guide.md` - TDD workflow for backend
+  - `playwright-setup-and-usage.md` - E2E testing with Playwright
+  - `testing-cheatsheet.md` - Quick reference for testing
+- `.claude/agents/` - AI agent definitions
+  - `frontend-component-builder.md` - Frontend component creation agent
+  - `frontend-testing-expert.md` - Frontend test generation agent
+  - `backend-testing-expert.md` - Backend TDD agent
+  - `component-migration-coordinator.md` - Migration orchestration agent
+  - `component-verification-agent.md` - Component verification agent
+- `.claude/commands/` - Slash commands
+  - `migrate-component.md` - Start migration workflow (/migrate-component)
 - `infrastructure/docker/` - Docker configurations for all services
 - `packages/api/test/` - Testing utilities, factories, and mocks
-- `packages/web/src/components/ui/` - Reusable UI components
+- `packages/web/src/components/atomic-design/` - Atomic Design components
 
 ### Health Monitoring
 - API health check: `http://localhost:3001/health`

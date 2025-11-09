@@ -1,12 +1,19 @@
 'use client';
 
-import { VerifyLoginCodeForm } from '@/components/custom/auth/forms/verify-login-code-form';
-import { AuthPageOrganism } from '@/components/atomic-design/organisms';
+import { VerifyLoginCodeFormOrganism } from '@/components/atomic-design/organisms';
 import { Typography } from '@/components/atomic-design/atoms/typography';
 import { useTranslations } from '@/context/TranslationContext';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 
+/**
+ * Verify Login Code Page
+ *
+ * Email code verification page following Atomic Design principles.
+ * Uses VerifyLoginCodeFormOrganism which includes its own header and description.
+ *
+ * @see /docs/00-conventions/atomic-design-architecture.md for architecture details
+ */
 function VerifyLoginCodeContent() {
   const t = useTranslations();
   const searchParams = useSearchParams();
@@ -14,27 +21,18 @@ function VerifyLoginCodeContent() {
 
   if (!email) {
     return (
-      <AuthPageOrganism
-        headerLabel={t('auth.verifyLoginCode.title')}
-        backButtonLabel={t('auth.backToLogin')}
-        backButtonHref="/auth/email-login"
-      >
-        <Typography variant="p" className="text-center text-muted-foreground">
+      <div className="text-center space-y-4">
+        <h1 className="text-3xl font-bold text-destructive">
+          {t('auth.verifyLoginCode.title')}
+        </h1>
+        <Typography variant="p" className="text-muted-foreground">
           {t('auth.verifyLoginCode.emailMissing')}
         </Typography>
-      </AuthPageOrganism>
+      </div>
     );
   }
 
-  return (
-    <AuthPageOrganism
-      headerLabel={t('auth.verifyLoginCode.title')}
-      backButtonLabel={t('auth.backToLogin')}
-      backButtonHref="/auth/email-login"
-    >
-      <VerifyLoginCodeForm email={email} />
-    </AuthPageOrganism>
-  );
+  return <VerifyLoginCodeFormOrganism email={email} />;
 }
 
 export default function VerifyLoginCodePage() {

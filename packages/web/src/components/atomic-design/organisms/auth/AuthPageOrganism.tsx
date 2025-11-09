@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { AuthCardWrapper } from '@/components/custom/auth/card/auth-card-wrapper';
+import { AuthCardWrapper } from '@/components/atomic-design/molecules';
 import type { AuthPageOrganismProps } from './AuthPageOrganism.types';
 
 /**
@@ -17,7 +17,7 @@ import type { AuthPageOrganismProps } from './AuthPageOrganism.types';
  * @example
  * ```tsx
  * import { AuthPageOrganism } from '@/components/atomic-design/organisms';
- * import { LoginForm } from '@/components/custom/auth/forms/login-form';
+ * import { LoginFormOrganism } from '@/components/atomic-design/organisms';
  * import { useTranslations } from '@/context/TranslationContext';
  *
  * export default function LoginPage() {
@@ -31,7 +31,7 @@ import type { AuthPageOrganismProps } from './AuthPageOrganism.types';
  *       showSocial
  *       socialDividerText={t('auth.socialDivider')}
  *     >
- *       <LoginForm />
+ *       <LoginFormOrganism />
  *     </AuthPageOrganism>
  *   );
  * }

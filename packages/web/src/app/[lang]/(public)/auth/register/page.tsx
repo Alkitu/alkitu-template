@@ -1,7 +1,6 @@
 'use client';
 
-import { AuthPageOrganism } from '@/components/atomic-design/organisms';
-import { RegisterForm } from '@/components/custom/auth/forms/register-form';
+import { AuthPageOrganism, RegisterFormOrganism } from '@/components/atomic-design/organisms';
 import { useTranslations } from '@/context/TranslationContext';
 
 /**
@@ -24,7 +23,7 @@ export default function RegisterPage() {
       socialDividerText={t('auth.socialDivider')}
       socialPlaceholderText={t('auth.socialPlaceholder')}
     >
-      <RegisterForm />
+      <RegisterFormOrganism />
     </AuthPageOrganism>
   );
 }

@@ -2,7 +2,8 @@
 
 import { useThemeEditor } from '../context/ThemeEditorContext';
 import { DEFAULT_THEMES } from '../constants/default-themes';
-import { 
+import { trpc } from '@/lib/trpc';
+import {
   ActionsBarLogic,
   HistoryState,
   ThemeImportHandler,
@@ -19,9 +20,9 @@ import {
  * Ahora con tipos específicos en lugar de 'any'
  */
 export function useActionsBarLogic(): ActionsBarLogic {
-  const { 
-    state, 
-    setViewport, 
+  const {
+    state,
+    setViewport,
     setThemeMode,
     setTheme,
     setError,
@@ -35,6 +36,10 @@ export function useActionsBarLogic(): ActionsBarLogic {
     undoCount,
     redoCount
   } = useThemeEditor();
+
+  // tRPC mutations for saving themes
+  const saveThemeMutation = trpc.theme.save.useMutation();
+  const updateThemeMutation = trpc.theme.update.useMutation();
 
   // Get current theme or default (evita repetición del fallback)
   const currentTheme = state.currentTheme || DEFAULT_THEMES[0];
@@ -64,22 +69,55 @@ export function useActionsBarLogic(): ActionsBarLogic {
     setError(error);
   };
 
-  const handleSave: ThemeSaveHandler = (theme) => {
-    // Check if it's a new theme or updating existing
-    const isNewTheme = !state.availableThemes.find(t => t.id === theme.id);
-    
-    if (isNewTheme) {
-      // Add as new theme
-      addTheme(theme);
-      console.log('Added new theme:', theme.name);
-    } else {
-      // Update existing theme
-      updateTheme(theme);
-      console.log('Updated theme:', theme.name);
+  const handleSave: ThemeSaveHandler = async (theme) => {
+    try {
+      // Check if it's a new theme or updating existing
+      const isNewTheme = !state.availableThemes.find(t => t.id === theme.id);
+
+      // Prepare theme data for backend
+      const themeData = {
+        name: theme.name,
+        description: theme.description,
+        author: theme.author,
+        themeData: {
+          lightColors: theme.lightColors,
+          darkColors: theme.darkColors,
+          typography: theme.typography,
+          brand: theme.brand,
+          spacing: theme.spacing,
+          borders: theme.borders,
+          shadows: theme.shadows,
+          scroll: theme.scroll,
+        },
+        tags: theme.tags,
+        isPublic: theme.isPublic,
+        isFavorite: theme.isFavorite,
+      };
+
+      if (isNewTheme) {
+        // Save as new theme to backend
+        const savedTheme = await saveThemeMutation.mutateAsync(themeData);
+        console.log('Saved new theme to backend:', savedTheme);
+
+        // Update local state
+        addTheme(theme);
+      } else {
+        // Update existing theme in backend
+        const updatedTheme = await updateThemeMutation.mutateAsync({
+          id: theme.id,
+          ...themeData,
+        });
+        console.log('Updated theme in backend:', updatedTheme);
+
+        // Update local state
+        updateTheme(theme);
+      }
+
+      markSaved();
+    } catch (error: any) {
+      console.error('Failed to save theme:', error);
+      setError(error.message || 'Failed to save theme to backend');
     }
-    
-    // TODO: Implement save to localStorage/API
-    markSaved();
   };
 
   const handleReset: ResetHandler = () => {

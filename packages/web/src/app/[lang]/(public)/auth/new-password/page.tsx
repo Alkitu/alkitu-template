@@ -1,9 +1,16 @@
 'use client';
 
-import { NewPasswordForm } from '@/components/custom/auth/forms/new-password-form';
-import { AuthPageOrganism } from '@/components/atomic-design/organisms';
+import { AuthPageOrganism, NewPasswordFormOrganism } from '@/components/atomic-design/organisms';
 import { useTranslations } from '@/context/TranslationContext';
 
+/**
+ * New Password Page
+ *
+ * Password reset page with token verification following Atomic Design principles.
+ * Uses NewPasswordFormOrganism which extracts token from URL parameters.
+ *
+ * @see /docs/00-conventions/atomic-design-architecture.md for architecture details
+ */
 export default function NewPasswordPage() {
   const t = useTranslations();
 
@@ -13,7 +20,7 @@ export default function NewPasswordPage() {
       backButtonLabel={t('auth.backToLogin')}
       backButtonHref="/auth/login"
     >
-      <NewPasswordForm />
+      <NewPasswordFormOrganism />
     </AuthPageOrganism>
   );
 }

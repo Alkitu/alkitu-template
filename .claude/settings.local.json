@@ -72,7 +72,17 @@
       "Bash(npx kill-port:*)",
       "Bash(timeout:*)",
       "Bash(mongosh:*)",
-      "Bash(npm run db:test:*)"
+      "Bash(npm run db:test:*)",
+      "Bash(tree:*)",
+      "Bash(fd:*)",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_take_screenshot",
+      "mcp__playwright__browser_evaluate",
+      "mcp__playwright__browser_click",
+      "mcp__playwright__browser_snapshot",
+      "Bash(npm run test:coverage:*)",
+      "Bash(cat:*)",
+      "Bash(npm run)"
     ],
     "deny": []
   }

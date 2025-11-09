@@ -41,3 +41,10 @@ Object.defineProperty(global, 'PushManager', {
   value: vi.fn(),
   writable: true,
 });
+
+// Mock ResizeObserver (needed for Radix UI components)
+global.ResizeObserver = vi.fn().mockImplementation(() => ({
+  observe: vi.fn(),
+  unobserve: vi.fn(),
+  disconnect: vi.fn(),
+}));

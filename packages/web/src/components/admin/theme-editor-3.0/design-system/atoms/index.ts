@@ -1,8 +1,8 @@
 // Atomic components exports
 export { Alert } from './Alert';
 export { Avatar } from './Avatar';
-export { Badge } from './Badge'; 
-export { Breadcrumb } from './Breadcrumb';
+export { Badge } from './Badge';
+// export { Breadcrumb } from './Breadcrumb'; // MIGRATED to molecules/breadcrumb
 export { Button } from './Button';
 export { Checkbox } from './Checkbox';
 export { Chip } from './Chip';

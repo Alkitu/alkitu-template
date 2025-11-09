@@ -1,9 +1,16 @@
 'use client';
 
-import { ForgotPasswordForm } from '@/components/custom/auth/forms/forgot-password-form';
-import { AuthPageOrganism } from '@/components/atomic-design/organisms';
+import { AuthPageOrganism, ForgotPasswordFormOrganism } from '@/components/atomic-design/organisms';
 import { useTranslations } from '@/context/TranslationContext';
 
+/**
+ * Forgot Password Page
+ *
+ * Password reset request page following Atomic Design principles.
+ * Uses ForgotPasswordFormOrganism which includes its own header and description.
+ *
+ * @see /docs/00-conventions/atomic-design-architecture.md for architecture details
+ */
 export default function ForgotPasswordPage() {
   const t = useTranslations();
 
@@ -13,7 +20,7 @@ export default function ForgotPasswordPage() {
       backButtonLabel={t('auth.backToLogin')}
       backButtonHref="/auth/login"
     >
-      <ForgotPasswordForm />
+      <ForgotPasswordFormOrganism />
     </AuthPageOrganism>
   );
 }

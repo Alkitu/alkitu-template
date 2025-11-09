@@ -77,6 +77,7 @@ The `/docs/` directory is organized as follows:
 docs/
 ├── 00-conventions/          # Project conventions and guidelines (THIS DIRECTORY)
 ├── 01-architecture/         # System architecture documentation
+├── 02-components/           # Component templates (atoms, molecules, organisms)
 ├── 03-ai-agents/           # AI agent protocols and workflows
 ├── 04-product/             # Product specifications and requirements
 ├── 05-guides/              # How-to guides and tutorials

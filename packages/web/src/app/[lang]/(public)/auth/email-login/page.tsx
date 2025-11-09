@@ -1,9 +1,16 @@
 'use client';
 
-import { EmailCodeRequestForm } from '@/components/custom/auth/forms/email-code-request-form';
-import { AuthPageOrganism } from '@/components/atomic-design/organisms';
+import { AuthPageOrganism, EmailCodeRequestFormOrganism } from '@/components/atomic-design/organisms';
 import { useTranslations } from '@/context/TranslationContext';
 
+/**
+ * Email Login Page
+ *
+ * Passwordless login via email code page following Atomic Design principles.
+ * Uses EmailCodeRequestFormOrganism which includes its own header and description.
+ *
+ * @see /docs/00-conventions/atomic-design-architecture.md for architecture details
+ */
 export default function EmailLoginPage() {
   const t = useTranslations();
 
@@ -13,7 +20,7 @@ export default function EmailLoginPage() {
       backButtonLabel={t('auth.backToLogin')}
       backButtonHref="/auth/login"
     >
-      <EmailCodeRequestForm />
+      <EmailCodeRequestFormOrganism />
     </AuthPageOrganism>
   );
 }

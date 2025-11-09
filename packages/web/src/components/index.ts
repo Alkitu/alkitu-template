@@ -32,7 +32,7 @@ export * from './ui/alert-dialog';
 export * from './ui/alert';
 // export * from './ui/avatar'; // Conflicts with atoms/Avatar
 // export * from './ui/badge'; // Conflicts with atoms/Badge
-export * from './ui/breadcrumb';
+// export * from './ui/breadcrumb'; // Conflicts with molecules/Breadcrumb
 // export * from './ui/button'; // Conflicts with atoms/Button
 export * from './ui/calendar';
 // export * from './ui/card'; // Conflicts with molecules/Card

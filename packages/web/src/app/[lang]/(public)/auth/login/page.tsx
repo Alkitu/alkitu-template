@@ -1,7 +1,6 @@
 'use client';
 
-import { AuthPageOrganism } from '@/components/atomic-design/organisms';
-import { LoginForm } from '@/components/custom/auth/forms/login-form';
+import { AuthPageOrganism, LoginFormOrganism } from '@/components/atomic-design/organisms';
 import { useTranslations } from '@/context/TranslationContext';
 
 /**
@@ -29,7 +28,7 @@ export default function LoginPage() {
       socialDividerText={t('auth.socialDivider')}
       socialPlaceholderText={t('auth.socialPlaceholder')}
     >
-      <LoginForm />
+      <LoginFormOrganism />
     </AuthPageOrganism>
   );
 }

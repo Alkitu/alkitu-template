@@ -1,9 +1,16 @@
 'use client';
 
-import { NewVerificationForm } from '@/components/custom/auth/forms/new-verification-form';
-import { AuthPageOrganism } from '@/components/atomic-design/organisms';
+import { AuthPageOrganism, NewVerificationFormOrganism } from '@/components/atomic-design/organisms';
 import { useTranslations } from '@/context/TranslationContext';
 
+/**
+ * New Verification Page
+ *
+ * Email verification page following Atomic Design principles.
+ * Uses NewVerificationFormOrganism which automatically verifies on mount.
+ *
+ * @see /docs/00-conventions/atomic-design-architecture.md for architecture details
+ */
 export default function NewVerificationPage() {
   const t = useTranslations();
 
@@ -13,7 +20,7 @@ export default function NewVerificationPage() {
       backButtonLabel={t('auth.backToLogin')}
       backButtonHref="/auth/login"
     >
-      <NewVerificationForm />
+      <NewVerificationFormOrganism />
     </AuthPageOrganism>
   );
 }

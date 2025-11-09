@@ -14,8 +14,43 @@ export type { FooterProps, FooterBrand, FooterSection, FooterLink } from './foot
 export { ThemeEditorOrganism } from './theme-editor';
 export type { ThemeEditorOrganismProps, ThemeEditorLabels } from './theme-editor';
 
-export { AuthPageOrganism } from './auth';
-export type { AuthPageOrganismProps } from './auth';
+export {
+  AuthPageOrganism,
+  LoginFormOrganism,
+  RegisterFormOrganism,
+  ForgotPasswordFormOrganism,
+  NewPasswordFormOrganism,
+  ResetPasswordFormOrganism,
+  EmailCodeRequestFormOrganism,
+  VerifyLoginCodeFormOrganism,
+  NewVerificationFormOrganism
+} from './auth';
+
+export type {
+  AuthPageOrganismProps,
+  LoginFormOrganismProps,
+  RegisterFormOrganismProps,
+  ForgotPasswordFormOrganismProps,
+  NewPasswordFormOrganismProps,
+  ResetPasswordFormOrganismProps,
+  EmailCodeRequestFormOrganismProps,
+  VerifyLoginCodeFormOrganismProps,
+  NewVerificationFormOrganismProps
+} from './auth';
 
 export { UnauthorizedOrganism } from './unauthorized';
 export type { UnauthorizedOrganismProps } from './unauthorized';
+
+export { IconUploaderOrganism } from './icon-uploader';
+export type { IconUploaderOrganismProps } from './icon-uploader';
+
+export { SonnerOrganism, useToast, toast } from './sonner';
+export type {
+  Toast,
+  ToastType,
+  ToastPosition,
+  ToastAction,
+  ToastContextType,
+  SonnerOrganismProps,
+  ToastHelpers,
+} from './sonner';

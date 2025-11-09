@@ -2,29 +2,29 @@
 
 import React from 'react';
 import { ShowcaseContainer } from './ShowcaseContainer';
-import { BreadcrumbMolecule as Breadcrumb, BreadcrumbMoleculeProps as BreadcrumbItem } from '../../../design-system/molecules/BreadcrumbMolecule';
+import { BreadcrumbNavigation as Breadcrumb, BreadcrumbItemData } from '@/components/atomic-design/molecules/breadcrumb';
 import { Home, Folder, File, Settings, User, ShoppingBag } from 'lucide-react';
 
 /**
  * Breadcrumb Showcase Component
- * Demonstrates all Breadcrumb atom variants with different configurations
+ * Demonstrates all Breadcrumb molecule variants with different configurations
  */
 export function BreadcrumbShowcase() {
   // Sample breadcrumb items
-  const basicItems: BreadcrumbItem[] = [
+  const basicItems: BreadcrumbItemData[] = [
     { label: 'Home', onClick: () => console.log('Home clicked') },
     { label: 'Products', onClick: () => console.log('Products clicked') },
     { label: 'Electronics', onClick: () => console.log('Electronics clicked') },
     { label: 'Smartphones', current: true },
   ];
 
-  const withIconsItems: BreadcrumbItem[] = [
+  const withIconsItems: BreadcrumbItemData[] = [
     { label: 'Home', icon: Home, onClick: () => console.log('Home clicked') },
     { label: 'Settings', icon: Settings, onClick: () => console.log('Settings clicked') },
     { label: 'Profile', icon: User, current: true },
   ];
 
-  const longItems: BreadcrumbItem[] = [
+  const longItems: BreadcrumbItemData[] = [
     { label: 'Dashboard', onClick: () => console.log('Dashboard') },
     { label: 'E-commerce', onClick: () => console.log('E-commerce') },
     { label: 'Products', onClick: () => console.log('Products') },
@@ -35,7 +35,7 @@ export function BreadcrumbShowcase() {
     { label: 'Apple iPhone', current: true },
   ];
 
-  const fileSystemItems: BreadcrumbItem[] = [
+  const fileSystemItems: BreadcrumbItemData[] = [
     { label: 'Root', icon: Home, onClick: () => console.log('Root') },
     { label: 'Documents', icon: Folder, onClick: () => console.log('Documents') },
     { label: 'Projects', icon: Folder, onClick: () => console.log('Projects') },

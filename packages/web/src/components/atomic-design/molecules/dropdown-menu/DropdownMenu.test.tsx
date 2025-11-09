@@ -317,7 +317,7 @@ describe('DropdownMenu Molecule - Primitive Components', () => {
   });
 });
 
-describe('MoleculeComponent - Data-Driven API', () => {
+describe('DropdownMenuMolecule - Data-Driven API', () => {
   // 6. MOLECULE RENDERING TESTS
   describe('Molecule - Basic Rendering', () => {
     it('renders with default trigger', () => {
@@ -325,7 +325,7 @@ describe('MoleculeComponent - Data-Driven API', () => {
         { id: '1', label: 'Item 1', type: 'item' },
       ];
 
-      render(<MoleculeComponent items={items} />);
+      render(<DropdownMenuMolecule items={items} />);
       expect(screen.getByText('Options')).toBeInTheDocument();
     });
 
@@ -335,7 +335,7 @@ describe('MoleculeComponent - Data-Driven API', () => {
       ];
 
       render(
-        <MoleculeComponent
+        <DropdownMenuMolecule
           items={items}
           trigger={<button>Custom Trigger</button>}
         />
@@ -353,7 +353,7 @@ describe('MoleculeComponent - Data-Driven API', () => {
         { id: '2', label: 'Checkbox Item', type: 'checkbox' },
       ];
 
-      render(<MoleculeComponent items={items} />);
+      render(<DropdownMenuMolecule items={items} />);
 
       await user.click(screen.getByText('Options'));
 

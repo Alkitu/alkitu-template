@@ -24,7 +24,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/atomic-design/atoms/select';
+} from '@/components/ui/select';
 import { Badge } from '@/components/atomic-design/atoms/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import {

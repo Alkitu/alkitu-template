@@ -32,7 +32,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/atomic-design/atoms/select';
+} from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Building2, ArrowLeft, Upload, X } from 'lucide-react';
 import { toast } from 'sonner';

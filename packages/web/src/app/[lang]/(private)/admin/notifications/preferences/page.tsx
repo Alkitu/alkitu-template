@@ -30,7 +30,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/atomic-design/atoms/select';
+} from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/atomic-design/atoms/separator';
 import { Badge } from '@/components/atomic-design/atoms/badge';

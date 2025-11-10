@@ -30,7 +30,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/atomic-design/atoms/select';
+} from '@/components/ui/select';
 import {
   Dialog,
   DialogContent,
@@ -50,7 +50,7 @@ import {
   Alert,
   AlertDescription,
   AlertTitle,
-} from '@/components/atomic-design/atoms/alert';
+} from '@/components/ui/alert';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 

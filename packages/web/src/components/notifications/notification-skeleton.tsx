@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/atomic-design/molecules/Card';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface NotificationSkeletonProps {

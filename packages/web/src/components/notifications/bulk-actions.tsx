@@ -8,9 +8,9 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
+} from '@/components/atomic-design/molecules/Card';
+import { Badge } from '@/components/atomic-design/atoms/badge';
+import { Separator } from '@/components/atomic-design/atoms/separator';
 import {
   AlertDialog,
   AlertDialogAction,

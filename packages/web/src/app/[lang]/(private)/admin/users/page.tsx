@@ -7,7 +7,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
+} from '@/components/atomic-design/molecules/Card';
 import {
   Table,
   TableBody,
@@ -24,8 +24,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
+} from '@/components/atomic-design/atoms/select';
+import { Badge } from '@/components/atomic-design/atoms/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
   SearchIcon,

@@ -8,7 +8,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
+} from '@/components/atomic-design/molecules/Card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -19,7 +19,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '@/components/atomic-design/atoms/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import { ArrowLeft, User, Save } from 'lucide-react';

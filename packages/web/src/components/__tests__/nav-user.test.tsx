@@ -40,14 +40,14 @@ vi.mock('@/components/ui/sidebar', () => ({
   SidebarMenuButton: ({ children, ...props }: any) => <button {...props}>{children}</button>,
 }));
 
-vi.mock('@/components/ui/dropdown-menu', () => ({
+vi.mock('@/components/atomic-design/molecules/dropdown-menu', () => ({
   DropdownMenu: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   DropdownMenuTrigger: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   DropdownMenuContent: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   DropdownMenuLabel: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   DropdownMenuSeparator: () => <hr />,
   DropdownMenuGroup: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  DropdownMenuItem: ({ children, onClick, asChild }: any) => 
+  DropdownMenuItem: ({ children, onClick, asChild }: any) =>
     asChild ? children : <button onClick={onClick}>{children}</button>,
 }));
 
@@ -56,8 +56,17 @@ vi.mock('../language-switcher', () => ({
 }));
 
 vi.mock('../notification-badge', () => ({
-  NotificationBadge: ({ count }: { count: number }) => 
+  NotificationBadge: ({ count }: { count: number }) =>
     count > 0 ? <span data-testid="notification-badge">{count}</span> : null,
+}));
+
+vi.mock('@/hooks/use-notification-count', () => ({
+  useNotificationCount: () => ({
+    count: 0,
+    isLoading: false,
+    error: null,
+    refetch: vi.fn(),
+  }),
 }));
 
 // Mock fetch globally

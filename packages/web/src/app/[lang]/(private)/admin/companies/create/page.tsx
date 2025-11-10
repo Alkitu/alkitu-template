@@ -12,7 +12,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
+} from '@/components/atomic-design/molecules/Card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Typography } from '@/components/atomic-design/atoms/typography';
@@ -25,14 +25,14 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Textarea } from '@/components/ui/textarea';
+import { Textarea } from '@/components/atomic-design/atoms/textarea';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '@/components/atomic-design/atoms/select';
 import { Switch } from '@/components/ui/switch';
 import { Building2, ArrowLeft, Upload, X } from 'lucide-react';
 import { toast } from 'sonner';

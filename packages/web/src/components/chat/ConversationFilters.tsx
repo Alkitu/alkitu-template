@@ -7,7 +7,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '@/components/atomic-design/atoms/select';
 import {
   ConversationStatus,
   ConversationFilters as ChatFilters,

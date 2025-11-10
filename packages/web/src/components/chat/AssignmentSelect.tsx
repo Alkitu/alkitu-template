@@ -4,7 +4,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '@/components/atomic-design/atoms/select';
 import { Label } from '@/components/ui/label';
 
 interface AssignmentSelectProps {

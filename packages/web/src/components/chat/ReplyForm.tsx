@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
+import { Textarea } from '@/components/atomic-design/atoms/textarea';
 import { Send } from 'lucide-react';
 
 interface ReplyFormProps {

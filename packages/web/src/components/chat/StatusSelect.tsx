@@ -4,9 +4,9 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '@/components/atomic-design/atoms/select';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/atomic-design/atoms/badge';
 
 type ConversationStatus = 'active' | 'closed' | 'pending' | 'resolved';
 

@@ -16,7 +16,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/atomic-design/atoms/select"
 import { Icons, iconCategories } from "@/lib/icons"
 
 interface IconSelectorProps {

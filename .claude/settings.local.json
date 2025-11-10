@@ -89,7 +89,8 @@
       "Bash([ -f \"$dir\"/*.test.ts ])",
       "Bash(git checkout:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(tee:*)"
     ],
     "deny": []
   }

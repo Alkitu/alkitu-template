@@ -11,7 +11,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
+} from '@/components/atomic-design/molecules/Card';
 import { Button } from '@/components/ui/button';
 import { Typography } from '@/components/atomic-design/atoms/typography';
 import {
@@ -30,10 +30,10 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '@/components/atomic-design/atoms/select';
 import { Input } from '@/components/ui/input';
-import { Separator } from '@/components/ui/separator';
-import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/atomic-design/atoms/separator';
+import { Badge } from '@/components/atomic-design/atoms/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useTranslations } from '@/context/TranslationContext';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';

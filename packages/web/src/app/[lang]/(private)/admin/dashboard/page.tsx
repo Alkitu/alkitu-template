@@ -1,6 +1,6 @@
 'use client';
 
-import { Card } from '@/components/ui/card';
+import { Card } from '@/components/atomic-design/molecules/Card';
 import { Construction, Settings, Wrench } from 'lucide-react';
 
 export default function AdminDashboardPage() {

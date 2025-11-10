@@ -15,8 +15,8 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+} from '@/components/atomic-design/molecules/Card';
+import { Badge } from '@/components/atomic-design/atoms/badge';
 import { Button } from '@/components/ui/button';
 import { Typography } from '@/components/atomic-design/atoms/typography';
 import { Checkbox } from '@/components/ui/checkbox';

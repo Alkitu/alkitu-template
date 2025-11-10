@@ -3,8 +3,8 @@
 import Link from 'next/link';
 import { useTranslations } from '@/context/TranslationContext';
 import { Typography } from '@/components/atomic-design/atoms/typography';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/atomic-design/molecules/Card';
+import { Badge } from '@/components/atomic-design/atoms/badge';
 import { Icon } from '@/components/atomic-design/atoms/icons/Icon';
 import { cn } from '@/lib/utils';
 

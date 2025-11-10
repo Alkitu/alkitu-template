@@ -7,11 +7,11 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
+} from '@/components/atomic-design/molecules/Card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Separator } from '@/components/ui/separator';
+import { Badge } from '@/components/atomic-design/atoms/badge';
+import { Alert, AlertDescription } from '@/components/atomic-design/atoms/alert';
+import { Separator } from '@/components/atomic-design/atoms/separator';
 import { useTranslations } from '@/context/TranslationContext';
 import { usePushNotifications } from '@/hooks/use-push-notifications';
 import {

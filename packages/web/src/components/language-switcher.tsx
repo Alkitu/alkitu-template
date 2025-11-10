@@ -8,7 +8,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/components/atomic-design/molecules/dropdown-menu";
 import { Globe } from "lucide-react";
 
 export function LanguageSwitcher() {

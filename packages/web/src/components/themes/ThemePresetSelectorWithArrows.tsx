@@ -7,7 +7,7 @@ import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from '@/components/atomic-design/atoms/tooltip';
+} from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { useCompanyTheme } from '@/components/providers/DynamicThemeProvider';
 import { trpc } from '@/lib/trpc';

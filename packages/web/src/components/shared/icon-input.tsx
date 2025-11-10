@@ -10,7 +10,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/atomic-design/atoms/tooltip"
+} from "@/components/ui/tooltip"
 
 interface IconInputProps {
   value: string

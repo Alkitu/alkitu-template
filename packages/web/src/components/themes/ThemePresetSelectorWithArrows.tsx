@@ -2,12 +2,12 @@
 
 import React, { useCallback, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
+import { Separator } from '@/components/atomic-design/atoms/separator';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from '@/components/ui/tooltip';
+} from '@/components/atomic-design/atoms/tooltip';
 import { cn } from '@/lib/utils';
 import { useCompanyTheme } from '@/components/providers/DynamicThemeProvider';
 import { trpc } from '@/lib/trpc';

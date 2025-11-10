@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/atomic-design/atoms/badge';
 import { Button } from '@/components/ui/button';
 import {
   Command,
@@ -16,12 +16,12 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
+import { Separator } from '@/components/atomic-design/atoms/separator';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from '@/components/ui/tooltip';
+} from '@/components/atomic-design/atoms/tooltip';
 import { cn } from '@/lib/utils';
 import { useCompanyTheme } from '@/components/providers/DynamicThemeProvider';
 import { trpc } from '@/lib/trpc';

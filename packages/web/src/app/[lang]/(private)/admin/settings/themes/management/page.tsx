@@ -28,7 +28,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/atomic-design/atoms/select';
+} from '@/components/ui/select';
 import {
   DropdownMenu,
   DropdownMenuContent,

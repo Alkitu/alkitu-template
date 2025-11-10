@@ -13,8 +13,8 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuSubContent,
   DropdownMenuShortcut,
-  DropdownMenuMolecule,
 } from './DropdownMenu';
+import { DropdownMenuMolecule } from './DropdownMenuMolecule';
 import type { DropdownMenuDataItem } from './DropdownMenu.types';
 import {
   User,

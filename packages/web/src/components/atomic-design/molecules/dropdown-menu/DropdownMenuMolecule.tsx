@@ -255,7 +255,7 @@ export function DropdownMenuMolecule({
   return (
     <div className={className}>
       <DropdownMenu modal={modal}>
-        <DropdownMenuTrigger asChild={triggerAsChild || !!trigger} disabled={disabled}>
+        <DropdownMenuTrigger asChild disabled={disabled}>
           {trigger || getDefaultTrigger()}
         </DropdownMenuTrigger>
 

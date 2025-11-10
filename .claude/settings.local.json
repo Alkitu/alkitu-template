@@ -82,7 +82,14 @@
       "mcp__playwright__browser_snapshot",
       "Bash(npm run test:coverage:*)",
       "Bash(cat:*)",
-      "Bash(npm run)"
+      "Bash(npm run)",
+      "Bash(for dir in atoms/* molecules/* organisms/*)",
+      "Bash(do if [ -d \"$dir\" ])",
+      "Bash([ -f \"$dir\"/*.test.tsx ])",
+      "Bash([ -f \"$dir\"/*.test.ts ])",
+      "Bash(git checkout:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ],
     "deny": []
   }

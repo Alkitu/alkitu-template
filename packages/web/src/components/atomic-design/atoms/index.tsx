@@ -2,7 +2,8 @@ export * from './alert';
 export * from './buttons';
 export * from './icons';
 export * from './typography';
-export * from './badges';
+export * from './badge'; // PHASE 2 CONSOLIDATION - Migrated from ./badges
+export * from './badges'; // OLD - Keep for backward compatibility during migration
 export * from './chips';
 export * from './avatars';
 export * from './spinners';

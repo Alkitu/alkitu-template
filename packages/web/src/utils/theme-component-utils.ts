@@ -1,4 +1,5 @@
 import React from 'react';
+import { formatHex, formatCss, oklch, converter, formatRgb, parse } from 'culori';
 
 export interface ComponentThemeProps {
   themeOverride?: Record<string, string>;
@@ -47,69 +48,188 @@ export const themeAwareClass = (
   return `${baseClass} ${baseClass}--${themeModifier}`;
 };
 
-// Convert OKLCH to hex (for compatibility)
-export const oklchToHex = (oklch: string): string => {
-  // This is a simplified conversion - in production use a proper color library
-  const match = oklch.match(/oklch\(\s*([0-9.]+)\s+([0-9.]+)\s+([0-9.]+)\s*\)/);
-  if (!match) return '#000000';
-  
-  const [, l, c, h] = match.map(Number);
-  
-  // Simplified conversion (placeholder)
-  // In real implementation, use a library like 'culori'
-  const lightness = l * 100;
-  const hex = Math.round(lightness * 2.55).toString(16).padStart(2, '0');
-  return `#${hex}${hex}${hex}`;
+// Convert OKLCH to hex (using culori)
+export const oklchToHex = (oklchString: string): string => {
+  try {
+    const color = oklch(oklchString);
+    if (!color) return '#000000';
+    return formatHex(color) || '#000000';
+  } catch {
+    return '#000000';
+  }
 };
 
 // Check if a color string is valid OKLCH
 export const isValidOklch = (value: string): boolean => {
-  return /^oklch\(\s*[\d.]+\s+[\d.]+\s+[\d.]+\s*\)$/.test(value);
+  try {
+    const color = oklch(value);
+    return color !== undefined && color.mode === 'oklch';
+  } catch {
+    return false;
+  }
 };
 
-// Parse OKLCH string to components
+// Parse OKLCH string to components (using culori)
 export const parseOklch = (value: string): { l: number; c: number; h: number } | null => {
-  const match = value.match(/oklch\(\s*([\d.]+)\s+([\d.]+)\s+([\d.]+)\s*\)/);
-  if (!match) return null;
-  
-  return {
-    l: parseFloat(match[1]),
-    c: parseFloat(match[2]),
-    h: parseFloat(match[3]),
-  };
+  try {
+    const color = oklch(value);
+    if (!color || color.mode !== 'oklch') return null;
+
+    return {
+      l: color.l ?? 0,
+      c: color.c ?? 0,
+      h: color.h ?? 0,
+    };
+  } catch {
+    return null;
+  }
 };
 
-// Mix two OKLCH colors
+// Mix two OKLCH colors (using culori interpolation)
 export const mixOklch = (color1: string, color2: string, amount: number = 0.5): string => {
-  const c1 = parseOklch(color1);
-  const c2 = parseOklch(color2);
-  
-  if (!c1 || !c2) return color1;
-  
-  const mixed = {
-    l: c1.l * (1 - amount) + c2.l * amount,
-    c: c1.c * (1 - amount) + c2.c * amount,
-    h: c1.h * (1 - amount) + c2.h * amount,
-  };
-  
-  return `oklch(${mixed.l.toFixed(4)} ${mixed.c.toFixed(4)} ${mixed.h.toFixed(1)})`;
+  try {
+    const oklchConverter = converter('oklch');
+    const c1 = oklchConverter(color1);
+    const c2 = oklchConverter(color2);
+
+    if (!c1 || !c2) return color1;
+
+    // Linear interpolation in OKLCH space
+    const mixed = {
+      mode: 'oklch' as const,
+      l: (c1.l ?? 0) * (1 - amount) + (c2.l ?? 0) * amount,
+      c: (c1.c ?? 0) * (1 - amount) + (c2.c ?? 0) * amount,
+      h: (c1.h ?? 0) * (1 - amount) + (c2.h ?? 0) * amount,
+    };
+
+    return formatCss(mixed);
+  } catch {
+    return color1;
+  }
 };
 
-// Generate color variants
+// Generate color variants (using culori)
 export const generateColorVariants = (baseColor: string) => {
-  const parsed = parseOklch(baseColor);
-  if (!parsed) return {};
-  
-  return {
-    '50': `oklch(${Math.min(0.98, parsed.l + 0.35)} ${parsed.c * 0.2} ${parsed.h})`,
-    '100': `oklch(${Math.min(0.95, parsed.l + 0.30)} ${parsed.c * 0.3} ${parsed.h})`,
-    '200': `oklch(${Math.min(0.90, parsed.l + 0.25)} ${parsed.c * 0.4} ${parsed.h})`,
-    '300': `oklch(${Math.min(0.85, parsed.l + 0.15)} ${parsed.c * 0.6} ${parsed.h})`,
-    '400': `oklch(${Math.min(0.75, parsed.l + 0.05)} ${parsed.c * 0.8} ${parsed.h})`,
-    '500': baseColor,
-    '600': `oklch(${Math.max(0.10, parsed.l - 0.10)} ${parsed.c} ${parsed.h})`,
-    '700': `oklch(${Math.max(0.08, parsed.l - 0.20)} ${parsed.c * 0.9} ${parsed.h})`,
-    '800': `oklch(${Math.max(0.06, parsed.l - 0.30)} ${parsed.c * 0.8} ${parsed.h})`,
-    '900': `oklch(${Math.max(0.04, parsed.l - 0.40)} ${parsed.c * 0.7} ${parsed.h})`,
-  };
+  try {
+    const color = oklch(baseColor);
+    if (!color || color.mode !== 'oklch') return {};
+
+    const l = color.l ?? 0.5;
+    const c = color.c ?? 0.1;
+    const h = color.h ?? 0;
+
+    const createVariant = (lightness: number, chromaMultiplier: number = 1) => {
+      const variant = {
+        mode: 'oklch' as const,
+        l: Math.max(0, Math.min(1, lightness)),
+        c: Math.max(0, c * chromaMultiplier),
+        h,
+      };
+      return formatCss(variant);
+    };
+
+    return {
+      '50': createVariant(Math.min(0.98, l + 0.35), 0.2),
+      '100': createVariant(Math.min(0.95, l + 0.30), 0.3),
+      '200': createVariant(Math.min(0.90, l + 0.25), 0.4),
+      '300': createVariant(Math.min(0.85, l + 0.15), 0.6),
+      '400': createVariant(Math.min(0.75, l + 0.05), 0.8),
+      '500': baseColor,
+      '600': createVariant(Math.max(0.10, l - 0.10), 1.0),
+      '700': createVariant(Math.max(0.08, l - 0.20), 0.9),
+      '800': createVariant(Math.max(0.06, l - 0.30), 0.8),
+      '900': createVariant(Math.max(0.04, l - 0.40), 0.7),
+    };
+  } catch {
+    return {};
+  }
+};
+
+// Convert any color format to OKLCH
+export const toOklch = (color: string): string | null => {
+  try {
+    const parsed = parse(color);
+    if (!parsed) return null;
+
+    const oklchConverter = converter('oklch');
+    const oklchColor = oklchConverter(parsed);
+
+    if (!oklchColor) return null;
+    return formatCss(oklchColor);
+  } catch {
+    return null;
+  }
+};
+
+// Convert OKLCH to RGB
+export const oklchToRgb = (oklchString: string): string | null => {
+  try {
+    const color = oklch(oklchString);
+    if (!color) return null;
+    return formatRgb(color) || null;
+  } catch {
+    return null;
+  }
+};
+
+// Adjust lightness of an OKLCH color
+export const adjustLightness = (color: string, amount: number): string => {
+  try {
+    const oklchConverter = converter('oklch');
+    const oklchColor = oklchConverter(color);
+
+    if (!oklchColor) return color;
+
+    const adjusted = {
+      mode: 'oklch' as const,
+      l: Math.max(0, Math.min(1, (oklchColor.l ?? 0) + amount)),
+      c: oklchColor.c ?? 0,
+      h: oklchColor.h ?? 0,
+    };
+
+    return formatCss(adjusted);
+  } catch {
+    return color;
+  }
+};
+
+// Adjust chroma (saturation) of an OKLCH color
+export const adjustChroma = (color: string, amount: number): string => {
+  try {
+    const oklchConverter = converter('oklch');
+    const oklchColor = oklchConverter(color);
+
+    if (!oklchColor) return color;
+
+    const adjusted = {
+      mode: 'oklch' as const,
+      l: oklchColor.l ?? 0,
+      c: Math.max(0, (oklchColor.c ?? 0) + amount),
+      h: oklchColor.h ?? 0,
+    };
+
+    return formatCss(adjusted);
+  } catch {
+    return color;
+  }
+};
+
+// Get contrasting text color (black or white) for a background color
+export const getContrastingTextColor = (backgroundColor: string): string => {
+  try {
+    const oklchConverter = converter('oklch');
+    const color = oklchConverter(backgroundColor);
+
+    if (!color) return 'oklch(0 0 0)'; // black
+
+    const lightness = color.l ?? 0.5;
+
+    // Use white text for dark backgrounds, black for light backgrounds
+    // Threshold at 0.6 lightness
+    return lightness > 0.6
+      ? 'oklch(0 0 0)' // black
+      : 'oklch(1 0 0)'; // white
+  } catch {
+    return 'oklch(0 0 0)'; // black
+  }
 };

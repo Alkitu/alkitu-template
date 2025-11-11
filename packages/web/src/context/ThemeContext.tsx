@@ -25,6 +25,29 @@ export interface ThemeRule {
 }
 
 type ThemeMode = 'light' | 'dark' | 'system';
+type ViewportSize = 'mobile' | 'tablet' | 'desktop';
+
+// Viewport state interface
+export interface ViewportState {
+  current: ViewportSize;
+  isResponsive: boolean;
+}
+
+// History entry interface for undo/redo
+export interface HistoryEntry {
+  tokens: Record<string, string>;
+  typography: ThemeTypography;
+  themeMode: ThemeMode;
+  timestamp: number;
+}
+
+// History state interface
+export interface HistoryState {
+  past: HistoryEntry[];
+  present: HistoryEntry;
+  future: HistoryEntry[];
+  maxHistory: number;
+}
 
 interface ThemeContextValue {
   theme: Theme | null;
@@ -34,6 +57,8 @@ interface ThemeContextValue {
   typography: ThemeTypography;
   themeMode: ThemeMode;
   isDarkMode: boolean;
+
+  // Existing methods
   setThemeMode: (mode: ThemeMode) => void;
   toggleThemeMode: () => void;
   updateTheme: (themeData: Partial<Theme>) => Promise<void>;
@@ -44,6 +69,18 @@ interface ThemeContextValue {
   setCurrentTheme: (theme: Theme) => void;
   updateThemeColors: (colors: Record<string, string>, mode: 'light' | 'dark') => void;
   clearPreviewTokens: () => void;
+
+  // NEW: Viewport state
+  viewport: ViewportState;
+  setViewport: (size: ViewportSize) => void;
+  toggleResponsive: () => void;
+
+  // NEW: History state
+  canUndo: boolean;
+  canRedo: boolean;
+  undo: () => void;
+  redo: () => void;
+  clearHistory: () => void;
 }
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
@@ -320,6 +357,98 @@ function generateFallbackTokens(fallback: 'light' | 'dark'): Record<string, stri
   };
 }
 
+// ============================================================================
+// HISTORY MANAGEMENT HELPERS
+// ============================================================================
+
+function createInitialHistoryState(
+  tokens: Record<string, string>,
+  typography: ThemeTypography,
+  mode: ThemeMode
+): HistoryState {
+  const initialEntry: HistoryEntry = {
+    tokens,
+    typography,
+    themeMode: mode,
+    timestamp: Date.now(),
+  };
+
+  return {
+    past: [],
+    present: initialEntry,
+    future: [],
+    maxHistory: 30,
+  };
+}
+
+function addToHistory(history: HistoryState, newEntry: HistoryEntry): HistoryState {
+  const newPast = [...history.past, history.present];
+
+  // Limit history to maxHistory entries
+  if (newPast.length > history.maxHistory) {
+    newPast.shift(); // Remove oldest entry
+  }
+
+  return {
+    ...history,
+    past: newPast,
+    present: newEntry,
+    future: [], // Clear future when new action is performed
+  };
+}
+
+function canUndoHistory(history: HistoryState): boolean {
+  return history.past.length > 0;
+}
+
+function canRedoHistory(history: HistoryState): boolean {
+  return history.future.length > 0;
+}
+
+function performUndo(
+  history: HistoryState
+): { history: HistoryState; entry: HistoryEntry } | null {
+  if (!canUndoHistory(history)) return null;
+
+  const previous = history.past[history.past.length - 1];
+  const newPast = history.past.slice(0, -1);
+  const newFuture = [history.present, ...history.future];
+
+  return {
+    history: {
+      ...history,
+      past: newPast,
+      present: previous,
+      future: newFuture,
+    },
+    entry: previous,
+  };
+}
+
+function performRedo(
+  history: HistoryState
+): { history: HistoryState; entry: HistoryEntry } | null {
+  if (!canRedoHistory(history)) return null;
+
+  const next = history.future[0];
+  const newFuture = history.future.slice(1);
+  const newPast = [...history.past, history.present];
+
+  return {
+    history: {
+      ...history,
+      past: newPast,
+      present: next,
+      future: newFuture,
+    },
+    entry: next,
+  };
+}
+
+// ============================================================================
+// PROVIDER COMPONENT
+// ============================================================================
+
 export const DynamicThemeProvider: React.FC<DynamicThemeProviderProps> = ({
   companyId,
   themeId,
@@ -334,7 +463,16 @@ export const DynamicThemeProvider: React.FC<DynamicThemeProviderProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [themeMode, setThemeModeState] = useState<ThemeMode>(defaultMode);
   const [systemPrefersDark, setSystemPrefersDark] = useState(false);
-  
+
+  // NEW: Viewport state
+  const [viewport, setViewportState] = useState<ViewportState>({
+    current: 'desktop',
+    isResponsive: true,
+  });
+
+  // NEW: History state (initialized later after tokens are available)
+  const [history, setHistory] = useState<HistoryState | null>(null);
+
   // Use tRPC to fetch theme
   const { data: fetchedTheme, isLoading, error: trpcError } = trpc.theme.getThemeById.useQuery(
     { themeId: themeId || '' },
@@ -592,6 +730,97 @@ export const DynamicThemeProvider: React.FC<DynamicThemeProviderProps> = ({
     setPreviewTokens({});
   };
 
+  // ============================================================================
+  // NEW: VIEWPORT MANAGEMENT
+  // ============================================================================
+
+  const setViewport = (size: ViewportSize) => {
+    setViewportState((prev) => ({
+      ...prev,
+      current: size,
+    }));
+  };
+
+  const toggleResponsive = () => {
+    setViewportState((prev) => ({
+      ...prev,
+      isResponsive: !prev.isResponsive,
+    }));
+  };
+
+  // ============================================================================
+  // NEW: HISTORY MANAGEMENT (UNDO/REDO)
+  // ============================================================================
+
+  // Initialize history when tokens are first available
+  useEffect(() => {
+    if (!history && tokens && Object.keys(tokens).length > 0) {
+      const initialHistory = createInitialHistoryState(tokens, typography, themeMode);
+      setHistory(initialHistory);
+    }
+  }, [tokens, typography, themeMode, history]);
+
+  // Add to history when tokens or typography change (but not on initial mount)
+  useEffect(() => {
+    if (history && tokens && Object.keys(tokens).length > 0) {
+      const newEntry: HistoryEntry = {
+        tokens,
+        typography,
+        themeMode,
+        timestamp: Date.now(),
+      };
+
+      // Only add if something actually changed
+      const current = history.present;
+      const tokensChanged = JSON.stringify(current.tokens) !== JSON.stringify(tokens);
+      const typographyChanged = JSON.stringify(current.typography) !== JSON.stringify(typography);
+      const modeChanged = current.themeMode !== themeMode;
+
+      if (tokensChanged || typographyChanged || modeChanged) {
+        setHistory(addToHistory(history, newEntry));
+      }
+    }
+  }, [tokens, typography, themeMode]); // Intentionally not including history to avoid infinite loop
+
+  const undo = () => {
+    if (!history) return;
+
+    const result = performUndo(history);
+    if (result) {
+      setHistory(result.history);
+
+      // Apply the previous state
+      setPreviewTokens(result.entry.tokens);
+      setTypography(result.entry.typography);
+      if (result.entry.themeMode !== themeMode) {
+        setThemeModeState(result.entry.themeMode);
+      }
+    }
+  };
+
+  const redo = () => {
+    if (!history) return;
+
+    const result = performRedo(history);
+    if (result) {
+      setHistory(result.history);
+
+      // Apply the next state
+      setPreviewTokens(result.entry.tokens);
+      setTypography(result.entry.typography);
+      if (result.entry.themeMode !== themeMode) {
+        setThemeModeState(result.entry.themeMode);
+      }
+    }
+  };
+
+  const clearHistory = () => {
+    if (tokens && Object.keys(tokens).length > 0) {
+      const freshHistory = createInitialHistoryState(tokens, typography, themeMode);
+      setHistory(freshHistory);
+    }
+  };
+
   // Initial theme data is handled by tRPC queries above
 
   // Apply theme tokens and manage dark class
@@ -721,6 +950,7 @@ export const DynamicThemeProvider: React.FC<DynamicThemeProviderProps> = ({
   }, [typography]);
 
   const contextValue: ThemeContextValue = {
+    // Existing properties
     theme,
     loading,
     error,
@@ -728,6 +958,8 @@ export const DynamicThemeProvider: React.FC<DynamicThemeProviderProps> = ({
     typography,
     themeMode,
     isDarkMode,
+
+    // Existing methods
     setThemeMode,
     toggleThemeMode,
     updateTheme,
@@ -738,6 +970,18 @@ export const DynamicThemeProvider: React.FC<DynamicThemeProviderProps> = ({
     setCurrentTheme,
     updateThemeColors,
     clearPreviewTokens,
+
+    // NEW: Viewport state and methods
+    viewport,
+    setViewport,
+    toggleResponsive,
+
+    // NEW: History state and methods
+    canUndo: history ? canUndoHistory(history) : false,
+    canRedo: history ? canRedoHistory(history) : false,
+    undo,
+    redo,
+    clearHistory,
   };
 
   return (

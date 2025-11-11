@@ -63,6 +63,91 @@
     --shadow-2xl: 0px 4px 8px -1px hsl(0 0% 0% / 0.25);
     --tracking-normal: 0em;
     --spacing: 0.25rem;
+
+    /* Component-specific Border Radius */
+    --radius-button: var(--radius);
+    --radius-input: var(--radius);
+    --radius-card: calc(var(--radius) + 4px);
+    --radius-dialog: calc(var(--radius) + 8px);
+    --radius-popover: var(--radius);
+    --radius-dropdown: var(--radius);
+    --radius-tooltip: calc(var(--radius) - 2px);
+    --radius-badge: calc(var(--radius) + 12px);
+    --radius-avatar: 9999px;
+    --radius-checkbox: calc(var(--radius) - 2px);
+    --radius-switch: 9999px;
+    --radius-slider: 9999px;
+    --radius-progress: 9999px;
+    --radius-separator: 0px;
+    --radius-tabs: var(--radius);
+    --radius-select: var(--radius);
+    --radius-toast: var(--radius);
+
+    /* Component-specific Shadows */
+    --shadow-button: var(--shadow-sm);
+    --shadow-button-hover: var(--shadow-md);
+    --shadow-card: var(--shadow-md);
+    --shadow-card-hover: var(--shadow-lg);
+    --shadow-dialog: var(--shadow-2xl);
+    --shadow-popover: var(--shadow-lg);
+    --shadow-dropdown: var(--shadow-lg);
+    --shadow-tooltip: var(--shadow-sm);
+    --shadow-toast: var(--shadow-xl);
+
+    /* Spacing System */
+    --spacing-unit: 0.25rem;
+    --spacing-xs: calc(var(--spacing-unit) * 1);
+    --spacing-sm: calc(var(--spacing-unit) * 2);
+    --spacing-md: calc(var(--spacing-unit) * 4);
+    --spacing-lg: calc(var(--spacing-unit) * 6);
+    --spacing-xl: calc(var(--spacing-unit) * 8);
+    --spacing-2xl: calc(var(--spacing-unit) * 12);
+    --spacing-3xl: calc(var(--spacing-unit) * 16);
+
+    /* Scrollbar Variables */
+    --scrollbar-width: 12px;
+    --scrollbar-width-thin: 8px;
+    --scrollbar-track: var(--muted);
+    --scrollbar-thumb: var(--muted-foreground);
+    --scrollbar-thumb-hover: var(--primary);
+    --scrollbar-border-radius: var(--radius);
+
+    /* Typography per Component */
+    --typography-button-family: var(--font-sans);
+    --typography-button-size: 0.875rem;
+    --typography-button-weight: 500;
+    --typography-button-line-height: 1.25rem;
+    --typography-button-letter-spacing: 0.01em;
+
+    --typography-input-family: var(--font-sans);
+    --typography-input-size: 0.875rem;
+    --typography-input-weight: 400;
+    --typography-input-line-height: 1.25rem;
+
+    --typography-label-family: var(--font-sans);
+    --typography-label-size: 0.875rem;
+    --typography-label-weight: 500;
+    --typography-label-line-height: 1.25rem;
+
+    --typography-heading-family: var(--font-sans);
+    --typography-body-family: var(--font-sans);
+    --typography-code-family: var(--font-mono);
+
+    /* Animation & Transitions */
+    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-theme: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* Z-index Scale */
+    --z-dropdown: 1000;
+    --z-sticky: 1020;
+    --z-fixed: 1030;
+    --z-modal-backdrop: 1040;
+    --z-modal: 1050;
+    --z-popover: 1060;
+    --z-tooltip: 1070;
+    --z-toast: 1080;
   }
 
   .dark {
@@ -121,6 +206,91 @@
     --shadow-xl:
       0px 4px 8px -1px hsl(0 0% 0% / 0.1), 0px 8px 10px -2px hsl(0 0% 0% / 0.1);
     --shadow-2xl: 0px 4px 8px -1px hsl(0 0% 0% / 0.25);
+
+    /* Component-specific Border Radius (same as light) */
+    --radius-button: var(--radius);
+    --radius-input: var(--radius);
+    --radius-card: calc(var(--radius) + 4px);
+    --radius-dialog: calc(var(--radius) + 8px);
+    --radius-popover: var(--radius);
+    --radius-dropdown: var(--radius);
+    --radius-tooltip: calc(var(--radius) - 2px);
+    --radius-badge: calc(var(--radius) + 12px);
+    --radius-avatar: 9999px;
+    --radius-checkbox: calc(var(--radius) - 2px);
+    --radius-switch: 9999px;
+    --radius-slider: 9999px;
+    --radius-progress: 9999px;
+    --radius-separator: 0px;
+    --radius-tabs: var(--radius);
+    --radius-select: var(--radius);
+    --radius-toast: var(--radius);
+
+    /* Component-specific Shadows (same as light) */
+    --shadow-button: var(--shadow-sm);
+    --shadow-button-hover: var(--shadow-md);
+    --shadow-card: var(--shadow-md);
+    --shadow-card-hover: var(--shadow-lg);
+    --shadow-dialog: var(--shadow-2xl);
+    --shadow-popover: var(--shadow-lg);
+    --shadow-dropdown: var(--shadow-lg);
+    --shadow-tooltip: var(--shadow-sm);
+    --shadow-toast: var(--shadow-xl);
+
+    /* Spacing System (same as light) */
+    --spacing-unit: 0.25rem;
+    --spacing-xs: calc(var(--spacing-unit) * 1);
+    --spacing-sm: calc(var(--spacing-unit) * 2);
+    --spacing-md: calc(var(--spacing-unit) * 4);
+    --spacing-lg: calc(var(--spacing-unit) * 6);
+    --spacing-xl: calc(var(--spacing-unit) * 8);
+    --spacing-2xl: calc(var(--spacing-unit) * 12);
+    --spacing-3xl: calc(var(--spacing-unit) * 16);
+
+    /* Scrollbar Variables */
+    --scrollbar-width: 12px;
+    --scrollbar-width-thin: 8px;
+    --scrollbar-track: var(--muted);
+    --scrollbar-thumb: var(--muted-foreground);
+    --scrollbar-thumb-hover: var(--primary);
+    --scrollbar-border-radius: var(--radius);
+
+    /* Typography per Component (same as light) */
+    --typography-button-family: var(--font-sans);
+    --typography-button-size: 0.875rem;
+    --typography-button-weight: 500;
+    --typography-button-line-height: 1.25rem;
+    --typography-button-letter-spacing: 0.01em;
+
+    --typography-input-family: var(--font-sans);
+    --typography-input-size: 0.875rem;
+    --typography-input-weight: 400;
+    --typography-input-line-height: 1.25rem;
+
+    --typography-label-family: var(--font-sans);
+    --typography-label-size: 0.875rem;
+    --typography-label-weight: 500;
+    --typography-label-line-height: 1.25rem;
+
+    --typography-heading-family: var(--font-sans);
+    --typography-body-family: var(--font-sans);
+    --typography-code-family: var(--font-mono);
+
+    /* Animation & Transitions (same as light) */
+    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-theme: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* Z-index Scale (same as light) */
+    --z-dropdown: 1000;
+    --z-sticky: 1020;
+    --z-fixed: 1030;
+    --z-modal-backdrop: 1040;
+    --z-modal: 1050;
+    --z-popover: 1060;
+    --z-tooltip: 1070;
+    --z-toast: 1080;
   }
 
   @theme inline {

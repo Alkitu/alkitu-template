@@ -1,7 +1,7 @@
 'use client';
 
-import { AuthPageOrganism, LoginFormOrganism } from '@/components/atomic-design/organisms';
-import { useTranslations } from '@/context/TranslationContext';
+import { AuthPageOrganism, LoginFormOrganism } from '@/components/organisms';
+import { useTranslations } from '@/context/TranslationsContext';
 
 /**
  * Login Page

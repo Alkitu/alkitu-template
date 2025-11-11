@@ -2,6 +2,10 @@ import { NextMiddleware, NextResponse, NextRequest } from 'next/server';
 import { PROTECTED_ROUTES } from '@/lib/routes/protected-routes';
 import { UserRole } from '@alkitu/shared/enums/user-role.enum';
 
+const DEFAULT_LOCALE = 'es';
+const SUPPORTED_LOCALES = ['es', 'en'];
+const LOCALE_COOKIE_NAME = 'NEXT_LOCALE';
+
 export function withAuthMiddleware(next: NextMiddleware): NextMiddleware {
   return async function middleware(request, event) {
     const { pathname } = request.nextUrl;
@@ -49,7 +53,12 @@ export function withAuthMiddleware(next: NextMiddleware): NextMiddleware {
     console.log('[AUTH MIDDLEWARE] Auth cookie exists:', !!authCookie);
 
     const redirectToLogin = (req: NextRequest) => {
-      const locale = getLocaleFromPath(req.nextUrl.pathname) || 'es';
+      // Primero intentar obtener locale de la URL, luego de la cookie, finalmente usar default
+      const locale = getLocaleFromPath(req.nextUrl.pathname) ||
+                     getLocaleFromCookie(req) ||
+                     DEFAULT_LOCALE;
+      console.log('[AUTH MIDDLEWARE] Redirect locale determined:', locale);
+
       const redirectUrl = new URL(
         `/${locale}/auth/login?redirect=${encodeURIComponent(req.nextUrl.pathname)}`,
         req.url,
@@ -243,7 +252,9 @@ export function withAuthMiddleware(next: NextMiddleware): NextMiddleware {
       console.log(
         '[AUTH MIDDLEWARE] User role is undefined after backend fetch. Redirecting to login.',
       );
-      const locale = getLocaleFromPath(pathname) || 'es';
+      const locale = getLocaleFromPath(pathname) ||
+                     getLocaleFromCookie(request) ||
+                     DEFAULT_LOCALE;
       const redirectUrl = new URL(
         `/${locale}/auth/login?redirect=${encodeURIComponent(pathname)}`,
         request.url,
@@ -261,7 +272,9 @@ export function withAuthMiddleware(next: NextMiddleware): NextMiddleware {
       console.log(
         '[AUTH MIDDLEWARE] User role does not match required roles. Redirecting to unauthorized.',
       );
-      const locale = getLocaleFromPath(pathname) || 'es';
+      const locale = getLocaleFromPath(pathname) ||
+                     getLocaleFromCookie(request) ||
+                     DEFAULT_LOCALE;
       const redirectUrl = new URL(`/${locale}/unauthorized`, request.url);
       console.log('[AUTH MIDDLEWARE] Redirecting to:', redirectUrl.toString());
       return NextResponse.redirect(redirectUrl);
@@ -323,5 +336,16 @@ function getRequiredRoles(path: string): UserRole[] | null {
 
 function getLocaleFromPath(pathname: string): string | null {
   const firstSegment = pathname.split('/')[1];
-  return ['es', 'en'].includes(firstSegment) ? firstSegment : null;
+  return SUPPORTED_LOCALES.includes(firstSegment) ? firstSegment : null;
+}
+
+function getLocaleFromCookie(request: NextRequest): string | null {
+  const cookieLocale = request.cookies.get(LOCALE_COOKIE_NAME)?.value;
+  console.log('[AUTH MIDDLEWARE] Cookie NEXT_LOCALE:', cookieLocale);
+
+  if (cookieLocale && SUPPORTED_LOCALES.includes(cookieLocale)) {
+    return cookieLocale;
+  }
+
+  return null;
 }

@@ -1,7 +1,10 @@
 'use client';
 
-import { AuthPageOrganism, NewPasswordFormOrganism } from '@/components/atomic-design/organisms';
-import { useTranslations } from '@/context/TranslationContext';
+import {
+  AuthPageOrganism,
+  NewPasswordFormOrganism,
+} from '@/components/organisms';
+import { useTranslations } from '@/context/TranslationsContext';
 
 /**
  * New Password Page

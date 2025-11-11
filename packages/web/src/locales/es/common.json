@@ -281,16 +281,39 @@
       "users": "Usuarios",
       "userList": "Lista de Usuarios",
       "createUser": "Crear Usuario",
+      "companies": "Empresas",
+      "companiesList": "Todas las Empresas",
+      "createCompany": "Nueva Empresa",
+      "chat": "Chat",
+      "conversations": "Conversaciones",
+      "chatAnalytics": "Analíticas Chat",
+      "notifications": "Notificaciones",
+      "allNotifications": "Todas las Notificaciones",
+      "notificationAnalytics": "Analíticas",
+      "notificationPreferences": "Preferencias",
+      "messaging": "Mensajería",
+      "emailManagement": "Gestión de Email",
+      "security": "Seguridad",
+      "dataProtection": "Protección de Datos",
+      "settings": "Configuración",
+      "settingsGeneral": "General",
+      "settingsChatbot": "Chatbot",
+      "settingsThemes": "Temas",
+      "billing": "Facturación",
       "analytics": "Analíticas",
       "reports": "Reportes",
       "insights": "Insights",
       "projects": "Proyectos",
       "activeProjects": "Proyectos Activos",
       "archived": "Archivados",
-      "settings": "Configuración",
-      "profile": "Perfil",
-      "preferences": "Preferencias",
-      "dashboard": "Dashboard"
+      "profile": "Mi Perfil",
+      "account": "Cuenta",
+      "privacy": "Privacidad",
+      "docs": "Documentación",
+      "help": "Ayuda",
+      "dashboard": "Dashboard",
+      "home": "Inicio",
+      "preferences": "Preferencias"
     },
     "projects": {
       "alkitu": "Plataforma Alkitu"
@@ -760,6 +783,198 @@
     "preview": {
       "title": "Vista Previa",
       "loading": "Cargando vista previa..."
+    }
+  },
+  "security": {
+    "title": "Seguridad",
+    "tabs": {
+      "sessions": "Sesiones Activas",
+      "apiTokens": "Tokens API",
+      "security": "Configuración de Seguridad"
+    },
+    "sessions": {
+      "title": "Sesiones Activas",
+      "description": "Gestiona todas las sesiones activas de los usuarios",
+      "terminateAll": "Terminar Todas las Sesiones",
+      "table": {
+        "user": "Usuario",
+        "device": "Dispositivo",
+        "location": "Ubicación",
+        "ipAddress": "Dirección IP",
+        "lastActive": "Última Actividad",
+        "status": "Estado",
+        "actions": "Acciones"
+      },
+      "status": {
+        "active": "Activa",
+        "inactive": "Inactiva"
+      },
+      "actions": {
+        "terminate": "Terminar Sesión"
+      }
+    },
+    "apiTokens": {
+      "title": "Tokens API",
+      "description": "Gestiona los tokens de acceso API",
+      "generateNew": "Generar Nuevo Token",
+      "table": {
+        "name": "Nombre",
+        "token": "Token",
+        "permissions": "Permisos",
+        "created": "Creado",
+        "lastUsed": "Último Uso",
+        "status": "Estado",
+        "actions": "Acciones"
+      },
+      "actions": {
+        "revoke": "Revocar",
+        "regenerate": "Regenerar"
+      }
+    },
+    "settings": {
+      "title": "Configuración de Seguridad",
+      "description": "Configura las opciones de seguridad del sistema",
+      "twoFactor": {
+        "title": "Autenticación de Dos Factores",
+        "description": "Requiere verificación adicional",
+        "enable": "Habilitar 2FA"
+      },
+      "passwordPolicy": {
+        "title": "Política de Contraseñas",
+        "minLength": "Longitud mínima",
+        "requireNumbers": "Requiere números"
+      }
+    },
+    "messages": {
+      "sessionTerminated": "Sesión terminada exitosamente",
+      "tokenGenerated": "Token generado exitosamente",
+      "error": "Ocurrió un error"
+    }
+  },
+  "dataProtection": {
+    "title": "Protección de Datos",
+    "subtitle": "Gestión de GDPR y privacidad",
+    "tabs": {
+      "users": "Usuarios y Datos",
+      "requests": "Solicitudes",
+      "exports": "Exportaciones"
+    },
+    "users": {
+      "title": "Usuarios y Datos",
+      "search": "Buscar...",
+      "table": {
+        "name": "Nombre",
+        "email": "Email",
+        "lastAccess": "Último Acceso",
+        "actions": "Acciones"
+      },
+      "actions": {
+        "viewData": "Ver Datos",
+        "exportData": "Exportar",
+        "anonymize": "Anonimizar"
+      }
+    },
+    "messages": {
+      "dataExported": "Datos exportados",
+      "error": "Ocurrió un error"
+    }
+  },
+  "messaging": {
+    "title": "Mensajería",
+    "compose": "Redactar",
+    "inbox": "Bandeja de Entrada",
+    "sent": "Enviados",
+    "drafts": "Borradores",
+    "table": {
+      "from": "De",
+      "subject": "Asunto",
+      "date": "Fecha",
+      "actions": "Acciones"
+    },
+    "actions": {
+      "reply": "Responder",
+      "forward": "Reenviar",
+      "delete": "Eliminar"
+    }
+  },
+  "emailManagement": {
+    "title": "Gestión de Email",
+    "tabs": {
+      "templates": "Plantillas",
+      "logs": "Registro",
+      "settings": "Configuración"
+    },
+    "templates": {
+      "title": "Plantillas de Email",
+      "create": "Nueva Plantilla",
+      "table": {
+        "name": "Nombre",
+        "subject": "Asunto",
+        "lastModified": "Última Modificación",
+        "actions": "Acciones"
+      }
+    },
+    "logs": {
+      "title": "Registro de Envíos",
+      "table": {
+        "recipient": "Destinatario",
+        "subject": "Asunto",
+        "status": "Estado",
+        "sentAt": "Enviado"
+      }
+    }
+  },
+  "users": {
+    "title": "Usuarios",
+    "createUser": "Crear Usuario",
+    "search": "Buscar usuarios...",
+    "table": {
+      "name": "Nombre",
+      "email": "Email",
+      "role": "Rol",
+      "status": "Estado",
+      "actions": "Acciones"
+    },
+    "actions": {
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "view": "Ver"
+    },
+    "status": {
+      "active": "Activo",
+      "inactive": "Inactivo"
+    }
+  },
+  "companies": {
+    "title": "Empresas",
+    "createCompany": "Nueva Empresa",
+    "search": "Buscar empresas...",
+    "table": {
+      "name": "Nombre",
+      "industry": "Industria",
+      "employees": "Empleados",
+      "actions": "Acciones"
+    },
+    "actions": {
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "view": "Ver"
+    }
+  },
+  "chat": {
+    "title": "Chat",
+    "conversations": "Conversaciones",
+    "analytics": "Analíticas",
+    "search": "Buscar conversaciones...",
+    "table": {
+      "participant": "Participante",
+      "lastMessage": "Último Mensaje",
+      "date": "Fecha",
+      "status": "Estado"
+    },
+    "actions": {
+      "open": "Abrir",
+      "archive": "Archivar"
     }
   }
 }

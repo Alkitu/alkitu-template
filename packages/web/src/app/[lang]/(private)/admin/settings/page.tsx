@@ -1,24 +1,26 @@
 'use client';
 
 import Link from 'next/link';
-import { useTranslations } from '@/context/TranslationContext';
-import { Typography } from '@/components/atomic-design/atoms/typography';
-import { Card } from '@/components/atomic-design/molecules/Card';
-import { Badge } from '@/components/atomic-design/atoms/badge';
-import { Icon } from '@/components/atomic-design/atoms/icons/Icon';
+import { useTranslations } from '@/context/TranslationsContext';
+import { Typography } from '@/components/atoms/typography';
+import { Card } from '@/components/primitives/Card';
+import { Badge } from '@/components/atoms/badge';
+import { Icon } from '@/components/atoms/icons/Icon';
 import { cn } from '@/lib/utils';
 
 const settingsOptions = [
   {
     title: 'Theme Editor 3.0',
-    description: 'Advanced theme customization with OKLCH colors, typography, spacing, and more',
-    href: '/dashboard/settings/themes-3.0',
+    description:
+      'Advanced theme customization with OKLCH colors, typography, spacing, and more',
+    href: '/dashboard/settings/themes',
     icon: 'palette' as const,
     badge: 'New',
   },
   {
     title: 'Theme Configuration',
-    description: 'Customize your application colors and appearance with Clean Architecture',
+    description:
+      'Customize your application colors and appearance with Clean Architecture',
     href: '/dashboard/settings/themes',
     icon: 'zap' as const,
   },
@@ -42,9 +44,7 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <Typography variant="h1">
-          Settings
-        </Typography>
+        <Typography variant="h1">Settings</Typography>
         <Typography variant="p">
           Manage your application preferences and configuration
         </Typography>

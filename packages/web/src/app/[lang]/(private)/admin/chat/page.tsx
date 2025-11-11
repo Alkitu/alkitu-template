@@ -1,9 +1,9 @@
 'use client';
 
 import { trpc } from '@/lib/trpc';
-import { ConversationList } from '@/components/chat/ConversationList';
-import { ConversationFilters } from '@/components/chat/ConversationFilters';
-import { Typography } from '@/components/atomic-design/atoms/typography';
+import { ConversationList } from '@/components/features/chat/ConversationList';
+import { ConversationFilters } from '@/components/features/chat/ConversationFilters';
+import { Typography } from '@/components/atoms/typography';
 import { useState } from 'react';
 
 export default function ChatDashboardPage() {
@@ -21,7 +21,8 @@ export default function ChatDashboardPage() {
     data: conversations,
     isLoading,
     error,
-  } = trpc.chat.getConversations.useQuery(filters, { // TODO: Implement this
+  } = trpc.chat.getConversations.useQuery(filters, {
+    // TODO: Implement this
     refetchOnWindowFocus: false,
     refetchInterval: 30000, // Refetch cada 30 segundos para datos actualizados
     enabled: false, // Deshabilitado por ahora para testing

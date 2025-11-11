@@ -5,6 +5,7 @@ This document defines the Atomic Design methodology conventions for the Alkitu T
 ## Purpose
 
 Atomic Design is a methodology for creating design systems with five distinct levels of hierarchy:
+
 1. **Atoms** - Basic building blocks (buttons, inputs, labels)
 2. **Molecules** - Simple groups of atoms (form fields, search bars)
 3. **Organisms** - Complex components (headers, forms, cards)
@@ -16,7 +17,7 @@ This convention ensures consistency, reusability, and maintainability across the
 ## Directory Structure
 
 ```
-packages/web/src/components/atomic-design/
+packages/web/src/components/
 ├── atoms/
 │   ├── buttons/
 │   │   ├── Button.tsx
@@ -55,6 +56,7 @@ packages/web/src/components/atomic-design/
 Every component MUST follow this structure:
 
 ### 1. Component.tsx (Implementation)
+
 ```typescript
 'use client';
 
@@ -106,14 +108,14 @@ export default ComponentName;
 ```
 
 ### 2. Component.types.ts (TypeScript Types)
+
 ```typescript
-import type { ReactNode, CSSProperties } from 'react';
+import type { ReactNode, CSSProperties } from "react";
 
-export type ComponentVariant = 'default' | 'primary' | 'secondary';
-export type ComponentSize = 'sm' | 'md' | 'lg';
+export type ComponentVariant = "default" | "primary" | "secondary";
+export type ComponentSize = "sm" | "md" | "lg";
 
-export interface ComponentNameProps
-  extends React.HTMLAttributes<HTMLElement> {
+export interface ComponentNameProps extends React.HTMLAttributes<HTMLElement> {
   /**
    * Visual variant of the component
    * @default 'default'
@@ -149,23 +151,29 @@ export interface ComponentNameProps
 ```
 
 ### 3. index.ts (Barrel Export)
+
 ```typescript
-export { ComponentName, default } from './ComponentName';
-export type { ComponentNameProps, ComponentVariant, ComponentSize } from './ComponentName.types';
+export { ComponentName, default } from "./ComponentName";
+export type {
+  ComponentNameProps,
+  ComponentVariant,
+  ComponentSize,
+} from "./ComponentName.types";
 ```
 
 ### 4. Component.stories.tsx (Optional - Storybook)
+
 ```typescript
-import type { Meta, StoryObj } from '@storybook/react';
-import { ComponentName } from './ComponentName';
+import type { Meta, StoryObj } from "@storybook/react";
+import { ComponentName } from "./ComponentName";
 
 const meta: Meta<typeof ComponentName> = {
-  title: 'Atoms/ComponentName',
+  title: "Atoms/ComponentName",
   component: ComponentName,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
 };
 
 export default meta;
@@ -173,7 +181,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    children: 'Component content',
+    children: "Component content",
   },
 };
 ```
@@ -185,6 +193,7 @@ export const Default: Story = {
 **Definition**: The most basic building blocks. Cannot be broken down further without losing their meaning.
 
 **Characteristics**:
+
 - Single responsibility
 - No business logic
 - Highly reusable
@@ -192,6 +201,7 @@ export const Default: Story = {
 - Focused on visual presentation
 
 **Examples**:
+
 - Button
 - Input
 - Label
@@ -206,6 +216,7 @@ export const Default: Story = {
 - Slider
 
 **Rules**:
+
 - ✅ MUST be pure presentational components
 - ✅ MUST use `forwardRef` for DOM element access
 - ✅ MUST accept `className` prop for extensibility
@@ -216,6 +227,7 @@ export const Default: Story = {
 - ❌ MUST NOT use complex state management
 
 **Example - Button Atom**:
+
 ```typescript
 // Button.tsx
 <Button variant="primary" size="md" icon="check">
@@ -228,6 +240,7 @@ export const Default: Story = {
 **Definition**: Simple combinations of atoms that work together as a unit.
 
 **Characteristics**:
+
 - Composed of 2-5 atoms
 - Single purpose
 - Reusable across contexts
@@ -235,6 +248,7 @@ export const Default: Story = {
 - Minimal business logic
 
 **Examples**:
+
 - FormField (Label + Input + ErrorMessage)
 - SearchBar (Input + Icon + Button)
 - ColorPickerField (Label + ColorPicker + Value Display)
@@ -242,6 +256,7 @@ export const Default: Story = {
 - SliderControl (Label + Slider + Value)
 
 **Rules**:
+
 - ✅ MUST compose existing atoms
 - ✅ MUST have a single clear purpose
 - ✅ MAY have simple internal state (like isOpen, value)
@@ -250,6 +265,7 @@ export const Default: Story = {
 - ❌ MUST NOT contain complex business logic
 
 **Example - FormField Molecule**:
+
 ```typescript
 // FormField.tsx
 <FormField
@@ -266,6 +282,7 @@ export const Default: Story = {
 **Definition**: Complex components composed of atoms, molecules, and other organisms.
 
 **Characteristics**:
+
 - Composed of multiple molecules/atoms
 - Represents distinct section of interface
 - May contain business logic
@@ -273,6 +290,7 @@ export const Default: Story = {
 - Context-specific
 
 **Examples**:
+
 - Header (Logo + Navigation + UserMenu)
 - Hero (Badge + Typography + Buttons + Image)
 - FeatureGrid (Title + FeatureCards[])
@@ -281,6 +299,7 @@ export const Default: Story = {
 - Form (Multiple FormFields + Submit Button)
 
 **Rules**:
+
 - ✅ MUST compose atoms and molecules
 - ✅ MAY contain business logic
 - ✅ MAY fetch/manage data
@@ -289,6 +308,7 @@ export const Default: Story = {
 - ✅ MUST integrate translations via `useTranslations()` hook
 
 **Example - Hero Organism**:
+
 ```typescript
 // Hero.tsx
 <Hero
@@ -308,6 +328,7 @@ export const Default: Story = {
 **Definition**: Page-level layouts that define structure with placeholder/slot content.
 
 **Characteristics**:
+
 - Define page structure
 - Use slots/children for content
 - No real data
@@ -315,12 +336,14 @@ export const Default: Story = {
 - Handle responsive behavior
 
 **Examples**:
+
 - DashboardLayout (Sidebar + Header + Content)
 - AuthLayout (Logo + Form Container + Footer)
 - ThemeEditorLayout (Resizable panels with slots)
 - LandingPageLayout (Navbar + Hero + Sections + Footer)
 
 **Rules**:
+
 - ✅ MUST focus on layout and structure
 - ✅ MUST use children/slots for content
 - ✅ MUST handle responsive behavior
@@ -329,6 +352,7 @@ export const Default: Story = {
 - ❌ MUST NOT fetch data
 
 **Example - ThemeEditorLayout Template**:
+
 ```typescript
 // ThemeEditorLayout.tsx
 <ThemeEditorLayout
@@ -343,6 +367,7 @@ export const Default: Story = {
 **Definition**: Specific instances of templates with real content and data.
 
 **Characteristics**:
+
 - Lives in `app/` directory (Next.js App Router)
 - Composed of organisms and templates
 - Contains real data
@@ -350,10 +375,12 @@ export const Default: Story = {
 - Minimal UI code (just composition)
 
 **Examples**:
+
 - `app/[lang]/page.tsx` (Homepage)
-- `app/[lang]/(private)/admin/settings/themes-3.0/page.tsx`
+- `app/[lang]/(private)/admin/settings/themes/page.tsx`
 
 **Rules**:
+
 - ✅ MUST use `useTranslations()` hook for i18n
 - ✅ MUST prepare props with translations before passing to organisms
 - ✅ MUST compose organisms from atomic-design
@@ -362,10 +389,11 @@ export const Default: Story = {
 - ❌ MUST NOT duplicate component logic
 
 **Example - Clean Page Implementation**:
+
 ```typescript
 'use client';
 
-import { Hero, FeatureGrid, PricingCard } from '@/components/atomic-design/organisms';
+import { Hero, FeatureGrid, PricingCard } from '@/components/organisms';
 import { useTranslations } from '@/context/TranslationContext';
 
 export default function Home() {
@@ -405,7 +433,7 @@ All page components MUST follow this pattern for translations:
 'use client';
 
 import { useTranslations } from '@/context/TranslationContext';
-import { OrganismName } from '@/components/atomic-design/organisms';
+import { OrganismName } from '@/components/organisms';
 
 export default function PageName() {
   // 1. Get translation function
@@ -504,25 +532,28 @@ interface CommonProps {
   /**
    * Data test ID for testing
    */
-  'data-testid'?: string;
+  "data-testid"?: string;
 }
 ```
 
 ## Naming Conventions
 
 ### File Naming
+
 - **PascalCase** for component files: `Button.tsx`, `ServiceCard.tsx`
 - **PascalCase** for type files: `Button.types.ts`
 - **lowercase** for barrel exports: `index.ts`
 - **PascalCase.stories** for Storybook: `Button.stories.tsx`
 
 ### Component Naming
+
 - **Atoms**: Descriptive noun (Button, Input, Badge)
 - **Molecules**: Purpose + Type (FormField, SearchBar, ColorPickerField)
 - **Organisms**: Feature + Organism (HeroOrganism, ThemeSelectorOrganism) OR just Feature (Hero, ThemeSelector)
 - **Templates**: Feature + Layout (DashboardLayout, ThemeEditorLayout)
 
 ### Props Naming
+
 - **Boolean props**: Use `is`, `has`, `should` prefix (isDisabled, hasError, shouldValidate)
 - **Event handlers**: Use `on` prefix (onClick, onChange, onSubmit)
 - **Render props**: Use `render` prefix (renderHeader, renderFooter)
@@ -532,6 +563,7 @@ interface CommonProps {
 ### 1. Prefer Composition Over Props
 
 **❌ Bad - Too many props**:
+
 ```typescript
 <Card
   title="Title"
@@ -546,6 +578,7 @@ interface CommonProps {
 ```
 
 **✅ Good - Composition**:
+
 ```typescript
 <Card>
   <CardHeader>
@@ -566,6 +599,7 @@ interface CommonProps {
 Each component should do ONE thing well.
 
 **❌ Bad - Multiple responsibilities**:
+
 ```typescript
 // UserProfileCard.tsx - Does too much
 <UserProfileCard
@@ -579,6 +613,7 @@ Each component should do ONE thing well.
 ```
 
 **✅ Good - Separated concerns**:
+
 ```typescript
 <UserProfile user={user} />
 <UserPosts userId={user.id} />
@@ -589,14 +624,15 @@ Each component should do ONE thing well.
 ### 3. Props Interface Design
 
 **✅ Good Props Design**:
+
 ```typescript
 // Clear, focused, well-documented
 interface ButtonProps {
   /** Visual style variant */
-  variant?: 'primary' | 'secondary' | 'outline';
+  variant?: "primary" | "secondary" | "outline";
 
   /** Size of the button */
-  size?: 'sm' | 'md' | 'lg';
+  size?: "sm" | "md" | "lg";
 
   /** Disabled state */
   disabled?: boolean;
@@ -643,6 +679,7 @@ describe('Button', () => {
 When migrating existing components to Atomic Design:
 
 ### Step 1: Identify Component Level
+
 - Is it a basic element? → Atom
 - Is it 2-5 atoms working together? → Molecule
 - Is it a complex section? → Organism
@@ -650,21 +687,25 @@ When migrating existing components to Atomic Design:
 - Is it a full page? → Page
 
 ### Step 2: Extract Reusable Parts
+
 - Identify atoms that can be extracted
 - Create molecules from repeated patterns
 - Compose organisms from molecules
 
 ### Step 3: Create Types
+
 - Define props interface
 - Export types separately
 - Document with JSDoc
 
 ### Step 4: Implement Translations
+
 - Add `useTranslations()` hook
 - Prepare props with translations
 - Update translation files
 
 ### Step 5: Update Imports
+
 - Update all import paths
 - Use barrel exports
 - Remove old component files
@@ -672,6 +713,7 @@ When migrating existing components to Atomic Design:
 ## Anti-Patterns
 
 ### ❌ 1. Atom with Business Logic
+
 ```typescript
 // atoms/Button.tsx - BAD
 const Button = () => {
@@ -683,6 +725,7 @@ const Button = () => {
 ```
 
 ### ❌ 2. Organism in Atom Directory
+
 ```typescript
 // atoms/ComplexForm.tsx - BAD
 // This is clearly an organism, not an atom
@@ -697,6 +740,7 @@ const ComplexForm = () => (
 ```
 
 ### ❌ 3. Page with Inline UI
+
 ```typescript
 // page.tsx - BAD
 export default function Page() {
@@ -713,6 +757,7 @@ export default function Page() {
 ```
 
 **✅ Should be**:
+
 ```typescript
 // page.tsx - GOOD
 export default function Page() {
@@ -724,6 +769,7 @@ export default function Page() {
 ```
 
 ### ❌ 4. Direct Translation in Organisms
+
 ```typescript
 // organisms/Hero.tsx - BAD
 const Hero = () => {
@@ -738,6 +784,7 @@ const Hero = () => {
 ```
 
 **✅ Should be**:
+
 ```typescript
 // organisms/Hero.tsx - GOOD
 interface HeroProps {
@@ -770,7 +817,7 @@ const Hero = ({ title, subtitle }: HeroProps) => {
 
 - `/docs/00-conventions/documentation-guidelines.md` - How to document code
 - `/CLAUDE.md` - Main project guidelines
-- `/packages/web/src/components/atomic-design/` - Implementation examples
+- `/packages/web/src/components/` - Implementation examples
 - [Atomic Design Methodology](https://bradfrost.com/blog/post/atomic-web-design/) - Original concept by Brad Frost
 
 ## Enforcement

@@ -1,11 +1,11 @@
 'use client';
 
-import { useTranslations } from '@/context/TranslationContext';
-import { Button } from '@/components/ui/button';
-import { Typography } from '@/components/atomic-design/atoms/typography';
+import { useTranslations } from '@/context/TranslationsContext';
+import { Button } from '@/components/primitives/ui/button';
+import { Typography } from '@/components/atoms/typography';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
-import { NotificationAnalytics } from '@/components/notifications/notification-analytics';
+import { NotificationAnalytics } from '@/components/features/notifications/notification-analytics';
 
 // Test user ID - En una aplicación real, esto vendría de la sesión del usuario
 const TEST_USER_ID = '6861ea1a1c0cf932169adce4';

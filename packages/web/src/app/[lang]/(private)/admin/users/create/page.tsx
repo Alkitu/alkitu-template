@@ -8,19 +8,19 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/atomic-design/molecules/Card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { Typography } from '@/components/atomic-design/atoms/typography';
+} from '@/components/primitives/Card';
+import { Input } from '@/components/primitives/Input';
+import { Label } from '@/components/primitives/ui/label';
+import { Button } from '@/components/primitives/ui/button';
+import { Typography } from '@/components/atoms/typography';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
+} from '@/components/primitives/Select';
+import { Checkbox } from '@/components/primitives/ui/checkbox';
 import { toast } from 'sonner';
 import { ArrowLeft, User, Save } from 'lucide-react';
 import Link from 'next/link';

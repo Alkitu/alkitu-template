@@ -11,9 +11,9 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/atomic-design/molecules/Card';
-import { Button } from '@/components/ui/button';
-import { Typography } from '@/components/atomic-design/atoms/typography';
+} from '@/components/primitives/Card';
+import { Button } from '@/components/primitives/ui/button';
+import { Typography } from '@/components/atoms/typography';
 import {
   Form,
   FormControl,
@@ -22,22 +22,22 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Switch } from '@/components/ui/switch';
+} from '@/components/primitives/ui/form';
+import { Switch } from '@/components/primitives/ui/switch';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
-import { Separator } from '@/components/atomic-design/atoms/separator';
-import { Badge } from '@/components/atomic-design/atoms/badge';
-import { Checkbox } from '@/components/ui/checkbox';
-import { useTranslations } from '@/context/TranslationContext';
-import LoadingSpinner from '@/components/shared/LoadingSpinner';
-import PushNotificationSettings from '@/components/notifications/push-notification-settings';
+} from '@/components/primitives/Select';
+import { Input } from '@/components/primitives/Input';
+import { Separator } from '@/components/atoms/separator';
+import { Badge } from '@/components/atoms/badge';
+import { Checkbox } from '@/components/primitives/ui/checkbox';
+import { useTranslations } from '@/context/TranslationsContext';
+import LoadingSpinner from '@/components/primitives/ui/LoadingSpinner';
+import PushNotificationSettings from '@/components/features/notifications/push-notification-settings';
 import {
   Bell,
   Save,
@@ -125,12 +125,14 @@ export default function NotificationPreferencesPage() {
     data: preferences,
     isLoading: loading,
     refetch,
-  } = trpc.notification.getUserPreferences.useQuery({ // TODO: Implement this
+  } = trpc.notification.getUserPreferences.useQuery({
+    // TODO: Implement this
     userId: TEST_USER_ID,
   });
 
   const updatePreferences =
-    trpc.notification.createOrUpdatePreferences.useMutation({ // TODO: Implement this
+    trpc.notification.createOrUpdatePreferences.useMutation({
+      // TODO: Implement this
       onSuccess: () => {
         toast.success(t('preferences.successUpdate'));
         refetch();
@@ -141,12 +143,14 @@ export default function NotificationPreferencesPage() {
       },
     });
 
-  const deletePreferences = trpc.notification.deletePreferences.useMutation({ // TODO: Implement this
+  const deletePreferences = trpc.notification.deletePreferences.useMutation({
+    // TODO: Implement this
     onSuccess: () => {
       toast.success(t('preferences.successReset'));
       refetch();
     },
-    onError: (error) => { // TODO: Implement this
+    onError: (error) => {
+      // TODO: Implement this
       console.error('Error resetting preferences:', error);
       toast.error(t('preferences.errorReset'));
     },

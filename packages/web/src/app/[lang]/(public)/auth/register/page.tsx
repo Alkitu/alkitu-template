@@ -1,7 +1,7 @@
 'use client';
 
-import { AuthPageOrganism, RegisterFormOrganism } from '@/components/atomic-design/organisms';
-import { useTranslations } from '@/context/TranslationContext';
+import { AuthPageOrganism, RegisterFormOrganism } from '@/components/organisms';
+import { useTranslations } from '@/context/TranslationsContext';
 
 /**
  * Register Page

@@ -5,8 +5,8 @@
 
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { DynamicThemeProvider } from '../components/providers/DynamicThemeProvider';
-import { Button } from '../components/ui/button';
+import { DynamicThemeProvider } from '../context/providers/DynamicThemeProvider';
+import { Button } from '../components/primitives/ui/button';
 
 // Mock theme data
 const mockTheme = {

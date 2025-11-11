@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useCompanyTheme } from '@/components/providers/DynamicThemeProvider';
+import { useCompanyTheme } from '@/context/ThemeContext';
 
 export interface ThemeEditorContextValue {
   applyTheme: (themeColors: Record<string, string>) => void;

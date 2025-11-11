@@ -1,7 +1,10 @@
 'use client';
 
-import { AuthPageOrganism, EmailCodeRequestFormOrganism } from '@/components/atomic-design/organisms';
-import { useTranslations } from '@/context/TranslationContext';
+import {
+  AuthPageOrganism,
+  EmailCodeRequestFormOrganism,
+} from '@/components/organisms';
+import { useTranslations } from '@/context/TranslationsContext';
 
 /**
  * Email Login Page

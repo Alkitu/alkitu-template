@@ -241,16 +241,39 @@
       "users": "Users",
       "userList": "User List",
       "createUser": "Create User",
+      "companies": "Companies",
+      "companiesList": "All Companies",
+      "createCompany": "New Company",
+      "chat": "Chat",
+      "conversations": "Conversations",
+      "chatAnalytics": "Chat Analytics",
+      "notifications": "Notifications",
+      "allNotifications": "All Notifications",
+      "notificationAnalytics": "Analytics",
+      "notificationPreferences": "Preferences",
+      "messaging": "Messaging",
+      "emailManagement": "Email Management",
+      "security": "Security",
+      "dataProtection": "Data Protection",
+      "settings": "Settings",
+      "settingsGeneral": "General",
+      "settingsChatbot": "Chatbot",
+      "settingsThemes": "Themes",
+      "billing": "Billing",
       "analytics": "Analytics",
       "reports": "Reports",
       "insights": "Insights",
       "projects": "Projects",
       "activeProjects": "Active Projects",
       "archived": "Archived",
-      "settings": "Settings",
-      "profile": "Profile",
-      "preferences": "Preferences",
-      "dashboard": "Dashboard"
+      "profile": "My Profile",
+      "account": "Account",
+      "privacy": "Privacy",
+      "docs": "Documentation",
+      "help": "Help",
+      "dashboard": "Dashboard",
+      "home": "Home",
+      "preferences": "Preferences"
     },
     "projects": {
       "alkitu": "Alkitu Platform"
@@ -760,6 +783,198 @@
     "preview": {
       "title": "Preview",
       "loading": "Loading preview..."
+    }
+  },
+  "security": {
+    "title": "Security",
+    "tabs": {
+      "sessions": "Active Sessions",
+      "apiTokens": "API Tokens",
+      "security": "Security Settings"
+    },
+    "sessions": {
+      "title": "Active Sessions",
+      "description": "Manage all active user sessions",
+      "terminateAll": "Terminate All Sessions",
+      "table": {
+        "user": "User",
+        "device": "Device",
+        "location": "Location",
+        "ipAddress": "IP Address",
+        "lastActive": "Last Activity",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "actions": {
+        "terminate": "Terminate Session"
+      }
+    },
+    "apiTokens": {
+      "title": "API Tokens",
+      "description": "Manage API access tokens",
+      "generateNew": "Generate New Token",
+      "table": {
+        "name": "Name",
+        "token": "Token",
+        "permissions": "Permissions",
+        "created": "Created",
+        "lastUsed": "Last Used",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "actions": {
+        "revoke": "Revoke",
+        "regenerate": "Regenerate"
+      }
+    },
+    "settings": {
+      "title": "Security Settings",
+      "description": "Configure system security options",
+      "twoFactor": {
+        "title": "Two-Factor Authentication",
+        "description": "Requires additional verification",
+        "enable": "Enable 2FA"
+      },
+      "passwordPolicy": {
+        "title": "Password Policy",
+        "minLength": "Minimum length",
+        "requireNumbers": "Requires numbers"
+      }
+    },
+    "messages": {
+      "sessionTerminated": "Session terminated successfully",
+      "tokenGenerated": "Token generated successfully",
+      "error": "An error occurred"
+    }
+  },
+  "dataProtection": {
+    "title": "Data Protection",
+    "subtitle": "GDPR and privacy management",
+    "tabs": {
+      "users": "Users and Data",
+      "requests": "Requests",
+      "exports": "Exports"
+    },
+    "users": {
+      "title": "Users and Data",
+      "search": "Search...",
+      "table": {
+        "name": "Name",
+        "email": "Email",
+        "lastAccess": "Last Access",
+        "actions": "Actions"
+      },
+      "actions": {
+        "viewData": "View Data",
+        "exportData": "Export",
+        "anonymize": "Anonymize"
+      }
+    },
+    "messages": {
+      "dataExported": "Data exported",
+      "error": "An error occurred"
+    }
+  },
+  "messaging": {
+    "title": "Messaging",
+    "compose": "Compose",
+    "inbox": "Inbox",
+    "sent": "Sent",
+    "drafts": "Drafts",
+    "table": {
+      "from": "From",
+      "subject": "Subject",
+      "date": "Date",
+      "actions": "Actions"
+    },
+    "actions": {
+      "reply": "Reply",
+      "forward": "Forward",
+      "delete": "Delete"
+    }
+  },
+  "emailManagement": {
+    "title": "Email Management",
+    "tabs": {
+      "templates": "Templates",
+      "logs": "Logs",
+      "settings": "Settings"
+    },
+    "templates": {
+      "title": "Email Templates",
+      "create": "New Template",
+      "table": {
+        "name": "Name",
+        "subject": "Subject",
+        "lastModified": "Last Modified",
+        "actions": "Actions"
+      }
+    },
+    "logs": {
+      "title": "Delivery Logs",
+      "table": {
+        "recipient": "Recipient",
+        "subject": "Subject",
+        "status": "Status",
+        "sentAt": "Sent"
+      }
+    }
+  },
+  "users": {
+    "title": "Users",
+    "createUser": "Create User",
+    "search": "Search users...",
+    "table": {
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete",
+      "view": "View"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    }
+  },
+  "companies": {
+    "title": "Companies",
+    "createCompany": "New Company",
+    "search": "Search companies...",
+    "table": {
+      "name": "Name",
+      "industry": "Industry",
+      "employees": "Employees",
+      "actions": "Actions"
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete",
+      "view": "View"
+    }
+  },
+  "chat": {
+    "title": "Chat",
+    "conversations": "Conversations",
+    "analytics": "Analytics",
+    "search": "Search conversations...",
+    "table": {
+      "participant": "Participant",
+      "lastMessage": "Last Message",
+      "date": "Date",
+      "status": "Status"
+    },
+    "actions": {
+      "open": "Open",
+      "archive": "Archive"
     }
   }
 }

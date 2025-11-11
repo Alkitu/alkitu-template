@@ -24,10 +24,8 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
 
-  // Skip ESLint during build
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
+  // Empty Turbopack config for Next.js 16 compatibility
+  turbopack: {},
 
   webpack: (config, { dev, isServer }) => {
     // Enhanced HMR configuration for development

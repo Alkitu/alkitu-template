@@ -1,6 +1,6 @@
 'use client';
 
-import { Card } from '@/components/atomic-design/molecules/Card';
+import { Card } from '@/components/primitives/Card';
 import { Construction, Settings, Wrench } from 'lucide-react';
 
 export default function AdminDashboardPage() {
@@ -29,14 +29,14 @@ export default function AdminDashboardPage() {
               </div>
             </div>
           </div>
-          
+
           <h2 className="text-2xl font-semibold text-foreground mb-4">
             Dashboard en Construcción
           </h2>
-          
+
           <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-            Estamos trabajando en el panel de administración. 
-            Pronto tendrás acceso a todas las herramientas de gestión.
+            Estamos trabajando en el panel de administración. Pronto tendrás
+            acceso a todas las herramientas de gestión.
           </p>
 
           <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">

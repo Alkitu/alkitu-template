@@ -1,8 +1,8 @@
 'use client';
 
-import { ResetPasswordFormOrganism } from '@/components/atomic-design/organisms';
-import { Typography } from '@/components/atomic-design/atoms/typography';
-import { useTranslations } from '@/context/TranslationContext';
+import { ResetPasswordFormOrganism } from '@/components/organisms';
+import { Typography } from '@/components/atoms/typography';
+import { useTranslations } from '@/context/TranslationsContext';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 

@@ -52,7 +52,7 @@ El proyecto ahora cuenta con un workflow automatizado usando AI agents especiali
 # El agent creará automáticamente todos los archivos
 
 # Paso 2: Verificar archivos creados
-ls packages/web/src/components/atomic-design/atoms/[component-name]/
+ls packages/web/src/components/atoms/[component-name]/
 
 # Paso 3: Ejecutar tests
 npm run test ComponentName.test.tsx
@@ -67,6 +67,7 @@ npm run test:coverage
 ### Referencias a Templates
 
 Los agents siguen estos templates automáticamente:
+
 - **Atoms**: [component-atom-template.md](./02-components/component-atom-template.md)
 - **Molecules**: [component-molecule-template.md](./02-components/component-molecule-template.md)
 - **Organisms**: [component-organism-template.md](./02-components/component-organism-template.md)
@@ -75,12 +76,12 @@ Los agents siguen estos templates automáticamente:
 
 **IMPORTANTE**: El proyecto usa **múltiples frameworks** de testing según el propósito:
 
-| Propósito | Framework | Cuándo Usar |
-|-----------|-----------|-------------|
-| **Unit tests** | Vitest + Testing Library | Siempre para componentes individuales |
-| **E2E tests** | Playwright | Solo para flujos completos (auth, checkout) |
-| **Visual regression** | Storybook + Chromatic | Para componentes del design system |
-| **Accessibility** | jest-axe | Embebido en unit tests |
+| Propósito             | Framework                | Cuándo Usar                                 |
+| --------------------- | ------------------------ | ------------------------------------------- |
+| **Unit tests**        | Vitest + Testing Library | Siempre para componentes individuales       |
+| **E2E tests**         | Playwright               | Solo para flujos completos (auth, checkout) |
+| **Visual regression** | Storybook + Chromatic    | Para componentes del design system          |
+| **Accessibility**     | jest-axe                 | Embebido en unit tests                      |
 
 Consultar: [Testing Decision Tree](./05-testing/testing-decision-tree-when-to-use-what.md)
 
@@ -91,22 +92,25 @@ Consultar: [Testing Decision Tree](./05-testing/testing-decision-tree-when-to-us
 ### 1. Estructura de Archivos
 
 **DEBE cumplir:**
+
 - [ ] Archivo principal: `[ComponentName].tsx`
 - [ ] Archivo de tipos: `[ComponentName].types.ts`
 - [ ] Archivo de tests: `[ComponentName].test.tsx` (Playwright)
 - [ ] Archivo de exportación: `index.ts`
 - [ ] Ubicación correcta según tipo:
-  - Atoms: `atomic-design/atoms/[component-name]/`
-  - Molecules: `atomic-design/molecules/[component-name]/`
-  - Organisms: `atomic-design/organisms/[component-name]/`
+  - Atoms: `atoms/[component-name]/`
+  - Molecules: `molecules/[component-name]/`
+  - Organisms: `organisms/[component-name]/`
 
 **Archivos futuros (NO crear por ahora):**
+
 - `[ComponentName].figma.tsx` - Para integración con Figma
 - `[ComponentName].story.tsx` - Para Storybook
 
 **Ejemplo estructura:**
+
 ```
-atomic-design/atoms/alerts/
+atoms/alerts/
 ├── Alert.tsx           # Componente principal
 ├── Alert.types.ts      # Tipos TypeScript
 ├── Alert.test.tsx      # Tests con Playwright
@@ -114,6 +118,7 @@ atomic-design/atoms/alerts/
 ```
 
 **Prioridad de creación:**
+
 1. `[ComponentName].tsx` (componente)
 2. `[ComponentName].types.ts` (tipos)
 3. `[ComponentName].test.tsx` (tests)
@@ -122,6 +127,7 @@ atomic-design/atoms/alerts/
 ### 2. Formato de Código
 
 **DEBE cumplir:**
+
 - [ ] Usa `React.forwardRef` para forwarding refs
 - [ ] Tiene `displayName` definido
 - [ ] Exporta tipos con `export type`
@@ -130,7 +136,8 @@ atomic-design/atoms/alerts/
 - [ ] Tiene JSDoc comments completos
 
 **Ejemplo:**
-```tsx
+
+````tsx
 /**
  * Alert - Atom Component
  *
@@ -142,7 +149,7 @@ atomic-design/atoms/alerts/
  * ```
  */
 export const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
-  ({ variant = 'default', className, children, ...props }, ref) => {
+  ({ variant = "default", className, children, ...props }, ref) => {
     return (
       <div
         ref={ref}
@@ -155,12 +162,13 @@ export const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
   }
 );
 
-Alert.displayName = 'Alert';
-```
+Alert.displayName = "Alert";
+````
 
 ### 3. Sistema de Temas
 
 **DEBE cumplir (CRÍTICO):**
+
 - [ ] Usa clases de Tailwind que mapean a CSS variables:
   - `bg-primary`, `text-primary-foreground`
   - `bg-secondary`, `text-secondary-foreground`
@@ -173,6 +181,7 @@ Alert.displayName = 'Alert';
 - [ ] Soporta typography CSS variables (opcional para atoms)
 
 **Variables CSS permitidas:**
+
 ```tsx
 // ✅ CORRECTO
 className="bg-primary text-primary-foreground"
@@ -190,6 +199,7 @@ className="bg-blue-500 text-white"
 ### 4. Accesibilidad
 
 **DEBE cumplir:**
+
 - [ ] Roles ARIA apropiados
 - [ ] Labels descriptivos para screen readers
 - [ ] Keyboard navigation funcional
@@ -199,6 +209,7 @@ className="bg-blue-500 text-white"
 ### 5. TypeScript
 
 **DEBE cumplir:**
+
 - [ ] Pasa `npm run type-check` sin errores
 - [ ] Props interface exportada y documentada
 - [ ] Tipos genéricos usados correctamente
@@ -207,6 +218,7 @@ className="bg-blue-500 text-white"
 ### 6. Testing
 
 **DEBE cumplir:**
+
 - [ ] Archivo `[ComponentName].test.tsx` existe (co-localizado junto al componente)
 - [ ] Tests usan **Vitest + Testing Library** para unit tests
 - [ ] Tests de E2E con **Playwright** SOLO para flujos críticos completos
@@ -222,36 +234,39 @@ className="bg-blue-500 text-white"
   - Organisms: 95%+
 
 **IMPORTANTE: Framework de Testing**
+
 - ✅ **Vitest + Testing Library**: Para unit tests de componentes (SIEMPRE)
 - ✅ **Playwright**: SOLO para E2E tests de flujos completos (auth, checkout)
 - ✅ **Storybook**: Para visual regression y documentación
 - ✅ **jest-axe**: Para tests de accesibilidad (embebido en unit tests)
 
 **Estructura del archivo de test (Vitest):**
+
 ```tsx
 // Alert.test.tsx
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import { Alert } from './Alert';
+import { describe, it, expect } from "vitest";
+import { render, screen } from "@testing-library/react";
+import { Alert } from "./Alert";
 
-describe('Alert Component', () => {
-  it('renders correctly', () => {
+describe("Alert Component", () => {
+  it("renders correctly", () => {
     render(<Alert>Test message</Alert>);
-    expect(screen.getByText('Test message')).toBeInTheDocument();
+    expect(screen.getByText("Test message")).toBeInTheDocument();
   });
 
-  it('applies correct variant classes', () => {
+  it("applies correct variant classes", () => {
     const { container } = render(<Alert variant="error">Error</Alert>);
-    expect(container.firstChild).toHaveClass('bg-destructive');
+    expect(container.firstChild).toHaveClass("bg-destructive");
   });
 
-  it('responds to theme changes', () => {
+  it("responds to theme changes", () => {
     // Test CRÍTICO de reactividad a CSS variables
   });
 });
 ```
 
 **Tests generados automáticamente:**
+
 - Los tests son generados por el `frontend-testing-expert` agent
 - El agent sigue los templates en `/docs/05-testing/`
 - Consultar: [Frontend Testing Guide](/docs/05-testing/frontend-testing-guide.md)
@@ -265,19 +280,22 @@ describe('Alert Component', () => {
 Para cada componente migrado:
 
 #### Pre-migración
+
 - [ ] Identificar todas las dependencias del componente
 - [ ] Verificar si el componente usa otros componentes internos
 - [ ] Documentar características únicas
 
 #### Durante migración
+
 - [ ] **USAR `frontend-component-builder` agent** para crear estructura
 - [ ] Agent crea automáticamente: `.tsx`, `.types.ts`, `index.ts`
 - [ ] Agent invoca automáticamente `frontend-testing-expert` para tests
 - [ ] Copiar lógica del componente original y adaptar imports
-- [ ] Actualizar barrel exports en atomic-design/atoms/index.ts
+- [ ] Actualizar barrel exports en atoms/index.ts
 - [ ] Mantener componente original en theme-editor (NO eliminar aún)
 
 **Comandos para migración:**
+
 ```bash
 # 1. Invocar agent para crear estructura
 # El agent creará automáticamente:
@@ -295,6 +313,7 @@ npm run storybook
 ```
 
 #### Post-migración
+
 - [ ] Ejecutar `npm run type-check` - debe pasar
 - [ ] Ejecutar `npm run test` - debe pasar
 - [ ] Verificación visual en Storybook (si aplica)
@@ -309,6 +328,7 @@ npm run storybook
 Para cada componente consolidado:
 
 #### Pre-consolidación
+
 - [ ] Crear tabla comparativa de características:
   - Listar props de theme-editor version
   - Listar props de atomic-design version
@@ -317,6 +337,7 @@ Para cada componente consolidado:
 - [ ] Documentar plan de merge específico
 
 #### Durante consolidación
+
 - [ ] Agregar props faltantes al componente base
 - [ ] Agregar variants faltantes
 - [ ] Agregar estados faltantes
@@ -325,6 +346,7 @@ Para cada componente consolidado:
 - [ ] Actualizar documentación JSDoc
 
 #### Post-consolidación
+
 - [ ] Todas las características de theme-editor presentes
 - [ ] Todas las características de atomic-design presentes
 - [ ] Tests para TODAS las características
@@ -340,6 +362,7 @@ Para cada componente consolidado:
 Para cada componente, los tests unitarios deben verificar:
 
 #### 1. Renderizado Básico (Vitest)
+
 ```typescript
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
@@ -353,6 +376,7 @@ describe('Component rendering', () => {
 ```
 
 #### 2. Reactividad a Temas (CSS Variables)
+
 ```typescript
 it('uses theme CSS variables', () => {
   const { container } = render(<Component variant="primary" />);
@@ -364,6 +388,7 @@ it('uses theme CSS variables', () => {
 ```
 
 #### 3. Variants
+
 ```typescript
 describe('Component variants', () => {
   it.each([
@@ -378,6 +403,7 @@ describe('Component variants', () => {
 ```
 
 #### 4. Estados Interactivos
+
 ```typescript
 import userEvent from '@testing-library/user-event';
 
@@ -393,6 +419,7 @@ it('handles user interactions', async () => {
 ```
 
 #### 5. Accesibilidad (jest-axe)
+
 ```typescript
 import { axe, toHaveNoViolations } from 'jest-axe';
 expect.extend(toHaveNoViolations);
@@ -407,11 +434,13 @@ it('has no accessibility violations', async () => {
 ### Pruebas E2E con Playwright
 
 **SOLO crear tests de Playwright para:**
+
 - ✅ Flujos completos de usuario (login, checkout)
 - ✅ Navegación entre múltiples páginas
 - ✅ Integración con servicios externos
 
 **NO crear tests de Playwright para:**
+
 - ❌ Componentes individuales (usar Vitest)
 - ❌ Verificación de variants (usar Vitest)
 - ❌ Props testing (usar Vitest)
@@ -423,17 +452,20 @@ Consultar: [E2E Criteria](./05-testing/testing-e2e-criteria-when-to-create.md)
 ## 📊 Métricas de Aceptación
 
 ### Calidad de Código
+
 - [ ] **Coverage de tests**: ≥ 80% para componentes críticos
 - [ ] **TypeScript errors**: 0
 - [ ] **ESLint warnings**: ≤ 5 (justificados)
 - [ ] **Unused imports**: 0
 
 ### Performance
+
 - [ ] **Bundle size increase**: ≤ 5% por componente
 - [ ] **Render time**: ≤ 16ms (60fps)
 - [ ] **Memory leaks**: 0
 
 ### Accesibilidad
+
 - [ ] **Lighthouse accessibility score**: ≥ 95
 - [ ] **axe violations**: 0 critical
 - [ ] **Keyboard navigation**: 100% funcional
@@ -445,6 +477,7 @@ Consultar: [E2E Criteria](./05-testing/testing-e2e-criteria-when-to-create.md)
 Un componente debe ser rechazado si:
 
 ### Crítico (Bloqueante)
+
 - ❌ No se actualiza cuando cambia el tema
 - ❌ Rompe TypeScript compilation
 - ❌ Rompe tests existentes
@@ -453,12 +486,14 @@ Un componente debe ser rechazado si:
 - ❌ Accessibility score < 80
 
 ### Mayor (Requiere Fix)
+
 - ⚠️ Props interface incompleta
 - ⚠️ Falta documentación JSDoc
 - ⚠️ Falta archivo .types.ts
 - ⚠️ Tests coverage < 50%
 
 ### Menor (No bloqueante, pero debe documentarse)
+
 - ℹ️ Performance subóptima (pero > 60fps)
 - ℹ️ ESLint warnings
 - ℹ️ Código duplicado
@@ -478,6 +513,7 @@ Un componente debe ser rechazado si:
 **Fase:** [1/2/3/4]
 
 ### Checklist General
+
 - [ ] Estructura de archivos correcta
 - [ ] Formato de código correcto
 - [ ] Sistema de temas funcional
@@ -486,6 +522,7 @@ Un componente debe ser rechazado si:
 - [ ] Tests pasando
 
 ### Checklist de Testing (Vitest)
+
 - [ ] Tests unitarios completos (8-10 para atoms, 5-8 para molecules, 10-15 para organisms)
 - [ ] Renderizado básico verificado
 - [ ] Reactividad a temas (CSS variables) verificada
@@ -495,31 +532,37 @@ Un componente debe ser rechazado si:
 - [ ] Coverage requirements met (90-95%+)
 
 ### Checklist Específico
+
 [Lista específica del componente]
 
 ### Screenshots
+
 - Light mode: [link]
 - Dark mode: [link]
 - Variants: [links]
 
 ### Métricas
+
 - Bundle size: X KB
 - Render time: X ms
 - Test coverage: X%
 - Accessibility score: X
 
 ### Issues Encontrados
+
 1. [Descripción del issue]
    - Severidad: Critical/Major/Minor
    - Status: Open/Fixed
    - Link: [issue tracker]
 
 ### Resultado
+
 - ✅ APROBADO
 - ❌ RECHAZADO - Razón: [...]
 - ⚠️ APROBADO CON CONDICIONES - Condiciones: [...]
 
 ### Siguiente Acción
+
 [Qué sigue después de esta verificación]
 ```
 
@@ -557,46 +600,54 @@ Un componente debe ser rechazado si:
 ### Documentos Relacionados
 
 #### Convenciones
+
 - [Atomic Design Architecture](./00-conventions/atomic-design-architecture.md)
 - [Component Structure and Testing](./00-conventions/component-structure-and-testing.md)
 - [Testing Strategy and Frameworks](./00-conventions/testing-strategy-and-frameworks.md)
 - [Documentation Guidelines](./00-conventions/documentation-guidelines.md)
 
 #### Templates de Componentes
+
 - [Component Atom Template](./02-components/component-atom-template.md)
 - [Component Molecule Template](./02-components/component-molecule-template.md)
 - [Component Organism Template](./02-components/component-organism-template.md)
 
 #### Testing
+
 - [Frontend Testing Guide](./05-testing/frontend-testing-guide.md)
 - [Backend Testing Guide](./05-testing/backend-testing-guide.md)
 - [Testing Decision Tree](./05-testing/testing-decision-tree-when-to-use-what.md)
 - [E2E Criteria](./05-testing/testing-e2e-criteria-when-to-create.md)
 
 #### AI Agents
+
 - [Frontend Component Builder Agent](../.claude/agents/frontend-component-builder.md)
 - [Frontend Testing Expert Agent](../.claude/agents/frontend-testing-expert.md)
 - [Backend Testing Expert Agent](../.claude/agents/backend-testing-expert.md)
 - [Component Verification Agent](../.claude/agents/component-verification-agent.md)
 
 #### Migración
+
 - [Theme Editor 3.0 Functionality Guide](../packages/web/src/components/admin/theme-editor-3.0/CURRENT-FUNCTIONALITY-GUIDE.md)
 - [Component Migration Plan](./component-deduplication-plan.md)
 
 ### Tools
 
 #### Testing
+
 - **Unit Tests (Vitest)**: `npm run test` - Para componentes individuales
 - **E2E Tests (Playwright)**: `npm run test:e2e` - Para flujos completos
 - **Coverage**: `npm run test:coverage` - Reporte de cobertura
 - **Storybook**: `npm run storybook` - Documentación visual
 
 #### Quality
+
 - **TypeScript**: `npm run type-check` - Verificación de tipos
 - **Linter**: `npm run lint` - ESLint
 - **Type + Lint**: `npm run quality:check` - Ambos comandos
 
 #### AI Agents
+
 - **Create Component**: Invocar `frontend-component-builder` agent
 - **Generate Tests**: Invocado automáticamente por component-builder
 - **Verify Component**: Invocar `component-verification-agent`
@@ -609,17 +660,20 @@ Un componente debe ser rechazado si:
 
 **Fase 1 - Componentes Únicos:** 26/26 ✅ (100% completo)
 **Fase 2 - Componentes Consolidados:** 6/6 ✅ (100% completo)
-  - Completados: Avatar, Badge, Breadcrumb, Combobox, NavigationMenu, Spinner
-  - Nota: Button, Input, Icon ya existen en ui/ y están funcionando (no requieren migración Phase 2)
+
+- Completados: Avatar, Badge, Breadcrumb, Combobox, NavigationMenu, Spinner
+- Nota: Button, Input, Icon ya existen en ui/ y están funcionando (no requieren migración Phase 2)
 
 **Resumen de Tests (Total del Proyecto):**
+
 - **Total de tests**: 1,728 tests
   - ✅ **Passing**: 1,673 tests (96.8%)
   - ❌ **Failing**: 43 tests (2.5%) - Ver sección de tests fallando abajo
   - ⏭️ **Skipped**: 12 tests (0.7%)
 
 **Tests de Componentes Atomic-Design Migrados:**
-- **Tests en atomic-design/**: ~1,250 tests
+
+- **Tests en **: ~1,250 tests
 - **Porcentaje de éxito**: 98.3%
 - **Tests con warnings conocidos**:
   - Combobox (17 async/timing tests)
@@ -627,6 +681,7 @@ Un componente debe ser rechazado si:
 
 **Tests Fallando (NO son de atomic-design migrados):**
 Los 43 tests fallando son de componentes OLD que NO fueron parte de la migración:
+
 - ❌ nav-user.test.tsx (8 tests) - Componente viejo, usa Avatar/Badge antiguos
 - ❌ push-notification-settings.test.tsx (10 tests) - Componente viejo
 - ❌ performance.test.tsx (1 test) - Theme Editor 3.0 test
@@ -638,6 +693,7 @@ Los 43 tests fallando son de componentes OLD que NO fueron parte de la migració
 **Estado de Componentes Migrados**: ✅ TODOS los componentes migrados tienen tests passing
 
 NOTE: Breadcrumb was migrated as PHASE 2 (existed in both UI and Theme Editor, now consolidated)
+
 - [x] Alert (Completed: 2025-01-09 - 36/36 tests ✅)
 - [x] Checkbox (Completed: 2025-01-09 - 42/42 tests ✅)
 - [x] IconUploader (Completed: 2025-11-09 - 30/30 tests ✅ - ORGANISM - 12 tests skipped due to FileReader JSDOM limitations - Features: SVG validation, live preview with sizes/variants, auto-name generation, error handling, async upload, translation-ready props)
@@ -666,12 +722,13 @@ NOTE: Breadcrumb was migrated as PHASE 2 (existed in both UI and Theme Editor, n
 - [x] ChipMolecule (Completed: 2025-11-09)
 
 **Fase 2 - Componentes Consolidados:** 6/6 ✅ (100% completo)
-- [x] Avatar (Completed: 2025-11-10 - 62/62 tests ✅ - ATOM - PHASE 2 CONSOLIDATION - Consolidated from 3 implementations: ui/avatar.tsx (Radix primitives), theme-editor-3.0/atoms/Avatar.tsx (status indicators), atomic-design/avatars/Avatar.tsx (theme override) - Features: 6 sizes (xs/sm/md/lg/xl/2xl), 3 shape variants (circular/rounded/square), 5 status states (online/offline/away/busy/none), dual API support (primitive composition + simplified), auto-initials generation, icon fallback (User), typography CSS variables, Radix UI foundation, forwardRef support, data-slot attributes, full accessibility)
-- [x] Badge (Completed: 2025-11-10 - 70/70 tests ✅ - Coverage: 100% statements, 85.71% branches, 100% functions - ATOM - PHASE 2 CONSOLIDATION - Consolidated from 4 implementations: ui/badge.tsx (Shadcn base + CVA + Radix Slot), atomic-design/atoms/badges/Badge.tsx (6 variants + theme override), theme-editor-3.0/atoms/Badge.tsx (icons + removable + accessibility), theme-editor-3.0/primitives/badge.tsx (re-export) - Features: 9 variants (default/primary/secondary/success/warning/error/destructive/outline/ghost), 3 sizes (sm/md/lg), icon support with auto-sizing, removable with keyboard nav (Enter/Space), asChild polymorphic rendering via Radix Slot, full ARIA support with aria-live for alerts, theme CSS variables (typography + border-radius), CVA integration, forwardRef support, data-slot attributes, full accessibility - 18 Storybook stories including migration guide)
+
+- [x] Avatar (Completed: 2025-11-10 - 62/62 tests ✅ - ATOM - PHASE 2 CONSOLIDATION - Consolidated from 3 implementations: ui/avatar.tsx (Radix primitives), theme-editor-3.0/atoms/Avatar.tsx (status indicators), avatars/Avatar.tsx (theme override) - Features: 6 sizes (xs/sm/md/lg/xl/2xl), 3 shape variants (circular/rounded/square), 5 status states (online/offline/away/busy/none), dual API support (primitive composition + simplified), auto-initials generation, icon fallback (User), typography CSS variables, Radix UI foundation, forwardRef support, data-slot attributes, full accessibility)
+- [x] Badge (Completed: 2025-11-10 - 70/70 tests ✅ - Coverage: 100% statements, 85.71% branches, 100% functions - ATOM - PHASE 2 CONSOLIDATION - Consolidated from 4 implementations: ui/badge.tsx (Shadcn base + CVA + Radix Slot), atoms/badges/Badge.tsx (6 variants + theme override), theme-editor-3.0/atoms/Badge.tsx (icons + removable + accessibility), theme-editor-3.0/primitives/badge.tsx (re-export) - Features: 9 variants (default/primary/secondary/success/warning/error/destructive/outline/ghost), 3 sizes (sm/md/lg), icon support with auto-sizing, removable with keyboard nav (Enter/Space), asChild polymorphic rendering via Radix Slot, full ARIA support with aria-live for alerts, theme CSS variables (typography + border-radius), CVA integration, forwardRef support, data-slot attributes, full accessibility - 18 Storybook stories including migration guide)
 - [x] Breadcrumb (Completed: 2025-11-09 - See Fase 1 for details)
 - [x] Combobox (Completed: 2025-11-09 - Consolidated from Theme Editor + UI - See Fase 1 for details)
 - [x] NavigationMenu (Completed: 2025-11-09 - See Fase 1 for details)
-- [x] Spinner (Completed: 2025-11-09 - 70/70 tests ✅ - ATOM - PHASE 2 CONSOLIDATION - Consolidated from 5 implementations: ui/spinner.tsx, theme-editor-3.0/Spinner.tsx, atomic-design/Spinner.tsx, shared/LoadingSpinner.tsx, shared/ui/loading-indicator.tsx - Features: 6 sizes (xs-2xl) + custom, 8 color variants + custom, 3 types (circular/dots/pulse), 3 speeds (slow/normal/fast), optional label, CVA integration, forwardRef, theme override, full accessibility - 70 unit tests, 18 Storybook stories)
+- [x] Spinner (Completed: 2025-11-09 - 70/70 tests ✅ - ATOM - PHASE 2 CONSOLIDATION - Consolidated from 5 implementations: ui/spinner.tsx, theme-editor-3.0/Spinner.tsx, Spinner.tsx, shared/LoadingSpinner.tsx, shared/ui/loading-indicator.tsx - Features: 6 sizes (xs-2xl) + custom, 8 color variants + custom, 3 types (circular/dots/pulse), 3 speeds (slow/normal/fast), optional label, CVA integration, forwardRef, theme override, full accessibility - 70 unit tests, 18 Storybook stories)
 
 ---
 
@@ -696,6 +753,7 @@ Un componente está completamente DONE cuando:
 ## 📋 Qué Nos Falta / Próximos Pasos
 
 ### ✅ Completado (100%)
+
 - [x] Fase 1: 26/26 componentes únicos migrados
 - [x] Fase 2: 6/6 componentes consolidados
 - [x] Tests: ~1,250 tests creados para componentes atomic-design
@@ -705,38 +763,44 @@ Un componente está completamente DONE cuando:
 ### 🔄 Pendiente (Opcional)
 
 #### 1. Actualizar Imports en Componentes Viejos
+
 **Prioridad**: Alta
 **Esfuerzo**: 2-3 días
 **Archivos afectados**: ~30 componentes
 
 Componentes que aún usan imports viejos y causan los 43 tests fallando:
+
 - `nav-user.tsx` - Usa Avatar/Badge de ui/ o theme-editor
 - `push-notification-settings.tsx` - Usa componentes viejos
 - `LoginFormOrganism.tsx` - Usa componentes viejos
 - Otros componentes en `admin/theme-editor-3.0/`
 
 **Acción requerida**:
+
 ```typescript
 // Cambiar imports viejos:
-import { Avatar } from '@/components/ui/avatar'
-import { Badge } from '@/components/theme-editor-3.0/atoms/Badge'
+import { Avatar } from "@/components/ui/avatar";
+import { Badge } from "@/components/theme-editor-3.0/atoms/Badge";
 
 // Por nuevos imports:
-import { Avatar } from '@/components/atomic-design/atoms/avatar'
-import { Badge } from '@/components/atomic-design/atoms/badge'
+import { Avatar } from "@/components/atoms/avatar";
+import { Badge } from "@/components/atoms/badge";
 ```
 
 #### 2. Limpiar Componentes Originales
+
 **Prioridad**: Media
 **Esfuerzo**: 1-2 días
 **Prerrequisito**: Completar punto 1
 
 Una vez que TODOS los imports estén actualizados, eliminar:
+
 - `packages/web/src/components/ui/` (componentes duplicados)
 - `packages/web/src/components/admin/theme-editor-3.0/design-system/` (componentes viejos)
-- Mantener solo: `packages/web/src/components/atomic-design/`
+- Mantener solo: `packages/web/src/components/`
 
 #### 3. Resolver Tests con Timing Issues
+
 **Prioridad**: Baja
 **Esfuerzo**: 1 día
 
@@ -744,6 +808,7 @@ Una vez que TODOS los imports estén actualizados, eliminar:
 - Tabs: 5 tests de interacción (timing de Radix UI)
 
 #### 4. Documentación Adicional
+
 **Prioridad**: Baja
 **Esfuerzo**: 2-3 horas
 
@@ -753,6 +818,7 @@ Una vez que TODOS los imports estén actualizados, eliminar:
 - [ ] Guía de Storybook para diseñadores
 
 #### 5. Performance Optimization
+
 **Prioridad**: Baja
 **Esfuerzo**: 1-2 días
 
@@ -768,18 +834,21 @@ Una vez que TODOS los imports estén actualizados, eliminar:
 ### Fase de Limpieza (Próxima)
 
 **Semana 1-2**: Actualizar Imports
+
 1. Identificar TODOS los archivos que importan componentes viejos
 2. Actualizar imports progresivamente por módulo
 3. Ejecutar tests después de cada cambio
 4. Verificar que la app funciona correctamente
 
 **Semana 3**: Limpiar Código Viejo
+
 1. Verificar que NO hay imports a componentes viejos
 2. Mover componentes viejos a carpeta `_deprecated/`
 3. Ejecutar tests completos
 4. Eliminar definitivamente carpeta `_deprecated/`
 
 **Semana 4**: Documentación y Optimización
+
 1. Crear guía de migración
 2. Analizar bundle size
 3. Optimizar imports pesados
@@ -790,6 +859,7 @@ Una vez que TODOS los imports estén actualizados, eliminar:
 ## ✅ Logros del Proyecto
 
 ### Componentes Migrados
+
 - **32 componentes** completamente migrados
 - **~1,250 tests** con 98.3% passing rate
 - **100% TypeScript** con types completos
@@ -797,6 +867,7 @@ Una vez que TODOS los imports estén actualizados, eliminar:
 - **Storybook completo** con ejemplos interactivos
 
 ### Mejoras de Arquitectura
+
 - ✅ Atomic Design methodology implementado
 - ✅ Consolidación de 15+ implementaciones duplicadas
 - ✅ Radix UI como base para accesibilidad
@@ -805,6 +876,7 @@ Una vez que TODOS los imports estén actualizados, eliminar:
 - ✅ Full TypeScript con types exportados
 
 ### Calidad de Código
+
 - ✅ 95%+ coverage en Atoms
 - ✅ 90%+ coverage en Molecules
 - ✅ 95%+ coverage en Organisms
@@ -813,6 +885,7 @@ Una vez que TODOS los imports estén actualizados, eliminar:
 - ✅ Componentes originales preservados
 
 ### Developer Experience
+
 - ✅ Dual API (primitive + simplified) donde aplica
 - ✅ Auto-completion con TypeScript
 - ✅ Storybook para exploración visual

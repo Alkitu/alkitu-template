@@ -91,7 +91,12 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(tee:*)",
-      "Bash(git log:*)"
+      "Bash(git log:*)",
+      "Bash(test -d:*)",
+      "WebSearch",
+      "Bash(test:*)",
+      "mcp__context7__resolve-library-id",
+      "mcp__playwright__browser_console_messages"
     ],
     "deny": []
   }

@@ -2,10 +2,10 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { trpc } from '@/lib/trpc';
-import { AppearanceForm } from '@/components/chatbot-settings/AppearanceForm';
-import { ContactFormFields } from '@/components/chatbot-settings/ContactFormFields';
-import { MessagesForm } from '@/components/chatbot-settings/MessagesForm';
-import { Typography } from '@/components/atomic-design/atoms/typography';
+import { AppearanceForm } from '@/components/features/chatbot-settings/AppearanceForm';
+import { ContactFormFields } from '@/components/features/chatbot-settings/ContactFormFields';
+import { MessagesForm } from '@/components/features/chatbot-settings/MessagesForm';
+import { Typography } from '@/components/atoms/typography';
 
 export default function ChatbotSettingsPage() {
   const {

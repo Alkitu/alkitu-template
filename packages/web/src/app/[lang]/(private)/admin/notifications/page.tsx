@@ -8,19 +8,19 @@ import React, {
   useRef,
   startTransition,
 } from 'react';
-import { useTranslations } from '@/context/TranslationContext';
+import { useTranslations } from '@/context/TranslationsContext';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/atomic-design/molecules/Card';
-import { Badge } from '@/components/atomic-design/atoms/badge';
-import { Button } from '@/components/ui/button';
-import { Typography } from '@/components/atomic-design/atoms/typography';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
+} from '@/components/primitives/Card';
+import { Badge } from '@/components/atoms/badge';
+import { Button } from '@/components/primitives/ui/button';
+import { Typography } from '@/components/atoms/typography';
+import { Checkbox } from '@/components/primitives/ui/checkbox';
+import { Label } from '@/components/primitives/ui/label';
 import {
   Bell,
   BellOff,
@@ -33,21 +33,21 @@ import {
   Zap,
   Loader2,
 } from 'lucide-react';
-import { BulkActions } from '@/components/notifications/bulk-actions';
-import { NotificationFilters } from '@/components/notifications/notification-filters';
+import { BulkActions } from '@/components/features/notifications/bulk-actions';
+import { NotificationFilters } from '@/components/features/notifications/notification-filters';
 import {
   useNotificationFiltersStore,
   type NotificationFilters as NotificationFiltersType,
 } from '@/stores/notification-filters';
-import { EnhancedPagination } from '@/components/notifications/enhanced-pagination';
+import { EnhancedPagination } from '@/components/features/notifications/enhanced-pagination';
 import {
   NotificationSkeleton,
   NotificationListSkeleton,
   InfiniteScrollSkeleton,
-} from '@/components/notifications/notification-skeleton';
+} from '@/components/features/notifications/notification-skeleton';
 import { useInfiniteNotifications } from '@/hooks/use-infinite-scroll';
 import Link from 'next/link';
-import { Switch } from '@/components/ui/switch';
+import { Switch } from '@/components/primitives/ui/switch';
 import { cn } from '@/lib/utils';
 
 const TEST_USER_ID = '6861ea1a1c0cf932169adce4';

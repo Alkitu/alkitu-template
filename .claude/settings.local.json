@@ -96,7 +96,9 @@
       "WebSearch",
       "Bash(test:*)",
       "mcp__context7__resolve-library-id",
-      "mcp__playwright__browser_console_messages"
+      "mcp__playwright__browser_console_messages",
+      "Bash(git push:*)",
+      "Bash(nul)"
     ],
     "deny": []
   }

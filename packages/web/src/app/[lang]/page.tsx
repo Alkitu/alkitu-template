@@ -1,12 +1,11 @@
 'use client';
 
-import { LandingNavbar } from '../../components/layout/landing-navbar';
-import { Hero, FeatureGrid, PricingCard, Footer } from '@/components/atomic-design/organisms';
-import { useTranslations } from '@/context/TranslationContext';
+import { LandingNavbar } from '../../components/primitives/ui/landing-navbar';
+import { Hero, FeatureGrid, PricingCard, Footer } from '@/components/organisms';
+import { useTranslations } from '@/context/TranslationsContext';
 
 export default function Home() {
   const t = useTranslations();
-
   // Hero configuration
   const heroProps = {
     badge: t('homepage.hero.badge'),

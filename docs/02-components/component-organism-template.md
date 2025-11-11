@@ -19,13 +19,13 @@ organisms/[feature-name]/
 
 ## Template: FeatureNameOrganism.tsx
 
-```typescript
+````typescript
 'use client';
 
 import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { Button, Input } from '@/components/atomic-design/atoms';
-import { FormField, SearchBar } from '@/components/atomic-design/molecules';
+import { Button, Input } from '@/components/atoms';
+import { FormField, SearchBar } from '@/components/molecules';
 import type { FeatureNameOrganismProps } from './FeatureNameOrganism.types';
 
 /**
@@ -194,19 +194,19 @@ export const FeatureNameOrganism = React.forwardRef<
 FeatureNameOrganism.displayName = 'FeatureNameOrganism';
 
 export default FeatureNameOrganism;
-```
+````
 
 ---
 
 ## Template: FeatureNameOrganism.types.ts
 
 ```typescript
-import type { HTMLAttributes } from 'react';
+import type { HTMLAttributes } from "react";
 
 /**
  * Variant options for FeatureNameOrganism
  */
-export type OrganismVariant = 'default' | 'primary' | 'secondary';
+export type OrganismVariant = "default" | "primary" | "secondary";
 
 /**
  * Form data structure
@@ -296,13 +296,13 @@ export interface FeatureNameOrganismProps
 ## Template: index.ts
 
 ```typescript
-export { FeatureNameOrganism, default } from './FeatureNameOrganism';
+export { FeatureNameOrganism, default } from "./FeatureNameOrganism";
 export type {
   FeatureNameOrganismProps,
   OrganismVariant,
   FormData,
   PlaceholderText,
-} from './FeatureNameOrganism.types';
+} from "./FeatureNameOrganism.types";
 ```
 
 ---
@@ -312,24 +312,28 @@ export type {
 Before creating an organism, ensure:
 
 ### ✅ Definition Validation
+
 - [ ] Component is composed of **atoms and molecules**
 - [ ] Component represents a **distinct section of interface**
 - [ ] Component MAY contain **business logic**
 - [ ] Component is **context-specific** (not as reusable as atoms/molecules)
 
 ### ✅ Composition
-- [ ] Uses atoms from `@/components/atomic-design/atoms`
-- [ ] Uses molecules from `@/components/atomic-design/molecules`
+
+- [ ] Uses atoms from `@/components/atoms`
+- [ ] Uses molecules from `@/components/molecules`
 - [ ] MAY compose other organisms (sparingly)
 - [ ] Clear hierarchy and layout
 
 ### ✅ Translation Handling (CRITICAL)
+
 - [ ] Does **NOT** use `useTranslations()` hook directly
 - [ ] Receives **translated text as props** from page
 - [ ] All text props are strings (not translation keys)
 - [ ] Page component handles translation, organism receives final text
 
 ### ✅ Props Design
+
 - [ ] Configuration props (title, subtitle, buttonText)
 - [ ] Behavior props (onSubmit, onCancel, onChange)
 - [ ] State props (loading, error, success)
@@ -337,6 +341,7 @@ Before creating an organism, ensure:
 - [ ] Clear prop names with JSDoc
 
 ### ✅ State Management
+
 - [ ] Local state for UI concerns (isOpen, selectedTab)
 - [ ] Form state (formData, validation)
 - [ ] MAY use hooks (useState, useReducer)
@@ -344,6 +349,7 @@ Before creating an organism, ensure:
 - [ ] MAY fetch data (if organism manages it)
 
 ### ✅ Business Logic
+
 - [ ] MAY contain validation logic
 - [ ] MAY handle form submission
 - [ ] MAY manage API calls
@@ -351,12 +357,14 @@ Before creating an organism, ensure:
 - [ ] Keep logic focused on organism's purpose
 
 ### ✅ Styling
+
 - [ ] Uses `cn()` for class composition
 - [ ] Layout classes for child arrangement
 - [ ] Responsive design implemented
 - [ ] Consistent spacing system
 
 ### ✅ Accessibility
+
 - [ ] Semantic HTML structure
 - [ ] Form elements properly labeled
 - [ ] Error messages announced
@@ -364,6 +372,7 @@ Before creating an organism, ensure:
 - [ ] Focus management correct
 
 ### ✅ TypeScript
+
 - [ ] Types in separate `.types.ts` file
 - [ ] Interface types for data structures
 - [ ] Handler function types
@@ -371,6 +380,7 @@ Before creating an organism, ensure:
 - [ ] Exports types from `index.ts`
 
 ### ✅ File Structure
+
 - [ ] `FeatureNameOrganism.tsx` created (note "Organism" suffix)
 - [ ] `FeatureNameOrganism.types.ts` created
 - [ ] `index.ts` barrel export created
@@ -381,30 +391,35 @@ Before creating an organism, ensure:
 ## Common Organisms Examples
 
 ### 1. LoginFormOrganism
+
 - **Atoms/Molecules**: FormField, Button
 - **Purpose**: User authentication form
 - **Props**: onSubmit, error, loading, buttonText (translated)
 - **State**: formData, isSubmitting
 
 ### 2. HeroOrganism
+
 - **Atoms/Molecules**: Badge, Typography, Button
 - **Purpose**: Hero section with CTA
 - **Props**: title, subtitle, badge, cta (all translated)
 - **State**: None (stateless)
 
 ### 3. DataTableOrganism
+
 - **Atoms/Molecules**: Input, Button, Table
 - **Purpose**: Data display with search and pagination
 - **Props**: data, columns, onSearch, onPageChange
 - **State**: currentPage, searchQuery, selectedRows
 
 ### 4. ThemeSelectorOrganism
+
 - **Atoms/Molecules**: Select, ColorPicker, Button
 - **Purpose**: Theme customization interface
 - **Props**: themes, onSelect, onSave
 - **State**: selectedTheme, previewMode
 
 ### 5. CheckoutFormOrganism
+
 - **Atoms/Molecules**: FormField, Button, CardPreview
 - **Purpose**: Payment form with validation
 - **Props**: onSubmit, items, total
@@ -415,6 +430,7 @@ Before creating an organism, ensure:
 ## Anti-Patterns
 
 ### ❌ DON'T: Use useTranslations() Hook
+
 ```typescript
 // FeatureNameOrganism.tsx - BAD
 const FeatureNameOrganism = () => {
@@ -429,6 +445,7 @@ const FeatureNameOrganism = () => {
 ```
 
 **✅ SHOULD BE:**
+
 ```typescript
 // page.tsx - GOOD
 const t = useTranslations();
@@ -443,6 +460,7 @@ const FeatureNameOrganism = ({ title }: Props) => {
 ```
 
 ### ❌ DON'T: Create Inline Components
+
 ```typescript
 // FeatureNameOrganism.tsx - BAD
 const FeatureNameOrganism = () => (
@@ -454,6 +472,7 @@ const FeatureNameOrganism = () => (
 ```
 
 ### ❌ DON'T: Pass Too Many Props
+
 ```typescript
 // FeatureNameOrganism.tsx - BAD
 interface Props {
@@ -467,6 +486,7 @@ interface Props {
 ```
 
 **✅ SHOULD BE:**
+
 ```typescript
 // FeatureNameOrganism.tsx - GOOD
 interface Props {
@@ -477,6 +497,7 @@ interface Props {
 ```
 
 ### ❌ DON'T: Mix Concerns
+
 ```typescript
 // FeatureNameOrganism.tsx - BAD
 const FeatureNameOrganism = () => {
@@ -508,7 +529,7 @@ const FeatureNameOrganism = () => {
 'use client';
 
 import { useTranslations } from '@/context/TranslationContext';
-import { FeatureNameOrganism } from '@/components/atomic-design/organisms';
+import { FeatureNameOrganism } from '@/components/organisms';
 
 export default function FeaturePage() {
   const t = useTranslations();

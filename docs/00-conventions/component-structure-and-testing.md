@@ -5,6 +5,7 @@ This document defines the standard file structure and testing conventions for al
 ## Purpose
 
 Establishing a consistent component structure ensures:
+
 - **Predictability**: Developers know exactly where to find component files and tests
 - **Maintainability**: Clear separation of concerns makes updates easier
 - **Testability**: Co-located tests improve test coverage and discoverability
@@ -18,7 +19,7 @@ Establishing a consistent component structure ensures:
 Every component MUST follow this exact structure:
 
 ```
-packages/web/src/components/atomic-design/[atoms|molecules|organisms]/[component-name]/
+packages/web/src/components/[atoms|molecules|organisms]/[component-name]/
 ├── [ComponentName].tsx           # Main component implementation (REQUIRED)
 ├── [ComponentName].types.ts      # TypeScript types and interfaces (REQUIRED)
 ├── [ComponentName].test.tsx      # Unit tests with Vitest (REQUIRED)
@@ -75,7 +76,7 @@ atoms/button/
 **Example: Button Atom**
 
 ```
-packages/web/src/components/atomic-design/atoms/button/
+packages/web/src/components/atoms/button/
 ├── Button.tsx                # 150-200 lines
 ├── Button.types.ts           # 30-50 lines
 ├── Button.test.tsx           # 200-300 lines (8-10 tests)
@@ -85,6 +86,7 @@ packages/web/src/components/atomic-design/atoms/button/
 ```
 
 **Testing Requirements for Atoms:**
+
 - Minimum 8 test cases
 - Coverage: 95%+
 - Test categories:
@@ -102,7 +104,7 @@ packages/web/src/components/atomic-design/atoms/button/
 **Example: FormField Molecule**
 
 ```
-packages/web/src/components/atomic-design/molecules/form-field/
+packages/web/src/components/molecules/form-field/
 ├── FormField.tsx             # 100-150 lines
 ├── FormField.types.ts        # 20-40 lines
 ├── FormField.test.tsx        # 150-200 lines (5-8 tests)
@@ -111,6 +113,7 @@ packages/web/src/components/atomic-design/molecules/form-field/
 ```
 
 **Testing Requirements for Molecules:**
+
 - Minimum 5 test cases
 - Coverage: 90%+
 - Test categories:
@@ -125,7 +128,7 @@ packages/web/src/components/atomic-design/molecules/form-field/
 **Example: LoginFormOrganism**
 
 ```
-packages/web/src/components/atomic-design/organisms/auth/
+packages/web/src/components/organisms/auth/
 ├── LoginFormOrganism.tsx          # 150-200 lines
 ├── LoginFormOrganism.types.ts     # 30-50 lines
 ├── LoginFormOrganism.test.tsx     # 300-400 lines (10-15 tests)
@@ -134,6 +137,7 @@ packages/web/src/components/atomic-design/organisms/auth/
 ```
 
 **Testing Requirements for Organisms:**
+
 - Minimum 10 test cases
 - Coverage: 95%+
 - Test categories:
@@ -150,7 +154,7 @@ packages/web/src/components/atomic-design/organisms/auth/
 
 ### Button.tsx
 
-```typescript
+````typescript
 'use client';
 
 import React from 'react';
@@ -226,15 +230,20 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 );
 
 Button.displayName = 'Button';
-```
+````
 
 ### Button.types.ts
 
 ```typescript
-import { ButtonHTMLAttributes } from 'react';
+import { ButtonHTMLAttributes } from "react";
 
-export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive';
-export type ButtonSize = 'sm' | 'md' | 'lg';
+export type ButtonVariant =
+  | "primary"
+  | "secondary"
+  | "outline"
+  | "ghost"
+  | "destructive";
+export type ButtonSize = "sm" | "md" | "lg";
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   /**
@@ -471,8 +480,8 @@ export const AllVariants: Story = {
 ### index.ts
 
 ```typescript
-export { Button } from './Button';
-export type { ButtonProps, ButtonVariant, ButtonSize } from './Button.types';
+export { Button } from "./Button";
+export type { ButtonProps, ButtonVariant, ButtonSize } from "./Button.types";
 ```
 
 ## Anti-Patterns
@@ -500,7 +509,7 @@ atoms/button/
 
 ```typescript
 // Button.test.tsx
-import { test, expect } from '@playwright/test';  // ❌ WRONG - use Vitest for unit tests
+import { test, expect } from "@playwright/test"; // ❌ WRONG - use Vitest for unit tests
 
 // Playwright is ONLY for E2E tests
 ```
@@ -529,13 +538,13 @@ export const Button = (props: ButtonProps) => { ... };
 
 ### By Component Type
 
-| Component Type | Min Tests | Min Coverage | Test File Size |
-|---------------|-----------|--------------|----------------|
-| **Atoms** | 8 tests | 95% | 200-300 lines |
-| **Molecules** | 5 tests | 90% | 150-200 lines |
-| **Organisms** | 10 tests | 95% | 300-400 lines |
-| **Hooks** | 5 tests | 95% | 150-250 lines |
-| **Utils** | 100% coverage | 100% | Varies |
+| Component Type | Min Tests     | Min Coverage | Test File Size |
+| -------------- | ------------- | ------------ | -------------- |
+| **Atoms**      | 8 tests       | 95%          | 200-300 lines  |
+| **Molecules**  | 5 tests       | 90%          | 150-200 lines  |
+| **Organisms**  | 10 tests      | 95%          | 300-400 lines  |
+| **Hooks**      | 5 tests       | 95%          | 150-250 lines  |
+| **Utils**      | 100% coverage | 100%         | Varies         |
 
 ### Coverage Commands
 

@@ -1,7 +1,10 @@
 'use client';
 
-import { AuthPageOrganism, NewVerificationFormOrganism } from '@/components/atomic-design/organisms';
-import { useTranslations } from '@/context/TranslationContext';
+import {
+  AuthPageOrganism,
+  NewVerificationFormOrganism,
+} from '@/components/organisms';
+import { useTranslations } from '@/context/TranslationsContext';
 
 /**
  * New Verification Page

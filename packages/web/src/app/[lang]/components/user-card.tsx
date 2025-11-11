@@ -3,13 +3,13 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/molecules/Card';
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+} from '@/components/atoms/avatars';
+import { Badge } from '@/components/atoms/badge';
 
 interface UserCardProps {
   user: {
@@ -30,13 +30,13 @@ export function UserCard({ user }: UserCardProps) {
         <Avatar className="w-16 h-16">
           <AvatarImage
             src={user.image || undefined}
-            alt={user.name || "Usuario"}
+            alt={user.name || 'Usuario'}
             referrerPolicy="no-referrer"
           />
-          <AvatarFallback>{user.name?.charAt(0) || "U"}</AvatarFallback>
+          <AvatarFallback>{user.name?.charAt(0) || 'U'}</AvatarFallback>
         </Avatar>
         <div className="flex flex-col">
-          <CardTitle className="text-2xl">{user.name || "Usuario"}</CardTitle>
+          <CardTitle className="text-2xl">{user.name || 'Usuario'}</CardTitle>
           <p className="text-sm text-muted-foreground">{user.email}</p>
         </div>
       </CardHeader>
@@ -49,7 +49,7 @@ export function UserCard({ user }: UserCardProps) {
           <div>
             <p className="text-sm font-medium">Rol</p>
             <Badge variant="secondary" className="mt-1">
-              {user.role || "Sin rol"}
+              {user.role || 'Sin rol'}
             </Badge>
           </div>
         </div>
@@ -57,19 +57,19 @@ export function UserCard({ user }: UserCardProps) {
           <div>
             <p className="text-sm font-medium">Autenticación de dos factores</p>
             <Badge
-              variant={user.isTwoFactorEnabled ? "default" : "destructive"}
+              variant={user.isTwoFactorEnabled ? 'default' : 'destructive'}
               className="mt-1 "
             >
-              {user.isTwoFactorEnabled ? "Activada" : "Desactivada"}
+              {user.isTwoFactorEnabled ? 'Activada' : 'Desactivada'}
             </Badge>
           </div>
           <div>
             <p className="text-sm font-medium">Tipo de autenticación</p>
             <Badge
-              variant={user.isOAuth ? "default" : "secondary"}
+              variant={user.isOAuth ? 'default' : 'secondary'}
               className="mt-1 text-zinc-900"
             >
-              {user.isOAuth ? "OAuth" : "Email/Contraseña"}
+              {user.isOAuth ? 'OAuth' : 'Email/Contraseña'}
             </Badge>
           </div>
         </div>

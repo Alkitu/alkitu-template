@@ -19,12 +19,12 @@ molecules/[component-name]/
 
 ## Template: ComponentName.tsx
 
-```typescript
+````typescript
 'use client';
 
 import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { Button, Input, Label } from '@/components/atomic-design/atoms'; // Import atoms
+import { Button, Input, Label } from '@/components/atoms'; // Import atoms
 import type { ComponentNameProps } from './ComponentName.types';
 
 /**
@@ -124,30 +124,30 @@ export const ComponentName = React.forwardRef<HTMLDivElement, ComponentNameProps
 ComponentName.displayName = 'ComponentName';
 
 export default ComponentName;
-```
+````
 
 ---
 
 ## Template: ComponentName.types.ts
 
 ```typescript
-import type { InputHTMLAttributes } from 'react';
+import type { InputHTMLAttributes } from "react";
 
 /**
  * Variant options for ComponentName
  */
-export type ComponentVariant = 'default' | 'error' | 'success';
+export type ComponentVariant = "default" | "error" | "success";
 
 /**
  * Size options for ComponentName
  */
-export type ComponentSize = 'sm' | 'md' | 'lg';
+export type ComponentSize = "sm" | "md" | "lg";
 
 /**
  * Props for ComponentName molecule
  */
 export interface ComponentNameProps
-  extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
+  extends Omit<InputHTMLAttributes<HTMLInputElement>, "size"> {
   /**
    * Visual variant of the molecule
    * @default 'default'
@@ -204,12 +204,12 @@ export interface ComponentNameProps
 ## Template: index.ts
 
 ```typescript
-export { ComponentName, default } from './ComponentName';
+export { ComponentName, default } from "./ComponentName";
 export type {
   ComponentNameProps,
   ComponentVariant,
   ComponentSize,
-} from './ComponentName.types';
+} from "./ComponentName.types";
 ```
 
 ---
@@ -219,18 +219,21 @@ export type {
 Before creating a molecule, ensure:
 
 ### ✅ Definition Validation
+
 - [ ] Component is composed of **2-5 atoms**
 - [ ] Component has a **single clear purpose**
 - [ ] Component is **reusable across contexts**
 - [ ] Component MAY have **simple internal state**
 
 ### ✅ Composition
-- [ ] Uses existing atoms from `@/components/atomic-design/atoms`
+
+- [ ] Uses existing atoms from `@/components/atoms`
 - [ ] Does NOT create inline atoms (use existing ones)
 - [ ] Atoms work together as a cohesive unit
 - [ ] Clear parent-child relationship
 
 ### ✅ Props Design
+
 - [ ] Has clear `variant` options (if applicable)
 - [ ] Has clear `size` options (matches atom sizes)
 - [ ] Props are specific to the molecule's purpose
@@ -238,30 +241,35 @@ Before creating a molecule, ensure:
 - [ ] Uses sensible defaults
 
 ### ✅ State Management
+
 - [ ] ONLY simple local state (e.g., `isOpen`, `value`)
 - [ ] NO complex state management (Redux, Zustand)
 - [ ] NO data fetching
 - [ ] State is minimal and focused
 
 ### ✅ Styling
+
 - [ ] Uses `cn()` for class composition
 - [ ] Inherits atom styles
 - [ ] Only adds layout/spacing between atoms
 - [ ] Responsive design considered
 
 ### ✅ Accessibility
+
 - [ ] Labels associated with inputs
 - [ ] Error messages have proper ARIA
 - [ ] Focus management works correctly
 - [ ] Keyboard navigation supported
 
 ### ✅ TypeScript
+
 - [ ] Types in separate `.types.ts` file
 - [ ] Props extend relevant HTML attributes
 - [ ] All props documented
 - [ ] Exports types from `index.ts`
 
 ### ✅ File Structure
+
 - [ ] `ComponentName.tsx` created
 - [ ] `ComponentName.types.ts` created
 - [ ] `index.ts` barrel export created
@@ -272,26 +280,31 @@ Before creating a molecule, ensure:
 ## Common Molecules Examples
 
 ### 1. FormField
+
 - **Atoms**: Label + Input + ErrorMessage
 - **Purpose**: Single form input with label and validation
 - **Special Props**: error, helperText, required
 
 ### 2. SearchBar
+
 - **Atoms**: Input + Icon + Button
 - **Purpose**: Search input with submit button
 - **Special Props**: onSearch, placeholder, loading
 
 ### 3. ColorPickerField
+
 - **Atoms**: Label + ColorPicker + Input
 - **Purpose**: Color selection with hex input
 - **Special Props**: value, onChange, presets
 
 ### 4. CardHeader
+
 - **Atoms**: Avatar + Typography + Badge
 - **Purpose**: Card header with user info
 - **Special Props**: user, subtitle, badge
 
 ### 5. SliderControl
+
 - **Atoms**: Label + Slider + Input
 - **Purpose**: Numeric value control
 - **Special Props**: min, max, step, unit
@@ -301,6 +314,7 @@ Before creating a molecule, ensure:
 ## Anti-Patterns
 
 ### ❌ DON'T: Fetch Data
+
 ```typescript
 // ComponentName.tsx - BAD
 const ComponentName = () => {
@@ -311,6 +325,7 @@ const ComponentName = () => {
 ```
 
 ### ❌ DON'T: Use Complex Business Logic
+
 ```typescript
 // ComponentName.tsx - BAD
 const ComponentName = () => {
@@ -324,6 +339,7 @@ const ComponentName = () => {
 ```
 
 ### ❌ DON'T: Compose Too Many Atoms
+
 ```typescript
 // ComponentName.tsx - BAD (This is an Organism)
 const ComponentName = () => (
@@ -339,6 +355,7 @@ const ComponentName = () => (
 ```
 
 ### ❌ DON'T: Create Inline Atoms
+
 ```typescript
 // ComponentName.tsx - BAD
 const ComponentName = () => (
@@ -349,6 +366,7 @@ const ComponentName = () => (
 ```
 
 ### ❌ DON'T: Use Context/Providers
+
 ```typescript
 // ComponentName.tsx - BAD
 const ComponentName = () => {
@@ -364,6 +382,7 @@ const ComponentName = () => {
 ## Molecule Composition Patterns
 
 ### Pattern 1: Field Pattern (Label + Input + Helper)
+
 ```typescript
 <Container>
   <Label />
@@ -373,6 +392,7 @@ const ComponentName = () => {
 ```
 
 ### Pattern 2: Control Pattern (Label + Control + Value)
+
 ```typescript
 <Container>
   <Label />
@@ -382,6 +402,7 @@ const ComponentName = () => {
 ```
 
 ### Pattern 3: Action Pattern (Content + Button)
+
 ```typescript
 <Container>
   <Input />
@@ -390,6 +411,7 @@ const ComponentName = () => {
 ```
 
 ### Pattern 4: Info Pattern (Icon + Typography)
+
 ```typescript
 <Container>
   <Icon />

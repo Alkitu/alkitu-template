@@ -1,7 +1,7 @@
 'use client';
 
-import { UnauthorizedOrganism } from '@/components/atomic-design/organisms';
-import { useTranslations } from '@/context/TranslationContext';
+import { UnauthorizedOrganism } from '@/components/organisms';
+import { useTranslations } from '@/context/TranslationsContext';
 
 /**
  * Unauthorized Page

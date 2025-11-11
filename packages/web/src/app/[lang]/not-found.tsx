@@ -1,8 +1,8 @@
 'use client';
 
-import { useTranslations } from '@/context/TranslationContext';
-import { Button } from '@/components/ui/button';
-import { Typography } from '@/components/atomic-design/atoms/typography';
+import { useTranslations } from '@/context/TranslationsContext';
+import { Button } from '@/components/primitives/ui/button';
+import { Typography } from '@/components/atoms/typography';
 import Link from 'next/link';
 
 export default function NotFound() {

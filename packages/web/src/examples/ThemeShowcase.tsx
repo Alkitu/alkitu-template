@@ -1,6 +1,6 @@
 import React from 'react';
 import { DynamicThemeProvider } from '../components/providers/DynamicThemeProvider';
-import { Button } from '../components/atomic-design/atoms';
+import { Button } from '../components/atoms';
 import { useCompanyTheme } from '../components/providers/DynamicThemeProvider';
 
 // Diferentes temas de empresa para demostración

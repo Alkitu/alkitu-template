@@ -2,8 +2,8 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { trpc } from '@/lib/trpc';
-import { ChatAnalyticsDashboard } from '@/components/chat/ChatAnalyticsDashboard';
-import { Typography } from '@/components/atomic-design/atoms/typography';
+import { ChatAnalyticsDashboard } from '@/components/features/chat/ChatAnalyticsDashboard';
+import { Typography } from '@/components/atoms/typography';
 
 export default function ChatAnalyticsPage() {
   const {

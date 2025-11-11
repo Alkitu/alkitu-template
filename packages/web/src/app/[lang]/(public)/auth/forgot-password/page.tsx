@@ -1,7 +1,10 @@
 'use client';
 
-import { AuthPageOrganism, ForgotPasswordFormOrganism } from '@/components/atomic-design/organisms';
-import { useTranslations } from '@/context/TranslationContext';
+import {
+  AuthPageOrganism,
+  ForgotPasswordFormOrganism,
+} from '@/components/organisms';
+import { useTranslations } from '@/context/TranslationsContext';
 
 /**
  * Forgot Password Page

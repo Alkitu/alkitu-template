@@ -1,10 +1,10 @@
 import React from 'react';
-import Dashboard from '@/components/dashboard/dashboard';
+import Dashboard from '@/components/features/dashboard/dashboard';
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <Dashboard>
-      {children}
-    </Dashboard>
-  );
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return <Dashboard>{children}</Dashboard>;
 }

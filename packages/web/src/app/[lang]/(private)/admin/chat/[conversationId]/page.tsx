@@ -3,14 +3,14 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { trpc } from '@/lib/trpc';
 import { useParams } from 'next/navigation';
-import { ConversationDetail } from '@/components/chat/ConversationDetail';
-import { ReplyForm } from '@/components/chat/ReplyForm';
+import { ConversationDetail } from '@/components/features/chat/ConversationDetail';
+import { ReplyForm } from '@/components/features/chat/ReplyForm';
 import { useEffect } from 'react';
 import { io } from 'socket.io-client';
-import { AssignmentSelect } from '@/components/chat/AssignmentSelect';
-import { StatusSelect } from '@/components/chat/StatusSelect';
-import { InternalNotes } from '@/components/chat/InternalNotes';
-import { Typography } from '@/components/atomic-design/atoms/typography';
+import { AssignmentSelect } from '@/components/features/chat/AssignmentSelect';
+import { StatusSelect } from '@/components/features/chat/StatusSelect';
+import { InternalNotes } from '@/components/features/chat/InternalNotes';
+import { Typography } from '@/components/atoms/typography';
 
 export default function ConversationDetailPage() {
   const params = useParams();

@@ -1,8 +1,8 @@
 import './globals.css';
-import { Providers } from '../../components/providers/Providers';
+import { Providers } from '@/context/providers';
 import { cn, inter } from '@/lib/utils';
-import { Toaster } from '@/components/ui/toaster';
-import { ChatWidget } from '@/components/public/ChatWidget/ChatWidget';
+import { Toaster } from '@/components/primitives/ui/toaster';
+import { ChatWidget } from '@/components/features/ChatWidget/ChatWidget';
 // import { Analytics } from '@vercel/analytics/react';
 // import { SpeedInsights }m from '@vercel/speed-insights/next';
 import esTranslations from '../../locales/es/common.json';
@@ -27,8 +27,8 @@ export default async function RootLayout({ children, params }: LayoutProps) {
   return (
     <html lang={locale} suppressHydrationWarning>
       <body suppressHydrationWarning={true}>
-        <Providers 
-          initialLocale={locale} 
+        <Providers
+          initialLocale={locale}
           initialTranslations={translations}
           companyId={companyId}
         >

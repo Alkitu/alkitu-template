@@ -7,7 +7,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
+} from '@/components/primitives/Card';
 import {
   Table,
   TableBody,
@@ -15,18 +15,18 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+} from '@/components/primitives/ui/table';
+import { Input } from '@/components/primitives/Input';
+import { Button } from '@/components/primitives/ui/button';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { Checkbox } from '@/components/ui/checkbox';
+} from '@/components/primitives/Select';
+import { Badge } from '@/components/atoms/badge';
+import { Checkbox } from '@/components/primitives/ui/checkbox';
 import {
   SearchIcon,
   Filter,
@@ -41,7 +41,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from '@/components/primitives/DropdownMenu';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { UserRole } from '@alkitu/shared';

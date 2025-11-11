@@ -1,8 +1,8 @@
 'use client';
 
-import { AuthPageOrganism } from '@/components/atomic-design/organisms';
-import { useTranslations } from '@/context/TranslationContext';
-import { Typography } from '@/components/atomic-design/atoms/typography';
+import { AuthPageOrganism } from '@/components/organisms';
+import { useTranslations } from '@/context/TranslationsContext';
+import { Typography } from '@/components/atoms/typography';
 
 export default function VerifyRequestPage() {
   const t = useTranslations();

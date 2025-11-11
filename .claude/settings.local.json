@@ -82,7 +82,21 @@
       "mcp__playwright__browser_snapshot",
       "Bash(npm run test:coverage:*)",
       "Bash(cat:*)",
-      "Bash(npm run)"
+      "Bash(npm run)",
+      "Bash(for dir in atoms/* molecules/* organisms/*)",
+      "Bash(do if [ -d \"$dir\" ])",
+      "Bash([ -f \"$dir\"/*.test.tsx ])",
+      "Bash([ -f \"$dir\"/*.test.ts ])",
+      "Bash(git checkout:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(tee:*)",
+      "Bash(git log:*)",
+      "Bash(test -d:*)",
+      "WebSearch",
+      "Bash(test:*)",
+      "mcp__context7__resolve-library-id",
+      "mcp__playwright__browser_console_messages"
     ],
     "deny": []
   }

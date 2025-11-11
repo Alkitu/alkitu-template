@@ -15,6 +15,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 7. **DOCUMENT CONVENTIONS**: When solving a problem that establishes a new pattern or convention, ALWAYS create documentation in `/docs/00-conventions/` with a descriptive filename
 
 ### Documentation Convention Rules:
+
 - 📝 **ALWAYS** create convention documentation in `/docs/00-conventions/` when establishing new patterns
 - 📄 **USE** descriptive, kebab-case filenames (e.g., `api-design-patterns.md`)
 - ✅ **INCLUDE** clear rules, examples, and anti-patterns in documentation
@@ -22,6 +23,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - 📚 See `/docs/00-conventions/documentation-guidelines.md` for complete documentation standards
 
 ### Dependency Management Rules:
+
 - 🚫 **NEVER** install new packages without checking existing dependencies first
 - 📦 **ALWAYS** review `package.json` files (root and all workspaces) before suggesting new dependencies
 - ✅ **VERIFY** if functionality can be achieved with existing packages
@@ -34,6 +36,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - ⚠️ Only install new dependencies when absolutely no alternative exists
 
 ### Before Making ANY Changes:
+
 - ✅ Check if the component/function already exists
 - ✅ Verify the code is not being used elsewhere
 - ✅ Ensure changes are backward compatible
@@ -42,14 +45,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - ✅ Get confirmation before proceeding with significant changes
 
 ### Atomic Design Architecture Rules:
+
 - 🏗️ **FOLLOW ATOMIC DESIGN**: All UI components MUST follow Atomic Design methodology (Atoms → Molecules → Organisms → Templates → Pages)
-- 📁 **USE CORRECT STRUCTURE**: Place components in `/packages/web/src/components/atomic-design/` with proper hierarchy
+- 📁 **USE CORRECT STRUCTURE**: Place components in `/packages/web/src/components/` with proper hierarchy
 - 📝 **INCLUDE TYPE FILES**: Every component MUST have `.tsx`, `.types.ts`, and `index.ts` files
 - 🌍 **TRANSLATIONS IN PAGES**: Pages MUST use `useTranslations()` hook and pass translated props to organisms
 - ❌ **NO UI IN PAGES**: Page components should ONLY handle configuration and composition, NOT UI implementation
 - 🔗 **REFERENCE GUIDE**: See `/docs/00-conventions/atomic-design-architecture.md` for complete guidelines
 
 ### Component Testing Rules:
+
 - ✅ **CO-LOCATE TESTS**: Place `Component.test.tsx` NEXT TO `Component.tsx` (NOT in `__tests__/` folders)
 - 📊 **COVERAGE REQUIREMENTS**: Atoms (95%+), Molecules (90%+), Organisms (95%+)
 - 🧪 **UNIT TESTS**: Use Vitest + Testing Library for component testing
@@ -66,6 +71,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 This is **Alkitu Template** - an enterprise-grade TypeScript monorepo for building SaaS applications. It uses npm workspaces and follows SOLID principles with AI-driven development workflows.
 
 ### Technology Stack
+
 - **Backend**: NestJS v11 + MongoDB + Prisma + tRPC + GraphQL + WebSocket + JWT Auth
 - **Frontend**: Next.js v15 + Radix UI + NextUI + Tailwind CSS v4 + Zustand + React Query
 - **Mobile**: Flutter 3.10+ + BLoC + GoRouter + GraphQL
@@ -75,6 +81,7 @@ This is **Alkitu Template** - an enterprise-grade TypeScript monorepo for buildi
 ## Common Development Commands
 
 ### Development Environment
+
 ```bash
 # Start full development environment
 npm run dev
@@ -88,6 +95,7 @@ npm run dev:web      # Next.js frontend on :3000
 ```
 
 ### Testing Commands
+
 ```bash
 # Run all tests across packages
 npm run test
@@ -121,6 +129,7 @@ npm run test:visual     # Run Chromatic
 ```
 
 ### Database Operations
+
 ```bash
 # Database management
 npm run db:migrate      # Prisma migrations
@@ -130,6 +139,7 @@ npm run db:shell        # MongoDB shell
 ```
 
 ### Quality Assurance
+
 ```bash
 # Code quality checks
 npm run lint            # ESLint across all packages
@@ -141,6 +151,7 @@ npm run quality:gates   # Coverage + mutation + lint + type-check
 ```
 
 ### Docker Development
+
 ```bash
 # Docker management
 npm run docker:stop     # Stop all containers
@@ -151,6 +162,7 @@ npm run docker:restart  # Restart services
 ### Faster CLI Commands
 
 For improved performance and developer experience, use these modern alternatives:
+
 - **fd** - Faster alternative to `find` command
 - **rg** (ripgrep) - Faster alternative to `grep` command
 - **tree** - Display directory structures
@@ -162,16 +174,18 @@ For improved performance and developer experience, use these modern alternatives
 ## Architecture & Code Organization
 
 ### Monorepo Structure
+
 ```
 packages/
 ├── api/           # NestJS backend (MongoDB + Prisma + tRPC)
-├── web/           # Next.js frontend (App Router + Radix + tRPC)  
+├── web/           # Next.js frontend (App Router + Radix + tRPC)
 ├── mobile/        # Flutter app (BLoC + GraphQL)
 ├── shared/        # Common types, schemas, utilities
 └── tweakcn/       # Design system package
 ```
 
 ### Backend Architecture (packages/api/)
+
 - **SOLID Principles**: Strictly enforced with dedicated test utilities
 - **API Types**: REST + tRPC + GraphQL + WebSocket (comprehensive API layer)
 - **Authentication**: JWT + Passport (local & JWT strategies)
@@ -182,6 +196,7 @@ packages/
 - **Testing**: 95%+ coverage, 85%+ mutation score, TDD methodology
 
 ### Frontend Architecture (packages/web/)
+
 - **Framework**: Next.js v15 with App Router
 - **Component Architecture**: Atomic Design methodology (Atoms → Molecules → Organisms → Templates → Pages)
 - **State Management**: Zustand + React Query for server state
@@ -193,6 +208,7 @@ packages/
 - **Testing**: Vitest + React Testing Library + Storybook
 
 ### Shared Package (packages/shared/)
+
 - **Types**: Common TypeScript interfaces and types
 - **Schemas**: Zod validation schemas shared between API and frontend
 - **Utilities**: Helper functions and constants
@@ -201,7 +217,9 @@ packages/
 ## Development Patterns
 
 ### SOLID Principles Implementation
+
 The project strictly follows SOLID principles with dedicated testing utilities:
+
 - **Single Responsibility**: Each service has one clear purpose
 - **Open/Closed**: Services are extensible without modification
 - **Liskov Substitution**: Implementations are fully substitutable
@@ -211,6 +229,7 @@ The project strictly follows SOLID principles with dedicated testing utilities:
 Test SOLID compliance with: `npm run test:solid`
 
 ### Testing Methodology
+
 - **TDD Workflow**: RED → GREEN → REFACTOR → VALIDATION
 - **Coverage Requirements**: 95%+ for critical services, 90%+ globally
 - **Mutation Testing**: 85%+ mutation score using Stryker
@@ -224,14 +243,16 @@ Test SOLID compliance with: `npm run test:solid`
   - **Accessibility**: jest-axe (embedded in unit tests)
 
 ### API Development
+
 - **tRPC**: Primary API layer with type-safe client integration
 - **GraphQL**: Available for complex queries
-- **REST**: Available for external integrations  
+- **REST**: Available for external integrations
 - **WebSocket**: Real-time features using Socket.IO
 - **Validation**: Zod schemas for all endpoints
 - **Documentation**: Swagger/OpenAPI for REST endpoints
 
 ### Frontend Development
+
 - **Component Structure**: Atomic design pattern in Base Web Architecture
 - **Theme System**: Dynamic themes with OKLCH color space
 - **State Management**: Zustand for client state, React Query for server state
@@ -250,6 +271,7 @@ Test SOLID compliance with: `npm run test:solid`
 ## Environment Configuration
 
 ### Required Environment Variables
+
 ```bash
 # API (packages/api/.env)
 DATABASE_URL=mongodb://localhost:27017/alkitu?replicaSet=rs0
@@ -263,6 +285,7 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
 
 ### Development Setup
+
 1. Ensure Node.js >=18.0.0 and npm >=8.0.0
 2. Run `npm install` in root directory
 3. Copy `.env.example` files and configure
@@ -271,6 +294,7 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 ## AI Agent Integration
 
 This project uses AI-driven development with specialized agents:
+
 - **Architecture Agent**: SOLID principles and system design
 - **Backend Agent**: NestJS and API development
 - **Frontend Agent**: Next.js and UI development
@@ -284,11 +308,13 @@ This project uses AI-driven development with specialized agents:
 ### Workflows
 
 #### Component Creation Workflow (New Components)
+
 ```
 User request → frontend-component-builder → frontend-testing-expert → Complete component
 ```
 
 #### Component Migration Workflow (Existing Components)
+
 ```
 /migrate-component → component-migration-coordinator
   ├─ Analyzes original component
@@ -299,6 +325,7 @@ User request → frontend-component-builder → frontend-testing-expert → Comp
 ```
 
 **Quick Start Commands**:
+
 - `/migrate-component` - Start automated migration workflow with tracking
 - Invoke `frontend-component-builder` - Create new component from scratch
 
@@ -307,12 +334,14 @@ Refer to `docs/03-ai-agents/` for agent-specific protocols and workflows.
 ## Key Files and Locations
 
 ### Configuration Files
+
 - `package.json` - Root package configuration and workspace scripts
 - `docker-compose.dev.yml` - Development environment with MongoDB replica set
 - `packages/api/jest.config.mjs` - Comprehensive Jest configuration
 - `packages/web/vitest.config.ts` - Vitest configuration for frontend
 
 ### Important Directories
+
 - `docs/00-conventions/` - Project conventions and guidelines (START HERE for standards)
   - `documentation-guidelines.md` - How to write documentation
   - `atomic-design-architecture.md` - Component structure rules
@@ -337,9 +366,10 @@ Refer to `docs/03-ai-agents/` for agent-specific protocols and workflows.
   - `migrate-component.md` - Start migration workflow (/migrate-component)
 - `infrastructure/docker/` - Docker configurations for all services
 - `packages/api/test/` - Testing utilities, factories, and mocks
-- `packages/web/src/components/atomic-design/` - Atomic Design components
+- `packages/web/src/components/` - Atomic Design components
 
 ### Health Monitoring
+
 - API health check: `http://localhost:3001/health`
 - API documentation: `http://localhost:3001/api/docs`
 - Database GUI: `npm run db:studio`

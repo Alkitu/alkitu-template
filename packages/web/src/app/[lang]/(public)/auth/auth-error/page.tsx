@@ -1,8 +1,8 @@
 'use client';
 
-import { AuthPageOrganism } from '@/components/atomic-design/organisms';
-import { Typography } from '@/components/atomic-design/atoms';
-import { useTranslations } from '@/context/TranslationContext';
+import { AuthPageOrganism } from '@/components/organisms';
+import { Typography } from '@/components/atoms';
+import { useTranslations } from '@/context/TranslationsContext';
 
 /**
  * Auth Error Page
@@ -20,10 +20,7 @@ export default function AuthErrorPage() {
       backButtonLabel={t('auth.backToLogin')}
       backButtonHref="/auth/login"
     >
-      <Typography
-        variant="p"
-        className="text-destructive text-center"
-      >
+      <Typography variant="p" className="text-destructive text-center">
         {t('auth.error.message')}
       </Typography>
     </AuthPageOrganism>

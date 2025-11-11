@@ -10,15 +10,15 @@
 //   Button,
 //   Input,
 //   Brand,
-// } from '@/components/atomic-design/atoms';
+// } from '@/components/atoms';
 // import { ScrollArea } from '@/components/ui/scroll-area';
 
 // // Contexto de branding
 // import { BrandingProvider } from '@/context/BrandingContext';
 
 // // Componentes del sistema
-// import ComponentDemo from '@/components/atomic-design/system/ComponentDemo';
-// import ComponentSpecs from '@/components/atomic-design/system/ComponentSpecs';
+// import ComponentDemo from '@/components/system/ComponentDemo';
+// import ComponentSpecs from '@/components/system/ComponentSpecs';
 // import {
 //   componentsData,
 //   componentCategories,

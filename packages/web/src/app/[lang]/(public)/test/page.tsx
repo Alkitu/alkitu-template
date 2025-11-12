@@ -28,11 +28,13 @@ export default function ThemeTestPage() {
     currentTheme,
     themes,
     savedThemes,
+    builtInThemes,
     handleThemeSelect,
     handlePreviousTheme,
     handleNextTheme,
     handleRandomTheme,
     handleToggleFavorite,
+    isBuiltInTheme,
   } = useThemeSelector();
 
   const currentColors = state.themeMode === 'dark' ? currentTheme.darkColors : currentTheme.lightColors;
@@ -263,6 +265,60 @@ export default function ThemeTestPage() {
           </div>
         </Card>
 
+        {/* Built-in Themes List */}
+        <Card className="p-6">
+          <h2 className="text-2xl font-semibold mb-4">
+            Built-in Themes ({builtInThemes.length})
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Click the star to save a built-in theme to your collection as a favorite
+          </p>
+          <div className="space-y-2">
+            {builtInThemes.map((theme) => (
+              <div
+                key={theme.id}
+                className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors"
+                data-testid={`builtin-theme-${theme.id}`}
+              >
+                <div className="flex items-center gap-3">
+                  <div
+                    className="w-10 h-10 rounded border border-border"
+                    style={{
+                      backgroundColor: theme.lightColors?.primary?.hex || '#000',
+                    }}
+                  />
+                  <div>
+                    <p className="font-medium">{theme.name}</p>
+                    <p className="text-xs text-muted-foreground">{theme.id}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary" className="text-xs">
+                    Built-in
+                  </Badge>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleToggleFavorite(theme.id)}
+                    data-testid={`toggle-favorite-builtin-${theme.id}`}
+                    title="Save as favorite"
+                  >
+                    <Star className="w-4 h-4 text-muted-foreground" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleThemeSelect(theme)}
+                    data-testid={`select-builtin-theme-${theme.id}`}
+                  >
+                    Apply
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+
         {/* Theme Debug Info */}
         <Card className="p-6">
           <h2 className="text-2xl font-semibold mb-4">Debug Info</h2>
@@ -274,6 +330,10 @@ export default function ThemeTestPage() {
             <div className="flex justify-between">
               <span className="text-muted-foreground">Saved Themes:</span>
               <span data-testid="debug-saved-themes">{savedThemes.length}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Built-in Themes:</span>
+              <span data-testid="debug-builtin-themes">{builtInThemes.length}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Loading:</span>

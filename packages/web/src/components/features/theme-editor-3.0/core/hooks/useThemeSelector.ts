@@ -23,8 +23,15 @@ export function useThemeSelector() {
     activeOnly: false,
   });
 
-  // Toggle favorite mutation
+  // Mutations for favorite functionality
   const toggleFavoriteMutation = trpc.theme.setDefaultTheme.useMutation({
+    onSuccess: () => {
+      refetchThemes();
+    },
+  });
+
+  // Mutation to save built-in theme as favorite
+  const createThemeMutation = trpc.theme.createTheme.useMutation({
     onSuccess: () => {
       refetchThemes();
     },
@@ -139,12 +146,53 @@ export function useThemeSelector() {
     handleThemeSelect(randomTheme);
   };
 
+  /**
+   * Check if a theme is a built-in theme (not saved in database)
+   * Built-in themes have simple IDs like 'default', 'amber-minimal'
+   * Database themes have MongoDB ObjectIDs (24 char hex strings)
+   */
+  const isBuiltInTheme = (themeId: string): boolean => {
+    // MongoDB ObjectIDs are 24 characters hexadecimal
+    const isMongoId = /^[0-9a-fA-F]{24}$/.test(themeId);
+    return !isMongoId;
+  };
+
+  /**
+   * Handle toggling favorite on a theme
+   * - For saved themes: Toggle favorite status in database
+   * - For built-in themes: Save to database first with isFavorite: true
+   */
   const handleToggleFavorite = (themeId: string) => {
-    toggleFavoriteMutation.mutate({
-      themeId,
-      companyId,
-      userId: 'current-user-id', // TODO: Get from auth context
-    });
+    const theme = allThemes.find(t => t.id === themeId);
+
+    if (!theme) {
+      console.error('Theme not found:', themeId);
+      return;
+    }
+
+    // Check if it's a built-in theme
+    if (isBuiltInTheme(themeId)) {
+      // Built-in theme: Save to database with isFavorite: true
+      createThemeMutation.mutate({
+        name: theme.name,
+        description: theme.description || `Built-in ${theme.name} theme`,
+        author: theme.author || 'Alkitu',
+        companyId,
+        createdById: 'current-user-id', // TODO: Get from auth context
+        lightModeConfig: theme.lightColors,
+        darkModeConfig: theme.darkColors,
+        typography: theme.typography,
+        tags: theme.tags || [],
+        isDefault: true, // Mark as default when favoriting
+      });
+    } else {
+      // Saved theme: Toggle favorite in database
+      toggleFavoriteMutation.mutate({
+        themeId,
+        companyId,
+        userId: 'current-user-id', // TODO: Get from auth context
+      });
+    }
   };
 
   return {
@@ -164,6 +212,9 @@ export function useThemeSelector() {
     handleNextTheme,
     handleRandomTheme,
     handleToggleFavorite,
+
+    // Helper functions
+    isBuiltInTheme,
 
     // Data
     themes: allThemes,

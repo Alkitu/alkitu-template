@@ -1,10 +1,9 @@
 'use client';
 import ReactQueryProvider from './ReactQueryProvider';
-import { ThemeContextProvider } from '@/context/providers/NextThemesProvider';
 import { TranslationsProvider } from '@/context/TranslationsContext';
 import { TrpcProvider } from './TrpcProvider';
 import { Translations } from '@/types/translations';
-import { DynamicThemeProvider } from '@/context/ThemeContext';
+import { GlobalThemeProvider } from '@/context/GlobalThemeProvider';
 import { ThemeErrorBoundaryClass } from './ThemeErrorBoundary';
 import { TooltipProvider } from '@/components/primitives/ui/tooltip';
 
@@ -14,6 +13,7 @@ interface ProvidersProps {
   initialTranslations: Translations;
   companyId?: string;
   themeId?: string;
+  initialTheme?: any; // Theme from database (server-side)
 }
 
 export function Providers({
@@ -22,28 +22,22 @@ export function Providers({
   initialTranslations,
   companyId,
   themeId,
+  initialTheme,
 }: ProvidersProps) {
   return (
     <ReactQueryProvider>
       <TrpcProvider>
         <ThemeErrorBoundaryClass>
-          <DynamicThemeProvider companyId={companyId} themeId={themeId}>
-            <ThemeContextProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-              disableTransitionOnChange
-            >
-              <TooltipProvider>
-                <TranslationsProvider
-                  initialLocale={initialLocale}
-                  initialTranslations={initialTranslations}
-                >
-                  {children}
-                </TranslationsProvider>
-              </TooltipProvider>
-            </ThemeContextProvider>
-          </DynamicThemeProvider>
+          <GlobalThemeProvider companyId={companyId} initialTheme={initialTheme}>
+            <TooltipProvider>
+              <TranslationsProvider
+                initialLocale={initialLocale}
+                initialTranslations={initialTranslations}
+              >
+                {children}
+              </TranslationsProvider>
+            </TooltipProvider>
+          </GlobalThemeProvider>
         </ThemeErrorBoundaryClass>
       </TrpcProvider>
     </ReactQueryProvider>

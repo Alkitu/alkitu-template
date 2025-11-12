@@ -12,12 +12,14 @@ export function ThemeSelector() {
     isDropdownOpen,
     savedThemes,
     themes,
+    builtInThemes,
     setSearchQuery,
     setIsDropdownOpen,
     handleThemeSelect,
     handlePreviousTheme,
     handleNextTheme,
-    handleRandomTheme
+    handleRandomTheme,
+    handleToggleFavorite
   } = useThemeSelector();
 
   return (
@@ -33,6 +35,8 @@ export function ThemeSelector() {
           isOpen={isDropdownOpen}
           onOpenChange={setIsDropdownOpen}
           savedThemes={savedThemes}
+          builtInThemes={builtInThemes}
+          onToggleFavorite={handleToggleFavorite}
         />
       </div>
 

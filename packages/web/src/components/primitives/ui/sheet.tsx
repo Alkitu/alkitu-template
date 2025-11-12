@@ -1,5 +1,20 @@
 'use client';
 
+/**
+ * Sheet Component - Theme-Aware Implementation
+ *
+ * Uses comprehensive CSS variable system for dynamic theming:
+ * - Shadows: --shadow-dialog (reused for sheets)
+ * - Z-Index: --z-modal-backdrop, --z-modal
+ * - Spacing: --spacing-* for padding and gaps
+ * - Transitions: --transition-slow
+ * - Colors: Tailwind classes with CSS variables
+ *
+ * All variables automatically respond to theme changes via DynamicThemeProvider.
+ *
+ * @see docs/CSS-VARIABLES-REFERENCE.md for complete variable documentation
+ */
+
 import * as React from 'react';
 import * as SheetPrimitive from '@radix-ui/react-dialog';
 import { XIcon } from 'lucide-react';
@@ -30,13 +45,20 @@ function SheetPortal({
 
 function SheetOverlay({
   className,
+  style,
   ...props
 }: React.ComponentProps<typeof SheetPrimitive.Overlay>) {
+  const overlayStyles: React.CSSProperties = {
+    // Z-index - Use modal backdrop z-index
+    zIndex: 'var(--z-modal-backdrop, 1040)',
+  };
+
   return (
     <SheetPrimitive.Overlay
       data-slot="sheet-overlay"
+      style={{ ...overlayStyles, ...style }}
       className={cn(
-        'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/50',
+        'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 bg-black/50',
         className,
       )}
       {...props}
@@ -48,17 +70,33 @@ function SheetContent({
   className,
   children,
   side = 'right',
+  style,
   ...props
 }: React.ComponentProps<typeof SheetPrimitive.Content> & {
   side?: 'top' | 'right' | 'bottom' | 'left';
 }) {
+  const contentStyles: React.CSSProperties = {
+    // Shadow - Use dialog shadow for prominent elevation (reused for sheets)
+    boxShadow: 'var(--shadow-dialog, var(--shadow-2xl))',
+
+    // Z-index - Use modal z-index
+    zIndex: 'var(--z-modal, 1050)',
+
+    // Spacing - Use spacing system for gaps
+    gap: 'var(--spacing-md, 1rem)',
+
+    // Transition - Use slow transition for sheet animations
+    transition: 'all var(--transition-slow, 300ms cubic-bezier(0.4, 0, 0.2, 1))',
+  };
+
   return (
     <SheetPortal>
       <SheetOverlay />
       <SheetPrimitive.Content
         data-slot="sheet-content"
+        style={{ ...contentStyles, ...style }}
         className={cn(
-          'bg-background data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-50 flex flex-col gap-4 shadow-lg transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500',
+          'bg-background data-[state=open]:animate-in data-[state=closed]:animate-out fixed flex flex-col ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500',
           side === 'right' &&
             'data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right inset-y-0 right-0 h-full w-3/4 border-l sm:max-w-sm',
           side === 'left' &&

@@ -1,5 +1,21 @@
 'use client';
 
+/**
+ * Sidebar Component - Theme-Aware Implementation
+ *
+ * Uses comprehensive CSS variable system for dynamic theming:
+ * - Border Radius: --radius-card (for floating variant borders)
+ * - Shadows: --shadow-card (for floating variant elevation)
+ * - Spacing: --spacing-* for padding and gaps
+ * - Transitions: --transition-base for smooth state changes
+ * - Z-Index: --z-dropdown for proper layering
+ * - Colors: Tailwind classes with CSS variables (sidebar-specific tokens)
+ *
+ * All variables automatically respond to theme changes via DynamicThemeProvider.
+ *
+ * @see docs/CSS-VARIABLES-REFERENCE.md for complete variable documentation
+ */
+
 import * as React from 'react';
 import { Slot } from '@radix-ui/react-slot';
 import { VariantProps, cva } from 'class-variance-authority';
@@ -239,12 +255,24 @@ function Sidebar({
             : 'group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[side=left]:border-r group-data-[side=right]:border-l',
           className,
         )}
+        style={{
+          // Z-index - Use dropdown z-index for sidebar layering
+          zIndex: 'var(--z-dropdown, 1000)',
+          // Transition - Use standardized transition for smooth state changes
+          transition: 'left var(--transition-base, 200ms cubic-bezier(0.4, 0, 0.2, 1)), right var(--transition-base, 200ms cubic-bezier(0.4, 0, 0.2, 1)), width var(--transition-base, 200ms cubic-bezier(0.4, 0, 0.2, 1))',
+        }}
         {...props}
       >
         <div
           data-sidebar="sidebar"
           data-slot="sidebar-inner"
-          className="bg-sidebar group-data-[variant=floating]:border-sidebar-border flex h-full w-full flex-col group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:shadow-sm"
+          className="bg-sidebar group-data-[variant=floating]:border-sidebar-border flex h-full w-full flex-col group-data-[variant=floating]:border"
+          style={{
+            // Border radius - Use card radius for floating variant
+            borderRadius: variant === 'floating' ? 'var(--radius-card, calc(var(--radius, 0.375rem) + 4px))' : undefined,
+            // Shadow - Use card shadow for floating variant elevation
+            boxShadow: variant === 'floating' ? 'var(--shadow-card, var(--shadow-md))' : undefined,
+          }}
         >
           {children}
         </div>
@@ -332,23 +360,37 @@ function SidebarInput({
   );
 }
 
-function SidebarHeader({ className, ...props }: React.ComponentProps<'div'>) {
+function SidebarHeader({ className, style, ...props }: React.ComponentProps<'div'>) {
+  const headerStyles: React.CSSProperties = {
+    // Spacing - Use spacing system for padding and gaps
+    gap: 'var(--spacing-sm, 0.5rem)',
+    padding: 'var(--spacing-sm, 0.5rem)',
+  };
+
   return (
     <div
       data-slot="sidebar-header"
       data-sidebar="header"
-      className={cn('flex flex-col gap-2 p-2', className)}
+      style={{ ...headerStyles, ...style }}
+      className={cn('flex flex-col', className)}
       {...props}
     />
   );
 }
 
-function SidebarFooter({ className, ...props }: React.ComponentProps<'div'>) {
+function SidebarFooter({ className, style, ...props }: React.ComponentProps<'div'>) {
+  const footerStyles: React.CSSProperties = {
+    // Spacing - Use spacing system for padding and gaps
+    gap: 'var(--spacing-sm, 0.5rem)',
+    padding: 'var(--spacing-sm, 0.5rem)',
+  };
+
   return (
     <div
       data-slot="sidebar-footer"
       data-sidebar="footer"
-      className={cn('flex flex-col gap-2 p-2', className)}
+      style={{ ...footerStyles, ...style }}
+      className={cn('flex flex-col', className)}
       {...props}
     />
   );

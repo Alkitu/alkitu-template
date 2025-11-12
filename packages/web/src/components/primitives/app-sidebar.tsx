@@ -14,6 +14,7 @@ import {
 import { LucideIcon } from 'lucide-react';
 import type { NavItem, User, Team } from '@/types';
 import { IconType } from 'react-icons';
+import { ThemeToggle } from '@/components/atoms/ThemeToggle';
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
   navMain?: NavItem[];
@@ -48,7 +49,12 @@ export function AppSidebar({
         {teams && <TeamSwitcher teams={teams} onTeamChange={onTeamChange} />}
       </SidebarHeader>
       <SidebarContent>{navMain && <NavMain items={navMain} />}</SidebarContent>
-      <SidebarFooter>{user && <NavUser user={user} />}</SidebarFooter>
+      <SidebarFooter>
+        <div className="flex items-center justify-between px-2 py-2">
+          <ThemeToggle />
+        </div>
+        {user && <NavUser user={user} />}
+      </SidebarFooter>
       <SidebarRail />
     </Sidebar>
   );

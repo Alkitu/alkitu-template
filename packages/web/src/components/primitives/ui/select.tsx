@@ -1,5 +1,21 @@
 'use client';
 
+/**
+ * Select Component - Theme-Aware Implementation
+ *
+ * Uses comprehensive CSS variable system for dynamic theming:
+ * - Typography: --typography-input-* variables (consistent with Input component)
+ * - Border Radius: --radius-select
+ * - Shadows: --shadow-dropdown for the content
+ * - Spacing: --spacing-* variables
+ * - Transitions: --transition-base
+ * - Colors: Tailwind classes with CSS variables
+ *
+ * All variables automatically respond to theme changes via DynamicThemeProvider.
+ *
+ * @see docs/CSS-VARIABLES-REFERENCE.md for complete variable documentation
+ */
+
 import * as React from 'react';
 import * as SelectPrimitive from '@radix-ui/react-select';
 import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from 'lucide-react';
@@ -28,16 +44,36 @@ function SelectTrigger({
   className,
   size = 'default',
   children,
+  style,
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Trigger> & {
   size?: 'sm' | 'default';
 }) {
+  // Base select trigger styles using comprehensive CSS variable system
+  const baseStyles: React.CSSProperties = {
+    // Typography - Use input typography for consistency
+    fontFamily: 'var(--typography-input-family, var(--font-sans))',
+    fontSize: 'var(--typography-input-size, 0.875rem)',
+    fontWeight: 'var(--typography-input-weight, 400)',
+    lineHeight: 'var(--typography-input-line-height, 1.25rem)',
+
+    // Border radius - Use component-specific select radius
+    borderRadius: 'var(--radius-select, var(--radius, 0.375rem))',
+
+    // Transitions - Use standardized transition variables
+    transition: 'all var(--transition-base, 200ms cubic-bezier(0.4, 0, 0.2, 1))',
+  };
+
   return (
     <SelectPrimitive.Trigger
       data-slot="select-trigger"
       data-size={size}
+      style={{
+        ...baseStyles,
+        ...style,
+      }}
       className={cn(
-        "border-input data-[placeholder]:text-muted-foreground [&_svg:not([class*='text-'])]:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-background hover:bg-accent text-foreground flex w-full items-center justify-between gap-2 rounded-md border px-3 py-2 text-sm whitespace-nowrap transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 data-[size=default]:h-9 data-[size=sm]:h-8 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "border-input data-[placeholder]:text-muted-foreground [&_svg:not([class*='text-'])]:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-background hover:bg-accent text-foreground flex w-full items-center justify-between gap-2 border px-3 py-2 whitespace-nowrap outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 data-[size=default]:h-9 data-[size=sm]:h-8 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className,
       )}
       {...props}
@@ -54,14 +90,31 @@ function SelectContent({
   className,
   children,
   position = 'popper',
+  style,
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Content>) {
+  // Base select content styles using CSS variables
+  const contentStyles: React.CSSProperties = {
+    // Border radius - Use component-specific select radius
+    borderRadius: 'var(--radius-select, var(--radius, 0.375rem))',
+
+    // Shadow - Use dropdown shadow for elevated appearance
+    boxShadow: 'var(--shadow-dropdown, var(--shadow-lg))',
+
+    // Z-index - Use standardized z-index scale
+    zIndex: 'var(--z-dropdown, 1000)',
+  };
+
   return (
     <SelectPrimitive.Portal>
       <SelectPrimitive.Content
         data-slot="select-content"
+        style={{
+          ...contentStyles,
+          ...style,
+        }}
         className={cn(
-          'bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 relative z-50 max-h-(--radix-select-content-available-height) min-w-[8rem] origin-(--radix-select-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md border shadow-md',
+          'bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 relative max-h-(--radix-select-content-available-height) min-w-[8rem] origin-(--radix-select-content-transform-origin) overflow-x-hidden overflow-y-auto border',
           position === 'popper' &&
             'data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1',
           className,

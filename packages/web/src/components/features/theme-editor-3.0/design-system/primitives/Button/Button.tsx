@@ -1,43 +1,65 @@
 'use client';
 
+/**
+ * Button Component - Theme-Aware Implementation
+ *
+ * Uses comprehensive CSS variable system for dynamic theming:
+ * - Typography: --typography-button-* variables
+ * - Border Radius: --radius-button
+ * - Shadows: --shadow-button
+ * - Spacing: --spacing-* variables
+ * - Transitions: --transition-fast
+ * - Colors: Tailwind classes with CSS variables (--primary, --destructive, etc.)
+ *
+ * All variables automatically respond to theme changes via DynamicThemeProvider.
+ *
+ * @see docs/CSS-VARIABLES-REFERENCE.md for complete variable documentation
+ */
+
 import React from 'react';
 import type { ButtonProps } from './Button.types';
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className = '', variant = 'default', size = 'default', loading = false, icon, style, ...props }, ref) => {
 
-    // Base button styles
+    // Base button styles using comprehensive CSS variable system
     const baseStyles: React.CSSProperties = {
       display: 'inline-flex',
       alignItems: 'center',
       justifyContent: 'center',
-      fontWeight: '500',
       outline: 'none',
       cursor: props.disabled ? 'not-allowed' : 'pointer',
-      transition: 'all 0.15s ease-in-out',
 
-      // Global theme variables
-      fontFamily: 'var(--typography-paragraph-font-family)',
-      fontSize: 'var(--typography-paragraph-font-size)',
-      letterSpacing: 'var(--typography-paragraph-letter-spacing)',
-      borderRadius: 'var(--radius-button, var(--radius))',
+      // Typography - Use component-specific button typography variables
+      fontFamily: 'var(--typography-button-family, var(--font-sans))',
+      fontSize: 'var(--typography-button-size, 0.875rem)',
+      fontWeight: 'var(--typography-button-weight, 500)',
+      lineHeight: 'var(--typography-button-line-height, 1.25rem)',
+      letterSpacing: 'var(--typography-button-letter-spacing, 0.01em)',
 
-      // Size variants
+      // Border radius - Use component-specific button radius
+      borderRadius: 'var(--radius-button, var(--radius, 0.375rem))',
+
+      // Transitions - Use standardized transition variables
+      transition: 'all var(--transition-fast, 150ms cubic-bezier(0.4, 0, 0.2, 1))',
+
+      // Size variants using spacing system
       ...(size === 'sm' && {
-        height: '36px',
-        paddingLeft: '12px',
-        paddingRight: '12px',
+        height: '32px',
+        paddingLeft: 'var(--spacing-sm, 0.5rem)',
+        paddingRight: 'var(--spacing-sm, 0.5rem)',
+        fontSize: '0.8125rem', // Slightly smaller than default
       }),
       ...(size === 'default' && {
         height: '40px',
-        paddingLeft: '16px',
-        paddingRight: '16px',
+        paddingLeft: 'var(--spacing-md, 1rem)',
+        paddingRight: 'var(--spacing-md, 1rem)',
       }),
       ...(size === 'lg' && {
         height: '44px',
-        paddingLeft: '20px',
-        paddingRight: '20px',
-        fontSize: 'calc(var(--typography-paragraph-font-size) * 1.1)',
+        paddingLeft: 'var(--spacing-lg, 1.5rem)',
+        paddingRight: 'var(--spacing-lg, 1.5rem)',
+        fontSize: '0.9375rem', // Slightly larger than default
       }),
       ...(size === 'icon' && {
         height: '40px',
@@ -111,8 +133,8 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           ...style,
           outline: '2px solid transparent',
           outlineOffset: '2px',
-          '--focus-ring-color': 'var(--colors-primary, #0066CC)',
-          boxShadow: loading ? 'none' : undefined,
+          '--focus-ring-color': 'var(--ring, var(--primary))',
+          boxShadow: loading ? 'none' : 'var(--shadow-button, var(--shadow-sm))',
         } as React.CSSProperties}
         onFocus={(e) => {
           e.currentTarget.style.outline = '2px solid var(--focus-ring-color)';

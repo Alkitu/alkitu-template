@@ -5,6 +5,7 @@ import { ThemeData, ThemeWithCurrentColors, ThemeMode, EditorState, EditorSectio
 import { DEFAULT_THEME, DEFAULT_THEMES } from '../constants/default-themes';
 import { applyThemeToRoot, applyThemeMode, applyModeSpecificColors, applyTypographyElements, applyBorderElements, applyScrollElements, applyScrollbarColors, applyScrollbarUtilityClass } from '../../lib/utils/css/css-variables';
 import { DEFAULT_TYPOGRAPHY } from '../../theme-editor/editor/typography/types';
+import { trpc } from '@/lib/trpc';
 
 // History interface for undo/redo functionality
 interface HistoryEntry {
@@ -176,16 +177,43 @@ function persistActiveSection(section: EditorSection) {
   }
 }
 
-// Initial state
-const initialState: ThemeEditorState = {
-  baseTheme: DEFAULT_THEME,
-  currentTheme: computeCurrentTheme(DEFAULT_THEME, 'light'),
-  availableThemes: DEFAULT_THEMES,
-  themeMode: 'light',
-  history: createInitialHistoryState(DEFAULT_THEME, 'light'),
-  editor: {
-    activeSection: 'colors', // Always start with 'colors' to prevent hydration mismatch
-    isEditing: false,
+/**
+ * Get initial theme mode from localStorage (client-side only)
+ * This prevents FOUC by ensuring React hydrates with the same mode as the blocking script
+ */
+function getInitialThemeMode(): ThemeMode {
+  // Only read from localStorage on the client
+  if (typeof window !== 'undefined') {
+    try {
+      const savedMode = localStorage.getItem('theme-mode');
+      if (savedMode === 'dark' || savedMode === 'light' || savedMode === 'system') {
+        return savedMode;
+      }
+    } catch (error) {
+      console.warn('Failed to read theme-mode from localStorage:', error);
+    }
+  }
+  // Default to 'light' for SSR or if localStorage is not available
+  return 'light';
+}
+
+/**
+ * Create initial state - reads theme mode from localStorage to prevent FOUC
+ * This function is called during component initialization to ensure
+ * the initial state matches the blocking script's applied mode
+ */
+function createInitialState(): ThemeEditorState {
+  const initialThemeMode = getInitialThemeMode();
+
+  return {
+    baseTheme: DEFAULT_THEME,
+    currentTheme: computeCurrentTheme(DEFAULT_THEME, initialThemeMode),
+    availableThemes: DEFAULT_THEMES,
+    themeMode: initialThemeMode,
+    history: createInitialHistoryState(DEFAULT_THEME, initialThemeMode),
+    editor: {
+      activeSection: 'colors', // Always start with 'colors' to prevent hydration mismatch
+      isEditing: false,
     hasUnsavedChanges: false
   },
   viewport: {
@@ -200,7 +228,8 @@ const initialState: ThemeEditorState = {
   },
   isLoading: false,
   error: null
-};
+  };
+}
 
 // Reducer
 function themeEditorReducer(state: ThemeEditorState, action: ThemeEditorAction): ThemeEditorState {
@@ -375,20 +404,91 @@ const ThemeEditorContext = createContext<ThemeEditorContextType | undefined>(und
 // Provider
 interface ThemeEditorProviderProps {
   children: ReactNode;
+  companyId?: string;
+  initialTheme?: any; // Theme from server-side (DB theme object)
+  isEditorMode?: boolean; // Flag to enable/disable editor-specific features
 }
 
-export function ThemeEditorProvider({ children }: ThemeEditorProviderProps) {
-  const [state, dispatch] = useReducer(themeEditorReducer, initialState);
-  
-  // Apply initial theme and mode on load
+export function ThemeEditorProvider({ children, companyId: propCompanyId, initialTheme, isEditorMode = false }: ThemeEditorProviderProps) {
+  // Initialize state with localStorage theme mode to prevent FOUC
+  const [state, dispatch] = useReducer(themeEditorReducer, undefined, createInitialState);
+
+  // Load themes from database
+  // Use prop if provided, otherwise fallback to hardcoded (TODO: Get from auth context)
+  const companyId = propCompanyId || '6733c2fd80b7b58d4c36d966';
+
+  // Always fetch from database to detect theme updates (favorite/default changes)
+  const { data: dbThemes, refetch: refetchThemes } = trpc.theme.getCompanyThemes.useQuery(
+    {
+      companyId,
+      activeOnly: false,
+    },
+    {
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
+      staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
+    }
+  );
+
+  // Load theme with priority: DB themes (isDefault/isFavorite) → Server initialTheme → Hardcoded
   useEffect(() => {
-    const initialColors = state.themeMode === 'dark' ? DEFAULT_THEME.darkColors : DEFAULT_THEME.lightColors;
-    applyModeSpecificColors(initialColors);
+    let themeToLoad: any = null;
+
+    // Priority 1 (HIGHEST): Database themes - check for isDefault or isFavorite
+    if (dbThemes && dbThemes.length > 0) {
+      // Find default theme (starred theme)
+      themeToLoad = dbThemes.find(t => t.isDefault);
+
+      // If no default, find favorite theme
+      if (!themeToLoad) {
+        themeToLoad = dbThemes.find(t => t.isFavorite);
+      }
+
+      // If no default or favorite, use the most recently updated theme
+      if (!themeToLoad) {
+        themeToLoad = dbThemes[0]; // Already sorted by updatedAt desc from backend
+      }
+    }
+    // Priority 2: Fallback to server-side initialTheme if no DB themes
+    else if (initialTheme) {
+      themeToLoad = initialTheme;
+    }
+    // Priority 3 (LOWEST): Use hardcoded default as last resort
+    else {
+      const initialColors = state.themeMode === 'dark' ? DEFAULT_THEME.darkColors : DEFAULT_THEME.lightColors;
+      applyModeSpecificColors(initialColors);
+      applyThemeMode(state.themeMode);
+      applyScrollElements(state.baseTheme.scroll);
+      applyTypographyElements(DEFAULT_TYPOGRAPHY);
+      return;
+    }
+
+    // Convert theme to ThemeData format (works for both DB themes and initialTheme)
+    const loadedTheme: ThemeData = {
+      id: themeToLoad.id,
+      name: themeToLoad.name,
+      description: themeToLoad.description || '',
+      lightColors: themeToLoad.lightModeConfig as any,
+      darkColors: themeToLoad.darkModeConfig as any,
+      typography: themeToLoad.typography as any,
+      brand: {},
+      spacing: {},
+      borders: {},
+      shadows: {},
+      scroll: {},
+      isDefault: themeToLoad.isDefault,
+      isFavorite: themeToLoad.isFavorite,
+    };
+
+    // Apply the loaded theme
+    dispatch({ type: 'SET_THEME', payload: loadedTheme });
+
+    const colors = state.themeMode === 'dark' ? loadedTheme.darkColors : loadedTheme.lightColors;
+    applyModeSpecificColors(colors);
     applyThemeMode(state.themeMode);
-    applyScrollElements(state.baseTheme.scroll);
-    // Apply default typography elements so Preview works immediately
-    applyTypographyElements(DEFAULT_TYPOGRAPHY);
-  }, []);
+    applyScrollElements(loadedTheme.scroll || {});
+    applyTypographyElements(loadedTheme.typography || DEFAULT_TYPOGRAPHY);
+  }, [dbThemes, state.themeMode]); // Removed initialTheme from deps - only load it once on mount
 
   // Hydrate persisted active section after initial render to prevent hydration mismatch
   useEffect(() => {

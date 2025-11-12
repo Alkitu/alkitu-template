@@ -254,6 +254,7 @@ export interface ThemeData {
   tags?: string[];
   isPublic: boolean;
   isFavorite: boolean;
+  isDefault?: boolean; // Whether this is the default/starred theme
 }
 
 // Helper to get current colors based on mode

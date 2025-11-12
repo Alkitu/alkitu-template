@@ -80,20 +80,28 @@ export function SaveThemeDialog({
   const handleOverwriteConfirm = async () => {
     setIsSaving(true);
     const isCurrentTheme = themeName === currentTheme.name;
-    
+
+    // Helper to check if ID is a valid MongoDB ObjectID (24 hex characters)
+    const isValidObjectId = (id: string): boolean => {
+      return /^[a-f\d]{24}$/i.test(id);
+    };
+
+    const isBuiltInTheme = !isValidObjectId(currentTheme.id);
+
     try {
       const updatedTheme: ThemeData = {
         ...currentTheme,
         name: themeName,
         description: themeDescription,
         updatedAt: new Date().toISOString(),
-        // Keep same ID if updating current theme, new ID if overwriting another
-        id: isCurrentTheme ? currentTheme.id : `theme-${Date.now()}`
+        // Keep same ID if updating current theme AND it's a DB theme (valid ObjectID)
+        // Otherwise generate new temporary ID
+        id: isCurrentTheme && !isBuiltInTheme ? currentTheme.id : `theme-${Date.now()}`
       };
 
       await onSave(updatedTheme, !isCurrentTheme);
       onOpenChange(false);
-      
+
       // Reset state
       setShowOverwriteWarning(false);
     } catch (error) {

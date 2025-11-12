@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Button } from '../../design-system/primitives/Button';
-import { Check, Heart } from 'lucide-react';
+import { Check, Heart, Star } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '../../design-system/primitives/popover';
 import { Badge } from '../../design-system/primitives/badge';
 import { ThemeData } from '../../core/types/theme.types';
@@ -18,6 +18,8 @@ interface ThemeDropdownProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   savedThemes?: ThemeData[];
+  builtInThemes?: ThemeData[];
+  onToggleFavorite?: (themeId: string) => void;
 }
 
 export function ThemeDropdown({
@@ -28,11 +30,18 @@ export function ThemeDropdown({
   onThemeSelect,
   isOpen,
   onOpenChange,
-  savedThemes = []
+  savedThemes = [],
+  builtInThemes = [],
+  onToggleFavorite
 }: ThemeDropdownProps) {
-  
-  // Filter themes based on search query
-  const filteredThemes = themes.filter(theme =>
+
+  // Filter saved themes and built-in themes separately
+  const filteredSavedThemes = savedThemes.filter(theme =>
+    theme.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    theme.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
+
+  const filteredBuiltInThemes = builtInThemes.filter(theme =>
     theme.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     theme.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
   );
@@ -71,35 +80,47 @@ export function ThemeDropdown({
         {/* Theme Stats */}
         <div className="flex items-center justify-between px-3 py-2 border-b border-border bg-muted">
           <span className="text-sm text-muted-foreground">
-            {filteredThemes.length} theme{filteredThemes.length !== 1 ? 's' : ''}
+            {filteredSavedThemes.length + filteredBuiltInThemes.length} theme{filteredSavedThemes.length + filteredBuiltInThemes.length !== 1 ? 's' : ''}
           </span>
           <div className="flex gap-2">
+            {filteredSavedThemes.length > 0 && (
+              <Badge variant="outline" className="text-xs">
+                {filteredSavedThemes.length} My Themes
+              </Badge>
+            )}
             <Badge variant="outline" className="text-xs">
-              Built-in
+              {filteredBuiltInThemes.length} Built-in
             </Badge>
           </div>
         </div>
 
-        {/* Saved Themes Section */}
-        {savedThemes.length > 0 && (
+        {/* My Themes Section */}
+        {filteredSavedThemes.length > 0 && (
           <>
             <div className="px-3 py-2 border-b border-border bg-muted">
-              <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-                <Heart className="h-4 w-4" />
-                <span>Saved Themes</span>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                  <Star className="h-4 w-4" />
+                  <span>My Themes</span>
+                </div>
+                <Badge variant="secondary" className="text-xs">
+                  {filteredSavedThemes.length}
+                </Badge>
               </div>
             </div>
-            <div className="max-h-32 overflow-y-auto border-b border-border">
-              {savedThemes.map((theme) => (
+            <div className="max-h-48 overflow-y-auto border-b border-border">
+              {filteredSavedThemes.map((theme) => (
                 <div
                   key={theme.id}
-                  className={`flex items-center gap-3 px-3 py-2 hover:bg-muted cursor-pointer ${
+                  className={`flex items-center gap-3 px-3 py-2 hover:bg-muted group ${
                     theme.id === selectedTheme.id ? 'bg-muted' : ''
                   }`}
-                  onClick={() => handleThemeSelect(theme)}
                 >
                   <ThemePreview theme={theme} size="sm" />
-                  <div className="flex-1 min-w-0">
+                  <div
+                    className="flex-1 min-w-0 cursor-pointer"
+                    onClick={() => handleThemeSelect(theme)}
+                  >
                     <div className="text-sm font-medium truncate text-foreground">{theme.name}</div>
                     {theme.description && (
                       <div className="text-xs text-muted-foreground truncate">
@@ -107,9 +128,29 @@ export function ThemeDropdown({
                       </div>
                     )}
                   </div>
-                  {theme.id === selectedTheme.id && (
-                    <Check className="h-4 w-4 text-primary" />
-                  )}
+                  <div className="flex items-center gap-1">
+                    {onToggleFavorite && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onToggleFavorite(theme.id);
+                        }}
+                        className="p-1 hover:bg-muted-foreground/10 rounded transition-colors"
+                        title={theme.isDefault ? 'Remove as default theme' : 'Set as default theme'}
+                      >
+                        <Star
+                          className={`h-4 w-4 ${
+                            theme.isDefault
+                              ? 'fill-amber-500 text-amber-500'
+                              : 'text-muted-foreground opacity-0 group-hover:opacity-100'
+                          }`}
+                        />
+                      </button>
+                    )}
+                    {theme.id === selectedTheme.id && (
+                      <Check className="h-4 w-4 text-primary" />
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -117,18 +158,26 @@ export function ThemeDropdown({
         )}
 
         {/* Built-in Themes Header */}
-        <div className="px-3 py-2 border-b border-border">
-          <span className="text-sm font-medium text-foreground">Built-in Themes</span>
+        <div className="px-3 py-2 border-b border-border bg-muted">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+              <Heart className="h-4 w-4" />
+              <span>Built-in Themes</span>
+            </div>
+            <Badge variant="secondary" className="text-xs">
+              {filteredBuiltInThemes.length}
+            </Badge>
+          </div>
         </div>
 
         {/* Themes List */}
         <div className="max-h-64 overflow-y-auto">
-          {filteredThemes.length === 0 ? (
+          {filteredBuiltInThemes.length === 0 && filteredSavedThemes.length === 0 ? (
             <div className="px-3 py-8 text-center text-sm text-muted-foreground">
               No themes found for "{searchQuery}"
             </div>
           ) : (
-            filteredThemes.map((theme) => (
+            filteredBuiltInThemes.map((theme) => (
               <div
                 key={theme.id}
                 className={`flex items-center gap-3 px-3 py-2 hover:bg-muted cursor-pointer ${

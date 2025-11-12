@@ -1,5 +1,19 @@
 'use client';
 
+/**
+ * Badge Component - Theme-Aware Implementation (PHASE 2 CONSOLIDATION)
+ *
+ * Uses comprehensive CSS variable system for dynamic theming:
+ * - Typography: --typography-emphasis-* (font-family, font-size, letter-spacing)
+ * - Border Radius: --radius-badge
+ * - Transitions: Tailwind transition-colors
+ * - Colors: Tailwind classes with CSS variables (variant-based colors)
+ *
+ * All variables automatically respond to theme changes via DynamicThemeProvider.
+ *
+ * @see docs/CSS-VARIABLES-REFERENCE.md for complete variable documentation
+ */
+
 import React from 'react';
 import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';

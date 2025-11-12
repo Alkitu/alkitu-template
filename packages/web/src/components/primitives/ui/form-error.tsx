@@ -1,14 +1,47 @@
+/**
+ * FormError Component - Theme-Aware Implementation
+ *
+ * Uses comprehensive CSS variable system for dynamic theming:
+ * - Border Radius: --radius-input (consistent with form inputs)
+ * - Spacing: --spacing-* for padding, gaps, and margins
+ * - Transitions: --transition-base for smooth changes
+ * - Colors: Tailwind classes with CSS variables (destructive color)
+ *
+ * All variables automatically respond to theme changes via DynamicThemeProvider.
+ *
+ * @see docs/CSS-VARIABLES-REFERENCE.md for complete variable documentation
+ */
+
 import { AlertTriangle } from "lucide-react";
+import React from "react";
 
 interface FormErrorProps {
   message?: string;
+  className?: string;
+  style?: React.CSSProperties;
 }
 
-export const FormError = ({ message }: FormErrorProps) => {
+export const FormError = ({ message, className, style }: FormErrorProps) => {
   if (!message) return null;
 
+  const errorStyles: React.CSSProperties = {
+    // Border radius - Use input radius for consistency with form elements
+    borderRadius: 'var(--radius-input, var(--radius, 0.375rem))',
+
+    // Spacing - Use spacing system for padding, gaps, and margins
+    padding: 'var(--spacing-sm, 0.75rem)',
+    gap: 'var(--spacing-sm, 0.5rem)',
+    marginTop: 'var(--spacing-md, 1rem)',
+
+    // Transition - Use standardized transition for smooth changes
+    transition: 'all var(--transition-base, 200ms cubic-bezier(0.4, 0, 0.2, 1))',
+  };
+
   return (
-    <div className="bg-destructive/15 p-3 rounded-md flex items-center gap-x-2 text-sm text-destructive mt-4">
+    <div
+      style={{ ...errorStyles, ...style }}
+      className={`bg-destructive/15 flex items-center text-sm text-destructive ${className || ''}`}
+    >
       <AlertTriangle size={20} />
       <span>{message}</span>
     </div>

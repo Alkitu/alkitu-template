@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useCompanyTheme } from '@/context/ThemeContext';
+import { useCompanyTheme } from '@/context/GlobalThemeProvider';
 
 // Brand Configuration Types
 export interface BrandConfig {

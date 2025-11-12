@@ -16,6 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from './dropdown-menu';
+import { ThemeToggle } from '@/components/atoms/ThemeToggle';
 
 export function LandingNavbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -89,6 +90,7 @@ export function LandingNavbar() {
             <Button asChild>
               <Link href="/auth/register">Registrarse</Link>
             </Button>
+            <ThemeToggle />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon">
@@ -163,6 +165,17 @@ export function LandingNavbar() {
                         Registrarse
                       </Link>
                     </Button>
+                  </div>
+
+                  {/* Mobile Theme Toggle */}
+                  <div className="border-t pt-4">
+                    <p className="text-sm font-medium mb-2">Tema</p>
+                    <div className="flex items-center space-x-2">
+                      <ThemeToggle />
+                      <span className="text-sm text-foreground/80">
+                        Cambiar tema
+                      </span>
+                    </div>
                   </div>
 
                   {/* Mobile Language Selector */}

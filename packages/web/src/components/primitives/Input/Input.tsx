@@ -1,14 +1,18 @@
 'use client';
 
-import * as React from 'react';
-import { cn } from '@/lib/utils';
-import type { InputProps } from './Input.types';
-
 /**
- * Input - Design System Primitive
+ * Input Component - Theme-Aware Implementation
  *
- * A themeable input component with CSS variable support.
- * Supports all standard HTML input types and attributes.
+ * Uses comprehensive CSS variable system for dynamic theming:
+ * - Typography: --typography-input-* variables
+ * - Border Radius: --radius-input
+ * - Spacing: --spacing-* variables
+ * - Transitions: --transition-base
+ * - Colors: Tailwind classes with CSS variables (--input, --ring, etc.)
+ *
+ * All variables automatically respond to theme changes via DynamicThemeProvider.
+ *
+ * @see docs/CSS-VARIABLES-REFERENCE.md for complete variable documentation
  *
  * @example
  * ```tsx
@@ -17,16 +21,40 @@ import type { InputProps } from './Input.types';
  * <Input type="password" placeholder="Password" />
  * ```
  */
+
+import * as React from 'react';
+import { cn } from '@/lib/utils';
+import type { InputProps } from './Input.types';
+
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type = 'text', ...props }, ref) => {
+  ({ className, type = 'text', style, ...props }, ref) => {
+    // Base input styles using comprehensive CSS variable system
+    const baseStyles: React.CSSProperties = {
+      // Typography - Use component-specific input typography variables
+      fontFamily: 'var(--typography-input-family, var(--font-sans))',
+      fontSize: 'var(--typography-input-size, 0.875rem)',
+      fontWeight: 'var(--typography-input-weight, 400)',
+      lineHeight: 'var(--typography-input-line-height, 1.25rem)',
+
+      // Border radius - Use component-specific input radius
+      borderRadius: 'var(--radius-input, var(--radius, 0.375rem))',
+
+      // Transitions - Use standardized transition variables
+      transition: 'all var(--transition-base, 200ms cubic-bezier(0.4, 0, 0.2, 1))',
+    };
+
     return (
       <input
         ref={ref}
         type={type}
         data-slot="input"
+        style={{
+          ...baseStyles,
+          ...style,
+        }}
         className={cn(
           // Base styles
-          'flex h-9 w-full min-w-0 rounded-md border px-3 py-1 text-base transition-[color,box-shadow] outline-none',
+          'flex h-9 w-full min-w-0 border px-3 py-1 text-base outline-none',
           // Border and background
           'border-input bg-input-background',
           // Text colors

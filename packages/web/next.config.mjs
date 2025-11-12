@@ -8,6 +8,8 @@ const nextConfig = {
     optimizeCss: false,
     workerThreads: false,
     cpus: 1,
+    // Disable parallel builds to avoid worker errors
+    webpackBuildWorker: false,
   },
   
   // HMR and development server configuration

@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useThemeEditor } from '../context/ThemeEditorContext';
 import { DEFAULT_THEMES } from '../constants/default-themes';
 import { ThemeData } from '../types/theme.types';
 import { generateColorVariants } from '../../theme-editor/editor/brand/utils';
+import { trpc } from '@/lib/trpc';
 
 /**
  * Custom hook para el Theme Selector
@@ -14,10 +15,49 @@ export function useThemeSelector() {
   const { state, setTheme } = useThemeEditor();
   const [searchQuery, setSearchQuery] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [savedThemes] = useState<ThemeData[]>([]); // Future: load from localStorage/API
+
+  // Load themes from database
+  const companyId = '6733c2fd80b7b58d4c36d966'; // TODO: Get from auth context
+  const { data: dbThemes, refetch: refetchThemes } = trpc.theme.getCompanyThemes.useQuery({
+    companyId,
+    activeOnly: false,
+  });
+
+  // Toggle favorite mutation
+  const toggleFavoriteMutation = trpc.theme.setDefaultTheme.useMutation({
+    onSuccess: () => {
+      refetchThemes();
+    },
+  });
 
   // Usar currentTheme del context directamente (sin duplicar estado local)
   const currentTheme = state.currentTheme;
+
+  // Convert DB themes to ThemeData format and combine with built-in themes
+  const savedThemes = useMemo(() => {
+    if (!dbThemes) return [];
+
+    return dbThemes.map(theme => ({
+      id: theme.id,
+      name: theme.name,
+      description: theme.description || '',
+      lightColors: theme.lightModeConfig as any,
+      darkColors: theme.darkModeConfig as any,
+      typography: theme.typography as any,
+      brand: {},
+      spacing: {},
+      borders: {},
+      shadows: {},
+      scroll: {},
+      isDefault: theme.isDefault,
+      isFavorite: theme.isFavorite,
+    })) as ThemeData[];
+  }, [dbThemes]);
+
+  // Combine saved themes with built-in themes (saved themes first)
+  const allThemes = useMemo(() => {
+    return [...savedThemes, ...DEFAULT_THEMES];
+  }, [savedThemes]);
 
   // Theme navigation handlers
   const handleThemeSelect = (theme: ThemeData) => {
@@ -80,23 +120,31 @@ export function useThemeSelector() {
   };
 
   const handlePreviousTheme = () => {
-    const currentIndex = DEFAULT_THEMES.findIndex(t => t.id === currentTheme.id);
-    const previousIndex = currentIndex <= 0 ? DEFAULT_THEMES.length - 1 : currentIndex - 1;
-    const previousTheme = DEFAULT_THEMES[previousIndex];
+    const currentIndex = allThemes.findIndex(t => t.id === currentTheme.id);
+    const previousIndex = currentIndex <= 0 ? allThemes.length - 1 : currentIndex - 1;
+    const previousTheme = allThemes[previousIndex];
     handleThemeSelect(previousTheme);
   };
 
   const handleNextTheme = () => {
-    const currentIndex = DEFAULT_THEMES.findIndex(t => t.id === currentTheme.id);
-    const nextIndex = currentIndex >= DEFAULT_THEMES.length - 1 ? 0 : currentIndex + 1;
-    const nextTheme = DEFAULT_THEMES[nextIndex];
+    const currentIndex = allThemes.findIndex(t => t.id === currentTheme.id);
+    const nextIndex = currentIndex >= allThemes.length - 1 ? 0 : currentIndex + 1;
+    const nextTheme = allThemes[nextIndex];
     handleThemeSelect(nextTheme);
   };
 
   const handleRandomTheme = () => {
-    const randomIndex = Math.floor(Math.random() * DEFAULT_THEMES.length);
-    const randomTheme = DEFAULT_THEMES[randomIndex];
+    const randomIndex = Math.floor(Math.random() * allThemes.length);
+    const randomTheme = allThemes[randomIndex];
     handleThemeSelect(randomTheme);
+  };
+
+  const handleToggleFavorite = (themeId: string) => {
+    toggleFavoriteMutation.mutate({
+      themeId,
+      companyId,
+      userId: 'current-user-id', // TODO: Get from auth context
+    });
   };
 
   return {
@@ -105,18 +153,21 @@ export function useThemeSelector() {
     searchQuery,
     isDropdownOpen,
     savedThemes,
-    
+
     // Setters
     setSearchQuery,
     setIsDropdownOpen,
-    
+
     // Handlers
     handleThemeSelect,
     handlePreviousTheme,
     handleNextTheme,
     handleRandomTheme,
-    
+    handleToggleFavorite,
+
     // Data
-    themes: DEFAULT_THEMES
+    themes: allThemes,
+    builtInThemes: DEFAULT_THEMES,
+    isLoadingThemes: !dbThemes,
   };
 }

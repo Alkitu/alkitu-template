@@ -1,5 +1,5 @@
 import React from 'react';
-import { useCompanyTheme } from '@/context/ThemeContext';
+import { useCompanyTheme } from '@/context/GlobalThemeProvider';
 
 interface ThemeErrorBoundaryProps {
   children: React.ReactNode;
@@ -10,7 +10,7 @@ export const ThemeErrorBoundary: React.FC<ThemeErrorBoundaryProps> = ({
   children,
   fallback,
 }) => {
-  const { error, loading } = useCompanyTheme();
+  const { error, isLoading: loading } = useCompanyTheme();
 
   if (loading) {
     return (

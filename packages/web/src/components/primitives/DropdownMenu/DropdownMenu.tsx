@@ -1,5 +1,21 @@
 'use client';
 
+/**
+ * DropdownMenu Components - Theme-Aware Implementation
+ *
+ * Uses comprehensive CSS variable system for dynamic theming:
+ * - Border Radius: --radius-dropdown
+ * - Shadows: --shadow-dropdown
+ * - Z-Index: --z-dropdown
+ * - Spacing: --spacing-* for padding
+ * - Transitions: Tailwind animations
+ * - Colors: Tailwind classes with CSS variables (popover, accent colors)
+ *
+ * All variables automatically respond to theme changes via DynamicThemeProvider.
+ *
+ * @see docs/CSS-VARIABLES-REFERENCE.md for complete variable documentation
+ */
+
 import * as React from 'react';
 import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu';
 import { CheckIcon, ChevronRightIcon, CircleIcon } from 'lucide-react';
@@ -77,18 +93,33 @@ DropdownMenuTrigger.displayName = 'DropdownMenuTrigger';
 export const DropdownMenuContent = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Content>,
   DropdownMenuContentProps
->(({ className, sideOffset = 4, ...props }, ref) => {
+>(({ className, sideOffset = 4, style, ...props }, ref) => {
+  const contentStyles: React.CSSProperties = {
+    // Border radius - Use dropdown-specific radius
+    borderRadius: 'var(--radius-dropdown, var(--radius, 0.375rem))',
+
+    // Shadow - Use dropdown shadow for elevation
+    boxShadow: 'var(--shadow-dropdown, var(--shadow-lg))',
+
+    // Z-index - Use dropdown z-index
+    zIndex: 'var(--z-dropdown, 1000)',
+
+    // Spacing - Use spacing system for padding
+    padding: 'var(--spacing-xs, 0.25rem)',
+  };
+
   return (
     <DropdownMenuPrimitive.Portal>
       <DropdownMenuPrimitive.Content
         ref={ref}
         data-slot="dropdown-menu-content"
         sideOffset={sideOffset}
+        style={{ ...contentStyles, ...style }}
         className={cn(
           'bg-popover text-popover-foreground',
-          'z-50 min-w-[8rem] origin-(--radix-dropdown-menu-content-transform-origin)',
+          'min-w-[8rem] origin-(--radix-dropdown-menu-content-transform-origin)',
           'max-h-(--radix-dropdown-menu-content-available-height)',
-          'overflow-x-hidden overflow-y-auto rounded-md border p-1 shadow-md',
+          'overflow-x-hidden overflow-y-auto border',
           'data-[state=open]:animate-in data-[state=closed]:animate-out',
           'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
           'data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95',

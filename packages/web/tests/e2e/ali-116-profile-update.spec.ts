@@ -84,8 +84,9 @@ test.describe('ALI-116: Profile Update for CLIENT Role', () => {
       .fill(clientUser.password);
     await page.getByRole('button', { name: /iniciar sesión/i }).click();
 
-    // Wait for login to complete
-    await page.waitForTimeout(2000);
+    // Wait for redirect to dashboard (confirms successful login)
+    await page.waitForURL(/admin\/dashboard/, { timeout: 10000 });
+    await page.waitForLoadState('networkidle');
   });
 
   test('1. CLIENT: Should see profile page with full form', async ({
@@ -245,7 +246,9 @@ test.describe('ALI-116: Profile Update for EMPLOYEE Role', () => {
       .fill(employeeUser.password);
     await page.getByRole('button', { name: /iniciar sesión/i }).click();
 
-    await page.waitForTimeout(2000);
+    // Wait for redirect to dashboard (confirms successful login)
+    await page.waitForURL(/admin\/dashboard/, { timeout: 10000 });
+    await page.waitForLoadState('networkidle');
   });
 
   test('1. EMPLOYEE: Should see simplified profile form', async ({ page }) => {
@@ -317,7 +320,9 @@ test.describe('ALI-116: Profile Update for ADMIN Role', () => {
       .fill(adminUser.password);
     await page.getByRole('button', { name: /iniciar sesión/i }).click();
 
-    await page.waitForTimeout(2000);
+    // Wait for redirect to dashboard (confirms successful login)
+    await page.waitForURL(/admin\/dashboard/, { timeout: 10000 });
+    await page.waitForLoadState('networkidle');
   });
 
   test('1. ADMIN: Should see simplified profile form', async ({ page }) => {
@@ -375,7 +380,9 @@ test.describe('ALI-116: Security Tests', () => {
       .fill(clientUser.password);
     await page.getByRole('button', { name: /iniciar sesión/i }).click();
 
-    await page.waitForTimeout(2000);
+    // Wait for redirect to dashboard (confirms successful login)
+    await page.waitForURL(/admin\/dashboard/, { timeout: 10000 });
+    await page.waitForLoadState('networkidle');
   });
 
   test('1. Should show note about email being unchangeable', async ({

@@ -20,7 +20,7 @@
         { "key": "Access-Control-Allow-Credentials", "value": "true" },
         {
           "key": "Access-Control-Allow-Origin",
-          "value": "https://www.insidehair.es, https://insidehair.es, http://www.insidehair.es, http://insidehair.es, insiders.vercel.app, https://insiders.vercel.app, http://insiders.vercel.app, https://www.insiders.vercel.app, http://www.insiders.vercel.app, https://insiders.vercel.app, http://insiders.vercel.app, https://www.insiders.vercel.app, http://www.insiders.vercel.app"
+          "value": "https://www.alkitu.es, https://alkitu.es, http://www.alkitu.es, http://alkitu.es, alkitu.vercel.app, https://alkitu.vercel.app, http://alkitu.vercel.app, https://www.alkitu.vercel.app, http://www.alkitu.vercel.app, https://alkitu.vercel.app, http://alkitu.vercel.app, https://www.alkitu.vercel.app, http://www.alkitu.vercel.app"
         },
         {
           "key": "Access-Control-Allow-Methods",

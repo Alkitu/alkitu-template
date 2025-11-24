@@ -76,6 +76,26 @@ export const OnboardingSchema = z.object({
   contactPerson: ContactPersonSchema.optional(),
 });
 
+/**
+ * Update profile schema (ALI-116)
+ * User self-service profile update (more restrictive than UpdateUserSchema)
+ * Does NOT allow: email, password, role, status, profileComplete
+ */
+export const UpdateProfileSchema = z.object({
+  firstname: z
+    .string()
+    .min(2, 'First name must be at least 2 characters')
+    .optional(),
+  lastname: z
+    .string()
+    .min(2, 'Last name must be at least 2 characters')
+    .optional(),
+  phone: z.string().optional(),
+  company: z.string().optional(),
+  address: z.string().optional(), // Only for CLIENT role (validated in backend)
+  contactPerson: ContactPersonSchema.optional(), // Only for CLIENT role (validated in backend)
+});
+
 export const LoginSchema = z.object({
   email: z.string().email("Invalid email format"),
   password: z.string().min(1, "Password is required"),
@@ -124,6 +144,7 @@ export const UsersFilterSchema = z.object({
 export type CreateUserInput = z.infer<typeof CreateUserSchema>;
 export type RegisterInput = z.infer<typeof RegisterSchema>;
 export type UpdateUserInput = z.infer<typeof UpdateUserSchema>;
+export type UpdateProfileInput = z.infer<typeof UpdateProfileSchema>;
 export type OnboardingInput = z.infer<typeof OnboardingSchema>;
 export type LoginInput = z.infer<typeof LoginSchema>;
 export type ForgotPasswordInput = z.infer<typeof ForgotPasswordSchema>;

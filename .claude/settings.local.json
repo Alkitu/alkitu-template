@@ -43,7 +43,8 @@
       "Bash(cd /Users/luiseurdanetamartucci/Desktop/Proyectos en GitHub/Alkitu/alkitu-template/packages/api && npm test:*)",
       "Bash(cd:*)",
       "Bash(npm test:*)",
-      "Bash(cd /Users/luiseurdanetamartucci/Desktop/Proyectos en GitHub/Alkitu/alkitu-template/packages/api && find:*)"
+      "Bash(cd /Users/luiseurdanetamartucci/Desktop/Proyectos en GitHub/Alkitu/alkitu-template/packages/api && find:*)",
+      "Bash(sed:*)"
     ],
     "deny": [],
     "ask": []

@@ -19,8 +19,8 @@ export default async function RootLayout({ children, params }: LayoutProps) {
   const { lang } = await params;
   const locale = (lang === 'en' ? 'en' : 'es') as 'en' | 'es';
   const translations = locale === 'en' ? enTranslations : esTranslations;
-  console.log('layout.tsx - Server Side Locale:', locale);
-  console.log('layout.tsx - Server Side Translations:', translations);
+  // console.log('layout.tsx - Server Side Locale:', locale);
+  // console.log('layout.tsx - Server Side Translations:', translations);
 
   // TODO: Get companyId from session/auth context when available
   // For testing, use a valid 24-character MongoDB ObjectID format
@@ -33,7 +33,7 @@ export default async function RootLayout({ children, params }: LayoutProps) {
   try {
     defaultTheme = await getDefaultTheme(companyId);
     themeCSS = generateInlineThemeCSS(defaultTheme);
-    console.log('layout.tsx - Server Side Theme:', defaultTheme?.name || 'No theme loaded');
+    // console.log('layout.tsx - Server Side Theme:', defaultTheme?.name || 'No theme loaded');
   } catch (error) {
     console.error('layout.tsx - Failed to load theme server-side:', error);
     // Fallback: App will load theme client-side via ThemeEditorContext

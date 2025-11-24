@@ -80,9 +80,17 @@ export const LoginFormOrganism = React.forwardRef<
       // Remove insecure localStorage usage
       localStorage.removeItem('user');
 
+      // ALI-115: Pass user data to redirect hook for profileComplete check
+      const userData = data.user
+        ? {
+            profileComplete: data.user.profileComplete ?? true,
+            role: data.user.role,
+          }
+        : undefined;
+
       // Add a small delay to ensure cookies are set before redirect
       setTimeout(() => {
-        redirectAfterLogin();
+        redirectAfterLogin(userData);
       }, 100);
     } catch (err: any) {
       setError(err.message || t('auth.login.error'));

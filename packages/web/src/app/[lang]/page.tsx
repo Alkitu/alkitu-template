@@ -19,11 +19,11 @@ export default function Home() {
     },
     features: [
       {
-        icon: 'check-circle',
+        icon: 'checkCircle',
         text: t('homepage.hero.quickInstall'),
       },
       {
-        icon: 'check-circle',
+        icon: 'checkCircle',
         text: t('homepage.hero.freeUpdates'),
       },
     ],

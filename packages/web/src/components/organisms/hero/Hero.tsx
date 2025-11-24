@@ -141,7 +141,7 @@ export const Hero = React.forwardRef<HTMLElement, HeroProps>(
                   {features.map((feature, index) => (
                     <div key={index} className="flex items-center gap-2">
                       <Icon
-                        name={feature.icon || 'check-circle'}
+                        name={feature.icon || 'checkCircle'}
                         size="sm"
                         className="text-green-500"
                       />

@@ -7,8 +7,8 @@ import { Icon, Spinner } from '..';
 import type { ButtonProps, ButtonIconPosition } from './Button.types';
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  (
-    {
+  (props, ref) => {
+    const {
       variant = 'primary',
       size = 'md',
       disabled = false,
@@ -22,10 +22,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       themeOverride,
       useSystemColors = true,
       asChild = false,
-      ...props
-    },
-    ref,
-  ) => {
+      ...restProps
+    } = props;
     // Theme integration (if needed in future)
     // const themeVars = useThemeVariables();
 
@@ -123,7 +121,19 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       }
     };
 
+    // Disable asChild when button has decorations (icon/loading)
+    // or when children contains multiple React elements
+    // because Slot expects exactly one child element
+    const hasMultipleChildren = React.Children.count(children) > 1;
+    const shouldUseSlot = asChild && !icon && !loading && !hasMultipleChildren;
+    const Comp = shouldUseSlot ? Slot : 'button';
+
     const renderContent = () => {
+      // If using asChild with valid single child, return as-is
+      if (shouldUseSlot) {
+        return children;
+      }
+
       if (loading) {
         return (
           <>
@@ -154,8 +164,6 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       return children;
     };
 
-    const Comp = asChild ? Slot : 'button';
-
     return (
       <Comp
         ref={ref}
@@ -164,7 +172,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         onClick={handleClick}
         style={inlineStyles}
         data-testid="button"
-        {...props}
+        {...restProps}
       >
         {renderContent()}
       </Comp>

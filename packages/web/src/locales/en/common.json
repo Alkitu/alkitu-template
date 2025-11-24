@@ -233,6 +233,24 @@
       "newPassword": "New Password",
       "newVerification": "New Verification",
       "verifyRequest": "Verify Request"
+    },
+    "onboarding": {
+      "title": "Complete your profile",
+      "subtitle": "Help us get to know you better to personalize your experience",
+      "phone": "Phone (optional)",
+      "company": "Company (optional)",
+      "address": "Address (optional)",
+      "addContactPerson": "Add contact person",
+      "contactPersonInfo": "Contact information",
+      "contactName": "Name",
+      "contactLastname": "Last name",
+      "contactPhone": "Phone",
+      "contactEmail": "Email",
+      "skipButton": "Complete later",
+      "submitButton": "Complete profile",
+      "contactPersonRequired": "Please complete all contact person fields",
+      "success": "Profile completed successfully!",
+      "error": "Error completing profile"
     }
   },
   "dashboard": {

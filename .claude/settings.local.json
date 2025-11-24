@@ -34,7 +34,16 @@
       "Bash(del \"C:\\Users\\LEUM_\\Desktop\\Alkitu, Agencia de Marketing DIgital\\Luis Urdaneta\\alkitu-template\\packages\\web\\src\\hooks\\useDynamicTheme.ts\")",
       "Bash(del \"C:\\Users\\LEUM_\\Desktop\\Alkitu, Agencia de Marketing DIgital\\Luis Urdaneta\\alkitu-template\\packages\\web\\src\\hooks\\useThemeVariables.ts\")",
       "Bash(del \"C:\\Users\\LEUM_\\Desktop\\Alkitu, Agencia de Marketing DIgital\\Luis Urdaneta\\alkitu-template\\packages\\web\\src\\examples\\ThemeShowcase.tsx\")",
-      "Bash(del \"C:\\Users\\LEUM_\\Desktop\\Alkitu, Agencia de Marketing DIgital\\Luis Urdaneta\\alkitu-template\\packages\\web\\src\\scripts\\validate-theme-system.tsx\")"
+      "Bash(del \"C:\\Users\\LEUM_\\Desktop\\Alkitu, Agencia de Marketing DIgital\\Luis Urdaneta\\alkitu-template\\packages\\web\\src\\scripts\\validate-theme-system.tsx\")",
+      "mcp__atlassian__getAccessibleAtlassianResources",
+      "mcp__atlassian__atlassianUserInfo",
+      "mcp__atlassian__getJiraIssue",
+      "mcp__atlassian__searchJiraIssuesUsingJql",
+      "Bash(mkdir:*)",
+      "Bash(cd /Users/luiseurdanetamartucci/Desktop/Proyectos en GitHub/Alkitu/alkitu-template/packages/api && npm test:*)",
+      "Bash(cd:*)",
+      "Bash(npm test:*)",
+      "Bash(cd /Users/luiseurdanetamartucci/Desktop/Proyectos en GitHub/Alkitu/alkitu-template/packages/api && find:*)"
     ],
     "deny": [],
     "ask": []

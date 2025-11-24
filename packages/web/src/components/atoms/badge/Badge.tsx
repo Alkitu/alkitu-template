@@ -88,8 +88,8 @@ const badgeVariants = cva(
  * ```
  */
 export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
-  (
-    {
+  (props, ref) => {
+    const {
       variant = 'default',
       size = 'md',
       icon,
@@ -103,10 +103,8 @@ export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
       'aria-label': ariaLabel,
       'aria-describedby': ariaDescribedby,
       role = 'status',
-      ...props
-    },
-    ref,
-  ) => {
+      ...restProps
+    } = props;
     // asChild cannot be used with icon or removable as Slot requires single child
     const Comp = asChild && !icon && !removable ? Slot : 'span';
 
@@ -158,7 +156,7 @@ export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
           data-slot="badge"
           data-use-system-colors={useSystemColors}
           {...accessibilityProps}
-          {...props}
+          {...restProps}
         >
           {children}
         </Comp>
@@ -174,7 +172,7 @@ export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
         data-slot="badge"
         data-use-system-colors={useSystemColors}
         {...accessibilityProps}
-        {...props}
+        {...restProps}
       >
         {/* Left icon */}
         {icon && (
@@ -182,14 +180,16 @@ export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
             className="flex-shrink-0 flex items-center justify-center"
             aria-hidden="true"
           >
-            {React.cloneElement(icon as React.ReactElement, {
-              className: cn(
-                'w-full h-full',
-                size === 'sm' && 'size-2.5',
-                size === 'md' && 'size-3',
-                size === 'lg' && 'size-3.5',
-              ),
-            })}
+            {React.isValidElement(icon)
+              ? React.cloneElement(icon as React.ReactElement<any>, {
+                  className: cn(
+                    'w-full h-full',
+                    size === 'sm' && 'size-2.5',
+                    size === 'md' && 'size-3',
+                    size === 'lg' && 'size-3.5',
+                  ),
+                })
+              : icon}
           </span>
         )}
 

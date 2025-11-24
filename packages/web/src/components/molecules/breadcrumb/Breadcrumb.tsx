@@ -126,7 +126,8 @@ BreadcrumbItem.displayName = 'BreadcrumbItem';
 export const BreadcrumbLink = React.forwardRef<
   HTMLAnchorElement,
   BreadcrumbLinkProps
->(({ asChild, className, ...props }, ref) => {
+>((props, ref) => {
+  const { asChild, className, ...restProps } = props;
   const Comp = asChild ? Slot : 'a';
 
   return (
@@ -134,7 +135,7 @@ export const BreadcrumbLink = React.forwardRef<
       ref={ref}
       data-slot="breadcrumb-link"
       className={cn('hover:text-foreground transition-colors', className)}
-      {...props}
+      {...restProps}
     />
   );
 });

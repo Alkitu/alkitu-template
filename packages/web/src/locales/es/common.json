@@ -233,6 +233,24 @@
       "newPassword": "Nueva Contraseña",
       "newVerification": "Nueva Verificación",
       "verifyRequest": "Solicitud de Verificación"
+    },
+    "onboarding": {
+      "title": "Completa tu perfil",
+      "subtitle": "Ayúdanos a conocerte mejor para personalizar tu experiencia",
+      "phone": "Teléfono (opcional)",
+      "company": "Empresa (opcional)",
+      "address": "Dirección (opcional)",
+      "addContactPerson": "Agregar persona de contacto",
+      "contactPersonInfo": "Información de contacto",
+      "contactName": "Nombre",
+      "contactLastname": "Apellido",
+      "contactPhone": "Teléfono",
+      "contactEmail": "Email",
+      "skipButton": "Completar después",
+      "submitButton": "Completar perfil",
+      "contactPersonRequired": "Por favor complete todos los campos de la persona de contacto",
+      "success": "¡Perfil completado exitosamente!",
+      "error": "Error al completar perfil"
     }
   },
   "admin": {

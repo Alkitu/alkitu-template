@@ -17,10 +17,21 @@
  */
 
 import React from 'react';
+import { Slot } from '@radix-ui/react-slot';
 import type { ButtonProps } from './Button.types';
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className = '', variant = 'default', size = 'default', loading = false, icon, style, ...props }, ref) => {
+  (props, ref) => {
+    const { 
+      className = '', 
+      variant = 'default', 
+      size = 'default', 
+      loading = false, 
+      icon, 
+      style,
+      asChild = false,
+      ...restProps 
+    } = props;
 
     // Base button styles using comprehensive CSS variable system
     const baseStyles: React.CSSProperties = {
@@ -108,24 +119,70 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       const accessibilityProps: Record<string, any> = {
         'data-focus-visible': true,
         'aria-busy': loading ? 'true' : undefined,
-        'aria-disabled': (props.disabled || loading) ? 'true' : undefined,
+        'aria-disabled': (restProps.disabled || loading) ? 'true' : undefined,
       };
 
       // Add aria-label for icon-only buttons
-      if (variant === 'icon' && !props.children && !props['aria-label']) {
+      if (variant === 'icon' && !restProps.children && !restProps['aria-label']) {
         accessibilityProps['aria-label'] = 'Button';
       }
 
       // Add aria-live for loading state changes
-      if (loading && !props['aria-live']) {
+      if (loading && !restProps['aria-live']) {
         accessibilityProps['aria-live'] = 'polite';
       }
 
       return accessibilityProps;
     };
 
+    // Disable asChild when button has decorations (icon/loading)
+    // because Slot expects exactly one child element
+    const hasMultipleChildren = React.Children.count(restProps.children) > 1;
+    const shouldUseSlot = asChild && !icon && !loading && !hasMultipleChildren;
+    const Comp = shouldUseSlot ? Slot : 'button';
+
+    // When using asChild with valid single child, render with minimal decoration
+    if (shouldUseSlot) {
+      return (
+        <Comp
+          ref={ref}
+          className={`${getVariantClasses()} ${className} border`}
+          style={{
+            ...baseStyles,
+            ...style,
+            outline: '2px solid transparent',
+            outlineOffset: '2px',
+            '--focus-ring-color': 'var(--ring, var(--primary))',
+            boxShadow: loading ? 'none' : 'var(--shadow-button, var(--shadow-sm))',
+          } as React.CSSProperties}
+          onFocus={(e: any) => {
+            e.currentTarget.style.outline = '2px solid var(--focus-ring-color)';
+            e.currentTarget.style.outlineOffset = '2px';
+            if (restProps.onFocus) restProps.onFocus(e);
+          }}
+          onBlur={(e: any) => {
+            e.currentTarget.style.outline = '2px solid transparent';
+            if (restProps.onBlur) restProps.onBlur(e);
+          }}
+          onKeyDown={(e: any) => {
+            if ((e.key === 'Enter' || e.key === ' ') && !restProps.disabled && !loading) {
+              e.preventDefault();
+              if (restProps.onClick) {
+                restProps.onClick(e as any);
+              }
+            }
+            if (restProps.onKeyDown) restProps.onKeyDown(e);
+          }}
+          {...getAccessibilityProps()}
+          {...restProps}
+        >
+          {restProps.children}
+        </Comp>
+      );
+    }
+
     return (
-      <button
+      <Comp
         ref={ref}
         className={`${getVariantClasses()} ${className} border`}
         style={{
@@ -136,34 +193,34 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           '--focus-ring-color': 'var(--ring, var(--primary))',
           boxShadow: loading ? 'none' : 'var(--shadow-button, var(--shadow-sm))',
         } as React.CSSProperties}
-        onFocus={(e) => {
+        onFocus={(e: any) => {
           e.currentTarget.style.outline = '2px solid var(--focus-ring-color)';
           e.currentTarget.style.outlineOffset = '2px';
-          if (props.onFocus) props.onFocus(e);
+          if (restProps.onFocus) restProps.onFocus(e);
         }}
-        onBlur={(e) => {
+        onBlur={(e: any) => {
           e.currentTarget.style.outline = '2px solid transparent';
-          if (props.onBlur) props.onBlur(e);
+          if (restProps.onBlur) restProps.onBlur(e);
         }}
-        onKeyDown={(e) => {
-          if ((e.key === 'Enter' || e.key === ' ') && !props.disabled && !loading) {
+        onKeyDown={(e: any) => {
+          if ((e.key === 'Enter' || e.key === ' ') && !restProps.disabled && !loading) {
             e.preventDefault();
-            if (props.onClick) {
-              props.onClick(e as any);
+            if (restProps.onClick) {
+              restProps.onClick(e as any);
             }
           }
-          if (props.onKeyDown) props.onKeyDown(e);
+          if (restProps.onKeyDown) restProps.onKeyDown(e);
         }}
-        disabled={props.disabled || loading}
+        disabled={restProps.disabled || loading}
         {...getAccessibilityProps()}
-        {...props}
+        {...restProps}
       >
         {loading && (
           <svg
             className="animate-spin -ml-1 mr-2 h-4 w-4"
             fill="none"
             viewBox="0 0 24 24"
-            style={{ marginRight: props.children ? '8px' : '0' }}
+            style={{ marginRight: restProps.children ? '8px' : '0' }}
           >
             <circle
               className="opacity-25"
@@ -181,12 +238,12 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           </svg>
         )}
         {icon && !loading && (
-          <span style={{ marginRight: props.children ? '8px' : '0' }}>
+          <span style={{ marginRight: restProps.children ? '8px' : '0' }}>
             {icon}
           </span>
         )}
-        {props.children}
-      </button>
+        {restProps.children}
+      </Comp>
     );
   }
 );

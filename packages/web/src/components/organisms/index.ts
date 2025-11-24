@@ -38,6 +38,13 @@ export type {
   NewVerificationFormOrganismProps
 } from './auth';
 
+export { OnboardingFormOrganism } from './onboarding';
+export type {
+  OnboardingFormOrganismProps,
+  OnboardingFormData,
+  ContactPersonData,
+} from './onboarding';
+
 export { UnauthorizedOrganism } from './unauthorized';
 export type { UnauthorizedOrganismProps } from './unauthorized';
 

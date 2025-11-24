@@ -20,6 +20,7 @@ export * from './select';
 export * from './textarea';
 export * from './tooltip';
 export * from './custom-icon';
+export * from './password-strength-indicator';
 // export * from './labels';
 // export * from './radios';
 // export * from './switches';

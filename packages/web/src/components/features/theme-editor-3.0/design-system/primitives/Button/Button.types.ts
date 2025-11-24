@@ -36,4 +36,10 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
    * Accessibility live region
    */
   'aria-live'?: 'off' | 'polite' | 'assertive';
+
+  /**
+   * Render as child element (Radix UI pattern)
+   * @default false
+   */
+  asChild?: boolean;
 }

@@ -127,7 +127,7 @@ export const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
                 {features.map((feature, index) => (
                   <div key={index} className="flex items-center gap-2">
                     <Icon
-                      name="check-circle"
+                      name="checkCircle"
                       size="sm"
                       className="text-green-500 flex-shrink-0"
                     />

@@ -38,10 +38,10 @@ export function TranslationsProvider({
   const [locale, setLocaleState] = useState<Locale>(initialLocale);
   const [isLoading, setIsLoading] = useState(false);
 
-  console.log('TranslationContext.tsx - Initial Locale:', initialLocale);
-  console.log('TranslationContext.tsx - Initial Translations:', initialTranslations);
-  console.log('TranslationContext.tsx - Current Locale State:', locale);
-  console.log('TranslationContext.tsx - Current Translations State:', translations);
+  // console.log('TranslationContext.tsx - Initial Locale:', initialLocale);
+  // console.log('TranslationContext.tsx - Initial Translations:', initialTranslations);
+  // console.log('TranslationContext.tsx - Current Locale State:', locale);
+  // console.log('TranslationContext.tsx - Current Translations State:', translations);
 
   const setLocale = useCallback(
     async (newLocale: Locale) => {

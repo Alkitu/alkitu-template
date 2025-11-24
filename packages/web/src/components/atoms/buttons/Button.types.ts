@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import type { IconProps } from '../icons/Icon';
+import type { IconProps } from '../icons/Icon.types';
 
 export type ButtonVariant =
   | 'primary'

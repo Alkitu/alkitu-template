@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/primitives/ui/button';
 import { Input } from '@/components/primitives/Input';
 import { Label } from '@/components/primitives/ui/label';
@@ -9,18 +9,20 @@ import { Checkbox } from '@/components/primitives/ui/checkbox';
 import { useTranslations } from '@/context/TranslationsContext';
 import { FormError } from '@/components/primitives/ui/form-error';
 import { FormSuccess } from '@/components/primitives/ui/form-success';
-import { trpc } from '@/lib/trpc';
+import { PasswordStrengthIndicator } from '@/components/atoms/password-strength-indicator';
 import { getCurrentLocalizedRoute } from '@/lib/locale';
 import type { RegisterFormOrganismProps } from './RegisterFormOrganism.types';
 
 /**
- * RegisterFormOrganism - Organism Component
+ * RegisterFormOrganism - Organism Component (ALI-115)
  *
  * A complete registration form organism that handles the entire user registration flow.
  * Follows Atomic Design principles as a self-contained feature component.
  *
  * Features:
- * - Multi-field form (name, lastName, email, phone, password, confirmPassword)
+ * - Minimal registration fields (firstname, lastname, email, password, terms)
+ * - Password complexity validation (8+ chars, uppercase, lowercase, number)
+ * - Real-time password strength indicator
  * - Password confirmation validation
  * - Terms and conditions checkbox
  * - tRPC API integration
@@ -28,6 +30,13 @@ import type { RegisterFormOrganismProps } from './RegisterFormOrganism.types';
  * - Error and success messages
  * - Automatic redirect to login after successful registration
  * - Locale-aware navigation
+ * - Additional fields (phone, company, address) collected in onboarding
+ *
+ * Changes in ALI-115:
+ * - Renamed: name → firstname, lastName → lastname
+ * - Removed: contactNumber/phone (now in onboarding)
+ * - Added: Password strength indicator
+ * - Added: Password complexity requirements
  *
  * @example
  * ```tsx
@@ -46,40 +55,18 @@ export const RegisterFormOrganism = React.forwardRef<
 >(({ className }, ref) => {
   const t = useTranslations();
   const pathname = usePathname();
+  const router = useRouter();
   const [formData, setFormData] = useState({
-    name: '',
-    lastName: '',
+    firstname: '',
+    lastname: '',
     email: '',
     password: '',
     confirmPassword: '',
-    contactNumber: '',
     terms: false,
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-
-  // Use tRPC mutation for registration
-  const registerMutation = trpc.user.register.useMutation({
-    onSuccess: (data: any) => {
-      setSuccess(t('auth.register.success'));
-
-      // Redirect to login with proper locale
-      setTimeout(() => {
-        const localizedLoginRoute = getCurrentLocalizedRoute(
-          '/auth/login',
-          pathname,
-        );
-        window.location.href = localizedLoginRoute;
-      }, 2000);
-    },
-    onError: (error: any) => {
-      setError(
-        error.message ||
-          t('auth.register.error', {}, 'auth') ||
-          'Registration failed',
-      );
-    },
-  });
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (field: string, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -101,18 +88,43 @@ export const RegisterFormOrganism = React.forwardRef<
       return;
     }
 
+    setIsLoading(true);
+
     try {
       const { confirmPassword, ...submitData } = formData;
 
-      // Use tRPC mutation
-      await registerMutation.mutateAsync(submitData);
+      // Use fetch to call Next.js API route
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(submitData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Registration failed');
+      }
+
+      setSuccess(t('auth.register.success'));
+
+      // Redirect to login with proper locale
+      setTimeout(() => {
+        const localizedLoginRoute = getCurrentLocalizedRoute(
+          '/auth/login',
+          pathname,
+        );
+        router.push(localizedLoginRoute);
+      }, 1500);
     } catch (err: any) {
-      // Error handling is done in the mutation's onError callback
+      setError(err.message || t('auth.register.error', {}, 'auth') || 'Registration failed');
       console.error('Registration error:', err);
+    } finally {
+      setIsLoading(false);
     }
   };
-
-  const isLoading = registerMutation.isPending;
 
   return (
     <form
@@ -122,12 +134,12 @@ export const RegisterFormOrganism = React.forwardRef<
     >
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="name">{t('auth.register.name')}</Label>
+          <Label htmlFor="firstname">{t('auth.register.name')}</Label>
           <Input
-            id="name"
+            id="firstname"
             type="text"
-            value={formData.name}
-            onChange={(e) => handleChange('name', e.target.value)}
+            value={formData.firstname}
+            onChange={(e) => handleChange('firstname', e.target.value)}
             placeholder={t('auth.register.name')}
             required
             disabled={isLoading}
@@ -135,12 +147,12 @@ export const RegisterFormOrganism = React.forwardRef<
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="lastName">{t('auth.register.lastName')}</Label>
+          <Label htmlFor="lastname">{t('auth.register.lastName')}</Label>
           <Input
-            id="lastName"
+            id="lastname"
             type="text"
-            value={formData.lastName}
-            onChange={(e) => handleChange('lastName', e.target.value)}
+            value={formData.lastname}
+            onChange={(e) => handleChange('lastname', e.target.value)}
             placeholder={t('auth.register.lastName')}
             required
             disabled={isLoading}
@@ -162,18 +174,6 @@ export const RegisterFormOrganism = React.forwardRef<
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="contactNumber">{t('auth.register.phone')}</Label>
-        <Input
-          id="contactNumber"
-          type="tel"
-          value={formData.contactNumber}
-          onChange={(e) => handleChange('contactNumber', e.target.value)}
-          placeholder={t('auth.register.phone')}
-          disabled={isLoading}
-        />
-      </div>
-
-      <div className="space-y-2">
         <Label htmlFor="password">{t('auth.register.password')}</Label>
         <Input
           id="password"
@@ -183,7 +183,9 @@ export const RegisterFormOrganism = React.forwardRef<
           placeholder={t('auth.register.password')}
           required
           disabled={isLoading}
+          minLength={8}
         />
+        <PasswordStrengthIndicator password={formData.password} minLength={8} />
       </div>
 
       <div className="space-y-2">

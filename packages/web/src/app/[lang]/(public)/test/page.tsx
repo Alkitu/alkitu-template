@@ -4,7 +4,7 @@ import React from 'react';
 import { useGlobalTheme } from '@/context/GlobalThemeProvider';
 import { useThemeSelector } from '@/components/features/theme-editor-3.0/core/hooks/useThemeSelector';
 import { ThemeToggle } from '@/components/atoms/ThemeToggle/ThemeToggle';
-import { Button } from '@/components/primitives/ui/LoadingButton';
+import { Button } from '@/components/primitives/ui/button';
 import { Card } from '@/components/primitives/ui/card';
 import { Badge } from '@/components/atoms/badge/Badge';
 import {

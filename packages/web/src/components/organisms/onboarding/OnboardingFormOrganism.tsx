@@ -140,12 +140,42 @@ export const OnboardingFormOrganism = React.forwardRef<
     }
   };
 
-  const handleSkip = () => {
-    if (onSkip) {
-      onSkip();
+  const handleSkip = async () => {
+    setIsLoading(true);
+    setError('');
+
+    try {
+      // Call API to mark profile as complete (even when skipping)
+      // This ensures profileComplete=true is set in database
+      const response = await fetch('/api/auth/complete-profile', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({}), // Empty object - user skipped, no additional data
+        credentials: 'include',
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to complete profile');
+      }
+
+      // Call onSkip callback if provided
+      if (onSkip) {
+        onSkip();
+      }
+
+      // Redirect to dashboard after a short delay
+      setTimeout(() => {
+        router.push('/app/dashboard');
+      }, 1500);
+    } catch (err: any) {
+      setError(err.message || t('auth.onboarding.error'));
+    } finally {
+      setIsLoading(false);
     }
-    // Allow skip - user can complete profile later from settings
-    router.push('/app/dashboard');
   };
 
   return (

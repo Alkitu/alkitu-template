@@ -63,6 +63,12 @@ export default function ProfilePage() {
         }
 
         const data = await response.json();
+        console.log('🔍 [PROFILE PAGE DEBUG] User data:', {
+          email: data.email,
+          role: data.role,
+          roleType: typeof data.role,
+          fullData: data,
+        });
         setUser(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unknown error');
@@ -76,9 +82,10 @@ export default function ProfilePage() {
   }, [router]);
 
   const handleSuccess = () => {
-    // Optionally navigate back to dashboard after update
+    // Navigate to role-appropriate dashboard after update
     setTimeout(() => {
-      router.push('/admin/dashboard');
+      const dashboardPath = user?.role === 'CLIENT' ? '/dashboard' : '/admin/dashboard';
+      router.push(dashboardPath);
     }, 2000);
   };
 
@@ -125,7 +132,16 @@ export default function ProfilePage() {
         {/* Form Card */}
         <div className="bg-card rounded-lg shadow-sm border p-6">
           {/* Render appropriate form based on role */}
-          {user.role === 'CLIENT' ? (
+          {(() => {
+            const isClient = user.role === 'CLIENT';
+            console.log('🔍 [PROFILE PAGE] Rendering form:', {
+              role: user.role,
+              isClient,
+              condition: `user.role === 'CLIENT'`,
+              willRender: isClient ? 'ProfileFormClientOrganism' : 'ProfileFormEmployeeOrganism',
+            });
+            return isClient;
+          })() ? (
             <ProfileFormClientOrganism
               initialData={{
                 firstname: user.firstname,
@@ -170,4 +186,3 @@ export default function ProfilePage() {
     </div>
   );
 }
-

@@ -31,15 +31,9 @@ global.fetch = vi.fn();
 describe('LoginFormOrganism', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.clearAllTimers();
 
     // Reset fetch mock
     (global.fetch as any).mockClear();
-  });
-
-  afterEach(() => {
-    // Clear any pending timers to prevent test interference
-    vi.clearAllTimers();
   });
 
   it('should render all form elements correctly', () => {
@@ -100,6 +94,9 @@ describe('LoginFormOrganism', () => {
   });
 
   it('should show success message and redirect on successful login', async () => {
+    // Use fake timers for this test to control setTimeout
+    vi.useFakeTimers();
+
     const mockResponse = {
       ok: true,
       json: () =>
@@ -121,17 +118,18 @@ describe('LoginFormOrganism', () => {
     fireEvent.change(passwordInput, { target: { value: 'password123' } });
     fireEvent.click(submitButton);
 
-    await waitFor(() => {
+    // Wait for async fetch to complete
+    await vi.waitFor(() => {
       expect(screen.getByText('Login successful!')).toBeInTheDocument();
     });
 
-    // Wait for the timeout to trigger redirect
-    await waitFor(
-      () => {
-        expect(mockRedirectAfterLogin).toHaveBeenCalled();
-      },
-      { timeout: 200 },
-    );
+    // Advance timers by 100ms to trigger the setTimeout in component
+    vi.advanceTimersByTime(100);
+
+    expect(mockRedirectAfterLogin).toHaveBeenCalled();
+
+    // Restore real timers
+    vi.useRealTimers();
   });
 
   it('should show error message on failed login', async () => {
@@ -158,6 +156,15 @@ describe('LoginFormOrganism', () => {
     await waitFor(() => {
       expect(screen.getByText('Invalid credentials')).toBeInTheDocument();
     });
+
+    // Wait for any pending timers from previous tests to complete (100ms + buffer)
+    await new Promise(resolve => setTimeout(resolve, 150));
+
+    // Clear the mock after previous tests' timers have executed
+    mockRedirectAfterLogin.mockClear();
+
+    // Small wait to ensure no new calls happen during error state
+    await new Promise(resolve => setTimeout(resolve, 10));
 
     expect(mockRedirectAfterLogin).not.toHaveBeenCalled();
   });

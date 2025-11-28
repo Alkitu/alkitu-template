@@ -1,8 +1,10 @@
 // Types
 export * from "./types/user";
+export * from "./types/location";
 
 // Schemas
 export * from "./schemas/auth";
+export * from "./schemas/location";
 
 // Constants
 export * from "./constants/api";

@@ -1,0 +1,40 @@
+{
+  "packageManager": "npm",
+  "reporters": ["clear-text", "progress", "json", "html"],
+  "testRunner": "jest",
+  "testRunnerNodeArgs": ["--max_old_space_size=6144"],
+  "coverageAnalysis": "perTest",
+  "mutate": ["src/users/services/user-facade.service.ts"],
+  "mutator": {
+    "excludedMutations": ["StringLiteral", "ConditionalExpression"]
+  },
+  "thresholds": {
+    "high": 85,
+    "low": 70,
+    "break": 60
+  },
+  "timeoutMS": 15000,
+  "concurrency": 8,
+  "plugins": ["@stryker-mutator/jest-runner"],
+  "jest": {
+    "projectType": "custom",
+    "configFile": "jest.config.js",
+    "enableFindRelatedTests": true
+  },
+  "htmlReporter": {
+    "fileName": "reports/mutation/index.html"
+  },
+  "jsonReporter": {
+    "fileName": "reports/mutation/mutation-report.json"
+  },
+  "dashboard": {
+    "project": "alkitu-template-api",
+    "version": "main"
+  },
+  "ignorePatterns": [
+    "**/node_modules/**/*",
+    "**/*.d.ts",
+    "**/dist/**/*",
+    "**/build/**/*"
+  ]
+}

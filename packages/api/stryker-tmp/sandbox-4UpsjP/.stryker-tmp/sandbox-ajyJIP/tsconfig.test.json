@@ -1,0 +1,51 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": false,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "ES2023",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "incremental": true,
+    "skipLibCheck": true,
+    "strictNullChecks": false,
+    "strict": false,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "noFallthroughCasesInSwitch": false,
+    "types": [
+      "jest",
+      "node"
+    ],
+    "paths": {
+      "@alkitu/shared/*": [
+        "../shared/src/*"
+      ],
+      "@/*": [
+        "src/*"
+      ],
+      "@/test/*": [
+        "test/*"
+      ]
+    }
+  },
+  "include": [
+    "src/**/*",
+    "test/**/*",
+    "**/*.spec.ts",
+    "**/*.test.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    ".stryker-tmp",
+    "jest.config.*",
+    "stryker.conf.*"
+  ]
+}

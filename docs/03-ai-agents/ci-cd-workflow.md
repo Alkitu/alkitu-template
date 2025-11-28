@@ -8,7 +8,7 @@ Este documento describe el flujo completo de CI/CD controlado por agentes AI con
 
 ## 🎯 Objetivos
 
-- **TDD Obligatorio**: Todos los cambios DEBEN seguir Red-Green-Refactor
+- **TDD Obligatorio**: Todos los cambios DEBEN seguir Green-Refactor-Validation
 - **Quality Gates**: 95%+ coverage, 85%+ mutation score
 - **Automatización**: CI/CD completamente automatizado
 - **Docker**: Entornos consistentes y reproducibles
@@ -17,17 +17,6 @@ Este documento describe el flujo completo de CI/CD controlado por agentes AI con
 ---
 
 ## 🔄 Flujo TDD (Test-Driven Development)
-
-### **🔴 RED Phase - Write Failing Test**
-
-```bash
-# Comandos para agentes
-npm run test:tdd              # Modo watch para desarrollo
-npm run test:red              # Ejecutar tests que fallan
-```
-
-**Responsabilidad**: Testing Agent  
-**Criterio de éxito**: Test falla como se espera
 
 ### **🟢 GREEN Phase - Make Test Pass**
 
@@ -77,12 +66,6 @@ npm run dev:docker
 npm run docker:stop
 ```
 
-#### **🔴 test-runner**: Red Phase Testing
-
-- Ejecuta tests que fallan
-- Genera reportes de Red Phase
-- Valida que los tests fallan correctamente
-
 #### **🟢 unit-tester**: Green Phase Testing
 
 - Ejecuta tests unitarios
@@ -121,14 +104,13 @@ npm run docker:stop
 
 ```yaml
 # Secuencia de ejecución
-1. 🔴 RED Phase → 2. 🟢 GREEN Phase → 3. 🔄 REFACTOR Phase → 4. 🧪 VALIDATION Phase
+1. 🟢 GREEN Phase → 2. 🔄 REFACTOR Phase → 3. 🧪 VALIDATION Phase
 ↓
-5. 🐳 Docker Build & Test → 6. 🔍 Quality Gates → 7. 🚀 Deploy (Production)
+4. 🐳 Docker Build & Test → 5. 🔍 Quality Gates → 6. 🚀 Deploy (Production)
 ```
 
 ### **Artefactos Generados**
 
-- **red-phase-results**: Reportes de tests fallidos
 - **green-phase-results**: Reportes de tests unitarios
 - **refactor-phase-results**: Reportes de refactoring
 - **validation-phase-results**: Reportes de mutation testing
@@ -170,7 +152,7 @@ interface QualityMetrics {
 ### **Enforcement Rules**
 
 1. **NO CODE WITHOUT TESTS**: Código sin tests = Pipeline falla
-2. **TDD MANDATORY**: Debe seguir Red-Green-Refactor
+2. **TDD MANDATORY**: Debe seguir Green-Refactor-Validation
 3. **QUALITY GATES**: Todos los gates deben pasar
 4. **DOCKER VALIDATION**: Tests deben pasar en Docker
 5. **MUTATION TESTING**: 85%+ mutation score obligatorio
@@ -182,10 +164,6 @@ interface QualityMetrics {
 ### **TDD Development Cycle**
 
 ```bash
-# Red Phase
-npm run test:tdd              # Start TDD watch mode
-npm run test:red              # Run failing tests only
-
 # Green Phase
 npm run test:unit             # Run unit tests
 npm run test:green            # Run passing tests
@@ -236,9 +214,8 @@ npm run agent:deploy          # Agent-specific deployment
 
 1. ✅ Leer requirements y PRDs
 2. ✅ Verificar dependencias
-3. ✅ Ejecutar `npm run test:tdd`
-4. ✅ Escribir test que falle (RED)
-5. ✅ Verificar que test falla correctamente
+3. ✅ Escribir tests unitarios
+4. ✅ Verificar que tests están bien escritos
 
 ### **Durante Implementación**
 
@@ -333,7 +310,7 @@ interface KPIs {
 
 ### **For Individual Agents**
 
-- ✅ TDD cycle completado (Red-Green-Refactor-Validation)
+- ✅ TDD cycle completado (Green-Refactor-Validation)
 - ✅ Quality gates passed (95%+ coverage, 85%+ mutation)
 - ✅ Docker build successful
 - ✅ CI/CD pipeline green

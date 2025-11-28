@@ -5,6 +5,7 @@ Complete guide for testing NestJS backend services using TDD methodology.
 ## Overview
 
 This guide follows the **RED-GREEN-REFACTOR-VALIDATE** cycle with:
+
 - **Jest**: Unit and integration tests
 - **Stryker**: Mutation testing (85%+ score required)
 - **Supertest**: API endpoint testing
@@ -13,8 +14,7 @@ This guide follows the **RED-GREEN-REFACTOR-VALIDATE** cycle with:
 ## TDD Workflow
 
 ```
-🔴 RED      → Write failing test first
-🟢 GREEN    → Write minimal code to pass
+🟢 GREEN    → Write code with tests
 🔵 REFACTOR → Improve code while keeping tests green
 ✅ VALIDATE → Run mutation tests to verify test quality
 ```
@@ -31,12 +31,12 @@ This guide follows the **RED-GREEN-REFACTOR-VALIDATE** cycle with:
 
 ```typescript
 // user.service.spec.ts
-import { Test, TestingModule } from '@nestjs/testing';
-import { UserService } from './user.service';
-import { UserRepository } from './user.repository';
-import { createMock } from '@golevelup/ts-jest';
+import { Test, TestingModule } from "@nestjs/testing";
+import { UserService } from "./user.service";
+import { UserRepository } from "./user.repository";
+import { createMock } from "@golevelup/ts-jest";
 
-describe('UserService', () => {
+describe("UserService", () => {
   let service: UserService;
   let repository: jest.Mocked<UserRepository>;
 
@@ -55,22 +55,24 @@ describe('UserService', () => {
     repository = module.get(UserRepository);
   });
 
-  describe('createUser', () => {
-    it('should create user successfully', async () => {
-      const userData = { email: 'test@test.com', password: 'pass123' };
-      repository.create.mockResolvedValue({ id: '1', ...userData });
+  describe("createUser", () => {
+    it("should create user successfully", async () => {
+      const userData = { email: "test@test.com", password: "pass123" };
+      repository.create.mockResolvedValue({ id: "1", ...userData });
 
       const result = await service.createUser(userData);
 
-      expect(result).toHaveProperty('id');
+      expect(result).toHaveProperty("id");
       expect(repository.create).toHaveBeenCalledWith(userData);
     });
 
-    it('should throw ConflictException for duplicate email', async () => {
-      const userData = { email: 'exists@test.com', password: 'pass123' };
-      repository.findByEmail.mockResolvedValue({ id: '1', ...userData });
+    it("should throw ConflictException for duplicate email", async () => {
+      const userData = { email: "exists@test.com", password: "pass123" };
+      repository.findByEmail.mockResolvedValue({ id: "1", ...userData });
 
-      await expect(service.createUser(userData)).rejects.toThrow('User already exists');
+      await expect(service.createUser(userData)).rejects.toThrow(
+        "User already exists"
+      );
     });
   });
 });

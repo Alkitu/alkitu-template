@@ -2,7 +2,7 @@
 
 ## 📋 Overview
 
-Esta guía contiene ejemplos prácticos completos de cómo implementar la migración SOLID usando TDD (Test-Driven Development) y Mutation Testing. Cada ejemplo sigue el ciclo Red-Green-Refactor.
+Esta guía contiene ejemplos prácticos completos de cómo implementar la migración SOLID usando testing exhaustivo y Mutation Testing para garantizar la calidad del código.
 
 ---
 
@@ -39,9 +39,9 @@ packages/api/src/
 
 ---
 
-## 🔴 Phase 1: RED - Write Failing Tests
+## 📝 Phase 1: Create Interface Contract Tests
 
-### **Step 1: Create Interface Contract Tests**
+### **Step 1: Define Service Contract Tests**
 
 ```typescript
 // src/users/interfaces/__tests__/user-service.contract.spec.ts
@@ -64,7 +64,6 @@ export function runUserServiceContractTests(
 
     describe("createUser", () => {
       it("should create user with valid data", async () => {
-        // RED: This test will fail initially
         const userData: CreateUserDto = {
           email: "test@example.com",
           password: "StrongP@ssw0rd123!",
@@ -87,7 +86,7 @@ export function runUserServiceContractTests(
       });
 
       it("should throw ConflictException for duplicate email", async () => {
-        // RED: This test will fail initially
+
         const userData: CreateUserDto = {
           email: "duplicate@example.com",
           password: "StrongP@ssw0rd123!",
@@ -102,7 +101,7 @@ export function runUserServiceContractTests(
       });
 
       it("should hash password before storing", async () => {
-        // RED: This test will fail initially
+
         const userData: CreateUserDto = {
           email: "hash-test@example.com",
           password: "PlaintextPassword123!",
@@ -117,7 +116,7 @@ export function runUserServiceContractTests(
       });
 
       it("should validate password strength", async () => {
-        // RED: This test will fail initially
+
         const weakPasswords = ["123", "password", "abc123"];
 
         for (const password of weakPasswords) {
@@ -136,7 +135,7 @@ export function runUserServiceContractTests(
 
     describe("getUserById", () => {
       it("should return user when exists", async () => {
-        // RED: This test will fail initially
+
         const userData: CreateUserDto = {
           email: "findtest@example.com",
           password: "StrongP@ssw0rd123!",
@@ -154,7 +153,7 @@ export function runUserServiceContractTests(
       });
 
       it("should throw NotFoundException when user does not exist", async () => {
-        // RED: This test will fail initially
+
         const nonExistentId = "507f1f77bcf86cd799439011";
 
         await expect(service.getUserById(nonExistentId)).rejects.toThrow(
@@ -165,7 +164,7 @@ export function runUserServiceContractTests(
 
     describe("updateUser", () => {
       it("should update user data", async () => {
-        // RED: This test will fail initially
+
         const userData: CreateUserDto = {
           email: "update-test@example.com",
           password: "StrongP@ssw0rd123!",
@@ -192,7 +191,7 @@ export function runUserServiceContractTests(
 
     describe("deleteUser", () => {
       it("should delete user successfully", async () => {
-        // RED: This test will fail initially
+
         const userData: CreateUserDto = {
           email: "delete-test@example.com",
           password: "StrongP@ssw0rd123!",
@@ -230,7 +229,7 @@ export function runUserRepositoryContractTests(
 
     describe("create", () => {
       it("should create user and return with id", async () => {
-        // RED: This test will fail initially
+
         const userData: CreateUserDto = {
           email: "repo-test@example.com",
           password: "hashedPassword123",
@@ -250,7 +249,7 @@ export function runUserRepositoryContractTests(
 
     describe("findByEmail", () => {
       it("should return user when email exists", async () => {
-        // RED: This test will fail initially
+
         const userData: CreateUserDto = {
           email: "findemail-test@example.com",
           password: "hashedPassword123",
@@ -265,7 +264,7 @@ export function runUserRepositoryContractTests(
       });
 
       it("should return null when email does not exist", async () => {
-        // RED: This test will fail initially
+
         const result = await repository.findByEmail("nonexistent@example.com");
         expect(result).toBeNull();
       });
@@ -273,7 +272,7 @@ export function runUserRepositoryContractTests(
 
     describe("findById", () => {
       it("should return user when id exists", async () => {
-        // RED: This test will fail initially
+
         const userData: CreateUserDto = {
           email: "findid-test@example.com",
           password: "hashedPassword123",
@@ -290,7 +289,7 @@ export function runUserRepositoryContractTests(
       });
 
       it("should return null when id does not exist", async () => {
-        // RED: This test will fail initially
+
         const result = await repository.findById("507f1f77bcf86cd799439011");
         expect(result).toBeNull();
       });
@@ -301,9 +300,9 @@ export function runUserRepositoryContractTests(
 
 ---
 
-## 🟢 Phase 2: GREEN - Minimal Implementation
+## ⚙️ Phase 2: Implement Repository
 
-### **Step 3: Implement Repository (Minimal)**
+### **Step 3: Create Repository Implementation**
 
 ```typescript
 // src/users/repositories/user.repository.ts
@@ -319,33 +318,33 @@ export class UserRepository implements IUserRepository {
   constructor(private prisma: PrismaService) {}
 
   async create(userData: CreateUserDto): Promise<User> {
-    // GREEN: Minimal implementation to pass tests
+    // Implementation to pass tests
     return this.prisma.user.create({
       data: userData,
     });
   }
 
   async findById(id: string): Promise<User | null> {
-    // GREEN: Minimal implementation
+    // Implementation
     return this.prisma.user.findUnique({
       where: { id },
     });
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    // GREEN: Minimal implementation
+    // Implementation
     return this.prisma.user.findUnique({
       where: { email },
     });
   }
 
   async findAll(): Promise<User[]> {
-    // GREEN: Minimal implementation
+    // Implementation
     return this.prisma.user.findMany();
   }
 
   async update(id: string, userData: UpdateUserDto): Promise<User> {
-    // GREEN: Minimal implementation
+    // Implementation
     return this.prisma.user.update({
       where: { id },
       data: userData,
@@ -353,14 +352,14 @@ export class UserRepository implements IUserRepository {
   }
 
   async delete(id: string): Promise<void> {
-    // GREEN: Minimal implementation
+    // Implementation
     await this.prisma.user.delete({
       where: { id },
     });
   }
 
   async existsByEmail(email: string): Promise<boolean> {
-    // GREEN: Minimal implementation
+    // Implementation
     const user = await this.prisma.user.findUnique({
       where: { email },
       select: { id: true },
@@ -369,7 +368,7 @@ export class UserRepository implements IUserRepository {
   }
 
   async existsById(id: string): Promise<boolean> {
-    // GREEN: Minimal implementation
+    // Implementation
     const user = await this.prisma.user.findUnique({
       where: { id },
       select: { id: true },
@@ -381,7 +380,7 @@ export class UserRepository implements IUserRepository {
 }
 ```
 
-### **Step 4: Implement Core User Service (Minimal)**
+### **Step 4: Implement Core User Service**
 
 ```typescript
 // src/users/services/user-core.service.ts
@@ -403,7 +402,7 @@ export class UserCoreService implements IUserService {
   constructor(private userRepository: IUserRepository) {}
 
   async createUser(userData: CreateUserDto): Promise<User> {
-    // GREEN: Minimal implementation to pass tests
+    // Implementation to pass tests
 
     // Check if user exists
     const existingUser = await this.userRepository.findByEmail(userData.email);
@@ -431,7 +430,7 @@ export class UserCoreService implements IUserService {
   }
 
   async getUserById(id: string): Promise<User> {
-    // GREEN: Minimal implementation
+    // Implementation
     const user = await this.userRepository.findById(id);
 
     if (!user) {
@@ -444,7 +443,7 @@ export class UserCoreService implements IUserService {
   }
 
   async getUserByEmail(email: string): Promise<User | null> {
-    // GREEN: Minimal implementation
+    // Implementation
     const user = await this.userRepository.findByEmail(email);
 
     if (!user) {
@@ -457,7 +456,7 @@ export class UserCoreService implements IUserService {
   }
 
   async getAllUsers(): Promise<User[]> {
-    // GREEN: Minimal implementation
+    // Implementation
     const users = await this.userRepository.findAll();
 
     // Remove passwords
@@ -468,7 +467,7 @@ export class UserCoreService implements IUserService {
   }
 
   async updateUser(id: string, userData: UpdateUserDto): Promise<User> {
-    // GREEN: Minimal implementation
+    // Implementation
     const existingUser = await this.userRepository.findById(id);
     if (!existingUser) {
       throw new NotFoundException(`User with ID ${id} not found`);
@@ -482,7 +481,7 @@ export class UserCoreService implements IUserService {
   }
 
   async deleteUser(id: string): Promise<void> {
-    // GREEN: Minimal implementation
+    // Implementation
     const existingUser = await this.userRepository.findById(id);
     if (!existingUser) {
       throw new NotFoundException(`User with ID ${id} not found`);
@@ -492,12 +491,12 @@ export class UserCoreService implements IUserService {
   }
 
   async userExists(id: string): Promise<boolean> {
-    // GREEN: Minimal implementation
+    // Implementation
     return this.userRepository.existsById(id);
   }
 
   async emailExists(email: string): Promise<boolean> {
-    // GREEN: Minimal implementation
+    // Implementation
     return this.userRepository.existsByEmail(email);
   }
 
@@ -642,9 +641,9 @@ describe("UserCoreService", () => {
 
 ---
 
-## 🔵 Phase 3: REFACTOR - Improve Implementation
+## 🔧 Phase 3: Code Quality & Optimization
 
-### **Step 6: Add Validation and Error Handling**
+### **Step 6: Enhance Validation and Error Handling**
 
 ```typescript
 // src/users/services/user-core.service.ts (Refactored)
@@ -664,7 +663,7 @@ export class UserCoreService implements IUserService {
   constructor(private userRepository: IUserRepository) {}
 
   async createUser(userData: CreateUserDto): Promise<User> {
-    // REFACTOR: Add comprehensive validation and error handling
+    // Add comprehensive validation and error handling
     try {
       // Validate input data
       await this.validateUserData(userData);
@@ -700,7 +699,7 @@ export class UserCoreService implements IUserService {
       // Return sanitized user data
       return this.sanitizeUserData(user);
     } catch (error) {
-      // REFACTOR: Comprehensive error logging
+      // Comprehensive error logging
       this.logger.error("Failed to create user", {
         error: error.message,
         email: userData.email,
@@ -817,12 +816,12 @@ export class UserRepository implements IUserRepository {
 
   constructor(
     private prisma: PrismaService
-    // REFACTOR: Add caching if available
+    // Add caching if available
     // private cache: CacheService,
   ) {}
 
   async findByEmail(email: string): Promise<User | null> {
-    // REFACTOR: Add caching
+    // Add caching
     // const cacheKey = `user:email:${email}`;
     // const cached = await this.cache.get(cacheKey);
     // if (cached) {
@@ -832,7 +831,7 @@ export class UserRepository implements IUserRepository {
     const user = await this.prisma.user.findUnique({
       where: { email },
       select: {
-        // REFACTOR: Only select needed fields for performance
+        // Only select needed fields for performance
         id: true,
         email: true,
         name: true,
@@ -845,7 +844,7 @@ export class UserRepository implements IUserRepository {
       },
     });
 
-    // REFACTOR: Cache result
+    // Cache result
     // if (user) {
     //   await this.cache.set(cacheKey, user, 300); // 5 min cache
     // }
@@ -854,7 +853,7 @@ export class UserRepository implements IUserRepository {
   }
 
   async findById(id: string): Promise<User | null> {
-    // REFACTOR: Similar caching pattern
+    // Similar caching pattern
     const user = await this.prisma.user.findUnique({
       where: { id },
       select: {
@@ -1144,15 +1143,15 @@ checkQualityGates().catch(console.error);
 
 ### **What We've Accomplished**
 
-1. **✅ Red Phase**: Written comprehensive failing tests
-2. **✅ Green Phase**: Implemented minimal working code
-3. **✅ Refactor Phase**: Improved code quality while keeping tests green
+1. **✅ Contract Tests**: Written comprehensive interface contract tests
+2. **✅ Implementation**: Created working implementations with proper validation
+3. **✅ Code Quality**: Enhanced code with validation, error handling, and optimizations
 4. **✅ Mutation Testing**: Validated test quality with >85% mutation score
 5. **✅ Quality Gates**: Achieved >95% coverage and all quality standards
 
 ### **Key Benefits**
 
-- **Test-First Development**: All code is thoroughly tested
+- **Comprehensive Testing**: All code is thoroughly tested with contracts and unit tests
 - **High Quality**: Mutation testing ensures robust test suite
 - **SOLID Principles**: Clean, maintainable architecture
 - **Zero Risk**: Can switch implementations transparently
@@ -1167,4 +1166,4 @@ checkQualityGates().catch(console.error);
 
 ---
 
-_Estos ejemplos demuestran cómo implementar la migración SOLID de manera segura y con la máxima calidad usando TDD y Mutation Testing._
+_Estos ejemplos demuestran cómo implementar la migración SOLID de manera segura y con la máxima calidad usando testing exhaustivo y Mutation Testing._

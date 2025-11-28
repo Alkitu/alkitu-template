@@ -261,7 +261,7 @@ const licenseHierarchy = {
 
 ## 🧪 Testing & Quality
 
-### **TDD con Red-Green-Refactor**
+### **TDD con Green-Refactor-Validation**
 
 ```bash
 # Ejecutar tests en modo watch
@@ -365,7 +365,7 @@ npm run dev:docker
 - Plan daily tasks
 
 # 2. Development
-- TDD Red-Green-Refactor
+- TDD Green-Refactor-Validation
 - Feature flag implementation
 - Continuous integration
 

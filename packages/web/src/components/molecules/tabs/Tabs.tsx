@@ -176,6 +176,7 @@ export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(
                     ? 'opacity-50'
                     : 'hover:bg-accent/60 hover:scale-105 hover:shadow-md active:scale-95',
                 )}
+                data-testid="scroll-left-button"
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
@@ -297,6 +298,7 @@ export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(
                 onClick={() => scrollTabs('right')}
                 disabled={!canScrollRight}
                 className="flex-shrink-0 max-sm:hidden"
+                data-testid="scroll-right-button"
               >
                 <ChevronRight className="h-4 w-4" />
               </Button>
@@ -309,6 +311,7 @@ export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(
                 size="sm"
                 onClick={handleTabAdd}
                 className="flex-shrink-0 max-sm:w-full max-sm:mt-2"
+                aria-label="Add new tab"
               >
                 <Plus className="h-4 w-4" />
                 <span className="ml-2 max-sm:inline hidden">Add Tab</span>
@@ -338,6 +341,7 @@ export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(
                   'p-4 bg-background rounded-lg border border-border',
                   'min-h-[200px]',
                   'focus-visible:outline-none focus-visible:ring-0',
+                  'data-[state=inactive]:hidden',
                 )}
               >
                 {tab.content}

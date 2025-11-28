@@ -404,7 +404,7 @@ interface DocMetrics {
 3. **Living Documentation**: La documentación debe evolucionar con el código
 4. **User-Centric**: Escrita desde la perspectiva del usuario/desarrollador
 5. **SOLID Compliant**: Aplicar principios SOLID a la documentación
-6. **TDD-Driven**: Seguir ciclo Red-Green-Refactor para docs
+6. **TDD-Driven**: Seguir ciclo Green-Refactor-Validation para docs
 7. **Quality-Gated**: Pasar quality gates antes de mergear
 8. **Peer-Reviewed**: Cambios críticos requieren peer review
 

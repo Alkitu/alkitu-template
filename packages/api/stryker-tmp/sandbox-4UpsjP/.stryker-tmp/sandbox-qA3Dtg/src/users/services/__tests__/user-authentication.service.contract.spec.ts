@@ -1,0 +1,522 @@
+// @ts-nocheck
+// 
+// ✅ Testing Agent: UserAuthenticationService Contract Tests (RED Phase)
+// packages/api/src/users/services/__tests__/user-authentication.service.contract.spec.ts
+
+import { Test, TestingModule } from '@nestjs/testing';
+import { UnauthorizedException, NotFoundException } from '@nestjs/common';
+import { UserAuthenticationService } from '../user-authentication.service';
+import { UserRepositoryService } from '../user-repository.service';
+import {
+  SOLIDTestUtils,
+  TestDataFactory,
+  PerformanceTestUtils,
+} from '../../../test/utils/solid-test-utils';
+import { IUserAuthentication } from '../../interfaces/user-authentication.interface';
+import * as bcrypt from 'bcryptjs';
+
+// Mock bcrypt
+jest.mock('bcryptjs', () => ({
+  compare: jest.fn(),
+  hash: jest.fn(),
+}));
+const mockBcrypt = bcrypt as jest.Mocked<typeof bcrypt>;
+
+describe('UserAuthenticationService Contract Tests', () => {
+  let service: UserAuthenticationService;
+  let userRepository: jest.Mocked<UserRepositoryService>;
+  let module: TestingModule;
+
+  beforeEach(async () => {
+    const mockUserRepository = {
+      findByEmail: jest.fn(),
+      findById: jest.fn(),
+      updatePassword: jest.fn(),
+      updateLastLogin: jest.fn(),
+    };
+
+    module = await Test.createTestingModule({
+      providers: [
+        UserAuthenticationService,
+        {
+          provide: UserRepositoryService,
+          useValue: mockUserRepository,
+        },
+      ],
+    }).compile();
+
+    service = module.get<UserAuthenticationService>(UserAuthenticationService);
+    userRepository = module.get<UserRepositoryService>(
+      UserRepositoryService,
+    ) as jest.Mocked<UserRepositoryService>;
+
+    // Reset mocks
+    jest.clearAllMocks();
+  });
+
+  afterEach(async () => {
+    await module.close();
+  });
+
+  describe('SOLID Compliance Tests', () => {
+    it('should comply with Single Responsibility Principle (SRP)', () => {
+      const report = SOLIDTestUtils.generateSOLIDReport(
+        UserAuthenticationService,
+      );
+
+      expect(report.srp.compliant).toBe(true);
+      expect(service).toBeDefined();
+    });
+
+    it('should comply with Open/Closed Principle (OCP)', () => {
+      const report = SOLIDTestUtils.generateSOLIDReport(
+        UserAuthenticationService,
+      );
+
+      expect(report.ocp.compliant).toBe(true);
+      expect(service.constructor.length).toBeGreaterThan(0); // Has dependencies
+    });
+
+    it('should comply with Dependency Inversion Principle (DIP)', () => {
+      const report = SOLIDTestUtils.generateSOLIDReport(
+        UserAuthenticationService,
+      );
+
+      expect(report.dip.compliant).toBe(true);
+      expect(service).toBeDefined();
+    });
+
+    it('should implement IUserAuthentication interface correctly', () => {
+      // Verify service implements all required methods
+      expect(service.validateUser).toBeDefined();
+      expect(service.validatePassword).toBeDefined();
+      expect(service.changePassword).toBeDefined();
+      expect(service.hashPassword).toBeDefined();
+      expect(service.generatePasswordResetToken).toBeDefined();
+      expect(service.validatePasswordResetToken).toBeDefined();
+      expect(service.invalidateUserSessions).toBeDefined();
+    });
+  });
+
+  describe('Contract: validateUser', () => {
+    it('should return authenticated user with valid credentials', async () => {
+      // Arrange
+      const loginDto = TestDataFactory.createTestLoginDto();
+      const user = TestDataFactory.createTestUser({
+        email: loginDto.email,
+        password: 'hashed-password',
+      });
+
+      userRepository.findByEmail.mockResolvedValue(user);
+      (mockBcrypt.compare as jest.Mock).mockResolvedValue(true);
+
+      // Act
+      const result = await service.validateUser(loginDto);
+
+      // Assert
+      expect(result).toBeDefined();
+      expect(result?.email).toBe(loginDto.email);
+      expect(result).not.toHaveProperty('password'); // Password should be excluded
+      expect(userRepository.findByEmail).toHaveBeenCalledWith(loginDto.email);
+      expect(mockBcrypt.compare).toHaveBeenCalledWith(
+        loginDto.password,
+        user.password,
+      );
+    });
+
+    it('should return null when user not found', async () => {
+      // Arrange
+      const loginDto = TestDataFactory.createTestLoginDto();
+
+      userRepository.findByEmail.mockResolvedValue(null);
+
+      // Act
+      const result = await service.validateUser(loginDto);
+
+      // Assert
+      expect(result).toBeNull();
+      expect(userRepository.findByEmail).toHaveBeenCalledWith(loginDto.email);
+      expect(mockBcrypt.compare).not.toHaveBeenCalled();
+    });
+
+    it('should return null when password is invalid', async () => {
+      // Arrange
+      const loginDto = TestDataFactory.createTestLoginDto();
+      const user = TestDataFactory.createTestUser({
+        email: loginDto.email,
+        password: 'hashed-password',
+      });
+
+      userRepository.findByEmail.mockResolvedValue(user);
+      (mockBcrypt.compare as jest.Mock).mockResolvedValue(false);
+
+      // Act
+      const result = await service.validateUser(loginDto);
+
+      // Assert
+      expect(result).toBeNull();
+      expect(userRepository.findByEmail).toHaveBeenCalledWith(loginDto.email);
+      expect(mockBcrypt.compare).toHaveBeenCalledWith(
+        loginDto.password,
+        user.password,
+      );
+    });
+
+    it('should handle user with null password', async () => {
+      // Arrange
+      const loginDto = TestDataFactory.createTestLoginDto();
+      const user = TestDataFactory.createTestUser({
+        email: loginDto.email,
+        password: null,
+      });
+
+      userRepository.findByEmail.mockResolvedValue(user);
+
+      // Act
+      const result = await service.validateUser(loginDto);
+
+      // Assert
+      expect(result).toBeNull();
+      expect(userRepository.findByEmail).toHaveBeenCalledWith(loginDto.email);
+      expect(mockBcrypt.compare).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Contract: validatePassword', () => {
+    it('should return true when password is valid', async () => {
+      // Arrange
+      const userId = 'test-user-id';
+      const password = 'test-password';
+      const user = TestDataFactory.createTestUser({
+        id: userId,
+        password: 'hashed-password',
+      });
+      const fullUser = TestDataFactory.createTestUser({
+        id: userId,
+        email: user.email,
+        password: 'hashed-password',
+      });
+
+      userRepository.findById.mockResolvedValue(user);
+      userRepository.findByEmail.mockResolvedValue(fullUser);
+      (mockBcrypt.compare as jest.Mock).mockResolvedValue(true);
+
+      // Act
+      const result = await service.validatePassword(userId, password);
+
+      // Assert
+      expect(result).toBe(true);
+      expect(userRepository.findById).toHaveBeenCalledWith(userId);
+      expect(userRepository.findByEmail).toHaveBeenCalledWith(user.email);
+      expect(mockBcrypt.compare).toHaveBeenCalledWith(
+        password,
+        fullUser.password,
+      );
+    });
+
+    it('should return false when password is invalid', async () => {
+      // Arrange
+      const userId = 'test-user-id';
+      const password = 'wrong-password';
+      const user = TestDataFactory.createTestUser({
+        id: userId,
+        password: 'hashed-password',
+      });
+      const fullUser = TestDataFactory.createTestUser({
+        id: userId,
+        email: user.email,
+        password: 'hashed-password',
+      });
+
+      userRepository.findById.mockResolvedValue(user);
+      userRepository.findByEmail.mockResolvedValue(fullUser);
+      (mockBcrypt.compare as jest.Mock).mockResolvedValue(false);
+
+      // Act
+      const result = await service.validatePassword(userId, password);
+
+      // Assert
+      expect(result).toBe(false);
+      expect(userRepository.findById).toHaveBeenCalledWith(userId);
+      expect(userRepository.findByEmail).toHaveBeenCalledWith(user.email);
+      expect(mockBcrypt.compare).toHaveBeenCalledWith(
+        password,
+        fullUser.password,
+      );
+    });
+
+    it('should return false when user not found', async () => {
+      // Arrange
+      const userId = 'non-existent-user-id';
+      const password = 'test-password';
+
+      userRepository.findById.mockResolvedValue(null);
+
+      // Act
+      const result = await service.validatePassword(userId, password);
+
+      // Assert
+      expect(result).toBe(false);
+      expect(userRepository.findById).toHaveBeenCalledWith(userId);
+      expect(userRepository.findByEmail).not.toHaveBeenCalled();
+      expect(mockBcrypt.compare).not.toHaveBeenCalled();
+    });
+
+    it('should handle user with null password', async () => {
+      // Arrange
+      const userId = 'test-user-id';
+      const password = 'test-password';
+      const user = TestDataFactory.createTestUser({
+        id: userId,
+        password: null,
+      });
+
+      userRepository.findById.mockResolvedValue(user);
+
+      // Act
+      const result = await service.validatePassword(userId, password);
+
+      // Assert
+      expect(result).toBe(false);
+      expect(userRepository.findById).toHaveBeenCalledWith(userId);
+      expect(mockBcrypt.compare).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Contract: changePassword', () => {
+    it('should change password when current password is valid', async () => {
+      // Arrange
+      const userId = 'test-user-id';
+      const changePasswordDto = {
+        currentPassword: 'current-password',
+        newPassword: 'new-password',
+      };
+      const user = TestDataFactory.createTestUser({
+        id: userId,
+        password: 'hashed-current-password',
+      });
+      const fullUser = TestDataFactory.createTestUser({
+        id: userId,
+        email: user.email,
+        password: 'hashed-current-password',
+      });
+
+      userRepository.findById.mockResolvedValue(user);
+      userRepository.findByEmail.mockResolvedValue(fullUser);
+      (mockBcrypt.compare as jest.Mock).mockResolvedValue(true);
+      (mockBcrypt.hash as jest.Mock).mockResolvedValue('hashed-new-password');
+      userRepository.updatePassword.mockResolvedValue(user);
+
+      // Act
+      await service.changePassword(userId, changePasswordDto);
+
+      // Assert
+      expect(userRepository.findById).toHaveBeenCalledWith(userId);
+      expect(userRepository.findByEmail).toHaveBeenCalledWith(user.email);
+      expect(mockBcrypt.compare).toHaveBeenCalledWith(
+        changePasswordDto.currentPassword,
+        fullUser.password,
+      );
+      expect(mockBcrypt.hash).toHaveBeenCalledWith(
+        changePasswordDto.newPassword,
+        12,
+      );
+      expect(userRepository.updatePassword).toHaveBeenCalledWith(
+        userId,
+        'hashed-new-password',
+      );
+    });
+
+    it('should throw UnauthorizedException when current password is invalid', async () => {
+      // Arrange
+      const userId = 'test-user-id';
+      const changePasswordDto = {
+        currentPassword: 'wrong-password',
+        newPassword: 'new-password',
+      };
+      const user = TestDataFactory.createTestUser({
+        id: userId,
+        password: 'hashed-current-password',
+      });
+      const fullUser = TestDataFactory.createTestUser({
+        id: userId,
+        email: user.email,
+        password: 'hashed-current-password',
+      });
+
+      userRepository.findById.mockResolvedValue(user);
+      userRepository.findByEmail.mockResolvedValue(fullUser);
+      (mockBcrypt.compare as jest.Mock).mockResolvedValue(false);
+
+      // Act & Assert
+      await expect(
+        service.changePassword(userId, changePasswordDto),
+      ).rejects.toThrow(UnauthorizedException);
+
+      expect(userRepository.findById).toHaveBeenCalledWith(userId);
+      expect(userRepository.findByEmail).toHaveBeenCalledWith(user.email);
+      expect(mockBcrypt.compare).toHaveBeenCalledWith(
+        changePasswordDto.currentPassword,
+        fullUser.password,
+      );
+      expect(mockBcrypt.hash).not.toHaveBeenCalled();
+      expect(userRepository.updatePassword).not.toHaveBeenCalled();
+    });
+
+    it('should throw NotFoundException when user not found', async () => {
+      // Arrange
+      const userId = 'non-existent-user-id';
+      const changePasswordDto = {
+        currentPassword: 'current-password',
+        newPassword: 'new-password',
+      };
+
+      userRepository.findById.mockResolvedValue(null);
+
+      // Act & Assert
+      await expect(
+        service.changePassword(userId, changePasswordDto),
+      ).rejects.toThrow(NotFoundException);
+
+      expect(userRepository.findById).toHaveBeenCalledWith(userId);
+      expect(mockBcrypt.compare).not.toHaveBeenCalled();
+      expect(mockBcrypt.hash).not.toHaveBeenCalled();
+      expect(userRepository.updatePassword).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Contract: hashPassword', () => {
+    it('should hash password with correct salt rounds', async () => {
+      // Arrange
+      const password = 'test-password';
+      const hashedPassword = 'hashed-password';
+
+      (mockBcrypt.hash as jest.Mock).mockResolvedValue(hashedPassword);
+
+      // Act
+      const result = await service.hashPassword(password);
+
+      // Assert
+      expect(result).toBe(hashedPassword);
+      expect(mockBcrypt.hash).toHaveBeenCalledWith(password, 12);
+    });
+
+    it('should handle empty password', async () => {
+      // Arrange
+      const password = '';
+      const hashedPassword = 'hashed-empty';
+
+      (mockBcrypt.hash as jest.Mock).mockResolvedValue(hashedPassword);
+
+      // Act
+      const result = await service.hashPassword(password);
+
+      // Assert
+      expect(result).toBe(hashedPassword);
+      expect(mockBcrypt.hash).toHaveBeenCalledWith(password, 12);
+    });
+  });
+
+  describe('Contract: Performance Tests', () => {
+    it('should validate user within performance threshold', async () => {
+      // Arrange
+      const loginDto = TestDataFactory.createTestLoginDto();
+      const user = TestDataFactory.createTestUser({
+        email: loginDto.email,
+        password: 'hashed-password',
+      });
+
+      userRepository.findByEmail.mockResolvedValue(user);
+      (mockBcrypt.compare as jest.Mock).mockResolvedValue(true);
+
+      // Act & Assert
+      const performance = await PerformanceTestUtils.validatePerformance(
+        () => service.validateUser(loginDto),
+        200, // 200ms threshold (bcrypt is slower)
+      );
+
+      expect(performance.passed).toBe(true);
+      expect(performance.result).toBeDefined();
+    });
+
+    it('should hash password within performance threshold', async () => {
+      // Arrange
+      const password = 'test-password';
+
+      (mockBcrypt.hash as jest.Mock).mockResolvedValue('hashed-password');
+
+      // Act & Assert
+      const performance = await PerformanceTestUtils.validatePerformance(
+        () => service.hashPassword(password),
+        500, // 500ms threshold (bcrypt hashing is slower)
+      );
+
+      expect(performance.passed).toBe(true);
+      expect(performance.result).toBe('hashed-password');
+    });
+  });
+
+  describe('Contract: Security Tests', () => {
+    it('should not expose password in authenticated user response', async () => {
+      // Arrange
+      const loginDto = TestDataFactory.createTestLoginDto();
+      const user = TestDataFactory.createTestUser({
+        email: loginDto.email,
+        password: 'hashed-password',
+      });
+
+      userRepository.findByEmail.mockResolvedValue(user);
+      (mockBcrypt.compare as jest.Mock).mockResolvedValue(true);
+
+      // Act
+      const result = await service.validateUser(loginDto);
+
+      // Assert
+      expect(result).toBeDefined();
+      expect(result).not.toHaveProperty('password');
+      expect(result?.email).toBe(loginDto.email);
+    });
+
+    it('should use proper salt rounds for password hashing', async () => {
+      // Arrange
+      const password = 'test-password';
+
+      (mockBcrypt.hash as jest.Mock).mockResolvedValue('hashed-password');
+
+      // Act
+      await service.hashPassword(password);
+
+      // Assert
+      expect(mockBcrypt.hash).toHaveBeenCalledWith(password, 12);
+    });
+
+    it('should handle password comparison securely', async () => {
+      // Arrange
+      const userId = 'test-user-id';
+      const password = 'test-password';
+      const user = TestDataFactory.createTestUser({
+        id: userId,
+        password: 'hashed-password',
+      });
+      const fullUser = TestDataFactory.createTestUser({
+        id: userId,
+        email: user.email,
+        password: 'hashed-password',
+      });
+
+      userRepository.findById.mockResolvedValue(user);
+      userRepository.findByEmail.mockResolvedValue(fullUser);
+      (mockBcrypt.compare as jest.Mock).mockResolvedValue(true);
+
+      // Act
+      await service.validatePassword(userId, password);
+
+      // Assert
+      expect(mockBcrypt.compare).toHaveBeenCalledWith(
+        password,
+        fullUser.password,
+      );
+      expect(mockBcrypt.compare).toHaveBeenCalledTimes(1);
+    });
+  });
+});

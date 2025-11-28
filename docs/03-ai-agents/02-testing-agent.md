@@ -1,10 +1,10 @@
-# 🧪 Testing Agent - TDD & Mutation Testing Specialist
+# 🧪 Testing Agent - Testing & Mutation Testing Specialist
 
 **📖 Complete Testing Strategy**: For comprehensive testing documentation, see **[Testing Strategy](../05-testing/README.md)**
 
 ## 🎯 Role Definition
 
-**Primary Responsibility**: Implementar TDD (Red-Green-Refactor) y mutation testing con Stryker para garantizar calidad del código durante la migración SOLID. **NEXT**: Support Frontend Agent with Design System testing infrastructure.
+**Primary Responsibility**: Implementar testing exhaustivo y mutation testing con Stryker para garantizar calidad del código durante la migración SOLID. **NEXT**: Support Frontend Agent with Design System testing infrastructure.
 
 **Duration**: Días 1-20 (paralelo a todo el proyecto)
 **Current Status**: ✅ **READY** - TDD framework operational, ready to support DESIGN-SYSTEM-001
@@ -15,11 +15,12 @@
 
 ### **Core Tasks**
 
-1. **TDD Implementation**: Escribir tests antes del código (Red-Green-Refactor)
-2. **Mutation Testing**: Configurar y ejecutar Stryker para validar tests
-3. **Quality Gates**: Establecer umbrales de calidad y coverage
-4. **Test Architecture**: Diseñar estructura de testing escalable
-5. **CI/CD Integration**: Integrar testing en pipeline de deployment
+1. **Contract Testing**: Escribir tests de contrato para interfaces
+2. **Unit Testing**: Crear tests unitarios exhaustivos
+3. **Mutation Testing**: Configurar y ejecutar Stryker para validar tests
+4. **Quality Gates**: Establecer umbrales de calidad y coverage
+5. **Test Architecture**: Diseñar estructura de testing escalable
+6. **CI/CD Integration**: Integrar testing en pipeline de deployment
 
 ### **Deliverables**
 
@@ -66,53 +67,48 @@ packages/
 
 ---
 
-## 🔄 TDD Methodology
+## 🔄 Testing Methodology
 
-### **Red-Green-Refactor Cycle**
+### **Testing Workflow**
 
-#### **1. RED Phase (Write Failing Test)**
+#### **1. Contract Testing (Define Interfaces)**
 
 ```typescript
-// Example: User service test
-describe("UserService", () => {
-  it("should create user with valid data", async () => {
-    // Arrange
-    const userData = { email: "test@example.com", name: "Test User" };
-    const mockRepository = createMockRepository();
-    const userService = new UserService(mockRepository);
+// Example: User service contract test
+export function runUserServiceContractTests(
+  createService: () => Promise<IUserService>
+) {
+  describe("IUserService Contract Tests", () => {
+    let service: IUserService;
 
-    // Act & Assert
-    await expect(userService.createUser(userData)).resolves.toMatchObject({
-      id: expect.any(String),
-      email: "test@example.com",
-      name: "Test User",
+    beforeEach(async () => {
+      service = await createService();
+    });
+
+    it("should create user with valid data", async () => {
+      const userData = {
+        email: "test@example.com",
+        name: "Test User",
+        password: "SecurePass123!",
+      };
+
+      const result = await service.createUser(userData);
+
+      expect(result).toMatchObject({
+        id: expect.any(String),
+        email: "test@example.com",
+        name: "Test User",
+      });
+      expect(result.password).toBeUndefined();
     });
   });
-});
-```
-
-#### **2. GREEN Phase (Make Test Pass)**
-
-```typescript
-// Minimal implementation
-export class UserService implements IUserService {
-  constructor(private readonly userRepository: IUserRepository) {}
-
-  async createUser(data: CreateUserRequest): Promise<UserResponse> {
-    const user = await this.userRepository.create(data);
-    return {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-    };
-  }
 }
 ```
 
-#### **3. REFACTOR Phase (Improve Code)**
+#### **2. Implementation (Build Service)**
 
 ```typescript
-// Enhanced implementation
+// Service implementation
 export class UserService implements IUserService {
   constructor(
     private readonly userRepository: IUserRepository,
@@ -129,20 +125,35 @@ export class UserService implements IUserService {
       throw new ConflictException("User already exists");
     }
 
+    // Hash password
+    const hashedPassword = await this.hashPassword(data.password);
+
     // Create user
-    const user = await this.userRepository.create(data);
+    const user = await this.userRepository.create({
+      ...data,
+      password: hashedPassword,
+    });
+
     return this.mapToResponse(user);
   }
 
   private mapToResponse(user: User): UserResponse {
-    return {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      createdAt: user.createdAt,
-    };
+    const { password, ...userWithoutPassword } = user;
+    return userWithoutPassword as UserResponse;
+  }
+
+  private async hashPassword(password: string): Promise<string> {
+    return bcrypt.hash(password, 12);
   }
 }
+```
+
+#### **3. Quality Validation (Mutation Testing)**
+
+```typescript
+// Run mutation tests to validate test quality
+// Ensures tests catch all code mutations
+npm run test:mutation
 ```
 
 ---
@@ -219,7 +230,7 @@ Morning:
   - Implement service contract tests
 
 Afternoon:
-  - Run Red-Green-Refactor cycles
+  - Run Green-Refactor-Validation cycles
   - Execute mutation testing
   - Update quality metrics
 
@@ -402,13 +413,21 @@ module.exports = {
 
 ## 📚 Testing Best Practices
 
-### **TDD Best Practices**
+### **Contract Testing Best Practices**
 
-1. **Write minimal tests first** - Focus on behavior, not implementation
-2. **Make tests pass quickly** - Minimal code to pass tests
-3. **Refactor confidently** - Tests provide safety net
-4. **Keep tests independent** - Each test should run in isolation
+1. **Define interfaces first** - Establish clear contracts before implementation
+2. **Test behavior, not implementation** - Focus on what, not how
+3. **Keep contracts stable** - Minimize breaking changes
+4. **Reusable test suites** - Contract tests work with any implementation
 5. **Use descriptive test names** - Clear intent and expectations
+
+### **Unit Testing Best Practices**
+
+1. **Test all edge cases** - Cover happy path and error scenarios
+2. **Keep tests independent** - Each test should run in isolation
+3. **Mock external dependencies** - Focus on unit under test
+4. **Arrange-Act-Assert pattern** - Clear test structure
+5. **Fast execution** - Unit tests should run quickly
 
 ### **Mutation Testing Best Practices**
 

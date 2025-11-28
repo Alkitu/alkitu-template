@@ -56,11 +56,10 @@ Total Tests: 237
 
 ## 🎯 Testing Philosophy
 
-### **Red-Green-Refactor Cycle**
+### **Green-Refactor-Validation Cycle**
 
 ```
-🔴 RED    → Write failing test first
-🟢 GREEN  → Write minimal code to pass
+🟢 GREEN    → Write code with tests
 🔵 REFACTOR → Improve code while keeping tests green
 ✅ VALIDATE → Run mutation tests to verify test quality
 ```
@@ -135,98 +134,6 @@ packages/
     ├── mocks/                # Mock implementations
     ├── fixtures/             # Test data
     └── utils/                # Test utilities
-```
-
----
-
-## 🔴 RED Phase: Write Failing Tests First
-
-### **1. Interface Contract Tests**
-
-```typescript
-// src/users/interfaces/__tests__/user-service.contract.spec.ts
-describe("IUserService Contract", () => {
-  let service: IUserService;
-
-  beforeEach(() => {
-    service = testModule.get<IUserService>("IUserService");
-  });
-
-  describe("createUser", () => {
-    it("should create user with valid data", async () => {
-      // RED: This test fails initially
-      const userData = { email: "test@test.com", password: "password123" };
-      const result = await service.createUser(userData);
-
-      expect(result).toMatchObject({
-        id: expect.any(String),
-        email: userData.email,
-        createdAt: expect.any(Date),
-      });
-    });
-
-    it("should throw ConflictException for duplicate email", async () => {
-      // RED: This test fails initially
-      const userData = { email: "duplicate@test.com", password: "password123" };
-
-      await service.createUser(userData);
-
-      await expect(service.createUser(userData)).rejects.toThrow(
-        ConflictException
-      );
-    });
-
-    it("should hash password before storing", async () => {
-      // RED: This test fails initially
-      const userData = { email: "test@test.com", password: "plaintext" };
-      const result = await service.createUser(userData);
-
-      // Password should not be returned or be plaintext
-      expect(result.password).toBeUndefined();
-    });
-  });
-});
-```
-
-### **2. Repository Contract Tests**
-
-```typescript
-// src/users/repositories/__tests__/user-repository.contract.spec.ts
-describe("IUserRepository Contract", () => {
-  let repository: IUserRepository;
-
-  beforeEach(() => {
-    repository = testModule.get<IUserRepository>("IUserRepository");
-  });
-
-  describe("create", () => {
-    it("should create user and return with id", async () => {
-      // RED: Fails initially
-      const userData = createValidUserData();
-      const result = await repository.create(userData);
-
-      expect(result.id).toBeDefined();
-      expect(result.email).toBe(userData.email);
-    });
-  });
-
-  describe("findByEmail", () => {
-    it("should return user when email exists", async () => {
-      // RED: Fails initially
-      const userData = createValidUserData();
-      const created = await repository.create(userData);
-
-      const found = await repository.findByEmail(userData.email);
-      expect(found?.id).toBe(created.id);
-    });
-
-    it("should return null when email does not exist", async () => {
-      // RED: Fails initially
-      const result = await repository.findByEmail("nonexistent@test.com");
-      expect(result).toBeNull();
-    });
-  });
-});
 ```
 
 ---

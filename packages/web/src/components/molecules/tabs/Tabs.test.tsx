@@ -47,7 +47,7 @@ describe('Tabs Molecule', () => {
     it('renders first tab content by default', () => {
       render(<Tabs tabs={mockTabs} />);
       expect(screen.getByText('Overview Content')).toBeInTheDocument();
-      expect(screen.queryByText('Settings Content')).not.toBeVisible();
+      expect(screen.queryByText('Settings Content')).not.toBeInTheDocument();
     });
   });
 
@@ -132,7 +132,7 @@ describe('Tabs Molecule', () => {
 
       render(<Tabs tabs={tabsWithDisabled} />);
 
-      const disabledTab = screen.getByText('Disabled');
+      const disabledTab = screen.getByRole('tab', { name: /Disabled/i });
       expect(disabledTab).toBeDisabled();
     });
   });
@@ -148,7 +148,7 @@ describe('Tabs Molecule', () => {
       await user.click(screen.getByText('Settings'));
 
       expect(screen.getByText('Settings Content')).toBeVisible();
-      expect(screen.queryByText('Overview Content')).not.toBeVisible();
+      expect(screen.queryByText('Overview Content')).not.toBeInTheDocument();
     });
 
     it('calls onValueChange when tab changes', async () => {
@@ -190,7 +190,7 @@ describe('Tabs Molecule', () => {
 
       render(<Tabs tabs={mockTabs} addable onTabAdd={handleAdd} />);
 
-      const addButton = screen.getByRole('button', { name: /plus/i });
+      const addButton = screen.getByRole('button', { name: /add new tab/i });
       await user.click(addButton);
 
       expect(handleAdd).toHaveBeenCalled();
@@ -287,25 +287,20 @@ describe('Tabs Molecule', () => {
     it('renders scroll buttons when scrollable', () => {
       render(<Tabs tabs={mockTabs} scrollable />);
 
-      const leftButton = screen.getAllByRole('button').find(btn =>
-        within(btn).queryByRole('img', { hidden: true })
-      );
+      const leftButton = screen.getByTestId('scroll-left-button');
+      const rightButton = screen.getByTestId('scroll-right-button');
 
       expect(leftButton).toBeInTheDocument();
+      expect(rightButton).toBeInTheDocument();
     });
 
     it('disables scroll left when at start', () => {
       render(<Tabs tabs={mockTabs} scrollable />);
 
-      const buttons = screen.getAllByRole('button');
-      const scrollButtons = buttons.filter(btn =>
-        btn.querySelector('[class*="chevron"]')
-      );
+      const leftButton = screen.getByTestId('scroll-left-button');
 
-      // First scroll button (left) should be disabled at start
-      if (scrollButtons.length > 0) {
-        expect(scrollButtons[0]).toBeDisabled();
-      }
+      // Scroll left button should be disabled at start
+      expect(leftButton).toBeDisabled();
     });
 
     it('renders scroll buttons for scrollable tabs', () => {

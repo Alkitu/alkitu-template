@@ -167,7 +167,7 @@ El PRD actúa como un puente entre la **visión comercial** del template y su **
 
 1. **Análisis inicial**: Revisión del PRD
 2. **Diseño técnico**: Arquitectura y interfaces
-3. **Implementación**: TDD + Red-Green-Refactor
+3. **Implementación**: TDD + Green-Refactor-Validation
 4. **Testing**: Mutation testing con Stryker
 5. **Integration**: Integración con otros módulos
 6. **Deployment**: CI/CD automatizado

@@ -13,8 +13,8 @@ describe('Scrollbar Colors Validation', () => {
     expect(lightColors.scrollbarTrack.name).toBe('Scrollbar Track');
     expect(lightColors.scrollbarTrack.oklchString).toContain('oklch(');
     
-    // Thumb should be light pink
-    expect(lightColors.scrollbarThumb.hex.toUpperCase()).toBe('#FFE3E3');
+    // Thumb should be light gray
+    expect(lightColors.scrollbarThumb.hex.toUpperCase()).toBe('#CDCDCD');
     expect(lightColors.scrollbarThumb.name).toBe('Scrollbar Thumb');
     expect(lightColors.scrollbarThumb.oklchString).toContain('oklch(');
   });
@@ -71,8 +71,8 @@ describe('Scrollbar Colors Validation', () => {
     expect(lightTrack.oklch.l).toBeCloseTo(1, 2);
     expect(lightTrack.oklch.c).toBeLessThan(0.1);
     
-    // Light pink should have high lightness, low chroma
-    expect(lightThumb.oklch.l).toBeGreaterThan(0.9);
+    // Light gray should have high lightness, low chroma
+    expect(lightThumb.oklch.l).toBeGreaterThan(0.84);
     expect(lightThumb.oklch.c).toBeLessThan(0.1);
   });
 });

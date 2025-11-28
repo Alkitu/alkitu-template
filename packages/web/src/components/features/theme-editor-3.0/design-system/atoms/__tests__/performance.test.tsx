@@ -25,11 +25,7 @@ Object.defineProperty(global.performance, 'now', {
 });
 
 // Mock NODE_ENV para habilitar performance monitoring en tests
-const originalEnv = process.env.NODE_ENV;
-Object.defineProperty(process.env, 'NODE_ENV', {
-  writable: true,
-  value: 'development',
-});
+vi.stubEnv('NODE_ENV', 'development');
 
 describe('Performance Optimizations - ETAPA 3', () => {
   beforeEach(() => {

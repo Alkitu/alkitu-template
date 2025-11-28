@@ -151,7 +151,7 @@
 
 ### **TDD Compliance**
 
-- [ ] **Red-Green-Refactor**: TDD methodology followed
+- [ ] **Green-Refactor-Validation**: TDD methodology followed
 - [ ] **Test-First**: Tests written before implementation
 - [ ] **Incremental**: Small, incremental changes
 

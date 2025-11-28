@@ -19,13 +19,13 @@ Welcome to the comprehensive documentation hub for the Alkitu Template. This dir
 
 ### **📖 Core Documentation**
 
-| Section                                      | Description                                           | Key Features                                                         |
-| -------------------------------------------- | ----------------------------------------------------- | -------------------------------------------------------------------- |
-| **[🏗️ Architecture](./01-architecture.md)**  | System architecture, tech stack, and SOLID principles | - MongoDB + Prisma<br>- NestJS + Next.js<br>- SOLID Architecture     |
-| **[🤖 AI Agents](./03-ai-agents/README.md)** | Enhanced agent workflows and communication            | - Health Checks<br>- Peer Reviews<br>- Impact Analysis               |
-| **[📦 Product](./04-product/README.md)**     | Product requirements and development tickets          | - Feature Specifications<br>- Development Tickets<br>- PRD Documents |
-| **[🧪 Testing](./05-testing/README.md)**     | Comprehensive testing strategy                        | - TDD Red-Green-Refactor<br>- Mutation Testing<br>- Quality Gates    |
-| **[📚 Guides](./05-guides/README.md)**       | Development guides and best practices                 | - Migration Guides<br>- Legacy Systems<br>- Best Practices           |
+| Section                                      | Description                                           | Key Features                                                             |
+| -------------------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------ |
+| **[🏗️ Architecture](./01-architecture.md)**  | System architecture, tech stack, and SOLID principles | - MongoDB + Prisma<br>- NestJS + Next.js<br>- SOLID Architecture         |
+| **[🤖 AI Agents](./03-ai-agents/README.md)** | Enhanced agent workflows and communication            | - Health Checks<br>- Peer Reviews<br>- Impact Analysis                   |
+| **[📦 Product](./04-product/README.md)**     | Product requirements and development tickets          | - Feature Specifications<br>- Development Tickets<br>- PRD Documents     |
+| **[🧪 Testing](./05-testing/README.md)**     | Comprehensive testing strategy                        | - TDD Green-Refactor-Validation<br>- Mutation Testing<br>- Quality Gates |
+| **[📚 Guides](./05-guides/README.md)**       | Development guides and best practices                 | - Migration Guides<br>- Legacy Systems<br>- Best Practices               |
 
 ---
 
@@ -82,7 +82,7 @@ Welcome to the comprehensive documentation hub for the Alkitu Template. This dir
 
 - **95%+ Code Coverage** with comprehensive test suite
 - **85%+ Mutation Score** ensuring test quality
-- **Red-Green-Refactor** TDD methodology
+- **Green-Refactor-Validation** TDD methodology
 - **Automated Quality Gates** in CI/CD pipeline
 
 ### **🤖 AI-Driven Development**

@@ -65,7 +65,7 @@
 - **Quality Gates**: 95% coverage + 85% mutation survival
 - **Deployment**: Vercel + Railway automatizado
 - **Monitoring**: Sentry + PostHog integrados
-- **TDD Workflow**: Red-Green-Refactor automatizado
+- **TDD Workflow**: Green-Refactor-Validation automatizado
 
 ---
 
@@ -1074,22 +1074,11 @@ export interface IChatService {
 └─────────────────────────────────────────────────────────┘
 ```
 
-### 🔄 **Flujo TDD (Red-Green-Refactor) Automatizado**
+### 🔄 **Flujo TDD (Green-Refactor-Validation) Automatizado**
 
 ```typescript
 // TDD Workflow controlado por agentes
 interface TDDWorkflow {
-  // 🔴 RED: Escribir test que falle
-  redPhase: {
-    agent: "Testing Agent";
-    task: "Write failing test";
-    acceptanceCriteria: "Test fails as expected";
-    commands: [
-      "npm run test:watch",
-      "npm run test:unit -- --testNamePattern={feature}",
-    ];
-  };
-
   // 🟢 GREEN: Implementar código mínimo
   greenPhase: {
     agent: "Backend Agent | Frontend Agent";
@@ -1187,7 +1176,7 @@ on:
     branches: [main]
 
 jobs:
-  # Phase 1: TDD Red-Green-Refactor
+  # Phase 1: TDD Green-Refactor-Validation
   tdd-cycle:
     runs-on: ubuntu-latest
     strategy:
@@ -1205,11 +1194,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: 🔴 RED Phase - Run failing tests
-        run: |
-          npm run test:unit -- --passWithNoTests
-          echo "RED_PHASE_RESULT=$?" >> $GITHUB_ENV
 
       - name: 🟢 GREEN Phase - Run all tests
         run: |
@@ -1351,7 +1335,6 @@ interface QualityGates {
   "scripts": {
     // TDD Workflow
     "test:tdd": "jest --watch --verbose",
-    "test:red": "jest --testNamePattern='should fail' --verbose",
     "test:green": "jest --testNamePattern='should pass' --verbose",
     "test:refactor": "npm run lint && npm run type-check && npm run test:all",
 

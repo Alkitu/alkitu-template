@@ -121,7 +121,7 @@ After evaluating 5 migration strategies, Branch by Abstraction scored highest:
 1. **Team Alignment**: Review documentation with team
 2. **Environment Setup**: Configure testing tools
 3. **Phase 1 Start**: Create interfaces and legacy wrapper
-4. **TDD Training**: Ensure team understands Red-Green-Refactor
+4. **TDD Training**: Ensure team understands Green-Refactor-Validation
 
 ---
 
@@ -153,10 +153,9 @@ After evaluating 5 migration strategies, Branch by Abstraction scored highest:
 
 ### **Development Workflow**
 
-1. **RED**: Write failing test first
-2. **GREEN**: Minimal implementation to pass
-3. **REFACTOR**: Improve while keeping tests green
-4. **MUTATE**: Run mutation tests to validate
+1. **GREEN**: Write code with tests
+2. **REFACTOR**: Improve while keeping tests green
+3. **VALIDATE**: Run mutation tests to validate
 
 ### **Code Review Checklist**
 

@@ -29,7 +29,6 @@
     "build:web": "cd packages/web && npm run build",
     "test": "npm-run-all test:web test:api test:shared",
     "test:unit": "npm-run-all test:web test:api test:shared",
-    "test:red": "echo '🔴 RED Phase - Tests should fail (TDD)' && npm run test || echo 'RED phase: tests failed as expected'",
     "test:all": "npm-run-all lint type-check test",
     "test:web": "cd packages/web && npm run test",
     "test:api": "cd packages/api && npm run test",

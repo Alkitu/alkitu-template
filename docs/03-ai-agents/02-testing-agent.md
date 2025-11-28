@@ -89,7 +89,7 @@ export function runUserServiceContractTests(
       const userData = {
         email: "test@example.com",
         name: "Test User",
-        password: "SecurePass123!"
+        password: "SecurePass123!",
       };
 
       const result = await service.createUser(userData);
@@ -131,7 +131,7 @@ export class UserService implements IUserService {
     // Create user
     const user = await this.userRepository.create({
       ...data,
-      password: hashedPassword
+      password: hashedPassword,
     });
 
     return this.mapToResponse(user);
@@ -230,7 +230,7 @@ Morning:
   - Implement service contract tests
 
 Afternoon:
-  - Run Red-Green-Refactor cycles
+  - Run Green-Refactor-Validation cycles
   - Execute mutation testing
   - Update quality metrics
 

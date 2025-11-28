@@ -30,6 +30,11 @@ jobs:
       - name: 📦 Install dependencies
         run: npm ci
 
+      - name: 🔧 Generate Prisma Client
+        run: |
+          echo "🔧 Generating Prisma types..."
+          cd packages/api && npx prisma generate
+
       - name: 🟢 Run GREEN phase tests
         run: |
           echo "🟢 GREEN Phase - Running unit tests..."
@@ -67,6 +72,11 @@ jobs:
 
       - name: 📦 Install dependencies
         run: npm ci
+
+      - name: 🔧 Generate Prisma Client
+        run: |
+          echo "🔧 Generating Prisma types..."
+          cd packages/api && npx prisma generate
 
       - name: 🔄 Run REFACTOR phase
         run: |
@@ -107,6 +117,11 @@ jobs:
 
       - name: 📦 Install dependencies
         run: npm ci
+
+      - name: 🔧 Generate Prisma Client
+        run: |
+          echo "🔧 Generating Prisma types..."
+          cd packages/api && npx prisma generate
 
       - name: 🧪 Run VALIDATION phase
         run: |
@@ -214,6 +229,11 @@ jobs:
       - name: 📦 Install dependencies
         run: npm ci
 
+      - name: 🔧 Generate Prisma Client
+        run: |
+          echo "🔧 Generating Prisma types..."
+          cd packages/api && npx prisma generate
+
       - name: 📊 Download all artifacts
         uses: actions/download-artifact@v4
         with:
@@ -264,6 +284,11 @@ jobs:
 
       - name: 📦 Install dependencies
         run: npm ci
+
+      - name: 🔧 Generate Prisma Client
+        run: |
+          echo "🔧 Generating Prisma types..."
+          cd packages/api && npx prisma generate
 
       - name: 🏗️ Build production
         run: npm run build:all

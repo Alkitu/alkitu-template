@@ -65,7 +65,7 @@ vi.mock('@/components/atoms/inputs', () => ({
 }));
 
 // Mock Dialog components
-vi.mock('@/components/ui/dialog', () => ({
+vi.mock('@/components/primitives/Dialog', () => ({
   Dialog: ({ children, open, onOpenChange }: any) =>
     open ? <div role="dialog">{children}</div> : null,
   DialogContent: ({ children, className, ref }: any) => (

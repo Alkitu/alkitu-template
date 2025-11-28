@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useCallback } from 'react';
 import { Upload, X, Check, AlertCircle } from 'lucide-react';
-import { Button } from '@/components/features/theme-editor-3.0/design-system/primitives/Button';
+import { Button } from '@/components/atoms/buttons';
 import { Input } from '@/components/atoms/inputs';
 import { CustomIcon } from '@/components/atoms/custom-icon';
 import {

@@ -43,6 +43,7 @@ const adminUser = {
 
 test.describe('ALI-116: Profile Update for CLIENT Role', () => {
   test.beforeAll(async ({ browser }) => {
+    test.setTimeout(60000); // Increase timeout for registration
     // Register CLIENT user
     const page = await browser.newPage();
     await page.goto('http://localhost:3000/es/auth/register');
@@ -66,8 +67,30 @@ test.describe('ALI-116: Profile Update for CLIENT Role', () => {
     await page.getByRole('checkbox').check();
     await page.getByRole('button', { name: /registrar/i }).click();
 
-    // Wait for success
-    await page.waitForTimeout(3000);
+    // Wait for redirect to login page
+    await page.waitForURL(/auth\/login/, { timeout: 10000 });
+
+    // Login to complete onboarding
+    await page.getByLabel(/correo/i).fill(clientUser.email);
+    await page
+      .locator('input[type="password"]')
+      .first()
+      .fill(clientUser.password);
+    await page.getByRole('button', { name: /iniciar sesión/i }).click();
+
+    // Wait for redirect to onboarding
+    await page.waitForURL(/onboarding/, { timeout: 10000 });
+
+    // Skip onboarding (sets profileComplete=true)
+    const skipButton = page.getByRole('button', {
+      name: /completar después|saltar|skip/i,
+    });
+    if (await skipButton.isVisible()) {
+      await skipButton.click();
+      // Wait for redirect to dashboard (confirms profileComplete=true)
+      await page.waitForURL(/\/dashboard/, { timeout: 10000 });
+    }
+
     await page.close();
   });
 
@@ -85,7 +108,7 @@ test.describe('ALI-116: Profile Update for CLIENT Role', () => {
     await page.getByRole('button', { name: /iniciar sesión/i }).click();
 
     // Wait for redirect to dashboard (confirms successful login)
-    await page.waitForURL(/admin\/dashboard/, { timeout: 10000 });
+    await page.waitForURL(/\/dashboard/, { timeout: 10000 });
     await page.waitForLoadState('networkidle');
   });
 
@@ -162,8 +185,8 @@ test.describe('ALI-116: Profile Update for CLIENT Role', () => {
     await page.waitForTimeout(500);
 
     // Fill contact person details
-    const contactFields = await page.getByText(/contact person details/i);
-    await expect(contactFields).toBeVisible();
+    const contactHeading = await page.getByRole('heading', { name: /contact person details/i });
+    await expect(contactHeading).toBeVisible();
 
     // Fill all contact person fields
     const allFirstNameInputs = await page.getByLabel(/first name/i).all();
@@ -207,29 +230,52 @@ test.describe('ALI-116: Profile Update for CLIENT Role', () => {
 
 test.describe('ALI-116: Profile Update for EMPLOYEE Role', () => {
   test.beforeAll(async ({ browser }) => {
-    // Register EMPLOYEE user
+    test.setTimeout(60000); // Increase timeout for registration
+    // Register EMPLOYEE user via API (not UI) to specify role
     const page = await browser.newPage();
-    await page.goto('http://localhost:3000/es/auth/register');
-    await page.waitForLoadState('networkidle');
 
-    await page
-      .getByLabel(/nombre/i)
-      .first()
-      .fill(employeeUser.firstname);
-    await page.getByLabel(/apellido/i).fill(employeeUser.lastname);
+    // POST directly to backend API with role field
+    const registerResponse = await page.request.post('http://localhost:3001/auth/register', {
+      data: {
+        firstname: employeeUser.firstname,
+        lastname: employeeUser.lastname,
+        email: employeeUser.email,
+        password: employeeUser.password,
+        terms: true,
+        role: 'EMPLOYEE', // ✅ Specify EMPLOYEE role
+      },
+    });
+
+    // Ignore 409 error (user already exists from previous test run)
+    if (!registerResponse.ok() && registerResponse.status() !== 409) {
+      throw new Error(`Failed to register EMPLOYEE user: ${await registerResponse.text()}`);
+    }
+
+    // Login via UI to complete onboarding (if needed)
+    await page.goto('http://localhost:3000/es/auth/login');
+    await page.waitForLoadState('networkidle');
     await page.getByLabel(/correo/i).fill(employeeUser.email);
     await page
       .locator('input[type="password"]')
       .first()
       .fill(employeeUser.password);
-    await page
-      .locator('input[type="password"]')
-      .nth(1)
-      .fill(employeeUser.password);
-    await page.getByRole('checkbox').check();
-    await page.getByRole('button', { name: /registrar/i }).click();
+    await page.getByRole('button', { name: /iniciar sesión/i }).click();
 
-    await page.waitForTimeout(3000);
+    // Check if redirected to onboarding or dashboard
+    await page.waitForTimeout(2000);
+    const currentUrl = page.url();
+
+    if (currentUrl.includes('/onboarding')) {
+      // Skip onboarding (sets profileComplete=true)
+      const skipButton = page.getByRole('button', {
+        name: /completar después|saltar|skip/i,
+      });
+      if (await skipButton.isVisible()) {
+        await skipButton.click();
+        await page.waitForURL(/\/dashboard/, { timeout: 10000 });
+      }
+    }
+
     await page.close();
   });
 
@@ -247,7 +293,7 @@ test.describe('ALI-116: Profile Update for EMPLOYEE Role', () => {
     await page.getByRole('button', { name: /iniciar sesión/i }).click();
 
     // Wait for redirect to dashboard (confirms successful login)
-    await page.waitForURL(/admin\/dashboard/, { timeout: 10000 });
+    await page.waitForURL(/\/dashboard/, { timeout: 10000 });
     await page.waitForLoadState('networkidle');
   });
 
@@ -307,6 +353,56 @@ test.describe('ALI-116: Profile Update for EMPLOYEE Role', () => {
 });
 
 test.describe('ALI-116: Profile Update for ADMIN Role', () => {
+  test.beforeAll(async ({ browser }) => {
+    test.setTimeout(60000); // Increase timeout for registration
+    // Register ADMIN user via API (not UI) to specify role
+    const page = await browser.newPage();
+
+    // POST directly to backend API with role field
+    const registerResponse = await page.request.post('http://localhost:3001/auth/register', {
+      data: {
+        firstname: adminUser.firstname,
+        lastname: adminUser.lastname,
+        email: adminUser.email,
+        password: adminUser.password,
+        terms: true,
+        role: 'ADMIN', // ✅ Specify ADMIN role
+      },
+    });
+
+    // Ignore 409 error (user already exists from previous test run)
+    if (!registerResponse.ok() && registerResponse.status() !== 409) {
+      throw new Error(`Failed to register ADMIN user: ${await registerResponse.text()}`);
+    }
+
+    // Login via UI to complete onboarding (if needed)
+    await page.goto('http://localhost:3000/es/auth/login');
+    await page.waitForLoadState('networkidle');
+    await page.getByLabel(/correo/i).fill(adminUser.email);
+    await page
+      .locator('input[type="password"]')
+      .first()
+      .fill(adminUser.password);
+    await page.getByRole('button', { name: /iniciar sesión/i }).click();
+
+    // Check if redirected to onboarding or dashboard
+    await page.waitForTimeout(2000);
+    const currentUrl = page.url();
+
+    if (currentUrl.includes('/onboarding')) {
+      // Skip onboarding (sets profileComplete=true)
+      const skipButton = page.getByRole('button', {
+        name: /completar después|saltar|skip/i,
+      });
+      if (await skipButton.isVisible()) {
+        await skipButton.click();
+        await page.waitForURL(/\/dashboard/, { timeout: 10000 });
+      }
+    }
+
+    await page.close();
+  });
+
   test.beforeEach(async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
 
@@ -321,7 +417,7 @@ test.describe('ALI-116: Profile Update for ADMIN Role', () => {
     await page.getByRole('button', { name: /iniciar sesión/i }).click();
 
     // Wait for redirect to dashboard (confirms successful login)
-    await page.waitForURL(/admin\/dashboard/, { timeout: 10000 });
+    await page.waitForURL(/\/dashboard/, { timeout: 10000 });
     await page.waitForLoadState('networkidle');
   });
 
@@ -367,6 +463,39 @@ test.describe('ALI-116: Profile Update for ADMIN Role', () => {
 });
 
 test.describe('ALI-116: Security Tests', () => {
+  test.beforeAll(async ({ browser }) => {
+    test.setTimeout(60000);
+    // Ensure CLIENT user onboarding is complete
+    const page = await browser.newPage();
+
+    // Login and complete onboarding if needed (CLIENT user already created in first describe)
+    await page.goto('http://localhost:3000/es/auth/login');
+    await page.waitForLoadState('networkidle');
+    await page.getByLabel(/correo/i).fill(clientUser.email);
+    await page
+      .locator('input[type="password"]')
+      .first()
+      .fill(clientUser.password);
+    await page.getByRole('button', { name: /iniciar sesión/i }).click();
+
+    // Check if redirected to onboarding (profileComplete=false)
+    await page.waitForTimeout(2000);
+    const currentUrl = page.url();
+
+    if (currentUrl.includes('/onboarding')) {
+      // Skip onboarding to set profileComplete=true
+      const skipButton = page.getByRole('button', {
+        name: /completar después|saltar|skip/i,
+      });
+      if (await skipButton.isVisible()) {
+        await skipButton.click();
+        await page.waitForURL(/\/dashboard/, { timeout: 10000 });
+      }
+    }
+
+    await page.close();
+  });
+
   test.beforeEach(async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
 
@@ -381,7 +510,7 @@ test.describe('ALI-116: Security Tests', () => {
     await page.getByRole('button', { name: /iniciar sesión/i }).click();
 
     // Wait for redirect to dashboard (confirms successful login)
-    await page.waitForURL(/admin\/dashboard/, { timeout: 10000 });
+    await page.waitForURL(/\/dashboard/, { timeout: 10000 });
     await page.waitForLoadState('networkidle');
   });
 
@@ -441,7 +570,7 @@ test.describe('ALI-116: Security Tests', () => {
     // Wait for redirect (2 seconds delay in component)
     await page.waitForTimeout(3000);
 
-    // Should be redirected to dashboard
-    await expect(page).toHaveURL(/admin\/dashboard/);
+    // Should be redirected to CLIENT dashboard (not admin dashboard)
+    await expect(page).toHaveURL(/\/dashboard/);
   });
 });

@@ -1,25 +1,39 @@
-# ALI-116: User Profile & Onboarding - IMPLEMENTATION COMPLETE ✅
+# ALI-116: User Profile & Onboarding - IMPLEMENTATION STATUS
 
-**Date:** 2025-01-24  
-**Status:** ✅ **FULLY IMPLEMENTED & TESTED**  
+**Date:** 2025-01-24
+**Status:** ⚠️ **CODE COMPLETE - E2E TESTS FAILING (BLOCKED)**
 **Related:** ALI-115 (Auth Flow)
+**Blocker:** Server returning HTTP 400 on all requests - E2E tests cannot run
 
 ---
 
-## 🎉 IMPLEMENTATION SUMMARY
+## ⚠️ CRITICAL ISSUE
 
-**All 10 tasks completed:**
+**Problem**: Next.js development server is returning `HTTP 400 Bad Request` on all routes, preventing E2E tests from running.
+
+**Impact**:
+- ❌ E2E Tests: 0/14 passing (all fail on page.goto timeout)
+- ❌ Manual testing blocked
+- ❌ Cannot verify frontend functionality
+
+**See**: `/jira/sprint-1/specs/ALI-116/ALI-116-verification.md` for full diagnosis and action items.
+
+---
+
+## 🎯 IMPLEMENTATION SUMMARY
+
+**Code Implementation: 10/10 tasks completed:**
 
 - ✅ Backend: UpdateProfileDto + validation
 - ✅ Backend: PUT /users/me/profile endpoint
-- ✅ Backend: Tests unitarios (95%+) - **16 tests passing**
+- ✅ Backend: Tests unitarios (95%+) - **16 tests passing** (claimed, needs verification)
 - ✅ Shared: Types + Zod schemas
-- ✅ Frontend: ProfileFormClientOrganism
-- ✅ Frontend: ProfileFormEmployeeOrganism
-- ✅ Frontend: Profile page (route según role)
+- ✅ Frontend: ProfileFormClientOrganism component
+- ✅ Frontend: ProfileFormEmployeeOrganism component
+- ✅ Frontend: Profile page (role-based rendering)
 - ✅ Frontend: Next.js API route /api/users/profile
-- ✅ Tests E2E: Playwright (3 roles) - **15 test scenarios**
-- ✅ Documentation: Complete feedback document
+- ❌ Tests E2E: Playwright (3 roles) - **0/14 tests passing** (blocked by server 400)
+- ✅ Documentation: ALI-116-verification.md created
 
 ---
 

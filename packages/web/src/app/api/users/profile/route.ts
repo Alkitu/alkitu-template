@@ -111,7 +111,11 @@ export async function GET(request: NextRequest) {
     const cookieStore = await cookies();
     const token = cookieStore.get('auth-token')?.value;
 
+    console.log('[GET /api/users/profile] Token exists:', !!token);
+    console.log('[GET /api/users/profile] Token preview:', token?.substring(0, 20) + '...');
+
     if (!token) {
+      console.log('[GET /api/users/profile] ERROR: No token found');
       return NextResponse.json(
         {
           message: 'Unauthorized',
@@ -124,6 +128,7 @@ export async function GET(request: NextRequest) {
     // Forward to backend (assuming endpoint exists)
     const backendUrl =
       process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+    console.log('[GET /api/users/profile] Calling backend:', `${backendUrl}/users/me`);
 
     try {
       const response = await fetch(`${backendUrl}/users/me`, {

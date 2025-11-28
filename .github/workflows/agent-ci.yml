@@ -35,7 +35,7 @@ jobs:
           npm run test:red || echo "RED phase completed (tests should fail)"
 
       - name: 📊 Upload RED phase results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: red-phase-results
@@ -66,7 +66,7 @@ jobs:
           npm run test:unit
 
       - name: 📊 Upload GREEN phase results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: green-phase-results
@@ -99,7 +99,7 @@ jobs:
           npm run test:all
 
       - name: 📊 Upload REFACTOR phase results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: refactor-phase-results
@@ -145,7 +145,7 @@ jobs:
           fi
 
       - name: 📊 Upload VALIDATION phase results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: validation-phase-results
@@ -185,7 +185,7 @@ jobs:
         run: docker-compose -f docker-compose.ci.yml down
 
       - name: 📊 Upload Docker test results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: docker-test-results
@@ -211,7 +211,7 @@ jobs:
         run: npm ci
 
       - name: 📊 Download all artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           path: ./all-reports
 
@@ -236,7 +236,7 @@ jobs:
           echo "- Type Errors: 0" >> quality-report.md
 
       - name: 📊 Upload quality report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: quality-report
           path: quality-report.md

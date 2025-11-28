@@ -1,0 +1,36 @@
+{
+  "packageManager": "npm",
+  "reporters": ["clear-text", "progress", "json"],
+  "testRunner": "jest",
+  "testRunnerNodeArgs": ["--max_old_space_size=4096"],
+  "coverageAnalysis": "perTest",
+  "mutate": [
+    "src/users/services/user-repository.service.ts",
+    "src/users/services/user-authentication.service.ts",
+    "src/users/services/user-facade.service.ts",
+    "src/users/services/user-analytics.service.ts",
+    "src/users/services/user-events.service.ts"
+  ],
+  "thresholds": {
+    "high": 85,
+    "low": 70,
+    "break": 60
+  },
+  "timeoutMS": 30000,
+  "concurrency": 4,
+  "plugins": ["@stryker-mutator/jest-runner"],
+  "jest": {
+    "projectType": "custom",
+    "configFile": "jest.config.js"
+  },
+  "htmlReporter": {
+    "baseDir": "reports/mutation"
+  },
+  "jsonReporter": {
+    "fileName": "reports/mutation/mutation-report.json"
+  },
+  "dashboard": {
+    "project": "alkitu-template-api",
+    "version": "main"
+  }
+}

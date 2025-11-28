@@ -1,0 +1,458 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-arm64-openssl-3.0.x"]
+}
+
+// Enums
+enum UserRole {
+  ADMIN
+  EMPLOYEE
+  CLIENT
+  LEAD
+  USER
+  MODERATOR
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  ANONYMIZED
+}
+
+/// Contact person information for business clients (ALI-115)
+type ContactPerson {
+  name     String
+  lastname String
+  phone    String
+  email    String
+}
+
+model PasswordResetToken {
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  email   String
+  token   String   @unique
+  expires DateTime
+}
+
+enum ResourceType {
+  USER
+  ADMIN_PANEL
+  OTHER
+}
+
+enum AccessLevel {
+  READ
+  WRITE
+  ADMIN
+}
+
+// User Management (ALI-115 refactored)
+model User {
+  id                      String                  @id @default(auto()) @map("_id") @db.ObjectId
+
+  // Authentication fields
+  email                   String                  @unique
+  password                String?
+  emailVerified           DateTime?
+
+  // Personal information (RENAMED from name, lastName, contactNumber)
+  firstname               String                  @default("")
+  lastname                String                  @default("")
+  phone                   String?                 @default("")
+
+  // Business information (NEW fields ALI-115)
+  company                 String?                 @default("")
+  address                 String?
+  contactPerson           ContactPerson?
+
+  // Account settings
+  role                    UserRole                @default(CLIENT)
+  status                  UserStatus              @default(ACTIVE)
+  profileComplete         Boolean                 @default(false) // NEW: ALI-115 onboarding flag
+  terms                   Boolean                 @default(false)
+  isTwoFactorEnabled      Boolean                 @default(false)
+
+  // Metadata
+  image                   String?                 @default("")
+  createdAt               DateTime                @default(now())
+  updatedAt               DateTime                @updatedAt
+  lastLogin               DateTime?               @default(now())
+
+  // Relations
+  twoFactorConfirmation   TwoFactorConfirmation?
+  accounts                Account[]
+  notifications           Notification[]
+  notificationPreferences NotificationPreference?
+  billings                Billing[]
+  groupIds                String[]                @db.ObjectId
+  groups                  Group[]                 @relation(fields: [groupIds], references: [id])
+  tagIds                  String[]                @db.ObjectId
+  tags                    Tag[]                   @relation(fields: [tagIds], references: [id])
+  resourceIds             String[]                @db.ObjectId
+  resources               Resource[]              @relation(fields: [resourceIds], references: [id])
+  refreshTokens           RefreshToken[]
+  sentMessages            ChatMessage[]           @relation("SenderMessages")
+  assignedConversations   Conversation[]          @relation("AssignedConversations")
+  locations               WorkLocation[]          @relation("UserLocations") // ALI-117
+}
+
+// Notification Preferences model
+model NotificationPreference {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  userId String @unique @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Email notifications
+  emailEnabled Boolean  @default(true)
+  emailTypes   String[] @default(["welcome", "security", "system"]) // Types of notifications to receive via email
+
+  // Push notifications
+  pushEnabled Boolean  @default(true)
+  pushTypes   String[] @default(["urgent", "mentions", "system"]) // Types for push notifications
+
+  // In-app notifications  
+  inAppEnabled Boolean  @default(true)
+  inAppTypes   String[] @default(["all"]) // Types for in-app notifications
+
+  // Frequency settings
+  emailFrequency String  @default("immediate") // immediate, hourly, daily, weekly
+  digestEnabled  Boolean @default(false) // Enable email digest
+
+  // Quiet hours
+  quietHoursEnabled Boolean @default(false)
+  quietHoursStart   String? // Time format "HH:mm" 
+  quietHoursEnd     String? // Time format "HH:mm"
+
+  // Marketing and promotional
+  marketingEnabled   Boolean @default(false)
+  promotionalEnabled Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("notification_preferences")
+}
+
+// Notification model
+model Notification {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  message   String
+  type      String?  @default("info")
+  link      String?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// Billing model
+model Billing {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String    @db.ObjectId
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan          String
+  status        String
+  amount        Float
+  currency      String
+  startDate     DateTime
+  endDate       DateTime?
+  paymentMethod String?
+  transactionId String?   @unique
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([userId])
+}
+
+// Authentication Models
+model VerificationToken {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Account {
+  id                String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String  @db.ObjectId
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.String
+  access_token      String? @db.String
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.String
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model TwoFactorConfirmation {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  userId String @unique @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model RefreshToken {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expires   DateTime
+  createdAt DateTime @default(now())
+}
+
+// User Group Management
+model Group {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String   @unique
+  description String?
+  color       String?  @default("#3B82F6")
+  userIds     String[] @db.ObjectId
+  users       User[]   @relation(fields: [userIds], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// User Tag Management 
+model Tag {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String   @unique
+  description String?
+  color       String?  @default("#10B981")
+  userIds     String[] @db.ObjectId
+  users       User[]   @relation(fields: [userIds], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Resource Management
+model Resource {
+  id             String          @id @default(auto()) @map("_id") @db.ObjectId
+  name           String
+  description    String?
+  resourceType   ResourceType
+  userIds        String[]        @db.ObjectId
+  users          User[]          @relation(fields: [userIds], references: [id])
+  accessControls AccessControl[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+}
+
+// Access Control
+model AccessControl {
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  resourceId  String       @db.ObjectId
+  resource    Resource     @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  isActive    Boolean      @default(true)
+  accessRules AccessRule[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([resourceId])
+}
+
+model AccessRule {
+  id              String        @id @default(auto()) @map("_id") @db.ObjectId
+  accessControlId String        @db.ObjectId
+  accessControl   AccessControl @relation(fields: [accessControlId], references: [id], onDelete: Cascade)
+
+  subjectType  String // USER, ROLE
+  subjectValue String // email, role name
+  accessLevel  AccessLevel
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([accessControlId])
+  @@index([subjectType, subjectValue])
+}
+
+model Conversation {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  contactInfoId String   @db.ObjectId
+  assignedToId  String?  @db.ObjectId
+  status        ConversationStatus @default(OPEN)
+  priority      Priority @default(NORMAL)
+  source        String   @default("website")
+  tags          String[]
+  internalNotes String?
+  lastMessageAt DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  contactInfo ContactInfo @relation(fields: [contactInfoId], references: [id])
+  assignedTo  User?       @relation("AssignedConversations", fields: [assignedToId], references: [id])
+  messages    ChatMessage[]
+
+  @@map("conversations")
+}
+
+model ChatMessage {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  conversationId String   @db.ObjectId
+  content        String
+  isFromVisitor  Boolean  @default(true)
+  senderUserId   String?  @db.ObjectId
+  isRead         Boolean  @default(false)
+  metadata       Json?    // Additional message data
+  createdAt      DateTime @default(now())
+
+  // Relations
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderUser   User?        @relation("SenderMessages", fields: [senderUserId], references: [id])
+
+  @@map("chat_messages")
+}
+
+model ContactInfo {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  email         String?  @unique
+  phone         String?  @unique
+  name          String?
+  company       String?
+  source        String?  // UTM source, referrer
+  ipAddress     String?
+  userAgent     String?
+  metadata      Json?    // Additional contact data
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  conversations Conversation[]
+
+  @@map("contact_info")
+}
+
+enum ConversationStatus {
+  OPEN
+  IN_PROGRESS
+  WAITING_CUSTOMER
+  RESOLVED
+  CLOSED
+}
+
+enum Priority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+model ChatbotConfig {
+  id                 String  @id @default(auto()) @map("_id") @db.ObjectId
+  // Appearance
+  primaryColor       String  @default("#007ee6")
+  textColor          String  @default("#FFFFFF")
+  backgroundColor    String  @default("#222222")
+  borderRadius       Int     @default(8)
+  position           String  @default("bottom-right") // "bottom-right" | "bottom-left"
+  // Behavior
+  autoOpen           Boolean @default(false)
+  autoOpenDelay      Int     @default(5000) // milliseconds
+  offlineMode        Boolean @default(false)
+  // Contact Form Fields
+  requireEmail       Boolean @default(true)
+  requirePhone       Boolean @default(false)
+  requireName        Boolean @default(true)
+  requireCompany     Boolean @default(false)
+  allowAnonymous     Boolean @default(false)
+  // Messages
+  welcomeMessage     String  @default("Hi there! How can we help you today?")
+  offlineMessage     String  @default("We are currently offline. Please leave a message and we'll get back to you.")
+  thankYouMessage    String  @default("Thank you for your message! We'll get back to you shortly.")
+  // Business Hours
+  businessHoursEnabled Boolean @default(false)
+  timezone           String? // e.g., "America/New_York"
+  schedule           Json?   // Store weekly schedule as JSON
+  // Anti-spam
+  rateLimitMessages  Int     @default(5)
+  rateLimitWindow    Int     @default(60) // seconds
+  blockSpamKeywords  String[]
+
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@map("chatbot_configs")
+}
+
+// Theme Editor
+model Theme {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String?
+  version     String   @default("3.0.0")
+  author      String?
+  userId      String?  @db.ObjectId // Optional: User who created/owns the theme
+  companyId   String?  @db.ObjectId // Company this theme belongs to
+
+  // Theme configuration
+  lightModeConfig Json?     // Light mode color configuration
+  darkModeConfig  Json?     // Dark mode color configuration
+  typography      Json?     // Typography configuration
+
+  // Theme data stored as JSON (complex nested structure) - Legacy support
+  themeData   Json?    // Contains lightColors, darkColors, typography, brand, spacing, borders, shadows, scroll
+
+  // Metadata
+  tags        String[]
+  isPublic    Boolean  @default(false)
+  isFavorite  Boolean  @default(false)
+  isActive    Boolean  @default(false) // Whether this theme is currently active
+  isDefault   Boolean  @default(false) // Whether this is the default theme for the company
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("themes")
+  @@index([userId])
+  @@index([companyId])
+  @@index([isActive])
+  @@index([isDefault])
+}
+
+/// ALI-117: Work Locations Management
+model WorkLocation {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  user      User     @relation("UserLocations", fields: [userId], references: [id], onDelete: Cascade)
+  userId    String   @db.ObjectId
+
+  // Required address fields
+  street    String
+  city      String
+  zip       String
+  state     String   // 2-letter US state code (e.g., NY, CA)
+
+  // Optional fields for complex addresses
+  building  String?
+  tower     String?
+  floor     String?
+  unit      String?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("work_locations")
+}

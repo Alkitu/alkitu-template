@@ -1,0 +1,19 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "skipLibCheck": true,
+    "strict": false
+  },
+  "include": [
+    "src/**/*",
+    "test/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "src/trpc/routers/billing.router.ts",
+    "src/trpc/routers/chat.router.ts",
+    "src/trpc/routers/user.router.ts"
+  ]
+}

@@ -1,0 +1,29 @@
+FROM node:20-alpine
+
+# Instalar dependencias del sistema
+RUN apk add --no-cache curl
+
+# Establecer directorio de trabajo
+WORKDIR /app
+
+# Copiar package.json y package-lock.json del root
+COPY package*.json ./
+COPY packages/api/package*.json ./packages/api/
+COPY packages/shared/package*.json ./packages/shared/
+
+# Instalar dependencias
+RUN npm ci
+
+# Copiar código fuente
+COPY packages/api ./packages/api
+COPY packages/shared ./packages/shared
+
+# Generar Prisma client
+WORKDIR /app/packages/api
+RUN npm run prisma:generate
+
+# Exponer puerto
+EXPOSE 3001
+
+# Comando para desarrollo con hot reload
+CMD ["npm", "run", "dev"]

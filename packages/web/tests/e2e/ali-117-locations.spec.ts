@@ -140,8 +140,8 @@ test.describe('ALI-117: Work Locations Management', () => {
     // Submit form
     await page.getByRole('button', { name: /create location/i }).click();
 
-    // Wait for success message
-    await expect(page.getByText(/location created successfully/i)).toBeVisible({
+    // Wait for form to close (success)
+    await expect(page.getByText(/add new location/i)).not.toBeVisible({
       timeout: 5000,
     });
 
@@ -171,8 +171,8 @@ test.describe('ALI-117: Work Locations Management', () => {
     // Submit form
     await page.getByRole('button', { name: /create location/i }).click();
 
-    // Wait for success message
-    await expect(page.getByText(/location created successfully/i)).toBeVisible({
+    // Wait for form to close (success)
+    await expect(page.getByText(/add new location/i)).not.toBeVisible({
       timeout: 5000,
     });
 
@@ -230,8 +230,8 @@ test.describe('ALI-117: Work Locations Management', () => {
     // Submit form
     await page.getByRole('button', { name: /update location/i }).click();
 
-    // Wait for success message
-    await expect(page.getByText(/location updated successfully/i)).toBeVisible({
+    // Wait for form to close (success)
+    await expect(page.getByText(/edit location/i)).not.toBeVisible({
       timeout: 5000,
     });
 

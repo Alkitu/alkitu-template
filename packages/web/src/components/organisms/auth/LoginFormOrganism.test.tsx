@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { LoginFormOrganism } from './LoginFormOrganism';
 
 // Mock the dependencies
-vi.mock('@/context/TranslationContext', () => ({
+vi.mock('@/context/TranslationsContext', () => ({
   useTranslations: () => (key: string, options?: any, namespace?: string) => {
     const translations: Record<string, string> = {
       'auth.login.email': 'Email',

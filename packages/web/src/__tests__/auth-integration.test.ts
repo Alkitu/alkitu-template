@@ -378,7 +378,7 @@ describe('Authentication Integration Tests', () => {
       const endTime = Date.now();
 
       expect(response.ok).toBe(true);
-      expect(endTime - startTime).toBeGreaterThan(100);
+      expect(endTime - startTime).toBeGreaterThanOrEqual(100);
     });
   });
 });

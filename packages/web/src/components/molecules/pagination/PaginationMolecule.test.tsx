@@ -541,7 +541,8 @@ describe('PaginationMolecule', () => {
       // Verify the component renders and includes the total
       expect(container.querySelector('nav')).toBeInTheDocument();
       // toLocaleString() formatting is applied but exact output depends on locale
-      expect(container.textContent).toContain('1000');
+      // Accept both formats: 1000 or 1,000 (with thousand separator)
+      expect(container.textContent).toMatch(/1[,\s]?000/);
     });
   });
 

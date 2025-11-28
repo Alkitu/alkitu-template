@@ -62,11 +62,12 @@ All components must achieve minimum in:
 
 ## Quality Gates
 
-### TDD Workflow (Required)
-- 🔴 **RED**: Write failing tests first
-- 🟢 **GREEN**: Write minimal code to pass
-- 🔵 **REFACTOR**: Improve code quality
-- ✅ **VALIDATE**: Run mutation tests
+### Development Workflow
+- 📝 **DESIGN**: Define interfaces and contracts
+- ✅ **TEST**: Write comprehensive test suite
+- ⚙️ **IMPLEMENT**: Build implementation
+- 🔧 **OPTIMIZE**: Improve code quality and performance
+- 🧬 **VALIDATE**: Run mutation tests
 
 ### Pre-Commit Checks
 - ✅ All tests passing

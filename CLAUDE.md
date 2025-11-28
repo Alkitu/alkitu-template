@@ -230,10 +230,10 @@ Test SOLID compliance with: `npm run test:solid`
 
 ### Testing Methodology
 
-- **TDD Workflow**: RED → GREEN → REFACTOR → VALIDATION
+- **Testing Workflow**: DESIGN → TEST → IMPLEMENT → OPTIMIZE → VALIDATE
 - **Coverage Requirements**: 95%+ for critical services, 90%+ globally
 - **Mutation Testing**: 85%+ mutation score using Stryker
-- **Test Categories**: Unit, Integration, E2E, Performance, Contract
+- **Test Categories**: Contract, Unit, Integration, E2E, Performance
 - **Quality Gates**: Automated in CI/CD pipeline
 - **Testing Frameworks**:
   - **Backend**: Jest (unit) + Stryker (mutation) + Supertest (API)

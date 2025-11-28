@@ -31,9 +31,15 @@ global.fetch = vi.fn();
 describe('LoginFormOrganism', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.clearAllTimers();
 
     // Reset fetch mock
     (global.fetch as any).mockClear();
+  });
+
+  afterEach(() => {
+    // Clear any pending timers to prevent test interference
+    vi.clearAllTimers();
   });
 
   it('should render all form elements correctly', () => {

@@ -14,9 +14,22 @@ import { ChatModule } from './chat/chat.module';
 import { ChatbotConfigModule } from './chatbot-config/chatbot-config.module';
 import { ThemeModule } from './theme/theme.module';
 import { LocationsModule } from './locations/locations.module';
+import { CategoriesModule } from './categories/categories.module';
+import { ServicesModule } from './services/services.module';
+import { RequestsModule } from './requests/requests.module';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
+    // Global rate limiting: Higher limit for development/test environments
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000, // 60 seconds
+        limit: process.env.NODE_ENV === 'test' ? 0 : (process.env.NODE_ENV === 'production' ? 100 : 10000),
+        skipIf: () => process.env.NODE_ENV === 'test', // Skip throttling entirely for tests
+      },
+    ]),
     UsersModule,
     AuthModule,
     TrpcModule,
@@ -28,9 +41,20 @@ import { LocationsModule } from './locations/locations.module';
     ChatbotConfigModule,
     ThemeModule,
     LocationsModule,
+    CategoriesModule,
+    ServicesModule,
+    RequestsModule,
   ],
   controllers: [AppController],
-  providers: [AppService, PrismaService],
+  providers: [
+    AppService,
+    PrismaService,
+    // Apply throttler globally
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
   exports: [PrismaService],
 })
 export class AppModule {}

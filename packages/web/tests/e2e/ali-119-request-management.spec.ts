@@ -199,8 +199,8 @@ test.describe('ALI-119: CLIENT Role - Create and Manage Requests', () => {
     await page.goto('http://localhost:3000/es/requests');
     await page.waitForLoadState('networkidle');
 
-    // Verify page title
-    await expect(page.getByRole('heading', { name: /service requests/i })).toBeVisible();
+    // Verify page title (using .first() to avoid strict mode violation)
+    await expect(page.getByRole('heading', { name: /service requests/i }).first()).toBeVisible();
 
     // Verify CLIENT-specific description
     await expect(page.getByText(/manage your service requests/i)).toBeVisible();
@@ -392,8 +392,8 @@ test.describe('ALI-119: EMPLOYEE Role - Assign and Complete Requests', () => {
     await page.goto('http://localhost:3000/es/requests');
     await page.waitForLoadState('networkidle');
 
-    // Verify page title
-    await expect(page.getByRole('heading', { name: /service requests/i })).toBeVisible();
+    // Verify page title (using .first() to avoid strict mode violation)
+    await expect(page.getByRole('heading', { name: /service requests/i }).first()).toBeVisible();
 
     // Verify EMPLOYEE-specific description
     await expect(page.getByText(/view and manage assigned requests/i)).toBeVisible();
@@ -506,8 +506,8 @@ test.describe('ALI-119: ADMIN Role - Full Management', () => {
     await page.goto('http://localhost:3000/es/requests');
     await page.waitForLoadState('networkidle');
 
-    // Verify page title
-    await expect(page.getByRole('heading', { name: /service requests/i })).toBeVisible();
+    // Verify page title (using .first() to avoid strict mode violation)
+    await expect(page.getByRole('heading', { name: /service requests/i }).first()).toBeVisible();
 
     // Verify ADMIN-specific description
     await expect(page.getByText(/manage all service requests/i)).toBeVisible();

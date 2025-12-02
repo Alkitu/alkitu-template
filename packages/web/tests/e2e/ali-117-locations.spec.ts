@@ -102,12 +102,12 @@ test.describe('ALI-117: Work Locations Management', () => {
       timeout: 5000,
     });
 
-    // Verify location appears in list
-    await expect(page.getByText(testLocationFull.street)).toBeVisible({
+    // Verify location appears in list (using .first() to avoid strict mode violation)
+    await expect(page.getByText(testLocationFull.street).first()).toBeVisible({
       timeout: 3000,
     });
     await expect(
-      page.getByText(`${testLocationFull.city}, ${testLocationFull.state}`),
+      page.getByText(`${testLocationFull.city}, ${testLocationFull.state}`).first(),
     ).toBeVisible();
   });
 
@@ -134,8 +134,8 @@ test.describe('ALI-117: Work Locations Management', () => {
       timeout: 5000,
     });
 
-    // Verify location appears in list
-    await expect(page.getByText(testLocationMinimal.street)).toBeVisible({
+    // Verify location appears in list (using .first() to avoid strict mode violation)
+    await expect(page.getByText(testLocationMinimal.street).first()).toBeVisible({
       timeout: 3000,
     });
   });

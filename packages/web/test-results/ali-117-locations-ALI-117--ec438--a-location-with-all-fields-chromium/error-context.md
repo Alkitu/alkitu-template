@@ -1,0 +1,66 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e4]:
+      - generic [ref=e5]:
+        - generic [ref=e6]:
+          - heading "Work Locations" [level=2] [ref=e7]
+          - paragraph [ref=e8]: Manage your work locations for service requests
+        - button "Add Location" [ref=e9] [cursor=pointer]:
+          - img [ref=e10]
+          - text: Add Location
+      - generic [ref=e11]:
+        - generic [ref=e12]: 3 Locations
+        - generic [ref=e13]:
+          - generic [ref=e15]:
+            - generic [ref=e17]:
+              - img [ref=e19]
+              - generic [ref=e22]:
+                - generic [ref=e23]:
+                  - img [ref=e24]
+                  - generic [ref=e28]: Test Building, Tower A, 5th Floor, Suite 500
+                - generic [ref=e29]: 123 Test Street
+                - generic [ref=e30]: New York, NY 10001
+                - generic [ref=e31]: Added 12/2/2025
+            - generic [ref=e32]:
+              - button "Edit location" [ref=e33] [cursor=pointer]:
+                - img [ref=e34]
+              - button "Delete location" [ref=e37] [cursor=pointer]:
+                - img [ref=e38]
+          - generic [ref=e42]:
+            - generic [ref=e44]:
+              - img [ref=e46]
+              - generic [ref=e49]:
+                - generic [ref=e50]: 456 Minimal St
+                - generic [ref=e51]: Brooklyn, NY 11201
+                - generic [ref=e52]: Added 12/2/2025
+            - generic [ref=e53]:
+              - button "Edit location" [ref=e54] [cursor=pointer]:
+                - img [ref=e55]
+              - button "Delete location" [ref=e58] [cursor=pointer]:
+                - img [ref=e59]
+          - generic [ref=e63]:
+            - generic [ref=e65]:
+              - img [ref=e67]
+              - generic [ref=e70]:
+                - generic [ref=e71]:
+                  - img [ref=e72]
+                  - generic [ref=e76]: Test Building, Tower A, 5th Floor, Suite 500
+                - generic [ref=e77]: 123 Test Street
+                - generic [ref=e78]: New York, NY 10001
+                - generic [ref=e79]: Added 12/2/2025
+            - generic [ref=e80]:
+              - button "Edit location" [ref=e81] [cursor=pointer]:
+                - img [ref=e82]
+              - button "Delete location" [ref=e85] [cursor=pointer]:
+                - img [ref=e86]
+    - region "Notifications (F8)":
+      - list
+  - button [ref=e90] [cursor=pointer]:
+    - img [ref=e91]
+  - button "Open Next.js Dev Tools" [ref=e98] [cursor=pointer]:
+    - img [ref=e99]
+  - alert [ref=e102]
+```

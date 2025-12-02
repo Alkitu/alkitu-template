@@ -9,8 +9,6 @@ import { UsersModule } from '../users/users.module';
 import { EmailModule } from '../email/email.module';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
-import { RolesGuard } from './guards/roles.guard';
-import { APP_GUARD } from '@nestjs/core';
 import { PrismaService } from '../prisma.service';
 
 /**
@@ -47,10 +45,8 @@ import { PrismaService } from '../prisma.service';
     PrismaService,
     LocalStrategy,
     JwtStrategy,
-    {
-      provide: APP_GUARD,
-      useClass: RolesGuard,
-    },
+    // RolesGuard should NOT be a global guard - it must execute AFTER JwtAuthGuard
+    // Use @UseGuards(JwtAuthGuard, RolesGuard) at controller level instead
   ],
   exports: [AuthService, TokenService],
 })

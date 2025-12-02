@@ -41,10 +41,15 @@ export class AuthController {
 
   /**
    * User registration (ALI-115)
-   * Rate limit: 20 requests per hour
+   * Rate limit: 20 requests per hour in production, 500 per minute in dev/test
    */
   @Post('register')
-  @Throttle({ medium: { limit: 20, ttl: 3600000 } })
+  @Throttle({
+    medium: {
+      limit: process.env.NODE_ENV === 'production' ? 20 : 10000,
+      ttl: process.env.NODE_ENV === 'production' ? 3600000 : 60000, // 1 hour in prod, 1 min in dev/test
+    },
+  })
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Register a new user' })
   @ApiResponse({
@@ -108,11 +113,10 @@ export class AuthController {
 
   /**
    * User login (ALI-115)
-   * Rate limit: 5 requests per minute (prevent brute force)
+   * Rate limit: Uses global throttler (10000/min in dev/test, 100/min in production)
    */
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  @Throttle({ short: { limit: 5, ttl: 60000 } })
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Login user' })
   @ApiResponse({

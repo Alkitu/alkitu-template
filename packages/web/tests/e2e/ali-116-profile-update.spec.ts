@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../fixtures/authenticated-fixtures';
+import { TEST_USERS } from '../fixtures/test-users';
 
 /**
  * ALI-116 - Profile Update E2E Tests
@@ -12,109 +13,27 @@ import { test, expect } from '@playwright/test';
  * - Cannot change email
  * - Cannot change password (separate endpoint)
  * - Cannot change role
+ *
+ * NOTE: Uses pre-seeded test users from fixtures/test-users.ts
+ * Run `npm run seed:test-users` in packages/api before running these tests
  */
 
-// Test credentials for different roles
-const timestamp = Date.now();
-
-const clientUser = {
-  email: `client-${timestamp}@example.com`,
-  password: 'ClientPass123',
-  firstname: 'Client',
-  lastname: 'User',
-  role: 'CLIENT',
-};
-
-const employeeUser = {
-  email: `employee-${timestamp}@example.com`,
-  password: 'EmployeePass123',
-  firstname: 'Employee',
-  lastname: 'User',
-  role: 'EMPLOYEE',
-};
-
-const adminUser = {
-  email: 'admin@alkitu.com', // Use existing admin
-  password: 'Admin123!',
-  firstname: 'Admin',
-  lastname: 'User',
-  role: 'ADMIN',
-};
+// Test credentials for different roles (pre-seeded in database)
+const clientUser = TEST_USERS.CLIENT;
+const employeeUser = TEST_USERS.EMPLOYEE;
+const adminUser = TEST_USERS.ADMIN;
 
 test.describe('ALI-116: Profile Update for CLIENT Role', () => {
-  test.beforeAll(async ({ browser }) => {
-    test.setTimeout(60000); // Increase timeout for registration
-    // Register CLIENT user
-    const page = await browser.newPage();
-    await page.goto('http://localhost:3000/es/auth/register');
-    await page.waitForLoadState('networkidle');
+  // CLIENT user is pre-seeded via npm run seed:test-users
 
-    // Fill registration
-    await page
-      .getByLabel(/nombre/i)
-      .first()
-      .fill(clientUser.firstname);
-    await page.getByLabel(/apellido/i).fill(clientUser.lastname);
-    await page.getByLabel(/correo/i).fill(clientUser.email);
-    await page
-      .locator('input[type="password"]')
-      .first()
-      .fill(clientUser.password);
-    await page
-      .locator('input[type="password"]')
-      .nth(1)
-      .fill(clientUser.password);
-    await page.getByRole('checkbox').check();
-    await page.getByRole('button', { name: /registrar/i }).click();
-
-    // Wait for redirect to login page
-    await page.waitForURL(/auth\/login/, { timeout: 10000 });
-
-    // Login to complete onboarding
-    await page.getByLabel(/correo/i).fill(clientUser.email);
-    await page
-      .locator('input[type="password"]')
-      .first()
-      .fill(clientUser.password);
-    await page.getByRole('button', { name: /iniciar sesión/i }).click();
-
-    // Wait for redirect to onboarding
-    await page.waitForURL(/onboarding/, { timeout: 10000 });
-
-    // Skip onboarding (sets profileComplete=true)
-    const skipButton = page.getByRole('button', {
-      name: /completar después|saltar|skip/i,
-    });
-    if (await skipButton.isVisible()) {
-      await skipButton.click();
-      // Wait for redirect to dashboard (confirms profileComplete=true)
-      await page.waitForURL(/\/dashboard/, { timeout: 10000 });
-    }
-
-    await page.close();
-  });
-
-  test.beforeEach(async ({ page }) => {
-    await page.setViewportSize({ width: 1280, height: 720 });
-
-    // Login as CLIENT
-    await page.goto('http://localhost:3000/es/auth/login');
-    await page.waitForLoadState('networkidle');
-    await page.getByLabel(/correo/i).fill(clientUser.email);
-    await page
-      .locator('input[type="password"]')
-      .first()
-      .fill(clientUser.password);
-    await page.getByRole('button', { name: /iniciar sesión/i }).click();
-
-    // Wait for redirect to dashboard (confirms successful login)
-    await page.waitForURL(/\/dashboard/, { timeout: 10000 });
-    await page.waitForLoadState('networkidle');
+  test.beforeEach(async ({ authenticatedClientPage }) => {
+    await authenticatedClientPage.setViewportSize({ width: 1280, height: 720 });
   });
 
   test('1. CLIENT: Should see profile page with full form', async ({
-    page,
+    authenticatedClientPage,
   }) => {
+    const page = authenticatedClientPage;
     // Navigate to profile
     await page.goto('http://localhost:3000/es/profile');
     await page.waitForLoadState('networkidle');
@@ -136,8 +55,9 @@ test.describe('ALI-116: Profile Update for CLIENT Role', () => {
   });
 
   test('2. CLIENT: Should update basic fields successfully', async ({
-    page,
+    authenticatedClientPage,
   }) => {
+    const page = authenticatedClientPage;
     await page.goto('http://localhost:3000/es/profile');
     await page.waitForLoadState('networkidle');
 
@@ -156,7 +76,8 @@ test.describe('ALI-116: Profile Update for CLIENT Role', () => {
     });
   });
 
-  test('3. CLIENT: Should update address', async ({ page }) => {
+  test('3. CLIENT: Should update address', async ({ authenticatedClientPage }) => {
+    const page = authenticatedClientPage;
     await page.goto('http://localhost:3000/es/profile');
     await page.waitForLoadState('networkidle');
 
@@ -174,7 +95,8 @@ test.describe('ALI-116: Profile Update for CLIENT Role', () => {
     });
   });
 
-  test('4. CLIENT: Should add contact person', async ({ page }) => {
+  test('4. CLIENT: Should add contact person', async ({ authenticatedClientPage }) => {
+    const page = authenticatedClientPage;
     await page.goto('http://localhost:3000/es/profile');
     await page.waitForLoadState('networkidle');
 
@@ -215,8 +137,9 @@ test.describe('ALI-116: Profile Update for CLIENT Role', () => {
   });
 
   test('5. CLIENT: Should show note about CLIENT privileges', async ({
-    page,
+    authenticatedClientPage,
   }) => {
+    const page = authenticatedClientPage;
     await page.goto('http://localhost:3000/es/profile');
     await page.waitForLoadState('networkidle');
 
@@ -229,75 +152,14 @@ test.describe('ALI-116: Profile Update for CLIENT Role', () => {
 });
 
 test.describe('ALI-116: Profile Update for EMPLOYEE Role', () => {
-  test.beforeAll(async ({ browser }) => {
-    test.setTimeout(60000); // Increase timeout for registration
-    // Register EMPLOYEE user via API (not UI) to specify role
-    const page = await browser.newPage();
+  // EMPLOYEE user is pre-seeded via npm run seed:test-users
 
-    // POST directly to backend API with role field
-    const registerResponse = await page.request.post('http://localhost:3001/auth/register', {
-      data: {
-        firstname: employeeUser.firstname,
-        lastname: employeeUser.lastname,
-        email: employeeUser.email,
-        password: employeeUser.password,
-        terms: true,
-        role: 'EMPLOYEE', // ✅ Specify EMPLOYEE role
-      },
-    });
-
-    // Ignore 409 error (user already exists from previous test run)
-    if (!registerResponse.ok() && registerResponse.status() !== 409) {
-      throw new Error(`Failed to register EMPLOYEE user: ${await registerResponse.text()}`);
-    }
-
-    // Login via UI to complete onboarding (if needed)
-    await page.goto('http://localhost:3000/es/auth/login');
-    await page.waitForLoadState('networkidle');
-    await page.getByLabel(/correo/i).fill(employeeUser.email);
-    await page
-      .locator('input[type="password"]')
-      .first()
-      .fill(employeeUser.password);
-    await page.getByRole('button', { name: /iniciar sesión/i }).click();
-
-    // Check if redirected to onboarding or dashboard
-    await page.waitForTimeout(2000);
-    const currentUrl = page.url();
-
-    if (currentUrl.includes('/onboarding')) {
-      // Skip onboarding (sets profileComplete=true)
-      const skipButton = page.getByRole('button', {
-        name: /completar después|saltar|skip/i,
-      });
-      if (await skipButton.isVisible()) {
-        await skipButton.click();
-        await page.waitForURL(/\/dashboard/, { timeout: 10000 });
-      }
-    }
-
-    await page.close();
+  test.beforeEach(async ({ authenticatedEmployeePage }) => {
+    await authenticatedEmployeePage.setViewportSize({ width: 1280, height: 720 });
   });
 
-  test.beforeEach(async ({ page }) => {
-    await page.setViewportSize({ width: 1280, height: 720 });
-
-    // Login as EMPLOYEE
-    await page.goto('http://localhost:3000/es/auth/login');
-    await page.waitForLoadState('networkidle');
-    await page.getByLabel(/correo/i).fill(employeeUser.email);
-    await page
-      .locator('input[type="password"]')
-      .first()
-      .fill(employeeUser.password);
-    await page.getByRole('button', { name: /iniciar sesión/i }).click();
-
-    // Wait for redirect to dashboard (confirms successful login)
-    await page.waitForURL(/\/dashboard/, { timeout: 10000 });
-    await page.waitForLoadState('networkidle');
-  });
-
-  test('1. EMPLOYEE: Should see simplified profile form', async ({ page }) => {
+  test('1. EMPLOYEE: Should see simplified profile form', async ({ authenticatedEmployeePage }) => {
+    const page = authenticatedEmployeePage;
     await page.goto('http://localhost:3000/es/profile');
     await page.waitForLoadState('networkidle');
 
@@ -318,8 +180,9 @@ test.describe('ALI-116: Profile Update for EMPLOYEE Role', () => {
   });
 
   test('2. EMPLOYEE: Should update basic fields successfully', async ({
-    page,
+    authenticatedEmployeePage,
   }) => {
+    const page = authenticatedEmployeePage;
     await page.goto('http://localhost:3000/es/profile');
     await page.waitForLoadState('networkidle');
 
@@ -339,8 +202,9 @@ test.describe('ALI-116: Profile Update for EMPLOYEE Role', () => {
   });
 
   test('3. EMPLOYEE: Should NOT see CLIENT privileges note', async ({
-    page,
+    authenticatedEmployeePage,
   }) => {
+    const page = authenticatedEmployeePage;
     await page.goto('http://localhost:3000/es/profile');
     await page.waitForLoadState('networkidle');
 
@@ -353,75 +217,14 @@ test.describe('ALI-116: Profile Update for EMPLOYEE Role', () => {
 });
 
 test.describe('ALI-116: Profile Update for ADMIN Role', () => {
-  test.beforeAll(async ({ browser }) => {
-    test.setTimeout(60000); // Increase timeout for registration
-    // Register ADMIN user via API (not UI) to specify role
-    const page = await browser.newPage();
+  // ADMIN user is pre-seeded via npm run seed:test-users
 
-    // POST directly to backend API with role field
-    const registerResponse = await page.request.post('http://localhost:3001/auth/register', {
-      data: {
-        firstname: adminUser.firstname,
-        lastname: adminUser.lastname,
-        email: adminUser.email,
-        password: adminUser.password,
-        terms: true,
-        role: 'ADMIN', // ✅ Specify ADMIN role
-      },
-    });
-
-    // Ignore 409 error (user already exists from previous test run)
-    if (!registerResponse.ok() && registerResponse.status() !== 409) {
-      throw new Error(`Failed to register ADMIN user: ${await registerResponse.text()}`);
-    }
-
-    // Login via UI to complete onboarding (if needed)
-    await page.goto('http://localhost:3000/es/auth/login');
-    await page.waitForLoadState('networkidle');
-    await page.getByLabel(/correo/i).fill(adminUser.email);
-    await page
-      .locator('input[type="password"]')
-      .first()
-      .fill(adminUser.password);
-    await page.getByRole('button', { name: /iniciar sesión/i }).click();
-
-    // Check if redirected to onboarding or dashboard
-    await page.waitForTimeout(2000);
-    const currentUrl = page.url();
-
-    if (currentUrl.includes('/onboarding')) {
-      // Skip onboarding (sets profileComplete=true)
-      const skipButton = page.getByRole('button', {
-        name: /completar después|saltar|skip/i,
-      });
-      if (await skipButton.isVisible()) {
-        await skipButton.click();
-        await page.waitForURL(/\/dashboard/, { timeout: 10000 });
-      }
-    }
-
-    await page.close();
+  test.beforeEach(async ({ authenticatedAdminPage }) => {
+    await authenticatedAdminPage.setViewportSize({ width: 1280, height: 720 });
   });
 
-  test.beforeEach(async ({ page }) => {
-    await page.setViewportSize({ width: 1280, height: 720 });
-
-    // Login as ADMIN
-    await page.goto('http://localhost:3000/es/auth/login');
-    await page.waitForLoadState('networkidle');
-    await page.getByLabel(/correo/i).fill(adminUser.email);
-    await page
-      .locator('input[type="password"]')
-      .first()
-      .fill(adminUser.password);
-    await page.getByRole('button', { name: /iniciar sesión/i }).click();
-
-    // Wait for redirect to dashboard (confirms successful login)
-    await page.waitForURL(/\/dashboard/, { timeout: 10000 });
-    await page.waitForLoadState('networkidle');
-  });
-
-  test('1. ADMIN: Should see simplified profile form', async ({ page }) => {
+  test('1. ADMIN: Should see simplified profile form', async ({ authenticatedAdminPage }) => {
+    const page = authenticatedAdminPage;
     await page.goto('http://localhost:3000/es/profile');
     await page.waitForLoadState('networkidle');
 
@@ -442,8 +245,9 @@ test.describe('ALI-116: Profile Update for ADMIN Role', () => {
   });
 
   test('2. ADMIN: Should update basic fields successfully', async ({
-    page,
+    authenticatedAdminPage,
   }) => {
+    const page = authenticatedAdminPage;
     await page.goto('http://localhost:3000/es/profile');
     await page.waitForLoadState('networkidle');
 
@@ -463,60 +267,16 @@ test.describe('ALI-116: Profile Update for ADMIN Role', () => {
 });
 
 test.describe('ALI-116: Security Tests', () => {
-  test.beforeAll(async ({ browser }) => {
-    test.setTimeout(60000);
-    // Ensure CLIENT user onboarding is complete
-    const page = await browser.newPage();
+  // CLIENT user is pre-seeded via npm run seed:test-users
 
-    // Login and complete onboarding if needed (CLIENT user already created in first describe)
-    await page.goto('http://localhost:3000/es/auth/login');
-    await page.waitForLoadState('networkidle');
-    await page.getByLabel(/correo/i).fill(clientUser.email);
-    await page
-      .locator('input[type="password"]')
-      .first()
-      .fill(clientUser.password);
-    await page.getByRole('button', { name: /iniciar sesión/i }).click();
-
-    // Check if redirected to onboarding (profileComplete=false)
-    await page.waitForTimeout(2000);
-    const currentUrl = page.url();
-
-    if (currentUrl.includes('/onboarding')) {
-      // Skip onboarding to set profileComplete=true
-      const skipButton = page.getByRole('button', {
-        name: /completar después|saltar|skip/i,
-      });
-      if (await skipButton.isVisible()) {
-        await skipButton.click();
-        await page.waitForURL(/\/dashboard/, { timeout: 10000 });
-      }
-    }
-
-    await page.close();
-  });
-
-  test.beforeEach(async ({ page }) => {
-    await page.setViewportSize({ width: 1280, height: 720 });
-
-    // Login as CLIENT for security tests
-    await page.goto('http://localhost:3000/es/auth/login');
-    await page.waitForLoadState('networkidle');
-    await page.getByLabel(/correo/i).fill(clientUser.email);
-    await page
-      .locator('input[type="password"]')
-      .first()
-      .fill(clientUser.password);
-    await page.getByRole('button', { name: /iniciar sesión/i }).click();
-
-    // Wait for redirect to dashboard (confirms successful login)
-    await page.waitForURL(/\/dashboard/, { timeout: 10000 });
-    await page.waitForLoadState('networkidle');
+  test.beforeEach(async ({ authenticatedClientPage }) => {
+    await authenticatedClientPage.setViewportSize({ width: 1280, height: 720 });
   });
 
   test('1. Should show note about email being unchangeable', async ({
-    page,
+    authenticatedClientPage,
   }) => {
+    const page = authenticatedClientPage;
     await page.goto('http://localhost:3000/es/profile');
     await page.waitForLoadState('networkidle');
 
@@ -529,7 +289,8 @@ test.describe('ALI-116: Security Tests', () => {
     ).toBeVisible();
   });
 
-  test('2. Should NOT have email input field', async ({ page }) => {
+  test('2. Should NOT have email input field', async ({ authenticatedClientPage }) => {
+    const page = authenticatedClientPage;
     await page.goto('http://localhost:3000/es/profile');
     await page.waitForLoadState('networkidle');
 
@@ -541,7 +302,8 @@ test.describe('ALI-116: Security Tests', () => {
     expect(emailInputs.length).toBeLessThanOrEqual(1);
   });
 
-  test('3. Should NOT have password field', async ({ page }) => {
+  test('3. Should NOT have password field', async ({ authenticatedClientPage }) => {
+    const page = authenticatedClientPage;
     await page.goto('http://localhost:3000/es/profile');
     await page.waitForLoadState('networkidle');
 
@@ -551,8 +313,9 @@ test.describe('ALI-116: Security Tests', () => {
   });
 
   test('4. Should redirect to dashboard after successful update', async ({
-    page,
+    authenticatedClientPage,
   }) => {
+    const page = authenticatedClientPage;
     await page.goto('http://localhost:3000/es/profile');
     await page.waitForLoadState('networkidle');
 

@@ -69,7 +69,17 @@
       "Bash(gh run view:*)",
       "Bash(gh run list:*)",
       "Bash(gh run watch:*)",
-      "Bash(git reset:*)"
+      "Bash(git reset:*)",
+      "Bash(npx eslint \"src/categories/**/*.ts\" \"src/services/**/*.ts\")",
+      "Bash(npx eslint \"src/categories/**/*.ts\" \"src/services/**/*.ts\" --quiet)",
+      "Bash(npx eslint:*)",
+      "Bash(pkill:*)",
+      "Bash(find:*)",
+      "Bash(for i in {1..15})",
+      "Bash(do curl -X POST http://localhost:3001/auth/login -H \"Content-Type: application/json\" -d '{\"\"\"\"email\"\"\"\":\"\"\"\"admin-e2e@alkitu.test\"\"\"\",\"\"\"\"password\"\"\"\":\"\"\"\"Admin123!\"\"\"\"}' -s)",
+      "Bash(echo:*)",
+      "Bash(done)",
+      "Bash(xargs:*)"
     ],
     "deny": [],
     "ask": []

@@ -1,0 +1,63 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e4]:
+      - generic [ref=e5]:
+        - button "Back to Requests" [ref=e6]:
+          - img [ref=e7]
+          - text: Back to Requests
+        - heading "New Service Request" [level=1] [ref=e9]
+        - paragraph [ref=e10]: Fill in the details below to create a new service request
+      - generic [ref=e12]:
+        - generic [ref=e14]:
+          - img [ref=e15]
+          - generic [ref=e17]:
+            - heading "Error" [level=3] [ref=e18]
+            - paragraph [ref=e19]: Failed to load services and locations
+        - generic [ref=e20]:
+          - generic [ref=e21]:
+            - img [ref=e22]
+            - text: Service *
+          - combobox "Service *" [ref=e25]:
+            - option "Select a service..." [selected]
+        - generic [ref=e26]:
+          - generic [ref=e27]:
+            - img [ref=e28]
+            - text: Location *
+          - combobox "Location *" [ref=e31]:
+            - option "Select a location..." [selected]
+        - generic [ref=e32]:
+          - generic [ref=e33]:
+            - img [ref=e34]
+            - text: Execution Date & Time *
+          - textbox "Execution Date & Time *" [ref=e36]
+        - generic [ref=e37]:
+          - button "Create Request" [ref=e38] [cursor=pointer]
+          - button "Cancel" [ref=e39] [cursor=pointer]
+      - generic [ref=e40]:
+        - paragraph [ref=e41]:
+          - strong [ref=e42]: "Note:"
+          - text: After submitting your request, it will be reviewed and assigned to an available employee. You will be notified once an employee has been assigned.
+        - paragraph [ref=e43]:
+          - text: You can track the status of your request and cancel it if needed before it moves to the
+          - strong [ref=e44]: ONGOING
+          - text: status.
+    - region "Notifications (F8)":
+      - list
+  - button [ref=e46] [cursor=pointer]:
+    - img [ref=e47]
+  - generic [ref=e53] [cursor=pointer]:
+    - button "Open Next.js Dev Tools" [ref=e54]:
+      - img [ref=e55]
+    - generic [ref=e58]:
+      - button "Open issues overlay" [ref=e59]:
+        - generic [ref=e60]:
+          - generic [ref=e61]: "0"
+          - generic [ref=e62]: "1"
+        - generic [ref=e63]: Issue
+      - button "Collapse issues badge" [ref=e64]:
+        - img [ref=e65]
+  - alert [ref=e67]
+```

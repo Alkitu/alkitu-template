@@ -72,6 +72,7 @@ export const LoginFormOrganism = React.forwardRef<
         throw new Error(data.message || 'Login failed');
       }
 
+      console.log('[LoginFormOrganism] Login successful, response data:', data);
       setSuccess(t('auth.login.success'));
 
       // Remove client-side cookie setting - API route handles httpOnly cookies
@@ -88,10 +89,13 @@ export const LoginFormOrganism = React.forwardRef<
           }
         : undefined;
 
-      // Add a small delay to ensure cookies are set before redirect
-      setTimeout(() => {
-        redirectAfterLogin(userData);
-      }, 100);
+      console.log('[LoginFormOrganism] Prepared userData for redirect:', userData);
+      console.log('[LoginFormOrganism] About to call redirectAfterLogin()...');
+
+      // Redirect immediately - cookies are already set in the HTTP response
+      redirectAfterLogin(userData);
+
+      console.log('[LoginFormOrganism] redirectAfterLogin() called');
     } catch (err: any) {
       setError(err.message || t('auth.login.error'));
     } finally {

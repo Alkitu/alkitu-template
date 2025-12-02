@@ -23,18 +23,20 @@ export function useAuthRedirect() {
     profileComplete?: boolean;
     role?: string;
   }) => {
+    console.log('[redirectAfterLogin] Called with userData:', userData);
     const redirectUrl = searchParams.get('redirect');
 
     // Obtener el idioma actual desde la ruta
     const currentLocale = pathname.split('/')[1] || 'es';
+    console.log('[redirectAfterLogin] Current locale:', currentLocale);
 
     // Check if profile is incomplete (ALI-115)
     if (userData && userData.profileComplete === false) {
-      console.log('Profile incomplete, redirecting to onboarding');
       const onboardingUrl = `/${currentLocale}/onboarding`;
-      setTimeout(() => {
-        window.location.href = onboardingUrl;
-      }, 100);
+      console.log('[redirectAfterLogin] Profile incomplete, redirecting to:', onboardingUrl);
+      console.log('[redirectAfterLogin] About to call router.push()...');
+      router.push(onboardingUrl);
+      console.log('[redirectAfterLogin] router.push() called successfully');
       return;
     }
 
@@ -42,20 +44,27 @@ export function useAuthRedirect() {
     if (redirectUrl) {
       // Decodificar y usar la URL de redirect
       const decodedUrl = decodeURIComponent(redirectUrl);
-      console.log('Redirecting to redirect URL:', decodedUrl);
+      console.log('[redirectAfterLogin] Redirecting to redirect URL:', decodedUrl);
 
       // Si la URL no tiene idioma, agregarlo
       if (!decodedUrl.startsWith('/es/') && !decodedUrl.startsWith('/en/')) {
-        router.push(`/${currentLocale}${decodedUrl}`);
+        const finalUrl = `/${currentLocale}${decodedUrl}`;
+        console.log('[redirectAfterLogin] About to call router.push():', finalUrl);
+        router.push(finalUrl);
+        console.log('[redirectAfterLogin] router.push() called successfully');
       } else {
+        console.log('[redirectAfterLogin] About to call router.push():', decodedUrl);
         router.push(decodedUrl);
+        console.log('[redirectAfterLogin] router.push() called successfully');
       }
     } else {
       // Redirect based on role
       let dashboardUrl = `/${currentLocale}/admin/dashboard`;
 
       if (userData && userData.role) {
-        switch (userData.role.toUpperCase()) {
+        const role = userData.role.toUpperCase();
+        console.log('[redirectAfterLogin] User role:', role);
+        switch (role) {
           case 'CLIENT':
           case 'LEAD':
           case 'USER':
@@ -72,12 +81,10 @@ export function useAuthRedirect() {
         }
       }
 
-      console.log('Redirecting to dashboard:', dashboardUrl);
-
-      // Use window.location for more reliable redirect after login
-      setTimeout(() => {
-        window.location.href = dashboardUrl;
-      }, 100);
+      console.log('[redirectAfterLogin] Final dashboard URL:', dashboardUrl);
+      console.log('[redirectAfterLogin] About to call router.push()...');
+      router.push(dashboardUrl);
+      console.log('[redirectAfterLogin] router.push() called successfully');
     }
   };
 

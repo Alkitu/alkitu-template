@@ -1,0 +1,45 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - button "Cambiar a modo oscuro" [ref=e5]:
+        - img [ref=e6]
+      - generic [ref=e10]:
+        - heading "Iniciar Sesión" [level=2] [ref=e12]
+        - generic [ref=e13]:
+          - generic [ref=e14]:
+            - generic [ref=e15]:
+              - generic [ref=e16]: Correo electrónico
+              - textbox "Correo electrónico" [ref=e17]: skip-1764676936002@example.com
+            - generic [ref=e18]:
+              - generic [ref=e19]: Contraseña
+              - generic [ref=e20]:
+                - textbox "Contraseña" [ref=e21]: SecurePass123
+                - button "Mostrar contraseña" [ref=e22] [cursor=pointer]:
+                  - img [ref=e23]
+            - generic [ref=e26]:
+              - img [ref=e27]
+              - generic [ref=e29]: "ThrottlerException: Too Many Requests"
+            - button "Iniciar sesión con correo" [ref=e30] [cursor=pointer]
+            - generic [ref=e31]:
+              - link "¿Olvidaste tu contraseña?" [ref=e32] [cursor=pointer]:
+                - /url: /auth/forgot-password
+              - generic [ref=e33]:
+                - text: o
+                - link "accede con código de email" [ref=e34] [cursor=pointer]:
+                  - /url: /auth/email-login
+          - generic [ref=e35]:
+            - generic [ref=e40]: O continuar con
+            - button "Los proveedores OAuth serán configurados con el backend" [disabled] [ref=e41]
+        - link "Volver al Inicio" [ref=e43] [cursor=pointer]:
+          - /url: /es
+    - region "Notifications (F8)":
+      - list
+  - button [ref=e45] [cursor=pointer]:
+    - img [ref=e46]
+  - button "Open Next.js Dev Tools" [ref=e53] [cursor=pointer]:
+    - img [ref=e54]
+  - alert [ref=e57]
+```

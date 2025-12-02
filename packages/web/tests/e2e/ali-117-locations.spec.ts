@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../fixtures/authenticated-fixtures';
+import { TEST_USERS } from '../fixtures/test-users';
 
 /**
  * ALI-117 - Work Locations E2E Tests
@@ -15,17 +16,13 @@ import { test, expect } from '@playwright/test';
  * Security:
  * - All operations require authentication
  * - Users can only see/edit/delete their own locations
+ *
+ * NOTE: Uses pre-seeded test user from fixtures/test-users.ts
+ * Run `npm run seed:test-users` in packages/api before running these tests
  */
 
-// Test user credentials
-const timestamp = Date.now();
-const testUser = {
-  email: `location-test-${timestamp}@example.com`,
-  password: 'LocationTest123',
-  firstname: 'Location',
-  lastname: 'Tester',
-  role: 'CLIENT',
-};
+// Test user credentials (pre-seeded in database)
+const testUser = TEST_USERS.LOCATION_TESTER;
 
 // Test location data
 const testLocationFull = {
@@ -47,56 +44,15 @@ const testLocationMinimal = {
 };
 
 test.describe('ALI-117: Work Locations Management', () => {
-  test.beforeAll(async ({ browser }) => {
-    // Register test user via API (more reliable than UI)
-    const page = await browser.newPage();
+  // Test user is pre-seeded via npm run seed:test-users
+  // LOCATION_TESTER has CLIENT role, so use authenticatedClientPage
 
-    try {
-      const response = await page.request.post('http://localhost:3001/users/register', {
-        data: {
-          email: testUser.email,
-          password: testUser.password,
-          firstname: testUser.firstname,
-          lastname: testUser.lastname,
-          terms: true,
-        },
-      });
-
-      if (!response.ok()) {
-        console.log('Registration response:', await response.text());
-      }
-    } catch (error) {
-      console.error('Failed to register user:', error);
-    }
-
-    await page.close();
+  test.beforeEach(async ({ authenticatedClientPage }) => {
+    await authenticatedClientPage.setViewportSize({ width: 1280, height: 720 });
   });
 
-  test.beforeEach(async ({ page }) => {
-    await page.setViewportSize({ width: 1280, height: 720 });
-
-    // Login
-    await page.goto('http://localhost:3000/es/auth/login');
-    await page.waitForLoadState('networkidle');
-
-    await page.getByLabel(/correo/i).fill(testUser.email);
-    await page.locator('input[type="password"]').first().fill(testUser.password);
-    await page.getByRole('button', { name: /iniciar sesión/i }).click();
-
-    // Wait for redirect (dashboard or onboarding)
-    await page.waitForURL(/\/(admin\/)?dashboard|onboarding/, { timeout: 10000 });
-
-    // Skip onboarding if it appears
-    const skipButton = page.getByRole('button', { name: /skip/i });
-    if (await skipButton.isVisible({ timeout: 2000 }).catch(() => false)) {
-      await skipButton.click();
-      await page.waitForURL(/dashboard/, { timeout: 5000 });
-    }
-
-    await page.waitForLoadState('networkidle');
-  });
-
-  test('1. Should show empty state when no locations exist', async ({ page }) => {
+  test('1. Should show empty state when no locations exist', async ({ authenticatedClientPage }) => {
+    const page = authenticatedClientPage;
     // Navigate to locations page
     await page.goto('http://localhost:3000/es/locations');
     await page.waitForLoadState('networkidle');
@@ -116,7 +72,8 @@ test.describe('ALI-117: Work Locations Management', () => {
     }
   });
 
-  test('2. Should create a location with all fields', async ({ page }) => {
+  test('2. Should create a location with all fields', async ({ authenticatedClientPage }) => {
+    const page = authenticatedClientPage;
     await page.goto('http://localhost:3000/es/locations');
     await page.waitForLoadState('networkidle');
 
@@ -154,7 +111,8 @@ test.describe('ALI-117: Work Locations Management', () => {
     ).toBeVisible();
   });
 
-  test('3. Should create a location with required fields only', async ({ page }) => {
+  test('3. Should create a location with required fields only', async ({ authenticatedClientPage }) => {
+    const page = authenticatedClientPage;
     await page.goto('http://localhost:3000/es/locations');
     await page.waitForLoadState('networkidle');
 
@@ -182,7 +140,8 @@ test.describe('ALI-117: Work Locations Management', () => {
     });
   });
 
-  test('4. Should list all user locations', async ({ page }) => {
+  test('4. Should list all user locations', async ({ authenticatedClientPage }) => {
+    const page = authenticatedClientPage;
     await page.goto('http://localhost:3000/es/locations');
     await page.waitForLoadState('networkidle');
 
@@ -201,7 +160,8 @@ test.describe('ALI-117: Work Locations Management', () => {
     expect(countText).toMatch(/\d+/);
   });
 
-  test('5. Should edit a location', async ({ page }) => {
+  test('5. Should edit a location', async ({ authenticatedClientPage }) => {
+    const page = authenticatedClientPage;
     await page.goto('http://localhost:3000/es/locations');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
@@ -242,7 +202,8 @@ test.describe('ALI-117: Work Locations Management', () => {
     await expect(page.getByText(/Los Angeles, CA/)).toBeVisible();
   });
 
-  test('6. Should delete a location with confirmation', async ({ page }) => {
+  test('6. Should delete a location with confirmation', async ({ authenticatedClientPage }) => {
+    const page = authenticatedClientPage;
     await page.goto('http://localhost:3000/es/locations');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
@@ -271,7 +232,8 @@ test.describe('ALI-117: Work Locations Management', () => {
     expect(finalCards).toBe(initialCards - 1);
   });
 
-  test('7. Should show validation errors for invalid data', async ({ page }) => {
+  test('7. Should show validation errors for invalid data', async ({ authenticatedClientPage }) => {
+    const page = authenticatedClientPage;
     await page.goto('http://localhost:3000/es/locations');
     await page.waitForLoadState('networkidle');
 
@@ -303,7 +265,8 @@ test.describe('ALI-117: Work Locations Management', () => {
     await expect(page.getByText(/add new location/i)).toBeVisible();
   });
 
-  test('8. Should cancel location creation', async ({ page }) => {
+  test('8. Should cancel location creation', async ({ authenticatedClientPage }) => {
+    const page = authenticatedClientPage;
     await page.goto('http://localhost:3000/es/locations');
     await page.waitForLoadState('networkidle');
 
@@ -327,7 +290,8 @@ test.describe('ALI-117: Work Locations Management', () => {
     await expect(page.getByText(/work locations/i).first()).toBeVisible();
   });
 
-  test('9. Should show all address fields in location card', async ({ page }) => {
+  test('9. Should show all address fields in location card', async ({ authenticatedClientPage }) => {
+    const page = authenticatedClientPage;
     await page.goto('http://localhost:3000/es/locations');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
@@ -355,7 +319,8 @@ test.describe('ALI-117: Work Locations Management', () => {
     }
   });
 
-  test('10. Should require authentication', async ({ page }) => {
+  test('10. Should require authentication', async ({ authenticatedClientPage }) => {
+    const page = authenticatedClientPage;
     // Logout by clearing cookies
     await page.context().clearCookies();
 

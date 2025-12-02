@@ -1,0 +1,45 @@
+{
+  "cookies": [
+    {
+      "name": "NEXT_LOCALE",
+      "value": "es",
+      "domain": "localhost",
+      "path": "/",
+      "expires": 1796212917.559451,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "auth-token",
+      "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluLWUyZUBhbGtpdHUudGVzdCIsInN1YiI6IjY5MmRlOGFiZjQ1M2M5MGIxNWNiY2E2YSIsInJvbGUiOiJBRE1JTiIsImZpcnN0bmFtZSI6IkFkbWluVXBkYXRlZCIsImxhc3RuYW1lIjoiVXNlciIsInByb2ZpbGVDb21wbGV0ZSI6dHJ1ZSwiZW1haWxWZXJpZmllZCI6ZmFsc2UsImlhdCI6MTc2NDY3NjkxNywiZXhwIjoxNzY0NzYzMzE3fQ.u5HVb_0LQpVhECzPyI1yws-HHp-GV9-BaN73MHETWzY",
+      "domain": "localhost",
+      "path": "/",
+      "expires": 1764763317.542647,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "refresh-token",
+      "value": "69dbe1d881caa492d8df08c90fe0576d5820fd81e33e5fe14158c15ed983f16f",
+      "domain": "localhost",
+      "path": "/",
+      "expires": 1765281717.542677,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "http://localhost:3000",
+      "localStorage": [
+        {
+          "name": "theme-mode",
+          "value": "light"
+        }
+      ]
+    }
+  ]
+}

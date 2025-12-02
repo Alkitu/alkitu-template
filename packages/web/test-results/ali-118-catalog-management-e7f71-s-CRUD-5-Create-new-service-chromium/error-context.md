@@ -1,0 +1,136 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e6]:
+        - generic [ref=e8]:
+          - generic [ref=e9]:
+            - generic [ref=e10]: 📊 RESUMEN
+            - list [ref=e11]:
+              - listitem [ref=e12]:
+                - link "Dashboard" [ref=e13] [cursor=pointer]:
+                  - /url: /admin/dashboard
+                  - img [ref=e14]
+                  - generic: Dashboard
+          - generic [ref=e17]:
+            - generic [ref=e18]: 👥 GESTIÓN
+            - list [ref=e19]:
+              - listitem [ref=e20]:
+                - button "Usuarios" [ref=e21]:
+                  - img [ref=e22]
+                  - generic [ref=e27]: Usuarios
+                  - img [ref=e28]
+          - generic [ref=e30]:
+            - generic [ref=e31]: 💬 COMUNICACIÓN
+            - list [ref=e32]:
+              - listitem [ref=e33]:
+                - button "Chat" [ref=e34]:
+                  - img [ref=e35]
+                  - generic [ref=e37]: Chat
+                  - img [ref=e38]
+              - listitem [ref=e40]:
+                - button "Notificaciones" [ref=e41]:
+                  - img [ref=e42]
+                  - generic [ref=e45]: Notificaciones
+                  - img [ref=e46]
+          - generic [ref=e48]:
+            - generic [ref=e49]: ⚙️ CONFIGURACIÓN
+            - list [ref=e50]:
+              - listitem [ref=e51]:
+                - button "Configuración" [ref=e52]:
+                  - img [ref=e53]
+                  - generic [ref=e56]: Configuración
+                  - img [ref=e57]
+          - button "Toggle language" [ref=e60] [cursor=pointer]:
+            - img [ref=e61]
+            - generic [ref=e64]: Toggle language
+        - generic [ref=e65]:
+          - button "Cambiar a modo oscuro" [ref=e67]:
+            - img [ref=e68]
+          - list [ref=e70]:
+            - listitem [ref=e71]:
+              - button "Toggle language" [ref=e72] [cursor=pointer]:
+                - img [ref=e73]
+                - generic [ref=e76]: Toggle language
+              - button "CN" [ref=e77]:
+                - generic [ref=e80]: CN
+                - img [ref=e81]
+        - button "Toggle Sidebar" [ref=e84]
+      - main [ref=e85]:
+        - generic [ref=e86]:
+          - button "Toggle Sidebar" [ref=e87] [cursor=pointer]:
+            - img [ref=e88]
+            - generic [ref=e90]: Toggle Sidebar
+          - generic [ref=e97]:
+            - link "Ir a catalog" [ref=e98] [cursor=pointer]:
+              - /url: /es/admin/catalog
+              - img [ref=e99]
+              - paragraph [ref=e102]: Ir a catalog
+            - navigation "breadcrumb" [ref=e103]:
+              - list [ref=e104]:
+                - listitem [ref=e105]:
+                  - link "dashboard.dashboard" [ref=e106] [cursor=pointer]:
+                    - /url: /
+                - listitem [ref=e107]:
+                  - img [ref=e108]
+                - listitem [ref=e110]:
+                  - button "menú desplegable" [ref=e111]:
+                    - generic [ref=e112]:
+                      - img [ref=e113]
+                      - generic [ref=e117]: More
+                    - generic [ref=e118]: menú desplegable
+                - listitem [ref=e119]:
+                  - img [ref=e120]
+                - listitem:
+                  - link "services" [disabled]
+            - generic [ref=e122]:
+              - img [ref=e123]
+              - text: "0"
+              - list
+        - generic [ref=e129]:
+          - generic [ref=e130]:
+            - heading "Services" [level=1] [ref=e131]
+            - paragraph [ref=e132]: Manage services and their request form templates
+          - generic [ref=e133]:
+            - generic [ref=e134]:
+              - heading "Add New Service" [level=3] [ref=e135]
+              - generic [ref=e136]:
+                - generic [ref=e137]:
+                  - generic [ref=e138]: Service Name *
+                  - textbox "Service Name *" [active] [ref=e139]:
+                    - /placeholder: e.g., Emergency Plumbing, AC Repair
+                    - text: E2E Test Service 1764677184708
+                - generic [ref=e140]:
+                  - generic [ref=e141]: Category *
+                  - combobox "Category *" [ref=e142]:
+                    - option "Select a category" [selected]
+                - generic [ref=e143]:
+                  - generic [ref=e144]: Thumbnail URL (Optional)
+                  - textbox "Thumbnail URL (Optional)" [ref=e145]:
+                    - /placeholder: https://example.com/image.jpg
+                  - paragraph [ref=e146]: URL to an image representing this service
+                - generic [ref=e147]:
+                  - generic [ref=e148]: Request Form Template *
+                  - paragraph [ref=e149]: JSON template for the service request form (Phase 8 will have visual builder)
+                  - textbox "Request Form Template *" [ref=e150]: "{ \"version\": \"1.0\", \"fields\": [ { \"id\": \"description\", \"type\": \"textarea\", \"label\": \"Service Description\", \"required\": true } ] }"
+                - generic [ref=e151]:
+                  - button "Create Service" [ref=e152] [cursor=pointer]:
+                    - img [ref=e153]
+                    - text: Create Service
+                  - button "Cancel" [ref=e157] [cursor=pointer]:
+                    - img [ref=e158]
+                    - text: Cancel
+            - generic [ref=e161]:
+              - img [ref=e162]
+              - heading "No services yet" [level=3] [ref=e164]
+              - paragraph [ref=e165]: Get started by creating your first service.
+    - region "Notifications (F8)":
+      - list
+  - button [ref=e167] [cursor=pointer]:
+    - img [ref=e168]
+  - button "Open Next.js Dev Tools" [ref=e175] [cursor=pointer]:
+    - img [ref=e176]
+  - alert [ref=e179]
+```

@@ -8,6 +8,7 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
+  globalSetup: './tests/global-setup.ts',
 
   use: {
     baseURL: 'http://localhost:3000',
@@ -21,9 +22,18 @@ export default defineConfig({
     },
   ],
 
-  webServer: {
-    command: 'npm run dev',
-    url: 'http://localhost:3000',
-    reuseExistingServer: !process.env.CI,
-  },
+  webServer: [
+    {
+      command: 'cd ../.. && npm run dev:api',
+      url: 'http://localhost:3001/health',
+      reuseExistingServer: !process.env.CI,
+      timeout: 60000,
+    },
+    {
+      command: 'npm run dev',
+      url: 'http://localhost:3000',
+      reuseExistingServer: !process.env.CI,
+      timeout: 60000,
+    },
+  ],
 });

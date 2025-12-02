@@ -283,6 +283,37 @@ export function withAuthMiddleware(next: NextMiddleware): NextMiddleware {
       '[AUTH MIDDLEWARE] User role matches required roles. Allowing access.',
     );
 
+    // Role-based dashboard redirects
+    // If user is accessing the generic /dashboard route, redirect to role-specific dashboard
+    if (cleanPath === '/dashboard' || cleanPath === '/dashboard/') {
+      const locale = getLocaleFromPath(pathname) ||
+                     getLocaleFromCookie(request) ||
+                     DEFAULT_LOCALE;
+
+      let roleDashboard: string;
+      switch (userRoleEnum) {
+        case UserRole.CLIENT:
+          roleDashboard = 'client/dashboard';
+          break;
+        case UserRole.EMPLOYEE:
+          roleDashboard = 'employee/dashboard';
+          break;
+        case UserRole.ADMIN:
+          roleDashboard = 'admin/dashboard';
+          break;
+        default:
+          // For other roles (e.g., LEAD), keep using generic dashboard
+          roleDashboard = 'dashboard';
+      }
+
+      // Only redirect if the target dashboard is different from the current path
+      if (roleDashboard !== 'dashboard') {
+        const redirectUrl = new URL(`/${locale}/${roleDashboard}`, request.url);
+        console.log('[AUTH MIDDLEWARE] Redirecting to role-specific dashboard:', redirectUrl.toString());
+        return NextResponse.redirect(redirectUrl);
+      }
+    }
+
     return next(request, event);
   };
 }

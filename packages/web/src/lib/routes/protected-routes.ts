@@ -6,6 +6,61 @@ type ProtectedRoute = {
 };
 
 export const PROTECTED_ROUTES: ProtectedRoute[] = [
+  // Shared routes (all authenticated users)
+  {
+    path: '/profile',
+    roles: [UserRole.ADMIN, UserRole.EMPLOYEE, UserRole.CLIENT, UserRole.LEAD],
+  },
+  {
+    path: '/locations',
+    roles: [UserRole.ADMIN, UserRole.EMPLOYEE, UserRole.CLIENT, UserRole.LEAD],
+  },
+  // Client routes
+  {
+    path: '/client/dashboard',
+    roles: [UserRole.CLIENT],
+  },
+  {
+    path: '/client/requests/new',
+    roles: [UserRole.CLIENT],
+  },
+  {
+    path: '/client/requests',
+    roles: [UserRole.CLIENT],
+  },
+  {
+    path: '/client/notifications',
+    roles: [UserRole.CLIENT],
+  },
+  {
+    path: '/client/profile',
+    roles: [UserRole.CLIENT],
+  },
+  {
+    path: '/client/onboarding',
+    roles: [UserRole.CLIENT],
+  },
+  {
+    path: '/client',
+    roles: [UserRole.CLIENT],
+  },
+  // Employee routes
+  {
+    path: '/employee/dashboard',
+    roles: [UserRole.EMPLOYEE],
+  },
+  {
+    path: '/employee/requests',
+    roles: [UserRole.EMPLOYEE],
+  },
+  {
+    path: '/employee/notifications',
+    roles: [UserRole.EMPLOYEE],
+  },
+  {
+    path: '/employee',
+    roles: [UserRole.EMPLOYEE],
+  },
   // Admin routes
   {
     path: '/admin/users',

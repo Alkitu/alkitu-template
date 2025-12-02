@@ -102,6 +102,8 @@ model User {
   sentMessages            ChatMessage[]           @relation("SenderMessages")
   assignedConversations   Conversation[]          @relation("AssignedConversations")
   locations               WorkLocation[]          @relation("UserLocations") // ALI-117
+  requests                Request[]               @relation("UserRequests") // ALI-119: Requests created by user
+  assignedRequests        Request[]               @relation("RequestAssignedEmployee") // ALI-119: Requests assigned to employee
 }
 
 // Notification Preferences model
@@ -434,15 +436,15 @@ model Theme {
 
 /// ALI-117: Work Locations Management
 model WorkLocation {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  user      User     @relation("UserLocations", fields: [userId], references: [id], onDelete: Cascade)
-  userId    String   @db.ObjectId
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  user      User      @relation("UserLocations", fields: [userId], references: [id], onDelete: Cascade)
+  userId    String    @db.ObjectId
 
   // Required address fields
   street    String
   city      String
   zip       String
-  state     String   // 2-letter US state code (e.g., NY, CA)
+  state     String    // 2-letter US state code (e.g., NY, CA)
 
   // Optional fields for complex addresses
   building  String?
@@ -450,9 +452,119 @@ model WorkLocation {
   floor     String?
   unit      String?
 
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
+
+  // Relations
+  requests  Request[] @relation("LocationRequests") // ALI-119: Requests for this location
 
   @@index([userId])
   @@index([createdAt])
   @@map("work_locations")
+}
+
+/// ALI-118: Services, Categories & Dynamic Templates
+model Category {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  name      String    @unique
+  services  Service[] @relation("CategoryServices")
+
+  // Soft delete
+  deletedAt DateTime?
+
+  // Audit logging
+  createdBy String?   @db.ObjectId
+  updatedBy String?   @db.ObjectId
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("categories")
+}
+
+model Service {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  name            String
+  category        Category  @relation("CategoryServices", fields: [categoryId], references: [id], onDelete: Cascade)
+  categoryId      String    @db.ObjectId
+  thumbnail       String?
+  requestTemplate Json      // Dynamic form schema (see ALI-118-request-template-schema.md)
+
+  // Soft delete
+  deletedAt       DateTime?
+
+  // Audit logging
+  createdBy       String?   @db.ObjectId
+  updatedBy       String?   @db.ObjectId
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  requests        Request[] @relation("ServiceRequests") // ALI-119: Requests for this service
+
+  @@index([categoryId])
+  @@map("services")
+}
+
+/// ALI-119: Request Status Enum
+enum RequestStatus {
+  PENDING    // Initial state when request is created
+  ONGOING    // Request has been assigned and work is in progress
+  COMPLETED  // Request has been successfully completed
+  CANCELLED  // Request was cancelled (by client or admin)
+}
+
+/// ALI-119: Service Requests Lifecycle & Assignment
+model Request {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+
+  // Request creator (CLIENT role)
+  user      User     @relation("UserRequests", fields: [userId], references: [id], onDelete: Cascade)
+  userId    String   @db.ObjectId
+
+  // Service being requested
+  service   Service  @relation("ServiceRequests", fields: [serviceId], references: [id], onDelete: Restrict)
+  serviceId String   @db.ObjectId
+
+  // Work location
+  location     WorkLocation @relation("LocationRequests", fields: [locationId], references: [id], onDelete: Restrict)
+  locationId   String       @db.ObjectId
+
+  // Assignment (EMPLOYEE or ADMIN)
+  assignedTo   User?   @relation("RequestAssignedEmployee", fields: [assignedToId], references: [id], onDelete: SetNull)
+  assignedToId String? @db.ObjectId
+
+  // Scheduling
+  executionDateTime DateTime // When client wants the service executed
+
+  // Dynamic form data (must match Service.requestTemplate schema)
+  templateResponses Json // Client's answers to the service template form
+
+  // Rich text notes (TipTap JSON format)
+  note Json? // Optional additional notes from client
+
+  // Lifecycle management
+  status                  RequestStatus @default(PENDING)
+  cancellationRequested   Boolean       @default(false)
+  cancellationRequestedAt DateTime?
+  completedAt             DateTime?
+
+  // Soft delete
+  deletedAt DateTime?
+
+  // Audit logging
+  createdBy String? @db.ObjectId
+  updatedBy String? @db.ObjectId
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([serviceId])
+  @@index([locationId])
+  @@index([assignedToId])
+  @@index([status])
+  @@index([executionDateTime])
+  @@index([createdAt])
+  @@map("requests")
 }

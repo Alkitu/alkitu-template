@@ -68,10 +68,13 @@ export function useAuthRedirect() {
           case 'CLIENT':
           case 'LEAD':
           case 'USER':
-            // Client dashboard (when implemented)
+            // Client dashboard
             dashboardUrl = `/${currentLocale}/dashboard`;
             break;
           case 'EMPLOYEE':
+            // Employee dashboard
+            dashboardUrl = `/${currentLocale}/employee/dashboard`;
+            break;
           case 'ADMIN':
           case 'MODERATOR':
           default:

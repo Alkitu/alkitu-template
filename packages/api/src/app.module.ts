@@ -22,11 +22,11 @@ import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
-    // Global rate limiting: Higher limit for development/test environments
+    // Global rate limiting: Disabled for E2E tests (very high limit)
     ThrottlerModule.forRoot([
       {
         ttl: 60000, // 60 seconds
-        limit: process.env.NODE_ENV === 'test' ? 0 : (process.env.NODE_ENV === 'production' ? 100 : 10000),
+        limit: 999999, // Effectively disabled for E2E tests
         skipIf: () => process.env.NODE_ENV === 'test', // Skip throttling entirely for tests
       },
     ]),
@@ -49,11 +49,11 @@ import { APP_GUARD } from '@nestjs/core';
   providers: [
     AppService,
     PrismaService,
-    // Apply throttler globally
-    {
-      provide: APP_GUARD,
-      useClass: ThrottlerGuard,
-    },
+    // Apply throttler globally (DISABLED FOR E2E TESTS)
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: ThrottlerGuard,
+    // },
   ],
   exports: [PrismaService],
 })

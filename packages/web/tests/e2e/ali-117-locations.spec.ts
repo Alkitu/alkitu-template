@@ -326,6 +326,9 @@ test.describe('ALI-117: Work Locations Management', () => {
   });
 
   test('10. Should require authentication', async ({ authenticatedClientPage }) => {
+    // Skip if SKIP_AUTH is enabled (middleware bypasses all auth checks)
+    test.skip(process.env.SKIP_AUTH === 'true', 'Test requires auth middleware (SKIP_AUTH must be false or unset in .env)');
+
     const page = authenticatedClientPage;
     // Logout by clearing cookies
     await page.context().clearCookies();

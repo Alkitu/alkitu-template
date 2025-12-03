@@ -556,6 +556,9 @@ test.describe('ALI-119: ADMIN Role - Full Management', () => {
 
 test.describe('ALI-119: Security and Validation Tests', () => {
   test('1. Should require authentication to access requests', async ({ page }) => {
+    // Skip if SKIP_AUTH is enabled (middleware bypasses all auth checks)
+    test.skip(process.env.SKIP_AUTH === 'true', 'Test requires auth middleware (SKIP_AUTH must be false or unset in .env)');
+
     // Try to access requests page without login
     await page.goto('http://localhost:3000/es/requests');
     await page.waitForLoadState('networkidle');
@@ -566,21 +569,14 @@ test.describe('ALI-119: Security and Validation Tests', () => {
   });
 
   test('2. Should require authentication to create request', async ({ page }) => {
+    // Skip if SKIP_AUTH is enabled (middleware bypasses all auth checks)
+    test.skip(process.env.SKIP_AUTH === 'true', 'Test requires auth middleware (SKIP_AUTH must be false or unset in .env)');
+
     // Try to access new request page without login
     await page.goto('http://localhost:3000/es/requests/new');
-    await page.waitForLoadState('networkidle');
 
-    // Should redirect to login page or show auth error
-    const url = page.url();
-
-    // Check if redirected to login or showing auth-required message
-    const isLoginPage = url.includes('/auth/login');
-    const hasAuthError = await page
-      .getByText(/unauthorized|not authenticated|failed to load/i)
-      .isVisible({ timeout: 2000 })
-      .catch(() => false);
-
-    expect(isLoginPage || hasAuthError).toBe(true);
+    // Should be redirected to login page
+    await expect(page).toHaveURL(/\/auth\/login/);
   });
 
   test('3. Should validate required fields in request form', async ({ authenticatedClientPage }) => {

@@ -2,6 +2,10 @@ import { chromium, FullConfig } from '@playwright/test';
 import { TEST_USERS } from './fixtures/test-users';
 import path from 'path';
 import fs from 'fs';
+import * as dotenv from 'dotenv';
+
+// Load environment variables from .env file
+dotenv.config();
 
 /**
  * Global Setup for E2E Tests

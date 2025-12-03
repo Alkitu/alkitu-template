@@ -70,7 +70,12 @@ export const LocationCardMolecule: React.FC<LocationCardMoleculeProps> = ({
               )}
 
               {/* Street Address */}
-              <div className="font-medium text-gray-900">{location.street}</div>
+              <div
+                className="font-medium text-gray-900"
+                data-testid="location-card-street"
+              >
+                {location.street}
+              </div>
 
               {/* City, State, ZIP */}
               <div className="mt-1 text-sm text-gray-600">

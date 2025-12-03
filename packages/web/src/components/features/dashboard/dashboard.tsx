@@ -21,6 +21,9 @@ import {
   Building2,
   User,
   HelpCircle,
+  ShoppingBag,
+  Folder,
+  Wrench,
 } from 'lucide-react';
 import { AppSidebar } from '../../primitives/app-sidebar';
 import Header from '../../primitives/ui/header';
@@ -68,6 +71,22 @@ const getTransformedData = (t: any, pathname: string, userRole: 'admin' | 'user'
             {
               title: t?.('nav.createUser') || 'Crear Usuario',
               url: '/admin/users/create',
+            },
+          ],
+        },
+        {
+          title: t?.('nav.catalog') || 'Catálogo',
+          url: '/admin/catalog',
+          icon: ShoppingBag,
+          section: 'management',
+          items: [
+            {
+              title: t?.('nav.categories') || 'Categorías',
+              url: '/admin/catalog/categories',
+            },
+            {
+              title: t?.('nav.services') || 'Servicios',
+              url: '/admin/catalog/services',
             },
           ],
         },

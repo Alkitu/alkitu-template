@@ -15,6 +15,18 @@ export const PROTECTED_ROUTES: ProtectedRoute[] = [
     path: '/locations',
     roles: [UserRole.ADMIN, UserRole.EMPLOYEE, UserRole.CLIENT, UserRole.LEAD],
   },
+  {
+    path: '/requests',
+    roles: [UserRole.ADMIN, UserRole.EMPLOYEE, UserRole.CLIENT],
+  },
+  {
+    path: '/requests/new',
+    roles: [UserRole.CLIENT], // Only clients can create requests
+  },
+  {
+    path: '/requests/[id]',
+    roles: [UserRole.ADMIN, UserRole.EMPLOYEE, UserRole.CLIENT],
+  },
   // Client routes
   {
     path: '/client/dashboard',

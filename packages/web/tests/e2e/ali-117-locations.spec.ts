@@ -196,10 +196,16 @@ test.describe('ALI-117: Work Locations Management', () => {
     });
 
     // Verify updated location appears in list
-    await expect(page.getByText('999 Updated Street')).toBeVisible({
+    await expect(
+      page
+        .locator('[data-testid="location-card"]')
+        .locator('[data-testid="location-card-street"]')
+        .filter({ hasText: '999 Updated Street' })
+        .first(),
+    ).toBeVisible({
       timeout: 3000,
     });
-    await expect(page.getByText(/Los Angeles, CA/)).toBeVisible();
+    await expect(page.getByText(/Los Angeles, CA/).first()).toBeVisible();
   });
 
   test('6. Should delete a location with confirmation', async ({ authenticatedClientPage }) => {

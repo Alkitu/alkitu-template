@@ -107,6 +107,7 @@ export class RequestsService {
           templateResponses: createRequestDto.templateResponses as any,
           note: createRequestDto.note as any,
           status: RequestStatus.PENDING,
+          deletedAt: null, // Explicitly set to null for soft delete queries
           createdBy: userId,
           updatedBy: userId,
         },
@@ -194,10 +195,20 @@ export class RequestsService {
           `Sent multi-channel REQUEST_CREATED notifications to ${adminIds.length} admins for request ${createdRequest.id}`,
         );
       } catch (error) {
+        // Log detailed error for debugging but DON'T throw
+        // Request was successfully created - notification failure shouldn't prevent that
         this.logger.error(
-          `Failed to send request creation notifications: ${(error as Error).message}`,
+          `⚠️  Failed to send request creation notifications (request ${createdRequest.id} created successfully)`,
+          {
+            error: (error as Error).message,
+            stack: (error as Error).stack,
+            requestId: createdRequest.id,
+            userId,
+            serviceName: createdRequest.service?.name,
+            timestamp: new Date().toISOString(),
+          },
         );
-        throw error; // DEBUG: identifying why notifications fail
+        // Don't throw - request creation succeeded, notification is best-effort
       }
 
       return createdRequest;

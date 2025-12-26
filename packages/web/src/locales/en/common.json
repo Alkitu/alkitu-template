@@ -1022,5 +1022,45 @@
       "open": "Open",
       "archive": "Archive"
     }
+  },
+  "requests": {
+    "actions": {
+      "viewDetails": "View Details",
+      "assign": "Assign",
+      "complete": "Complete",
+      "cancel": "Cancel",
+      "assignedTo": "Assigned to"
+    },
+    "assign": {
+      "title": "Assign Request",
+      "description": "Select an employee to assign this request to.",
+      "selectEmployee": "Employee",
+      "selectEmployeePlaceholder": "Select an employee",
+      "loadingEmployees": "Loading employees...",
+      "noEmployeesAvailable": "No employees available",
+      "errorFetchingEmployees": "Failed to load employees",
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "assigning": "Assigning..."
+    },
+    "complete": {
+      "title": "Complete Request",
+      "description": "Mark this request as completed. You can add optional completion notes.",
+      "notes": "Completion Notes (Optional)",
+      "notesPlaceholder": "Add any notes about the completed work...",
+      "cancel": "Cancel",
+      "confirm": "Mark Complete",
+      "completing": "Completing..."
+    },
+    "cancel": {
+      "title": "Cancel Request",
+      "description": "Please provide a reason for canceling this request.",
+      "reason": "Cancellation Reason",
+      "reasonPlaceholder": "Explain why this request is being canceled...",
+      "reasonRequired": "Please provide a reason for cancellation",
+      "back": "Back",
+      "confirm": "Cancel Request",
+      "canceling": "Canceling..."
+    }
   }
 }

@@ -85,6 +85,11 @@ export class NotificationService {
   ): Promise<void> {
     const logger = new Logger('NotificationService');
 
+    logger.log(
+      `[NotificationService] Starting multi-channel notification for user ${userId}`,
+      { type: notification.type, userId },
+    );
+
     try {
       // Fetch user preferences
       const preferences = await this.getUserPreferences(userId);

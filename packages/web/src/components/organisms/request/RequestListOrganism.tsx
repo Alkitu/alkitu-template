@@ -4,7 +4,12 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/primitives/ui/button';
 import { Loader2, Filter, X, Plus, AlertCircle } from 'lucide-react';
 import { RequestStatus } from '@alkitu/shared';
-import { RequestCardMolecule } from '@/components/molecules/request';
+import {
+  RequestCardMolecule,
+  AssignRequestModal,
+  CompleteRequestModal,
+  CancelRequestModal,
+} from '@/components/molecules/request';
 import type { RequestListOrganismProps, RequestFilters } from './RequestListOrganism.types';
 
 /**
@@ -43,31 +48,45 @@ export const RequestListOrganism: React.FC<RequestListOrganismProps> = ({
     status: initialStatusFilter,
   });
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [pollingEnabled, setPollingEnabled] = useState(false);
+  const [lastFetchTime, setLastFetchTime] = useState<Date | null>(null);
+  const [assignModalOpen, setAssignModalOpen] = useState(false);
+  const [selectedRequestForAssign, setSelectedRequestForAssign] = useState<any | null>(null);
+  const [completeModalOpen, setCompleteModalOpen] = useState(false);
+  const [selectedRequestForComplete, setSelectedRequestForComplete] = useState<any | null>(null);
+  const [cancelModalOpen, setCancelModalOpen] = useState(false);
+  const [selectedRequestForCancel, setSelectedRequestForCancel] = useState<any | null>(null);
 
-  // Fetch requests
-  const fetchRequests = async () => {
+  // Fetch requests with retry logic
+  const fetchRequests = async (options?: { silent?: boolean; retryCount?: number }) => {
+    const { silent = false, retryCount = 0 } = options || {};
+    const MAX_RETRIES = 3;
+
     try {
-      setIsLoading(true);
+      if (!silent) setIsLoading(true);
       setError(null);
 
       const params = new URLSearchParams();
       if (filters.status) params.append('status', filters.status);
       if (filters.serviceId) params.append('serviceId', filters.serviceId);
       if (filters.assignedToId) params.append('assignedToId', filters.assignedToId);
+      if (silent) params.append('_t', Date.now().toString()); // Cache busting
 
       const response = await fetch(`/api/requests?${params.toString()}`);
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch requests');
-      }
+      if (!response.ok) throw new Error(`Failed to fetch: ${response.status}`);
 
       const data = await response.json();
       setRequests(data);
+      setLastFetchTime(new Date());
     } catch (err: any) {
+      if (retryCount < MAX_RETRIES && !silent) {
+        await new Promise(resolve => setTimeout(resolve, 1000 * (retryCount + 1)));
+        return fetchRequests({ silent, retryCount: retryCount + 1 });
+      }
       setError(err.message || 'Failed to load requests');
       console.error(err);
     } finally {
-      setIsLoading(false);
+      if (!silent) setIsLoading(false);
     }
   };
 
@@ -75,32 +94,95 @@ export const RequestListOrganism: React.FC<RequestListOrganismProps> = ({
     void fetchRequests();
   }, [filters]);
 
+  // Polling for new requests (auto-disable after 30 seconds)
+  useEffect(() => {
+    if (!pollingEnabled) return;
+
+    let pollCount = 0;
+    const MAX_POLLS = 6; // 30 seconds total (5s intervals)
+
+    const pollTimer = setInterval(async () => {
+      pollCount++;
+      if (pollCount >= MAX_POLLS) {
+        setPollingEnabled(false);
+        clearInterval(pollTimer);
+        return;
+      }
+      await fetchRequests({ silent: true });
+    }, 5000);
+
+    return () => clearInterval(pollTimer);
+  }, [pollingEnabled, filters]);
+
   // Handle assign request
   const handleAssign = async (request: any) => {
-    // In a real app, you'd open a modal to select employee
-    // For now, we'll just show a placeholder
-    alert('Assign modal would open here');
+    setSelectedRequestForAssign(request);
+    setAssignModalOpen(true);
+  };
+
+  // Handle assign confirmation from modal
+  const handleAssignConfirm = async (requestId: string, employeeId: string) => {
+    try {
+      setActionLoading(requestId);
+
+      const response = await fetch(`/api/requests/${requestId}/assign`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ assignedToId: employeeId }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.message || 'Failed to assign request');
+      }
+
+      // Refresh the request list
+      await fetchRequests();
+
+      // Close modal
+      setAssignModalOpen(false);
+      setSelectedRequestForAssign(null);
+    } catch (err: any) {
+      console.error('Error assigning request:', err);
+      alert(err.message || 'Failed to assign request');
+      throw err; // Re-throw so modal can handle error state
+    } finally {
+      setActionLoading(null);
+    }
   };
 
   // Handle complete request
   const handleComplete = async (request: any) => {
-    if (!confirm('Mark this request as completed?')) return;
+    setSelectedRequestForComplete(request);
+    setCompleteModalOpen(true);
+  };
 
+  // Handle complete confirmation from modal
+  const handleCompleteConfirm = async (requestId: string, notes?: string) => {
     try {
-      setActionLoading(request.id);
-      const response = await fetch(`/api/requests/${request.id}/complete`, {
+      setActionLoading(requestId);
+
+      const response = await fetch(`/api/requests/${requestId}/complete`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ notes: 'Completed successfully' }),
+        body: JSON.stringify({ notes: notes || 'Completed successfully' }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to complete request');
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.message || 'Failed to complete request');
       }
 
-      await fetchRequests(); // Refresh list
+      // Refresh the request list
+      await fetchRequests();
+
+      // Close modal
+      setCompleteModalOpen(false);
+      setSelectedRequestForComplete(null);
     } catch (err: any) {
+      console.error('Error completing request:', err);
       alert(err.message || 'Failed to complete request');
+      throw err; // Re-throw so modal can handle error state
     } finally {
       setActionLoading(null);
     }
@@ -108,24 +190,36 @@ export const RequestListOrganism: React.FC<RequestListOrganismProps> = ({
 
   // Handle cancel request
   const handleCancel = async (request: any) => {
-    const reason = prompt('Please provide a reason for cancellation:');
-    if (!reason) return;
+    setSelectedRequestForCancel(request);
+    setCancelModalOpen(true);
+  };
 
+  // Handle cancel confirmation from modal
+  const handleCancelConfirm = async (requestId: string, reason: string) => {
     try {
-      setActionLoading(request.id);
-      const response = await fetch(`/api/requests/${request.id}/cancel`, {
+      setActionLoading(requestId);
+
+      const response = await fetch(`/api/requests/${requestId}/cancel`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ reason }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to cancel request');
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.message || 'Failed to cancel request');
       }
 
-      await fetchRequests(); // Refresh list
+      // Refresh the request list
+      await fetchRequests();
+
+      // Close modal
+      setCancelModalOpen(false);
+      setSelectedRequestForCancel(null);
     } catch (err: any) {
+      console.error('Error canceling request:', err);
       alert(err.message || 'Failed to cancel request');
+      throw err; // Re-throw so modal can handle error state
     } finally {
       setActionLoading(null);
     }
@@ -146,6 +240,19 @@ export const RequestListOrganism: React.FC<RequestListOrganismProps> = ({
         <h2 className="text-2xl font-bold text-gray-900">Service Requests</h2>
 
         <div className="flex items-center gap-2">
+          {/* Refresh Button */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => void fetchRequests()}
+            disabled={isLoading}
+            className="gap-2"
+            title="Refresh requests"
+          >
+            <Loader2 className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+            Refresh
+          </Button>
+
           {/* Filter Button */}
           <Button
             variant="outline"
@@ -282,6 +389,42 @@ export const RequestListOrganism: React.FC<RequestListOrganismProps> = ({
           Showing {requests.length} request{requests.length !== 1 ? 's' : ''}
         </div>
       )}
+
+      {/* Assign Request Modal */}
+      <AssignRequestModal
+        open={assignModalOpen}
+        onClose={() => {
+          setAssignModalOpen(false);
+          setSelectedRequestForAssign(null);
+        }}
+        request={selectedRequestForAssign}
+        onConfirm={handleAssignConfirm}
+        isLoading={!!actionLoading}
+      />
+
+      {/* Complete Request Modal */}
+      <CompleteRequestModal
+        open={completeModalOpen}
+        onClose={() => {
+          setCompleteModalOpen(false);
+          setSelectedRequestForComplete(null);
+        }}
+        request={selectedRequestForComplete}
+        onConfirm={handleCompleteConfirm}
+        isLoading={!!actionLoading}
+      />
+
+      {/* Cancel Request Modal */}
+      <CancelRequestModal
+        open={cancelModalOpen}
+        onClose={() => {
+          setCancelModalOpen(false);
+          setSelectedRequestForCancel(null);
+        }}
+        request={selectedRequestForCancel}
+        onConfirm={handleCancelConfirm}
+        isLoading={!!actionLoading}
+      />
     </div>
   );
 };

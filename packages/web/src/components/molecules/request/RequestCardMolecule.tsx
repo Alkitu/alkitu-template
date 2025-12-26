@@ -6,6 +6,7 @@ import { Calendar, MapPin, User, Building2, Eye, XCircle, UserCheck, CheckCircle
 import { RequestStatus } from '@alkitu/shared';
 import { RequestStatusBadgeMolecule } from './RequestStatusBadgeMolecule';
 import type { RequestCardMoleculeProps } from './RequestCardMolecule.types';
+import { useTranslations } from '@/context/TranslationsContext';
 
 /**
  * RequestCardMolecule - Molecule Component (ALI-119)
@@ -45,6 +46,8 @@ export const RequestCardMolecule: React.FC<RequestCardMoleculeProps> = ({
   onComplete,
   isLoading = false,
 }) => {
+  const t = useTranslations('requests.actions');
+
   // Format date
   const executionDate = new Date(request.executionDateTime);
   const formattedDate = executionDate.toLocaleDateString('en-US', {
@@ -109,7 +112,7 @@ export const RequestCardMolecule: React.FC<RequestCardMoleculeProps> = ({
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <UserCheck className="h-4 w-4 flex-shrink-0 text-blue-600" aria-hidden="true" />
             <span>
-              Assigned to: <span className="font-medium text-blue-700">
+              {t('assign')}ed to: <span className="font-medium text-blue-700">
                 {request.assignedTo.firstname} {request.assignedTo.lastname}
               </span>
             </span>
@@ -134,7 +137,7 @@ export const RequestCardMolecule: React.FC<RequestCardMoleculeProps> = ({
               className="flex-1"
             >
               <Eye className="mr-1.5 h-4 w-4" aria-hidden="true" />
-              View Details
+              {t('viewDetails')}
             </Button>
           )}
 
@@ -151,7 +154,7 @@ export const RequestCardMolecule: React.FC<RequestCardMoleculeProps> = ({
               ) : (
                 <UserCheck className="mr-1.5 h-4 w-4" aria-hidden="true" />
               )}
-              Assign
+              {t('assign')}
             </Button>
           )}
 
@@ -168,7 +171,7 @@ export const RequestCardMolecule: React.FC<RequestCardMoleculeProps> = ({
               ) : (
                 <CheckCircle className="mr-1.5 h-4 w-4" aria-hidden="true" />
               )}
-              Complete
+              {t('complete')}
             </Button>
           )}
 
@@ -185,7 +188,7 @@ export const RequestCardMolecule: React.FC<RequestCardMoleculeProps> = ({
               ) : (
                 <XCircle className="mr-1.5 h-4 w-4" aria-hidden="true" />
               )}
-              Cancel
+              {t('cancel')}
             </Button>
           )}
         </div>

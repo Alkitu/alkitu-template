@@ -123,6 +123,10 @@ export const PROTECTED_ROUTES: ProtectedRoute[] = [
     roles: [UserRole.ADMIN],
   },
   {
+    path: '/admin/requests',
+    roles: [UserRole.ADMIN],
+  },
+  {
     path: '/admin/dashboard',
     roles: [UserRole.ADMIN],
   },

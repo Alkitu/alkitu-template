@@ -42,7 +42,11 @@
       "Bash(xargs cat:*)",
       "Bash(tee:*)",
       "mcp__playwright__browser_run_code",
-      "Bash(npx tsc --noEmit tests/e2e/ali-120-notifications.spec.ts)"
+      "Bash(npx tsc --noEmit tests/e2e/ali-120-notifications.spec.ts)",
+      "mcp__playwright__browser_take_screenshot",
+      "Bash(git log --oneline -20 --all -- packages/web/src/app/[lang]/\\\\\\(private\\\\\\)/requests)",
+      "Bash(python3:*)",
+      "Bash(mkdir:*)"
     ],
     "deny": [],
     "ask": []

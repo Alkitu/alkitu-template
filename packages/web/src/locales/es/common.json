@@ -1022,5 +1022,45 @@
       "open": "Abrir",
       "archive": "Archivar"
     }
+  },
+  "requests": {
+    "actions": {
+      "viewDetails": "Ver Detalles",
+      "assign": "Asignar",
+      "complete": "Completar",
+      "cancel": "Cancelar",
+      "assignedTo": "Asignado a"
+    },
+    "assign": {
+      "title": "Asignar Solicitud",
+      "description": "Seleccione un empleado para asignar esta solicitud.",
+      "selectEmployee": "Empleado",
+      "selectEmployeePlaceholder": "Seleccione un empleado",
+      "loadingEmployees": "Cargando empleados...",
+      "noEmployeesAvailable": "No hay empleados disponibles",
+      "errorFetchingEmployees": "Error al cargar empleados",
+      "cancel": "Cancelar",
+      "confirm": "Confirmar",
+      "assigning": "Asignando..."
+    },
+    "complete": {
+      "title": "Completar Solicitud",
+      "description": "Marque esta solicitud como completada. Puede agregar notas opcionales.",
+      "notes": "Notas de Finalización (Opcional)",
+      "notesPlaceholder": "Agregue notas sobre el trabajo completado...",
+      "cancel": "Cancelar",
+      "confirm": "Marcar Completada",
+      "completing": "Completando..."
+    },
+    "cancel": {
+      "title": "Cancelar Solicitud",
+      "description": "Por favor proporcione un motivo para cancelar esta solicitud.",
+      "reason": "Motivo de Cancelación",
+      "reasonPlaceholder": "Explique por qué se cancela esta solicitud...",
+      "reasonRequired": "Por favor proporcione un motivo para la cancelación",
+      "back": "Volver",
+      "confirm": "Cancelar Solicitud",
+      "canceling": "Cancelando..."
+    }
   }
 }

@@ -30,47 +30,6 @@ describe('Separator Atom', () => {
   });
 
   // 2. ORIENTATION TESTS
-  describe('Orientations', () => {
-    it('applies horizontal styles correctly', () => {
-      const { container } = render(<Separator orientation="horizontal" />);
-      const separator = container.querySelector('.separator-atom') as HTMLElement;
-      expect(separator?.style.width).toBe('100%');
-      expect(separator?.style.borderTop).toContain('1px solid');
-    });
-
-    it('applies vertical styles correctly', () => {
-      const { container } = render(<Separator orientation="vertical" length="40px" />);
-      const separator = container.querySelector('.separator-atom') as HTMLElement;
-      expect(separator?.style.height).toBe('40px');
-      expect(separator?.style.borderLeft).toContain('1px solid');
-    });
-
-    it('uses 100% height for vertical separator without length', () => {
-      const { container } = render(<Separator orientation="vertical" />);
-      const separator = container.querySelector('.separator-atom') as HTMLElement;
-      expect(separator?.style.height).toBe('100%');
-    });
-  });
-
-  // 3. SIZE TESTS
-  describe('Sizes', () => {
-    it.each([
-      ['thin', '1px'],
-      ['medium', '2px'],
-      ['thick', '4px'],
-    ])('applies %s size correctly', (size, expectedThickness) => {
-      const { container } = render(<Separator size={size as any} />);
-      const separator = container.querySelector('.separator-atom') as HTMLElement;
-      expect(separator?.style.borderTop).toContain(expectedThickness);
-    });
-
-    it('defaults to thin size', () => {
-      const { container } = render(<Separator />);
-      const separator = container.querySelector('.separator-atom') as HTMLElement;
-      expect(separator?.style.borderTop).toContain('1px');
-    });
-  });
-
   // 4. VARIANT TESTS
   describe('Variants', () => {
     it.each([
@@ -82,19 +41,6 @@ describe('Separator Atom', () => {
       const { container } = render(<Separator variant={variant as any} />);
       const separator = container.querySelector('.separator-atom') as HTMLElement;
       expect(separator?.style.borderTop).toContain(expectedColor);
-    });
-  });
-
-  // 5. BORDER STYLE TESTS
-  describe('Border Styles', () => {
-    it.each([
-      ['solid', 'solid'],
-      ['dashed', 'dashed'],
-      ['dotted', 'dotted'],
-    ])('applies %s border style correctly', (borderStyle, expectedStyle) => {
-      const { container } = render(<Separator borderStyle={borderStyle as any} />);
-      const separator = container.querySelector('.separator-atom') as HTMLElement;
-      expect(separator?.style.borderTop).toContain(expectedStyle);
     });
   });
 

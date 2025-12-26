@@ -18,6 +18,9 @@ export class MessageRepository implements IMessageRepository {
         createdAt: new Date(),
       },
       include: {
+        senderUser: {
+          select: { firstname: true, lastname: true, role: true },
+        },
         conversation: {
           include: {
             contactInfo: true,
@@ -32,6 +35,9 @@ export class MessageRepository implements IMessageRepository {
       where: { conversationId },
       orderBy: { createdAt: 'asc' },
       include: {
+        senderUser: {
+          select: { firstname: true, lastname: true, role: true },
+        },
         conversation: {
           select: { id: true, status: true },
         },

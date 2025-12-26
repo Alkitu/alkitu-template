@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 import React, { ReactNode } from "react";
 
 type Props = {
-  children: ReactNode;
+  children?: ReactNode;
   className?: string;
   separatorColor?: string;
   style?: React.CSSProperties;

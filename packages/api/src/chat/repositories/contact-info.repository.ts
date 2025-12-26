@@ -22,12 +22,26 @@ export class ContactInfoRepository implements IContactInfoRepository {
   }
 
   async findByEmail(email: string): Promise<ContactInfo | null> {
+    if (!email) return null;
     return this.prisma.contactInfo.findUnique({
       where: { email },
       include: {
         conversations: {
           orderBy: { createdAt: 'desc' },
-          take: 5, // Include last 5 conversations
+          take: 5,
+        },
+      },
+    });
+  }
+
+  async findByPhone(phone: string): Promise<ContactInfo | null> {
+    if (!phone) return null;
+    return this.prisma.contactInfo.findUnique({
+      where: { phone },
+      include: {
+        conversations: {
+          orderBy: { createdAt: 'desc' },
+          take: 5,
         },
       },
     });

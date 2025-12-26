@@ -2,10 +2,12 @@ import { initTRPC } from '@trpc/server';
 import { PrismaService } from '../prisma.service';
 import { ChatService } from '../chat/chat.service';
 import { ChatbotConfigService } from '../chatbot-config/chatbot-config.service';
+import { ChannelsService } from '../channels/channels.service';
 
 export interface Context {
   prisma: PrismaService;
   chatService: ChatService;
+  channelsService: ChannelsService;
   chatbotConfigService: ChatbotConfigService;
   user?: {
     id: string;

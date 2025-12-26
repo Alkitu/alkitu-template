@@ -93,6 +93,7 @@ describe('CategoriesService (ALI-118)', () => {
           ...createCategoryDto,
           createdBy: mockUserId,
           updatedBy: mockUserId,
+          deletedAt: null,
         },
       });
       expect(result).toEqual(mockCategory);
@@ -148,7 +149,7 @@ describe('CategoriesService (ALI-118)', () => {
         orderBy: { name: 'asc' },
         include: {
           _count: {
-            select: { services: { where: { deletedAt: null } } },
+            select: { services: true },
           },
         },
       });

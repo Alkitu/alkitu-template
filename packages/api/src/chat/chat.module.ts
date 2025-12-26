@@ -4,12 +4,13 @@ import { ChatGateway } from './chat.gateway';
 import { ChatController } from './chat.controller';
 import { PrismaService } from '../prisma.service';
 import { NotificationModule } from '../notification/notification.module';
+import { EmailModule } from '../email/email.module';
 import { ConversationRepository } from './repositories/conversation.repository';
 import { MessageRepository } from './repositories/message.repository';
 import { ContactInfoRepository } from './repositories/contact-info.repository';
 
 @Module({
-  imports: [NotificationModule],
+  imports: [NotificationModule, EmailModule],
   controllers: [ChatController],
   providers: [
     ChatService,

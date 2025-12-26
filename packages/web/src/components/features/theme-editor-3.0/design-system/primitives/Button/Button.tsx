@@ -83,6 +83,9 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         opacity: 0.5,
         cursor: 'not-allowed',
       }),
+
+      // Shadows - Use standardized shadow variables
+      boxShadow: loading ? 'none' : 'var(--shadow-button, var(--shadow-sm))',
     };
 
     // Variant classes using global color system
@@ -150,33 +153,27 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           style={{
             ...baseStyles,
             ...style,
-            outline: '2px solid transparent',
-            outlineOffset: '2px',
-            '--focus-ring-color': 'var(--ring, var(--primary))',
-            boxShadow: loading ? 'none' : 'var(--shadow-button, var(--shadow-sm))',
           } as React.CSSProperties}
           onFocus={(e: any) => {
-            e.currentTarget.style.outline = '2px solid var(--focus-ring-color)';
-            e.currentTarget.style.outlineOffset = '2px';
             if (restProps.onFocus) restProps.onFocus(e);
           }}
           onBlur={(e: any) => {
-            e.currentTarget.style.outline = '2px solid transparent';
             if (restProps.onBlur) restProps.onBlur(e);
-          }}
-          onKeyDown={(e: any) => {
-            if ((e.key === 'Enter' || e.key === ' ') && !restProps.disabled && !loading) {
-              e.preventDefault();
-              if (restProps.onClick) {
-                restProps.onClick(e as any);
-              }
-            }
-            if (restProps.onKeyDown) restProps.onKeyDown(e);
           }}
           {...getAccessibilityProps()}
           {...restProps}
         >
-          {restProps.children}
+          {loading ? (
+            <div className="flex items-center gap-2">
+              <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+              {restProps.children}
+            </div>
+          ) : (
+            <>
+              {icon && <span className="mr-2">{icon}</span>}
+              {restProps.children}
+            </>
+          )}
         </Comp>
       );
     }
@@ -188,28 +185,12 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         style={{
           ...baseStyles,
           ...style,
-          outline: '2px solid transparent',
-          outlineOffset: '2px',
-          '--focus-ring-color': 'var(--ring, var(--primary))',
-          boxShadow: loading ? 'none' : 'var(--shadow-button, var(--shadow-sm))',
         } as React.CSSProperties}
         onFocus={(e: any) => {
-          e.currentTarget.style.outline = '2px solid var(--focus-ring-color)';
-          e.currentTarget.style.outlineOffset = '2px';
           if (restProps.onFocus) restProps.onFocus(e);
         }}
         onBlur={(e: any) => {
-          e.currentTarget.style.outline = '2px solid transparent';
           if (restProps.onBlur) restProps.onBlur(e);
-        }}
-        onKeyDown={(e: any) => {
-          if ((e.key === 'Enter' || e.key === ' ') && !restProps.disabled && !loading) {
-            e.preventDefault();
-            if (restProps.onClick) {
-              restProps.onClick(e as any);
-            }
-          }
-          if (restProps.onKeyDown) restProps.onKeyDown(e);
         }}
         disabled={restProps.disabled || loading}
         {...getAccessibilityProps()}

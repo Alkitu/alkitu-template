@@ -1,6 +1,5 @@
 'use client';
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { trpc } from '@/lib/trpc';
 import { useParams } from 'next/navigation';
 import { ConversationDetail } from '@/components/features/chat/ConversationDetail';
@@ -16,66 +15,69 @@ import { AdminPageHeader } from '@/components/molecules/admin-page-header';
 export default function ConversationDetailPage() {
   const params = useParams();
   const conversationId = params.conversationId as string;
-  const queryClient = useQueryClient();
+  const utils = trpc.useUtils();
 
+  // Get current user (admin) data
+  const { data: currentUser } = trpc.user.me.useQuery();
+
+  // Fetch messages for this conversation
+  const {
+    data: messages = [],
+    isLoading: isLoadingMessages,
+    error: messagesError,
+  } = trpc.chat.getMessages.useQuery(
+    { conversationId },
+    {
+      enabled: !!conversationId,
+      refetchInterval: 2000, // Refresh every 2 seconds for near real-time updates
+      refetchOnWindowFocus: true,
+    }
+  );
+
+  // Fetch conversation details (for metadata like status, assignment)
   const {
     data: conversationsData,
     isLoading: isLoadingConversation,
-    error: conversationError,
-  } = useQuery({
-    queryKey: ['conversation', conversationId],
-    queryFn: () => trpc.chat.getConversations.query({}),
-    enabled: !!conversationId,
-  });
+  } = trpc.chat.getConversations.useQuery(
+    {},
+    {
+      enabled: !!conversationId,
+    }
+  );
 
   // Find the specific conversation from the list
   const conversation = conversationsData?.find(
     (conv) => conv.id === conversationId,
   );
 
-  // Get messages from the conversation (this will need to be handled differently since messages aren't in the conversation object)
-  const messages: any[] = []; // Placeholder - messages should be fetched separately
-
-  const replyMutation = useMutation({
-    mutationFn: (content: string) =>
-      trpc.chat.sendMessage.mutate({
-        conversationId,
-        content,
-        isFromVisitor: false,
-        senderUserId: 'admin', // This should be the actual admin user ID
-      }),
+  const replyMutation = trpc.chat.replyToMessage.useMutation({
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['conversation', conversationId],
-      });
+      utils.chat.getMessages.invalidate({ conversationId });
     },
   });
 
-  const assignMutation = useMutation({
-    mutationFn: (assignedToId: string) => {
-      // This would need a backend implementation
-      console.log('Assigning conversation', conversationId, 'to', assignedToId);
-      return Promise.resolve();
-    },
+  const assignMutation = trpc.chat.assignConversation.useMutation({
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['conversation', conversationId],
-      });
+      utils.chat.getConversations.invalidate();
     },
   });
 
-  const updateStatusMutation = useMutation({
-    mutationFn: (status: string) => {
-      // This would need a backend implementation
-      console.log('Updating conversation status', conversationId, 'to', status);
-      return Promise.resolve();
-    },
+  const updateStatusMutation = trpc.chat.updateStatus.useMutation({
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['conversation', conversationId],
-      });
+      utils.chat.getConversations.invalidate();
     },
   });
+
+  const markAsReadMutation = trpc.chat.markAsRead.useMutation();
+  const markAsDeliveredMutation = trpc.chat.markAsDelivered.useMutation();
+
+  // Mark as read and delivered when viewing
+  useEffect(() => {
+    if (conversationId && messages.length > 0) {
+      markAsReadMutation.mutate({ conversationId, userId: currentUser?.id || 'admin' });
+      markAsDeliveredMutation.mutate({ conversationId });
+    }
+  }, [conversationId, messages.length, currentUser?.id]);
 
   useEffect(() => {
     if (conversationId) {
@@ -83,9 +85,7 @@ export default function ConversationDetailPage() {
 
       socket.on('newMessage', (message) => {
         if (message.conversationId === conversationId) {
-          queryClient.invalidateQueries({
-            queryKey: ['chatMessages', conversationId],
-          });
+          utils.chat.getMessages.invalidate({ conversationId });
         }
       });
 
@@ -93,17 +93,17 @@ export default function ConversationDetailPage() {
         socket.disconnect();
       };
     }
-  }, [conversationId, queryClient]);
+  }, [conversationId, utils]);
 
-  if (isLoadingConversation) return <div>Loading conversation...</div>;
-  if (conversationError)
-    return <div>Error loading conversation: {conversationError.message}</div>;
+  if (isLoadingConversation || isLoadingMessages) return <div>Loading conversation...</div>;
+  if (messagesError)
+    return <div>Error loading messages: {messagesError.message}</div>;
   if (!conversation) return <div>Conversation not found.</div>;
 
   return (
     <div className="p-6 space-y-6">
       <AdminPageHeader
-        title={`Conversation with ${conversationId}`}
+        title={`Conversation ${conversation.id}`}
         description="Manage support conversation"
         backHref={`/admin/chat`}
         backLabel="Back to Chat"
@@ -111,18 +111,22 @@ export default function ConversationDetailPage() {
           <>
             <AssignmentSelect
               currentAssignment={conversation.assignedToId}
-              onAssign={assignMutation.mutate}
+              onAssign={(assignedToId) => assignMutation.mutate({ conversationId, assignedToId })}
             />
             <StatusSelect
-              currentStatus={conversation.status as any}
-              onStatusChange={updateStatusMutation.mutate}
+              currentStatus={conversation.status}
+              onStatusChange={(status) => updateStatusMutation.mutate({ conversationId, status })}
             />
           </>
         }
       />
-      <ConversationDetail messages={messages} />
+      <ConversationDetail messages={messages} currentUserId={currentUser?.id} />
       <ReplyForm
-        onSend={replyMutation.mutate}
+        onSend={(content) => replyMutation.mutate({ 
+          conversationId, 
+          content,
+          senderUserId: currentUser?.id || 'admin'
+        })}
         isLoading={replyMutation.isPending}
       />
       <InternalNotes

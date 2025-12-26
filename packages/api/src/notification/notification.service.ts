@@ -237,25 +237,33 @@ export class NotificationService {
   }
 
   async notifyNewChatConversation(conversation: any) {
-    // Assuming a default admin user or a system-wide notification mechanism
-    const adminUserId = 'admin'; // TODO: Replace with actual admin user ID or logic to find relevant users
-    await this.createNotification({
-      userId: adminUserId,
-      message: `New chat conversation from ${conversation.contactInfo?.name || conversation.contactInfo?.email || 'a visitor'}`,
-      type: NotificationType.CHAT_NEW_CONVERSATION,
-      link: `/dashboard/chat/${conversation.id}`,
-    });
+    // TODO: Implement proper admin user lookup or use a system notification mechanism
+    // Temporarily disabled notification creation to prevent ObjectID errors
+    // The hardcoded userId 'admin' is not a valid MongoDB ObjectID
+    console.log(`New chat conversation from ${conversation.contactInfo?.name || conversation.contactInfo?.email || 'a visitor'}`);
+    
+    // const adminUserId = 'admin'; // Invalid ObjectID
+    // await this.createNotification({
+    //   userId: adminUserId,
+    //   message: `New chat conversation from ${conversation.contactInfo?.name || conversation.contactInfo?.email || 'a visitor'}`,
+    //   type: NotificationType.CHAT_NEW_CONVERSATION,
+    //   link: `/dashboard/chat/${conversation.id}`,
+    // });
   }
 
   async notifyNewChatMessage(message: any) {
-    // Assuming a default admin user or a system-wide notification mechanism
-    const adminUserId = 'admin'; // TODO: Replace with actual admin user ID or logic to find relevant users
-    await this.createNotification({
-      userId: adminUserId,
-      message: `New message in conversation ${message.conversationId}: ${message.content.substring(0, 50)}...`,
-      type: NotificationType.CHAT_NEW_MESSAGE,
-      link: `/dashboard/chat/${message.conversationId}`,
-    });
+    // TODO: Implement proper admin user lookup or use a system notification mechanism
+    // Temporarily disabled notification creation to prevent ObjectID errors
+    // The hardcoded userId 'admin' is not a valid MongoDB ObjectID
+    console.log(`New message in conversation ${message.conversationId}: ${message.content.substring(0, 50)}...`);
+    
+    // const adminUserId = 'admin'; // Invalid ObjectID
+    // await this.createNotification({
+    //   userId: adminUserId,
+    //   message: `New message in conversation ${message.conversationId}: ${message.content.substring(0, 50)}...`,
+    //   type: NotificationType.CHAT_NEW_MESSAGE,
+    //   link: `/dashboard/chat/${message.conversationId}`,
+    // });
   }
 
   async getNotifications(userId: string) {

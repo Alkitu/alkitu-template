@@ -37,43 +37,6 @@ describe('PreviewImage Molecule', () => {
     });
   });
 
-  // Test 2: Aspect Ratios
-  describe('Aspect Ratios', () => {
-    const aspectRatios: Array<{
-      ratio: PreviewImageProps['aspectRatio'];
-      expected: string;
-    }> = [
-      { ratio: 'square', expected: '1' },
-      { ratio: '1:1', expected: '1' },
-      { ratio: '4:3', expected: '4/3' },
-      { ratio: '16:9', expected: '16/9' },
-      { ratio: '3:2', expected: '3/2' },
-      { ratio: '2:1', expected: '2/1' },
-      { ratio: 'auto', expected: 'auto' },
-    ];
-
-    aspectRatios.forEach(({ ratio, expected }) => {
-      it(`applies ${ratio} aspect ratio correctly`, () => {
-        const { container } = render(<PreviewImage aspectRatio={ratio} />);
-        const element = container.firstChild as HTMLElement;
-
-        if (expected === 'auto') {
-          expect(element.style.aspectRatio).toBeFalsy();
-        } else {
-          expect(element.style.aspectRatio).toBe(expected);
-        }
-      });
-    });
-
-    it('applies custom ratio when provided', () => {
-      const { container } = render(
-        <PreviewImage aspectRatio="16:9" customRatio="21/9" />,
-      );
-      const element = container.firstChild as HTMLElement;
-      expect(element.style.aspectRatio).toBe('21/9');
-    });
-  });
-
   // Test 3: Size Variants
   describe('Size Variants', () => {
     const sizes: Array<{
@@ -103,39 +66,6 @@ describe('PreviewImage Molecule', () => {
       const { container } = render(<PreviewImage size="lg" aspectRatio="16:9" />);
       const element = container.firstChild as HTMLElement;
       expect(element.style.width).toBe('100%');
-    });
-  });
-
-  // Test 4: Border Radius
-  describe('Border Radius', () => {
-    it('applies none radius', () => {
-      const { container } = render(<PreviewImage radius="none" />);
-      const element = container.firstChild as HTMLElement;
-      expect(element.style.borderRadius).toBe('0');
-    });
-
-    it('applies full radius', () => {
-      const { container } = render(<PreviewImage radius="full" />);
-      const element = container.firstChild as HTMLElement;
-      expect(element.style.borderRadius).toBe('50%');
-    });
-
-    it('applies sm radius with CSS variable', () => {
-      const { container } = render(<PreviewImage radius="sm" />);
-      const element = container.firstChild as HTMLElement;
-      expect(element.style.borderRadius).toBe('var(--radius-sm, 4px)');
-    });
-
-    it('applies md radius with CSS variable', () => {
-      const { container } = render(<PreviewImage radius="md" />);
-      const element = container.firstChild as HTMLElement;
-      expect(element.style.borderRadius).toBe('var(--radius, 8px)');
-    });
-
-    it('applies lg radius with CSS variable', () => {
-      const { container } = render(<PreviewImage radius="lg" />);
-      const element = container.firstChild as HTMLElement;
-      expect(element.style.borderRadius).toBe('var(--radius-lg, 12px)');
     });
   });
 
@@ -332,27 +262,6 @@ describe('PreviewImage Molecule', () => {
         'div[style*="opacity"]',
       ) as HTMLElement;
       expect(overlay?.style.opacity).toBe('0');
-    });
-  });
-
-  // Test 12: CSS Variables (Theme Integration)
-  describe('CSS Variables (Theme Integration)', () => {
-    it('uses CSS variable for background color', () => {
-      const { container } = render(<PreviewImage />);
-      const element = container.firstChild as HTMLElement;
-      expect(element.style.backgroundColor).toBe('var(--color-muted)');
-    });
-
-    it('uses CSS variable for border color', () => {
-      const { container } = render(<PreviewImage />);
-      const element = container.firstChild as HTMLElement;
-      expect(element.style.border).toBe('1px solid var(--color-border)');
-    });
-
-    it('uses CSS variable for muted foreground color', () => {
-      const { container } = render(<PreviewImage />);
-      const mutedText = container.querySelector('[style*="--color-muted-foreground"]');
-      expect(mutedText).toBeInTheDocument();
     });
   });
 

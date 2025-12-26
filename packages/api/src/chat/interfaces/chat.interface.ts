@@ -29,6 +29,7 @@ export interface CreateContactInfoData {
   source?: string;
   ipAddress?: string;
   userAgent?: string;
+  userId?: string;
 }
 
 export interface CreateConversationData {
@@ -37,6 +38,7 @@ export interface CreateConversationData {
   priority: Priority;
   source: string;
   assignedToId?: string;
+  clientUserId?: string;
 }
 
 export interface CreateMessageData {
@@ -57,10 +59,11 @@ export interface UpdateConversationData {
 
 export interface ConversationFindOptions {
   where?: {
-    id?: string;
+    id?: string | { in: string[] };
     status?: ConversationStatus;
     priority?: Priority;
     assignedToId?: string;
+    clientUserId?: string;
     createdAt?: {
       gte?: Date;
       lte?: Date;
@@ -143,6 +146,7 @@ export interface IMessageRepository {
 export interface IContactInfoRepository {
   create(data: CreateContactInfoData): Promise<ContactInfo>;
   findByEmail(email: string): Promise<ContactInfo | null>;
+  findByPhone(phone: string): Promise<ContactInfo | null>;
   findById(id: string): Promise<ContactInfo | null>;
   findAll(options: ContactInfoFindOptions): Promise<ContactInfo[]>;
 }

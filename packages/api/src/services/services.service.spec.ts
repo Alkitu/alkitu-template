@@ -130,6 +130,7 @@ describe('ServicesService (ALI-118)', () => {
           ...createServiceDto,
           createdBy: mockUserId,
           updatedBy: mockUserId,
+          deletedAt: null,
         },
         include: {
           category: {

@@ -121,6 +121,7 @@ describe('ChatGateway', () => {
         senderUserId: null,
         createdAt: new Date(),
         isRead: false,
+        isDelivered: false,
         metadata: null,
       };
 
@@ -139,6 +140,7 @@ describe('ChatGateway', () => {
         senderUserId: 'agent-123',
         createdAt: new Date(),
         isRead: false,
+        isDelivered: false,
         metadata: null,
       };
 
@@ -157,6 +159,7 @@ describe('ChatGateway', () => {
         senderUserId: 'agent-123',
         createdAt: new Date(),
         isRead: false,
+        isDelivered: false,
         metadata: { isInternal: true },
       };
 
@@ -175,6 +178,7 @@ describe('ChatGateway', () => {
         senderUserId: null,
         createdAt: new Date(),
         isRead: false,
+        isDelivered: false,
         metadata: null,
       };
 
@@ -186,6 +190,7 @@ describe('ChatGateway', () => {
         senderUserId: 'agent-123',
         createdAt: new Date(),
         isRead: false,
+        isDelivered: false,
         metadata: null,
       };
 

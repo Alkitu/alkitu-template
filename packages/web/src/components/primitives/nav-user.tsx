@@ -3,6 +3,7 @@
 import {
   BadgeCheck,
   Bell,
+  MessageSquare,
   ChevronsUpDown,
   CreditCard,
   Laptop,
@@ -149,6 +150,12 @@ export function NavUser({ user }: { user: User }) {
                 <Link href="/dashboard/billing">
                   <CreditCard />
                   {t('billing')}
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/admin/chat" className="relative">
+                  <MessageSquare className="h-4 w-4" />
+                  Chat
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>

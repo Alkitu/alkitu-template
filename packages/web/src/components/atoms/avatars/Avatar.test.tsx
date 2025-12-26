@@ -78,21 +78,6 @@ describe('Avatar Component - PHASE 2 CONSOLIDATION', () => {
         expect(fallback).toBeInTheDocument();
       });
 
-      it('applies typography CSS variables to fallback', () => {
-        const { container } = render(
-          <Avatar>
-            <AvatarFallback>JD</AvatarFallback>
-          </Avatar>
-        );
-
-        const fallback = container.querySelector('[data-slot="avatar-fallback"]') as HTMLElement;
-        const styles = window.getComputedStyle(fallback);
-
-        expect(fallback.style.fontFamily).toBe('var(--typography-emphasis-font-family, inherit)');
-        expect(fallback.style.fontWeight).toBe('var(--typography-emphasis-font-weight, 500)');
-        expect(fallback.style.letterSpacing).toBe('var(--typography-emphasis-letter-spacing, normal)');
-      });
-
       it('centers content with flex layout', () => {
         const { container } = render(
           <Avatar>

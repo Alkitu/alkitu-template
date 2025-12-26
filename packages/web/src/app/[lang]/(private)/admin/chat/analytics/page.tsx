@@ -1,6 +1,5 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
 import { trpc } from '@/lib/trpc';
 import { ChatAnalyticsDashboard } from '@/components/features/chat/ChatAnalyticsDashboard';
 import { Typography } from '@/components/atoms/typography';
@@ -11,10 +10,7 @@ export default function ChatAnalyticsPage() {
     data: analytics,
     isLoading,
     error,
-  } = useQuery({
-    queryKey: ['chatAnalytics'],
-    queryFn: () => trpc.chat.getChatAnalytics.query(), // TODO: Implement this
-  });
+  } = trpc.chat.getChatAnalytics.useQuery();
 
   if (isLoading) return <div>Loading analytics...</div>;
   if (error) return <div>Error loading analytics: {error.message}</div>;

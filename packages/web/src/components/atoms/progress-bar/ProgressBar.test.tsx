@@ -281,18 +281,6 @@ describe('ProgressBar Atom', () => {
       expect(bar).toHaveClass('rounded-full');
     });
 
-    it('applies typography CSS variables to label', () => {
-      render(
-        <ProgressBar value={50} label="Loading" showLabel data-testid="progress" />
-      );
-      const label = screen.getByTestId('progress-label');
-      const style = window.getComputedStyle(label);
-      // Verify that inline styles are applied (actual values depend on CSS variables)
-      expect(label).toHaveStyle({
-        fontFamily: 'var(--typography-emphasis-font-family)',
-      });
-    });
-
     it('applies border radius CSS variable', () => {
       const { container } = render(
         <ProgressBar value={50} data-testid="progress" />

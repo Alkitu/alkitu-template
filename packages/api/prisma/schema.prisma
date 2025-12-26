@@ -105,6 +105,14 @@ model User {
   locations               WorkLocation[]          @relation("UserLocations") // ALI-117
   requests                Request[]               @relation("UserRequests") // ALI-119: Requests created by user
   assignedRequests        Request[]               @relation("RequestAssignedEmployee") // ALI-119: Requests assigned to employee
+  
+  // Client Chat Relations (ALI-Channels)
+  clientConversations     Conversation[]          @relation("ClientConversations")
+  contactInfo             ContactInfo?
+
+  // Internal Channels Relations
+  channelMemberships      ChannelMember[]
+  channelMessages         ChannelMessage[]
 }
 
 // Notification Preferences model
@@ -355,6 +363,8 @@ model Conversation {
   // Relations
   contactInfo ContactInfo @relation(fields: [contactInfoId], references: [id])
   assignedTo  User?       @relation("AssignedConversations", fields: [assignedToId], references: [id])
+  clientUser  User?       @relation("ClientConversations", fields: [clientUserId], references: [id])
+  clientUserId String?    @db.ObjectId
   messages    ChatMessage[]
 
   @@map("conversations")
@@ -367,6 +377,7 @@ model ChatMessage {
   isFromVisitor  Boolean  @default(true)
   senderUserId   String?  @db.ObjectId
   isRead         Boolean  @default(false)
+  isDelivered    Boolean  @default(false)
   metadata       Json?    // Additional message data
   createdAt      DateTime @default(now())
 
@@ -392,8 +403,86 @@ model ContactInfo {
 
   // Relations
   conversations Conversation[]
+  user          User?          @relation(fields: [userId], references: [id])
+  userId        String?        @unique @db.ObjectId
 
   @@map("contact_info")
+}
+
+// Internal Channels (Slack-style)
+enum ChannelType {
+  PUBLIC
+  PRIVATE
+  DM
+}
+
+enum ChannelRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+model Channel {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  name        String?   // Null for DMs
+  description String?
+  type        ChannelType @default(PUBLIC)
+  allowedRoles UserRole[] @default([]) // Empty means all roles (if public) or specific members (if private)
+  workspaceId String?   @db.ObjectId // Optional: for multi-tenant future proofing
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Connections
+  members     ChannelMember[]
+  messages    ChannelMessage[]
+
+  @@map("channels")
+}
+
+model ChannelMember {
+  id        String      @id @default(auto()) @map("_id") @db.ObjectId
+  channelId String      @db.ObjectId
+  userId    String      @db.ObjectId
+  role      ChannelRole @default(MEMBER)
+  joinedAt  DateTime    @default(now())
+  
+  // Custom preferences (e.g. notifications)
+  muted     Boolean     @default(false)
+  isFavorite Boolean    @default(false)
+
+  channel   Channel     @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([channelId, userId])
+  @@map("channel_members")
+}
+
+model ChannelMessage {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  channelId   String   @db.ObjectId
+  content     String
+  senderId    String   @db.ObjectId
+  
+  // Threading support
+  parentId    String?  @db.ObjectId
+  replyCount  Int      @default(0)
+
+  // Read Receipts
+  readBy      String[] @db.ObjectId
+
+  // Attachments/Rich text
+  attachments Json?    // Array of { type: 'image'|'file', url: string, name: string }
+  metadata    Json?    // For reactions, edits, etc.
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  channel     Channel  @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  sender      User     @relation(fields: [senderId], references: [id])
+  parent      ChannelMessage?  @relation("ThreadReplies", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  replies     ChannelMessage[] @relation("ThreadReplies")
+
+  @@map("channel_messages")
 }
 
 enum ConversationStatus {

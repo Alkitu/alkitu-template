@@ -7,6 +7,7 @@ import { ChatGateway } from './chat.gateway';
 import { ConversationRepository } from './repositories/conversation.repository';
 import { MessageRepository } from './repositories/message.repository';
 import { ContactInfoRepository } from './repositories/contact-info.repository';
+import { EmailService } from '../email/email.service';
 import { ConversationStatus, Priority } from '@prisma/client';
 
 describe('ChatService - Comprehensive Business Logic Tests', () => {
@@ -28,6 +29,7 @@ describe('ChatService - Comprehensive Business Logic Tests', () => {
     source: 'website',
     ipAddress: '192.168.1.1',
     userAgent: 'Mozilla/5.0',
+    userId: null,
     metadata: null,
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -40,6 +42,7 @@ describe('ChatService - Comprehensive Business Logic Tests', () => {
     priority: Priority.NORMAL,
     source: 'website',
     assignedToId: null,
+    clientUserId: null,
     internalNotes: null,
     tags: [],
     createdAt: new Date(),
@@ -57,6 +60,7 @@ describe('ChatService - Comprehensive Business Logic Tests', () => {
     senderUserId: null,
     metadata: null,
     isRead: false,
+    isDelivered: false,
     createdAt: new Date(),
     updatedAt: new Date(),
   };
@@ -72,6 +76,10 @@ describe('ChatService - Comprehensive Business Logic Tests', () => {
   const mockPrismaService = {
     chatMessage: {
       updateMany: jest.fn(),
+    },
+    contactInfo: {
+      findFirst: jest.fn(),
+      update: jest.fn(),
     },
   };
 
@@ -115,8 +123,15 @@ describe('ChatService - Comprehensive Business Logic Tests', () => {
           provide: ContactInfoRepository,
           useValue: {
             findByEmail: jest.fn(),
+            findByPhone: jest.fn(),
             create: jest.fn(),
             findAll: jest.fn(),
+          },
+        },
+        {
+          provide: EmailService,
+          useValue: {
+            sendEmail: jest.fn(),
           },
         },
       ],
@@ -630,7 +645,7 @@ describe('ChatService - Comprehensive Business Logic Tests', () => {
           isFromVisitor: true,
           isRead: false,
         },
-        data: { isRead: true },
+        data: { isRead: true, isDelivered: true },
       });
     });
 
@@ -650,7 +665,7 @@ describe('ChatService - Comprehensive Business Logic Tests', () => {
           isFromVisitor: true,
           isRead: false,
         },
-        data: { isRead: true },
+        data: { isRead: true, isDelivered: true },
       });
     });
   });
@@ -828,7 +843,10 @@ describe('ChatService - Comprehensive Business Logic Tests', () => {
 
       const result = await service.startConversation(startConversationDto);
 
-      expect(contactInfoRepository.findByEmail).toHaveBeenCalledWith('');
+      // Empty strings are treated as undefined, so findByEmail should not be called
+      expect(contactInfoRepository.findByEmail).not.toHaveBeenCalled();
+      expect(contactInfoRepository.findByPhone).not.toHaveBeenCalled();
+      expect(contactInfoRepository.create).toHaveBeenCalled();
       expect(result).toBeDefined();
     });
 

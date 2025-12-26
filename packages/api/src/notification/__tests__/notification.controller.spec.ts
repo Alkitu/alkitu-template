@@ -317,7 +317,7 @@ describe('NotificationController', () => {
   describe('deleteNotificationsByType', () => {
     it('should delete notifications by type', async () => {
       const userId = 'user123';
-      const type = 'info';
+      const type = 'INFO';
       const expectedResult = { deleted: 4 };
 
       mockNotificationService.deleteNotificationsByType.mockResolvedValue(expectedResult);

@@ -9,6 +9,7 @@ import { billingRouter } from './routers/billing.router';
 import { createUserRouter } from './routers/user.router';
 import { chatRouter } from './routers/chat.router';
 import { chatbotConfigRouter } from './routers/chatbot-config.router';
+import { channelsRouter } from './routers/channels.router';
 import { createThemeRouter } from './routers/theme.router';
 import { createEmailTemplateRouter } from './routers/email-template.router';
 import { t } from './trpc';
@@ -41,6 +42,7 @@ export class TrpcRouter {
       billing: billingRouter, // Incluir el router de facturación
       user: createUserRouter(this.usersService, this.emailService), // Incluir el router de usuario con servicios
       chat: chatRouter, // Incluir el router de chat
+      channels: channelsRouter, // Channels router
       chatbotConfig: chatbotConfigRouter, // Incluir el router de configuración del chatbot
       theme: createThemeRouter(this.themeService), // Incluir el router de temas
       emailTemplate: createEmailTemplateRouter(this.emailTemplateService), // ALI-121: Router de email templates

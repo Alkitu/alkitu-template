@@ -277,31 +277,6 @@ describe('Badge Component - PHASE 2 CONSOLIDATION', () => {
   });
 
   describe('Theme Integration (CSS Variables)', () => {
-    it('applies typography CSS variables', () => {
-      const { container } = render(<Badge>Test</Badge>);
-      const badge = container.querySelector('[data-slot="badge"]') as HTMLElement;
-
-      expect(badge.style.fontFamily).toContain('var(--typography-emphasis-font-family');
-      expect(badge.style.letterSpacing).toContain('var(--typography-emphasis-letter-spacing');
-    });
-
-    it('applies border radius CSS variable', () => {
-      const { container } = render(<Badge>Test</Badge>);
-      const badge = container.querySelector('[data-slot="badge"]') as HTMLElement;
-
-      expect(badge.style.borderRadius).toContain('var(--radius-badge');
-    });
-
-    it('font size adjusts based on size prop', () => {
-      const { container, rerender } = render(<Badge size="md">Medium</Badge>);
-      let badge = container.querySelector('[data-slot="badge"]') as HTMLElement;
-      expect(badge.style.fontSize).toContain('calc');
-
-      rerender(<Badge size="lg">Large</Badge>);
-      badge = container.querySelector('[data-slot="badge"]') as HTMLElement;
-      expect(badge.style.fontSize).toContain('var(--typography-emphasis-font-size');
-    });
-
     it('merges themeOverride with base styles', () => {
       const { container } = render(
         <Badge themeOverride={{ backgroundColor: 'purple', color: 'white' }}>

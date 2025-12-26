@@ -396,7 +396,7 @@ describe('UserFacadeService Simple Tests', () => {
       expect(mockNotificationService.createNotification).toHaveBeenCalledWith({
         userId,
         message,
-        type: 'info',
+        type: 'INFO',
       });
     });
 

@@ -242,7 +242,8 @@ describe('LoginFormOrganism', () => {
   });
 
   it('should clear localStorage on successful login', async () => {
-    const mockRemoveItem = vi.spyOn(Storage.prototype, 'removeItem');
+    // Spy on the actual localStorage object instead of Storage.prototype
+    const mockRemoveItem = vi.spyOn(window.localStorage, 'removeItem');
 
     const mockResponse = {
       ok: true,

@@ -17,6 +17,7 @@ describe('MessageRepository', () => {
     isFromVisitor: false,
     senderUserId: 'user-123',
     isRead: false,
+    isDelivered: false,
     metadata: null,
     createdAt: new Date(),
   };
@@ -81,6 +82,9 @@ describe('MessageRepository', () => {
           createdAt: expect.any(Date),
         },
         include: {
+          senderUser: {
+            select: { firstname: true, lastname: true, role: true },
+          },
           conversation: {
             include: {
               contactInfo: true,
@@ -126,6 +130,9 @@ describe('MessageRepository', () => {
           createdAt: expect.any(Date),
         },
         include: {
+          senderUser: {
+            select: { firstname: true, lastname: true, role: true },
+          },
           conversation: {
             include: {
               contactInfo: true,
@@ -173,6 +180,9 @@ describe('MessageRepository', () => {
           createdAt: expect.any(Date),
         },
         include: {
+          senderUser: {
+            select: { firstname: true, lastname: true, role: true },
+          },
           conversation: {
             include: {
               contactInfo: true,
@@ -202,6 +212,9 @@ describe('MessageRepository', () => {
           createdAt: expect.any(Date),
         },
         include: {
+          senderUser: {
+            select: { firstname: true, lastname: true, role: true },
+          },
           conversation: {
             include: {
               contactInfo: true,
@@ -248,6 +261,9 @@ describe('MessageRepository', () => {
         where: { conversationId },
         orderBy: { createdAt: 'asc' },
         include: {
+          senderUser: {
+            select: { firstname: true, lastname: true, role: true },
+          },
           conversation: {
             select: { id: true, status: true },
           },
@@ -267,6 +283,9 @@ describe('MessageRepository', () => {
         where: { conversationId },
         orderBy: { createdAt: 'asc' },
         include: {
+          senderUser: {
+            select: { firstname: true, lastname: true, role: true },
+          },
           conversation: {
             select: { id: true, status: true },
           },
@@ -311,6 +330,9 @@ describe('MessageRepository', () => {
         where: { conversationId },
         orderBy: { createdAt: 'asc' },
         include: {
+          senderUser: {
+            select: { firstname: true, lastname: true, role: true },
+          },
           conversation: {
             select: { id: true, status: true },
           },

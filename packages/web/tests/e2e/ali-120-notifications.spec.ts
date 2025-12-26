@@ -408,32 +408,15 @@ test.describe.serial('ALI-120: Notification System', () => {
       await adminPage.waitForTimeout(2000);
 
       // Navigate to employee notifications
-      try {
-        await employeePage.goto('http://localhost:3000/es/employee/notifications', { waitUntil: 'domcontentloaded' });
-      } catch (e) {
-        console.log('[TEST DEBUG] Navigation failed:', e);
-        // Continue to assertions which might fail with better info
-      }
-      // await employeePage.waitForLoadState('networkidle'); // Remove strict network idle wait which might fail with polling/ws
+      // Navigate via UI to avoid potential goto aborts
+      await employeePage.goto('http://localhost:3000/es/dashboard');
+      await employeePage.getByRole('link', { name: /notificaciones/i }).click();
+      await expect(employeePage).toHaveURL(/.*\/employee\/notifications/);
 
       // Wait for notification to appear (with polling)
       await expect(async () => {
-        await employeePage.reload();
-        await employeePage.waitForLoadState('networkidle');
-        
-        // Debug: Print page state
-        const debugInfo = await employeePage.evaluate(() => {
-          const info = document.querySelector('[data-testid="debug-info"]');
-          if (!info) return 'Debug info not found';
-          return {
-            userId: info.querySelector('[data-testid="debug-user-id"]')?.textContent,
-            loading: info.querySelector('[data-testid="debug-loading"]')?.textContent,
-            error: info.querySelector('[data-testid="debug-error"]')?.textContent,
-            count: info.querySelector('[data-testid="debug-count"]')?.textContent,
-          };
-        });
-        console.log('[TEST DEBUG] Employee Page State:', debugInfo);
-
+        // Simple reload to trigger polling if needed, though polling interval should utilize it
+        // Check for card
         const notificationCards = employeePage.locator('[data-testid="notification-card"]');
         await expect(notificationCards.first()).toBeVisible({ timeout: 5000 });
       }).toPass({ timeout: 30000 });

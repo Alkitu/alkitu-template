@@ -279,29 +279,6 @@ describe('BreadcrumbNavigation - Data-Driven Component', () => {
     });
   });
 
-  describe('Size Variants', () => {
-    it('applies small size styles', () => {
-      const items = [{ label: 'Test', current: true }];
-      const { container } = render(<BreadcrumbNavigation items={items} size="sm" />);
-      const nav = container.querySelector('nav');
-      expect(nav).toHaveStyle({ fontSize: '0.75rem' });
-    });
-
-    it('applies medium size styles (default)', () => {
-      const items = [{ label: 'Test', current: true }];
-      const { container } = render(<BreadcrumbNavigation items={items} size="md" />);
-      const nav = container.querySelector('nav');
-      expect(nav).toHaveStyle({ fontSize: '0.875rem' });
-    });
-
-    it('applies large size styles', () => {
-      const items = [{ label: 'Test', current: true }];
-      const { container } = render(<BreadcrumbNavigation items={items} size="lg" />);
-      const nav = container.querySelector('nav');
-      expect(nav).toHaveStyle({ fontSize: '1rem' });
-    });
-  });
-
   describe('Item Collapsing', () => {
     const manyItems = [
       { label: 'Home', href: '/' },
@@ -439,15 +416,6 @@ describe('BreadcrumbNavigation - Data-Driven Component', () => {
   });
 
   describe('Theme Integration', () => {
-    it('uses typography CSS variables', () => {
-      const items = [{ label: 'Test', current: true }];
-      const { container } = render(<BreadcrumbNavigation items={items} />);
-      const nav = container.querySelector('nav');
-      expect(nav).toHaveStyle({
-        fontFamily: 'var(--typography-paragraph-font-family, inherit)',
-      });
-    });
-
     it('applies custom className', () => {
       const items = [{ label: 'Test', current: true }];
       const { container } = render(

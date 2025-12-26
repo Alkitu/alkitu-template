@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { NotificationService } from '@/notification/notification.service';
 import { ChatGateway } from './chat.gateway';
+import { EmailService } from '../email/email.service';
 import {
   ConversationStatus,
   Priority,
@@ -41,6 +42,7 @@ export class ChatService {
     private readonly contactInfoRepository: ContactInfoRepository,
     private readonly notificationService: NotificationService,
     private readonly websocketGateway: ChatGateway,
+    private readonly emailService: EmailService,
   ) {}
 
   private sanitizeConversation(conversation: Conversation): Conversation {
@@ -53,26 +55,93 @@ export class ChatService {
     return contactInfo;
   }
 
-  private sanitizeMessage(message: ChatMessage): ChatMessage {
-    // Remove sensitive data if any
+  private sanitizeMessage(message: any): any {
+    if (message.senderUser) {
+      message.senderName = `${message.senderUser.firstname} ${message.senderUser.lastname}`.trim() || 'Support';
+      message.senderRole = message.senderUser.role;
+    }
     return message;
   }
 
   async startConversation(
     data: StartConversationDto,
   ): Promise<ConversationResult> {
-    let contactInfo = await this.contactInfoRepository.findByEmail(
-      data.email || '',
-    );
+    // Sanitize inputs: treat empty strings as undefined
+    const email = data.email?.trim() || undefined;
+    const phone = data.phone?.trim() || undefined;
+    const userId = data.userId?.trim() || undefined;
+
+    let contactInfo = null;
+
+    // 1. If userId is provided, try to find contact info for this user
+    if (userId) {
+      contactInfo = await this.prisma.contactInfo.findFirst({
+        where: { userId: userId },
+      });
+    }
+
+    // 2. If not found by userId, try email
+    if (!contactInfo && email) {
+      contactInfo = await this.contactInfoRepository.findByEmail(email);
+    }
+
+    // 3. If not found by email, try phone
+    if (!contactInfo && phone) {
+      contactInfo = await this.contactInfoRepository.findByPhone(phone);
+    }
+
+    // 4. Create or Update Contact Info
     if (!contactInfo) {
-      contactInfo = await this.contactInfoRepository.create({
-        email: data.email,
-        phone: data.phone,
-        name: data.name,
-        company: data.company,
-        source: data.source,
-        ipAddress: data.ipAddress,
-        userAgent: data.userAgent,
+      try {
+        contactInfo = await this.contactInfoRepository.create({
+          email: email,
+          phone: phone,
+          name: data.name,
+          company: data.company,
+          source: data.source,
+          ipAddress: data.ipAddress,
+          userAgent: data.userAgent,
+          userId: userId, // Link to user if available
+        });
+      } catch (error: any) {
+        // Handle race condition: Unique constraint violation
+        // Check both Prisma code P2002 and error message string as fallback
+        const isUniqueConstraintError = 
+          error.code === 'P2002' || 
+          (error.message && error.message.includes('Unique constraint failed'));
+
+        if (isUniqueConstraintError) {
+          // Robust Recovery: Try to find the existing record by ANY provided unique identifier
+          const conditions: any[] = [];
+          
+          if (userId) conditions.push({ userId });
+          if (email) conditions.push({ email });
+          if (phone) conditions.push({ phone });
+
+          if (conditions.length > 0) {
+            contactInfo = await this.prisma.contactInfo.findFirst({
+              where: { 
+                OR: conditions 
+              }
+            });
+          }
+          
+          if (!contactInfo) {
+            console.error('Failed to recover from unique constraint error:', { 
+              error: error.message, 
+              data: { userId, email, phone } 
+            });
+            throw error; // If still not found, it's unrecoverable
+          }
+        } else {
+          throw error;
+        }
+      }
+    } else if (userId && !contactInfo.userId) {
+      // ... update logic
+      contactInfo = await this.prisma.contactInfo.update({
+        where: { id: contactInfo.id },
+        data: { userId: userId },
       });
     }
 
@@ -81,6 +150,7 @@ export class ChatService {
       status: ConversationStatus.OPEN,
       priority: Priority.NORMAL,
       source: data.source || 'website',
+      clientUserId: data.userId, // Link conversation to user
     });
 
     if (data.message) {
@@ -125,7 +195,26 @@ export class ChatService {
   }
 
   async getMessages(conversationId: string): Promise<ChatMessage[]> {
-    return this.messageRepository.findByConversationId(conversationId);
+    const messages = await this.messageRepository.findByConversationId(conversationId);
+    return messages.map(msg => this.sanitizeMessage(msg));
+  }
+
+  async getConversationsVisitor(data: { conversationIds?: string[] }): Promise<Conversation[]> {
+    if (!data.conversationIds || data.conversationIds.length === 0) return [];
+
+    return this.conversationRepository.findAll({
+      where: { id: { in: data.conversationIds } },
+      include: { contactInfo: true },
+      orderBy: { lastMessageAt: 'desc' },
+    });
+  }
+
+  async getUserConversations(userId: string): Promise<Conversation[]> {
+    return this.conversationRepository.findAll({
+      where: { clientUserId: userId },
+      include: { contactInfo: true },
+      orderBy: { lastMessageAt: 'desc' },
+    });
   }
 
   async getConversations(filter: GetConversationsDto): Promise<Conversation[]> {
@@ -237,16 +326,32 @@ export class ChatService {
     });
   }
 
-  async markAsRead(data: MarkAsReadDto): Promise<void> {
-    // This would typically mark messages as read for a specific user
-    // For simplicity, we'll assume marking all messages in a conversation as read for now
-    await this.prisma.chatMessage.updateMany({
+  async markAsRead(data: MarkAsReadDto & { isVisitor?: boolean }): Promise<void> {
+    // Mark messages as read based on who is doing the reading
+    // If visitor is reading, mark messages FROM support as read
+    // If admin is reading, mark messages FROM visitor as read
+    await (this.prisma.chatMessage as any).updateMany({
       where: {
         conversationId: data.conversationId,
-        isFromVisitor: true,
+        isFromVisitor: data.isVisitor ? false : true,
         isRead: false,
       },
-      data: { isRead: true },
+      data: { 
+        isRead: true,
+        isDelivered: true
+      },
+    });
+  }
+
+  async markAsDelivered(data: MarkAsReadDto & { isVisitor?: boolean }): Promise<void> {
+    // Mark messages as delivered when they are received by the client
+    await (this.prisma.chatMessage as any).updateMany({
+      where: {
+        conversationId: data.conversationId,
+        isFromVisitor: data.isVisitor ? false : true,
+        isDelivered: false,
+      },
+      data: { isDelivered: true },
     });
   }
 
@@ -291,5 +396,26 @@ export class ChatService {
       leadsCaptured: leadsCaptured.length,
       averageResponseTime,
     };
+  }
+
+  async sendEmailTranscript(conversationId: string, email: string): Promise<void> {
+    const conversation = await this.conversationRepository.findById(conversationId);
+    if (!conversation) throw new NotFoundException('Conversation not found');
+
+    const messages = await this.messageRepository.findByConversationId(conversationId);
+    
+    let transcriptHtml = `<h1>Chat Transcript - ${conversationId}</h1>`;
+    transcriptHtml += `<p>Conversation started at: ${conversation.createdAt.toLocaleString()}</p><hr/>`;
+    
+    messages.forEach(msg => {
+      const sender = msg.isFromVisitor ? 'Visitor' : 'Support';
+      transcriptHtml += `<p><strong>${sender}</strong> (${msg.createdAt.toLocaleString()}):<br/>${msg.content}</p>`;
+    });
+
+    await this.emailService.sendEmail({
+      to: email,
+      subject: `Chat Transcript - ${conversationId}`,
+      html: transcriptHtml,
+    });
   }
 }

@@ -25,6 +25,7 @@ import {
   ShoppingBag,
   Folder,
   Wrench,
+  Hash,
 } from 'lucide-react';
 import { AppSidebar } from '../../primitives/app-sidebar';
 import Header from '../../primitives/ui/header';
@@ -140,6 +141,13 @@ const getTransformedData = (t: any, pathname: string, userRole: 'admin' | 'user'
               url: '/admin/notifications/preferences',
             },
           ],
+        },
+        {
+          title: t?.('nav.teamChat') || 'Team Chat',
+          url: '/admin/channels',
+          icon: Hash,
+          section: 'communication',
+          items: [],
         },
 
         // CONFIGURACIÓN SECTION
@@ -270,7 +278,7 @@ function Dashboard({ children, showWelcome = false, userRole = 'admin' }: Dashbo
         </div>
 
         <div className="flex-1 overflow-auto">
-          <TailwindGrid fullSize={true} padding="lg" className="py-6">
+          <TailwindGrid fullSize={true} padding="lg" className="p-0">
             {showWelcome && userRole === 'admin' && <DashboardWelcome />}
             <div className="col-span-4 md:col-span-8 lg:col-span-12">
               {children || (userRole === 'admin' && <DashboardOverview />)}

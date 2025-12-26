@@ -3,6 +3,7 @@ import { TrpcRouter } from './trpc.router';
 import * as trpcExpress from '@trpc/server/adapters/express';
 import { PrismaService } from '../prisma.service';
 import { ChatService } from '../chat/chat.service';
+import { ChannelsService } from '../channels/channels.service';
 import { ChatbotConfigService } from '../chatbot-config/chatbot-config.service';
 
 import { JwtService } from '@nestjs/jwt';
@@ -13,6 +14,7 @@ export class TrpcService {
     private readonly trpcRouter: TrpcRouter,
     private prisma: PrismaService,
     private chatService: ChatService,
+    private channelsService: ChannelsService,
     private chatbotConfigService: ChatbotConfigService,
     private jwtService: JwtService,
   ) {}
@@ -55,6 +57,7 @@ export class TrpcService {
           return {
             prisma: this.prisma,
             chatService: this.chatService,
+            channelsService: this.channelsService,
             chatbotConfigService: this.chatbotConfigService,
             user,
           };

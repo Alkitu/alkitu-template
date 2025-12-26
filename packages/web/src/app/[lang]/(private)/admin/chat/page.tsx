@@ -9,13 +9,14 @@ import { AdminPageHeader } from '@/components/molecules/admin-page-header';
 
 export default function ChatDashboardPage() {
   const [filters, setFilters] = useState({});
+  const utils = trpc.useUtils();
 
   // Test con endpoint simple primero
   const {
     data: helloData,
     isLoading: helloLoading,
     error: helloError,
-  } = trpc.hello.useQuery({ name: 'World' }); // TODO: Implement this
+  } = trpc.hello.useQuery({ name: 'World' });
 
   // Usar el patrón tRPC recomendado con React Query integrado
   const {
@@ -23,11 +24,21 @@ export default function ChatDashboardPage() {
     isLoading,
     error,
   } = trpc.chat.getConversations.useQuery(filters, {
-    // TODO: Implement this
-    refetchOnWindowFocus: false,
-    refetchInterval: 30000, // Refetch cada 30 segundos para datos actualizados
-    enabled: false, // Deshabilitado por ahora para testing
+    refetchOnWindowFocus: true,
+    refetchInterval: 2000, // Poll every 2 seconds for real-time updates
   });
+
+  // TODO: Implement delete conversation endpoint in backend
+  // const deleteMutation = trpc.chat.deleteConversation.useMutation({
+  //   onSuccess: () => {
+  //     utils.chat.getConversations.invalidate();
+  //   },
+  // });
+
+  const handleDelete = (conversationId: string) => {
+    // TODO: Implement when backend endpoint is ready
+    alert(`Delete conversation ${conversationId}. Backend endpoint not implemented yet.`);
+  };
 
   if (helloLoading) return <div>Loading tRPC test...</div>;
   if (helloError) return <div>tRPC Error: {helloError.message}</div>;
@@ -47,7 +58,10 @@ export default function ChatDashboardPage() {
       )}
 
       <ConversationFilters onApplyFilters={setFilters} />
-      <ConversationList conversations={conversations || []} />
+      <ConversationList 
+        conversations={conversations || []} 
+        onDelete={handleDelete}
+      />
     </div>
   );
 }

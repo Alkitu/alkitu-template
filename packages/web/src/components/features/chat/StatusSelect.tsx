@@ -8,7 +8,7 @@ import {
 import { Label } from '@/components/primitives/ui/label';
 import { Badge } from '@/components/atoms/badge';
 
-type ConversationStatus = 'active' | 'closed' | 'pending' | 'resolved';
+import { ConversationStatus } from '@prisma/client';
 
 interface StatusSelectProps {
   currentStatus: ConversationStatus;
@@ -16,14 +16,19 @@ interface StatusSelectProps {
 }
 
 const statusOptions = [
-  { value: 'active', label: 'Active', color: 'bg-green-100 text-green-800' },
+  { value: ConversationStatus.OPEN, label: 'Open', color: 'bg-green-100 text-green-800' },
   {
-    value: 'pending',
-    label: 'Pending',
+    value: ConversationStatus.IN_PROGRESS,
+    label: 'In Progress',
+    color: 'bg-blue-100 text-blue-800',
+  },
+  {
+    value: ConversationStatus.WAITING_CUSTOMER,
+    label: 'Waiting Customer',
     color: 'bg-yellow-100 text-yellow-800',
   },
-  { value: 'resolved', label: 'Resolved', color: 'bg-blue-100 text-blue-800' },
-  { value: 'closed', label: 'Closed', color: 'bg-gray-100 text-gray-800' },
+  { value: ConversationStatus.RESOLVED, label: 'Resolved', color: 'bg-purple-100 text-purple-800' },
+  { value: ConversationStatus.CLOSED, label: 'Closed', color: 'bg-gray-100 text-gray-800' },
 ] as const;
 
 export function StatusSelect({

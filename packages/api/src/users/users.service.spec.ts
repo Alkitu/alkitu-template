@@ -185,7 +185,7 @@ describe('UsersService - Real Business Logic Tests', () => {
       expect(notificationService.createNotification).toHaveBeenCalledWith({
         userId: newUser.id,
         message: `Welcome to Alkitu, ${createUserDto.firstname}!`,
-        type: 'info',
+        type: 'INFO',
         link: '/dashboard',
       });
     });

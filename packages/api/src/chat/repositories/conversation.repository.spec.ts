@@ -21,6 +21,7 @@ describe('ConversationRepository', () => {
     priority: Priority.NORMAL,
     source: 'website',
     assignedToId: null,
+    clientUserId: null,
     tags: [],
     internalNotes: null,
     lastMessageAt: new Date(),

@@ -11,6 +11,7 @@ import { ChatModule } from '../chat/chat.module';
 import { ChatbotConfigModule } from '../chatbot-config/chatbot-config.module';
 import { ThemeModule } from '../theme/theme.module';
 import { EmailTemplateModule } from '../email-templates/email-template.module';
+import { ChannelsModule } from '../channels/channels.module';
 
 @Module({
   imports: [
@@ -21,7 +22,9 @@ import { EmailTemplateModule } from '../email-templates/email-template.module';
     ChatModule,
     ChatbotConfigModule,
     ThemeModule,
+    ThemeModule,
     EmailTemplateModule, // ALI-121: Email Templates Module
+    ChannelsModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'fallback-secret-key',
       signOptions: { expiresIn: '1d' },

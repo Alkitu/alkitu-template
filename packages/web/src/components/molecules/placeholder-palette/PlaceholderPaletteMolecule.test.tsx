@@ -19,17 +19,29 @@ const mockPlaceholders: AvailablePlaceholders = {
 describe('PlaceholderPaletteMolecule', () => {
   let clipboardWriteTextSpy: any;
 
+  beforeAll(() => {
+    // Ensure navigator.clipboard exists before spying
+    if (!navigator.clipboard) {
+      Object.defineProperty(navigator, 'clipboard', {
+        value: {
+          writeText: vi.fn(),
+          readText: vi.fn(),
+          read: vi.fn(),
+          write: vi.fn(),
+        },
+        writable: true,
+        configurable: true,
+      });
+    }
+  });
+
   beforeEach(() => {
-    // Mock clipboard API
-    clipboardWriteTextSpy = vi.fn().mockResolvedValue(undefined);
-    Object.assign(navigator, {
-      clipboard: {
-        writeText: clipboardWriteTextSpy,
-      },
-    });
+    // Spy on the clipboard writeText method
+    clipboardWriteTextSpy = vi.spyOn(navigator.clipboard, 'writeText').mockResolvedValue(undefined);
   });
 
   afterEach(() => {
+    clipboardWriteTextSpy.mockRestore();
     vi.clearAllMocks();
   });
 
@@ -232,7 +244,6 @@ describe('PlaceholderPaletteMolecule', () => {
     });
 
     it('clears copied state after 2 seconds', async () => {
-      vi.useFakeTimers();
       const user = userEvent.setup();
 
       render(
@@ -248,20 +259,20 @@ describe('PlaceholderPaletteMolecule', () => {
         expect(button).toHaveClass('bg-green-100');
       });
 
+      // Wait for 2 seconds to elapse
+      await new Promise((resolve) => setTimeout(resolve, 2100));
+
       // After 2 seconds, should return to normal
-      vi.advanceTimersByTime(2000);
-
-      await waitFor(() => {
-        const button = placeholder.closest('button');
-        expect(button).not.toHaveClass('bg-green-100');
-      });
-
-      vi.useRealTimers();
+      const button = placeholder.closest('button');
+      expect(button).not.toHaveClass('bg-green-100');
     });
 
     it('handles clipboard errors gracefully', async () => {
       const user = userEvent.setup();
       const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      // Reset the spy to reject for this specific test
+      clipboardWriteTextSpy.mockReset();
       clipboardWriteTextSpy.mockRejectedValueOnce(new Error('Clipboard error'));
 
       render(

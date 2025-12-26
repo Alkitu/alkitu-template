@@ -33,6 +33,10 @@ export const chatSchemas = {
     limit: z.number().default(10),
   }),
 
+  getConversationsVisitor: z.object({
+    conversationIds: z.array(z.string()),
+  }),
+
   assignConversation: z.object({
     conversationId: z.string(),
     assignedToId: z.string(),
@@ -57,5 +61,14 @@ export const chatSchemas = {
   markAsRead: z.object({
     conversationId: z.string(),
     userId: z.string(),
+  }),
+
+  markAsDelivered: z.object({
+    conversationId: z.string(),
+  }),
+
+  sendEmailTranscript: z.object({
+    conversationId: z.string(),
+    email: z.string().email(),
   }),
 };

@@ -4,12 +4,15 @@ import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/primitives/ui/button';
 import { Input } from '@/components/primitives/Input';
 import { Send } from 'lucide-react';
+import { MessageBubble } from '../chat/MessageBubble';
+import { playNotificationSound } from './utils/notificationSounds';
 
 interface ChatInterfaceProps {
   messages: any[];
   onSendMessage: (content: string) => void;
   isLoading: boolean;
   config: any;
+  soundEnabled?: boolean;
 }
 
 export function ChatInterface({
@@ -17,6 +20,7 @@ export function ChatInterface({
   onSendMessage,
   isLoading,
   config,
+  soundEnabled = true,
 }: ChatInterfaceProps) {
   const [newMessage, setNewMessage] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -30,6 +34,7 @@ export function ChatInterface({
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     if (newMessage.trim()) {
+      if (soundEnabled) playNotificationSound('sent');
       onSendMessage(newMessage);
       setNewMessage('');
     }
@@ -41,17 +46,23 @@ export function ChatInterface({
       style={{ backgroundColor: config?.backgroundColor || '#FFFFFF' }}
     >
       <div className="flex-1 p-4 overflow-y-auto">
-        {messages.map((msg, index) => (
-          <div
-            key={index}
-            className={`mb-2 ${msg.isFromVisitor ? 'text-left' : 'text-right'}`}
-          >
-            <div
-              className={`inline-block p-2 rounded-lg ${msg.isFromVisitor ? 'bg-gray-200' : 'bg-blue-500 text-white'}`}
-            >
-              {msg.content}
-            </div>
-          </div>
+        {messages.map((msg) => (
+          <MessageBubble
+            key={msg.id}
+            message={{
+              id: msg.id,
+              content: msg.content,
+              sender: msg.isFromVisitor ? 'user' : 'admin',
+              createdAt: msg.createdAt,
+              senderName: msg.senderName,
+              senderRole: msg.senderRole,
+              isFromVisitor: msg.isFromVisitor,
+              isRead: msg.isRead,
+              isDelivered: msg.isDelivered,
+              metadata: msg.metadata,
+            }}
+            isMe={msg.isFromVisitor}
+          />
         ))}
         <div ref={messagesEndRef} />
       </div>

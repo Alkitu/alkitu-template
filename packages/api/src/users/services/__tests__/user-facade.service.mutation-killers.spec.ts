@@ -9,7 +9,7 @@ import { UserAnalyticsService } from '../user-analytics.service';
 import { UserEventsService } from '../user-events.service';
 import { NotificationService } from '../../../notification/notification.service';
 import { NotFoundException, ConflictException } from '@nestjs/common';
-import { UserRole, UserStatus } from '@prisma/client';
+import { UserRole, UserStatus, NotificationType } from '@prisma/client';
 
 describe('UserFacadeService - Mutation Killer Tests', () => {
   let service: UserFacadeService;
@@ -65,9 +65,10 @@ describe('UserFacadeService - Mutation Killer Tests', () => {
     id: 'notification-id',
     userId: 'test-user-id',
     message: 'Test notification',
-    type: 'info',
+    type: NotificationType.INFO,
     link: '/dashboard',
     read: false,
+    data: null,
     createdAt: new Date(),
     updatedAt: new Date(),
   };
@@ -175,14 +176,14 @@ describe('UserFacadeService - Mutation Killer Tests', () => {
       expect(notificationService.createNotification).toHaveBeenCalledWith({
         userId: 'test-user-id',
         message: 'Welcome to Alkitu, Test!',
-        type: 'info',
+        type: 'INFO',
         link: '/dashboard',
       });
 
       // Verify exact strings (kills string mutations)
       const call = notificationService.createNotification.mock.calls[0][0];
       expect(call.message).toBe('Welcome to Alkitu, Test!');
-      expect(call.type).toBe('info');
+      expect(call.type).toBe('INFO');
       expect(call.link).toBe('/dashboard');
       expect(call.message).not.toBe('Welcome to Alkitu, '); // Kill partial string mutations
       expect(call.message).not.toBe('Welcome to Alkitu!'); // Kill missing name mutations
@@ -352,7 +353,7 @@ describe('UserFacadeService - Mutation Killer Tests', () => {
       expect(notificationService.createNotification).toHaveBeenCalledWith({
         userId: 'test-user-id',
         message: 'Welcome to Alkitu, test@example.com!',
-        type: 'info',
+        type: 'INFO',
         link: '/dashboard',
       });
     });
@@ -598,7 +599,7 @@ describe('UserFacadeService - Mutation Killer Tests', () => {
       const notificationCall =
         notificationService.createNotification.mock.calls[0][0];
       expect(notificationCall.message).toContain('TestUser'); // userData.name NOT userData.email
-      expect(notificationCall.type).toBe('info'); // string literal NOT 'error' or 'warning'
+      expect(notificationCall.type).toBe('INFO'); // string literal NOT 'error' or 'warning'
       expect(notificationCall.link).toBe('/dashboard'); // exact string NOT '/home' or '/profile'
     });
 
@@ -777,7 +778,7 @@ describe('UserFacadeService - Mutation Killer Tests', () => {
       const notificationCall =
         notificationService.createNotification.mock.calls[0][0];
       expect(notificationCall.message).toBe('Welcome to Alkitu, Test!'); // name || email logic
-      expect(notificationCall.type).toBe('info'); // success ? 'info' : 'error'
+      expect(notificationCall.type).toBe('INFO'); // success ? 'INFO' : 'ERROR'
     });
   });
 
@@ -823,7 +824,7 @@ describe('UserFacadeService - Mutation Killer Tests', () => {
       expect(notificationService.createNotification).toHaveBeenCalledWith(
         expect.objectContaining({
           message: 'Welcome to Alkitu, Complete!',
-          type: 'info',
+          type: 'INFO',
           link: '/dashboard',
         }),
       );

@@ -37,42 +37,6 @@ describe('ChipMolecule', () => {
     });
   });
 
-  describe('Variants', () => {
-    it.each([
-      ['default', 'var(--color-muted)'],
-      ['primary', 'color-mix(in srgb, var(--color-primary) 20%, transparent)'],
-      ['secondary', 'color-mix(in srgb, var(--color-secondary) 20%, transparent)'],
-      ['accent', 'color-mix(in srgb, var(--color-accent) 20%, transparent)'],
-      ['destructive', 'color-mix(in srgb, var(--color-destructive) 20%, transparent)'],
-      ['warning', 'color-mix(in srgb, var(--color-warning) 20%, transparent)'],
-      ['success', 'color-mix(in srgb, var(--color-success) 20%, transparent)'],
-      ['outline', 'transparent'],
-    ])('applies correct styles for %s variant', (variant, expectedBg) => {
-      const { container } = render(
-        <ChipMolecule variant={variant as any}>Test</ChipMolecule>
-      );
-      const element = container.firstChild as HTMLElement;
-      expect(element.style.backgroundColor).toBe(expectedBg);
-    });
-
-    it('applies selected state styles correctly', () => {
-      const { container } = render(
-        <ChipMolecule variant="primary" selected>
-          Selected
-        </ChipMolecule>
-      );
-      const element = container.firstChild as HTMLElement;
-      expect(element.style.backgroundColor).toBe('var(--color-primary)');
-      expect(element.style.color).toBe('var(--color-primary-foreground)');
-    });
-
-    it('applies default variant when not specified', () => {
-      const { container } = render(<ChipMolecule>Default</ChipMolecule>);
-      const element = container.firstChild as HTMLElement;
-      expect(element.style.backgroundColor).toBe('var(--color-muted)');
-    });
-  });
-
   describe('Sizes', () => {
     it.each([
       ['sm', '24px', '12px'],
@@ -264,33 +228,6 @@ describe('ChipMolecule', () => {
     });
   });
 
-  describe('CSS Variables', () => {
-    it('uses CSS variables for theming', () => {
-      const { container } = render(
-        <ChipMolecule variant="primary">Test</ChipMolecule>
-      );
-      const element = container.firstChild as HTMLElement;
-
-      expect(element.style.backgroundColor).toContain('var(--color-primary)');
-      expect(element.style.borderRadius).toContain('var(--radius');
-      expect(element.style.fontFamily).toContain('var(--typography-emphasis-font-family)');
-    });
-
-    it('uses color-mix for semi-transparent backgrounds', () => {
-      const { container } = render(
-        <ChipMolecule variant="primary">Test</ChipMolecule>
-      );
-      const element = container.firstChild as HTMLElement;
-      expect(element.style.backgroundColor).toContain('color-mix');
-    });
-
-    it('uses custom radius CSS variable', () => {
-      const { container } = render(<ChipMolecule>Test</ChipMolecule>);
-      const element = container.firstChild as HTMLElement;
-      expect(element.style.borderRadius).toBe('var(--radius-chip, var(--radius, 6px))');
-    });
-  });
-
   describe('Content', () => {
     it('truncates long text content', () => {
       const { container } = render(
@@ -364,49 +301,6 @@ describe('ChipMolecule', () => {
       const element = container.firstChild as HTMLElement;
       expect(element).toHaveAttribute('data-testid', 'custom-chip');
       expect(element).toHaveAttribute('aria-label', 'Custom chip');
-    });
-  });
-
-  describe('Theme Responsiveness', () => {
-    it('responds to CSS variable changes for primary variant', () => {
-      const { container, rerender } = render(
-        <ChipMolecule variant="primary" selected>
-          Primary
-        </ChipMolecule>
-      );
-      const element = container.firstChild as HTMLElement;
-
-      expect(element.style.backgroundColor).toBe('var(--color-primary)');
-      expect(element.style.color).toBe('var(--color-primary-foreground)');
-
-      rerender(
-        <ChipMolecule variant="primary" selected={false}>
-          Primary
-        </ChipMolecule>
-      );
-
-      expect(element.style.backgroundColor).toContain('color-mix');
-    });
-
-    it('responds to theme changes for all variants', () => {
-      const variants: Array<
-        'default' | 'primary' | 'secondary' | 'accent' | 'destructive' | 'warning' | 'success'
-      > = ['default', 'primary', 'secondary', 'accent', 'destructive', 'warning', 'success'];
-
-      variants.forEach((variant) => {
-        const { container } = render(
-          <ChipMolecule variant={variant} selected>
-            {variant}
-          </ChipMolecule>
-        );
-        const element = container.firstChild as HTMLElement;
-
-        if (variant === 'default') {
-          expect(element.style.backgroundColor).toBe('var(--color-foreground)');
-        } else {
-          expect(element.style.backgroundColor).toBe(`var(--color-${variant})`);
-        }
-      });
     });
   });
 

@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
-import { PrismaService } from './prisma.service';
+import { PrismaModule } from './prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { TrpcModule } from './trpc/trpc.module';
 import { EmailModule } from './email/email.module';
@@ -19,6 +19,7 @@ import { ServicesModule } from './services/services.module';
 import { RequestsModule } from './requests/requests.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { ChannelsModule } from './channels/channels.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { APP_GUARD } from '@nestjs/core';
         skipIf: () => process.env.NODE_ENV === 'test', // Skip throttling entirely for tests
       },
     ]),
+    PrismaModule,
     UsersModule,
     AuthModule,
     TrpcModule,
@@ -44,17 +46,16 @@ import { APP_GUARD } from '@nestjs/core';
     CategoriesModule,
     ServicesModule,
     RequestsModule,
+    ChannelsModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
-    PrismaService,
     // Apply throttler globally (DISABLED FOR E2E TESTS)
     // {
     //   provide: APP_GUARD,
     //   useClass: ThrottlerGuard,
     // },
   ],
-  exports: [PrismaService],
 })
 export class AppModule {}

@@ -19,6 +19,7 @@ describe('ContactInfoRepository', () => {
     source: 'website',
     ipAddress: '192.168.1.1',
     userAgent: 'Mozilla/5.0',
+    userId: null,
     metadata: null,
     createdAt: new Date(),
     updatedAt: new Date(),

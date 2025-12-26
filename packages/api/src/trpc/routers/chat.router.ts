@@ -1,3 +1,4 @@
+import { z } from 'zod';
 import { createTRPCRouter, publicProcedure, protectedProcedure } from '../trpc';
 import { chatSchemas } from '../schemas/chat.schemas';
 
@@ -19,6 +20,30 @@ export const chatRouter = createTRPCRouter({
     .input(chatSchemas.getMessages)
     .query(async ({ input, ctx }) => {
       return await ctx.chatService.getMessages(input.conversationId);
+    }),
+
+  getConversationsVisitor: publicProcedure
+    .input(chatSchemas.getConversationsVisitor)
+    .query(async ({ input, ctx }) => {
+      return await ctx.chatService.getConversationsVisitor(input);
+    }),
+
+  markAsReadVisitor: publicProcedure
+    .input(z.object({ conversationId: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      return await ctx.chatService.markAsRead({ conversationId: input.conversationId, userId: 'visitor', isVisitor: true });
+    }),
+
+  markAsDeliveredVisitor: publicProcedure
+    .input(chatSchemas.markAsDelivered)
+    .mutation(async ({ input, ctx }) => {
+      return await ctx.chatService.markAsDelivered({ conversationId: input.conversationId, userId: 'visitor', isVisitor: true });
+    }),
+
+  getMyConversations: protectedProcedure
+    .query(async ({ ctx }) => {
+      // Access authenticated user via ctx.user
+      return await ctx.chatService.getUserConversations(ctx.user.id);
     }),
 
   // Admin API for internal management
@@ -58,7 +83,19 @@ export const chatRouter = createTRPCRouter({
       return await ctx.chatService.markAsRead(input as any);
     }),
 
+  markAsDelivered: protectedProcedure
+    .input(chatSchemas.markAsDelivered)
+    .mutation(async ({ input, ctx }) => {
+      return await ctx.chatService.markAsDelivered(input as any);
+    }),
+
   getChatAnalytics: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.chatService.getChatAnalytics();
   }),
+  sendEmailTranscript: publicProcedure
+    .input(chatSchemas.sendEmailTranscript)
+    .mutation(async ({ input, ctx }) => {
+      // @ts-ignore - Assuming chatService will have this method implemented
+      return await ctx.chatService.sendEmailTranscript(input.conversationId, input.email);
+    }),
 });

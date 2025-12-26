@@ -165,7 +165,7 @@ export function EmailTemplateFormOrganism({
 
           {/* Trigger */}
           <div className="space-y-2">
-            <Label htmlFor="trigger">
+            <Label id="trigger-label" htmlFor="trigger">
               Trigger Event <span className="text-red-500">*</span>
             </Label>
             <Select
@@ -173,7 +173,7 @@ export function EmailTemplateFormOrganism({
               onValueChange={(value) => setValue('trigger', value as any)}
               disabled={isEditMode} // Cannot change trigger in edit mode
             >
-              <SelectTrigger id="trigger">
+              <SelectTrigger id="trigger" aria-labelledby="trigger-label">
                 <SelectValue placeholder="Select a trigger event" />
               </SelectTrigger>
               <SelectContent>
@@ -193,7 +193,7 @@ export function EmailTemplateFormOrganism({
           {/* Status (conditional - only for ON_STATUS_CHANGED) */}
           {selectedTrigger === 'ON_STATUS_CHANGED' && (
             <div className="space-y-2">
-              <Label htmlFor="status">
+              <Label id="status-label" htmlFor="status">
                 Target Status <span className="text-red-500">*</span>
               </Label>
               <Select
@@ -201,7 +201,7 @@ export function EmailTemplateFormOrganism({
                 onValueChange={(value) => setValue('status', value as any)}
                 disabled={isEditMode} // Cannot change status in edit mode
               >
-                <SelectTrigger id="status">
+                <SelectTrigger id="status" aria-labelledby="status-label">
                   <SelectValue placeholder="Select target status" />
                 </SelectTrigger>
                 <SelectContent>
@@ -274,7 +274,7 @@ export function EmailTemplateFormOrganism({
           {/* Active Toggle */}
           <div className="flex items-center justify-between rounded-lg border p-4">
             <div className="space-y-0.5">
-              <Label htmlFor="active" className="text-base">
+              <Label id="active-label" htmlFor="active" className="text-base">
                 Active
               </Label>
               <p className="text-sm text-muted-foreground">
@@ -285,6 +285,7 @@ export function EmailTemplateFormOrganism({
             </div>
             <Switch
               id="active"
+              aria-labelledby="active-label"
               checked={watch('active')}
               onCheckedChange={(checked) => setValue('active', checked)}
             />

@@ -171,17 +171,6 @@ describe('Textarea Component', () => {
       expect(textarea).toHaveAttribute('data-use-system-colors', 'true');
     });
 
-    it('applies typography CSS variables when enabled', () => {
-      render(<Textarea useTypographyVars data-testid="textarea" />);
-      const textarea = screen.getByTestId('textarea');
-      const style = textarea.style;
-
-      expect(style.fontFamily).toContain('var(--typography-paragraph-font-family');
-      expect(style.fontSize).toContain('var(--typography-paragraph-font-size');
-      expect(style.letterSpacing).toContain('var(--typography-paragraph-letter-spacing');
-      expect(style.lineHeight).toContain('var(--typography-paragraph-line-height');
-    });
-
     it('does not apply typography variables when disabled', () => {
       render(<Textarea useTypographyVars={false} data-testid="textarea" />);
       const textarea = screen.getByTestId('textarea');

@@ -73,6 +73,14 @@ export class StartConversationDto {
   @IsOptional()
   @IsString()
   userAgent?: string;
+
+  @ApiPropertyOptional({
+    description: 'ID of the authenticated user starting the conversation',
+    example: '60d5ecb74f3b2c001c8b4566',
+  })
+  @IsOptional()
+  @IsString()
+  userId?: string;
 }
 
 export class SendMessageDto {

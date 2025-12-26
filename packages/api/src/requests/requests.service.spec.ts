@@ -8,6 +8,7 @@ import {
 import { RequestsService } from './requests.service';
 import { PrismaService } from '../prisma.service';
 import { NotificationService } from '../notification/notification.service';
+import { EmailTemplateService } from '../email-templates/email-template.service';
 import { Request, RequestStatus, UserRole } from '@prisma/client';
 
 describe('RequestsService (ALI-119)', () => {
@@ -138,6 +139,11 @@ describe('RequestsService (ALI-119)', () => {
       }),
     };
 
+    const mockEmailTemplateService = {
+      processTemplateForRequest: jest.fn().mockResolvedValue(undefined),
+      sendEmailFromTemplate: jest.fn().mockResolvedValue(undefined),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         RequestsService,
@@ -148,6 +154,10 @@ describe('RequestsService (ALI-119)', () => {
         {
           provide: NotificationService,
           useValue: mockNotificationService,
+        },
+        {
+          provide: EmailTemplateService,
+          useValue: mockEmailTemplateService,
         },
       ],
     }).compile();

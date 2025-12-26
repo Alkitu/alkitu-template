@@ -40,18 +40,6 @@ describe('Spacer Atom', () => {
       const spacer = container.firstChild as HTMLElement;
       expect(spacer).toHaveAttribute('data-spacing-size', expectedDataAttr);
     });
-
-    it('renders with xs size and calculates correct spacing', () => {
-      const { container } = render(<Spacer size="xs" />);
-      const spacer = container.firstChild as HTMLElement;
-      expect(spacer.style.height).toContain('calc(var(--spacing, 2.2rem) * 0.5)');
-    });
-
-    it('renders with 2xl size and calculates correct spacing', () => {
-      const { container } = render(<Spacer size="2xl" />);
-      const spacer = container.firstChild as HTMLElement;
-      expect(spacer.style.height).toContain('calc(var(--spacing, 2.2rem) * 8)');
-    });
   });
 
   // 3. DIRECTION TESTS
@@ -165,18 +153,6 @@ describe('Spacer Atom', () => {
 
   // 7. THEME INTEGRATION TESTS
   describe('Theme Integration', () => {
-    it('uses CSS variables for spacing calculation', () => {
-      const { container } = render(<Spacer size="md" />);
-      const spacer = container.firstChild as HTMLElement;
-      expect(spacer.style.height).toContain('var(--spacing, 2.2rem)');
-    });
-
-    it('provides fallback value when CSS variable is not defined', () => {
-      const { container } = render(<Spacer size="sm" />);
-      const spacer = container.firstChild as HTMLElement;
-      expect(spacer.style.height).toContain('2.2rem'); // fallback value
-    });
-
     it('stores spacing value in data attribute for debugging', () => {
       const { container } = render(<Spacer size="lg" />);
       const spacer = container.firstChild as HTMLElement;

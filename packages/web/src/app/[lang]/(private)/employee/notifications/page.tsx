@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card } from '@/components/primitives/Card';
 import { Button } from '@/components/primitives/Button';
@@ -270,13 +270,6 @@ export default function EmployeeNotificationsPage() {
     return (
       <div className="min-h-screen bg-background p-6">
         <div className="max-w-4xl mx-auto">
-          {/* DEBUG INFO */}
-          <div className="hidden" data-testid="debug-info">
-            <span data-testid="debug-user-id">{userId || 'null'}</span>
-            <span data-testid="debug-loading">{isLoading ? 'true' : 'false'}</span>
-            <span data-testid="debug-error">{(error as any) ? (error as any).message : 'null'}</span>
-            <span data-testid="debug-count">{notifications?.length || '0'}</span>
-          </div>
           <div className="flex items-center justify-center py-12">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
           </div>
@@ -290,13 +283,6 @@ export default function EmployeeNotificationsPage() {
     return (
       <div className="min-h-screen bg-background p-6">
         <div className="max-w-4xl mx-auto">
-          {/* DEBUG INFO */}
-          <div className="hidden" data-testid="debug-info">
-            <span data-testid="debug-user-id">{userId || 'null'}</span>
-            <span data-testid="debug-loading">{isLoading ? 'true' : 'false'}</span>
-            <span data-testid="debug-error">{(error as any) ? (error as any).message : 'null'}</span>
-            <span data-testid="debug-count">{notifications?.length || '0'}</span>
-          </div>
           <Card className="p-12 text-center">
             <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
             <h2 className="text-xl font-semibold mb-2">
@@ -312,26 +298,9 @@ export default function EmployeeNotificationsPage() {
     );
   }
 
-  // Debug logs
-  useEffect(() => {
-    console.log('[EMPLOYEE_NOTIF_PAGE] State:', { 
-      userId, 
-      isLoading, 
-      notificationsCount: notifications?.length,
-      error: (error as any)?.message 
-    });
-  }, [userId, isLoading, notifications, error]);
-
   return (
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-4xl mx-auto">
-        {/* DEBUG INFO */}
-        <div className="hidden" data-testid="debug-info">
-          <span data-testid="debug-user-id">{userId || 'null'}</span>
-          <span data-testid="debug-loading">{isLoading ? 'true' : 'false'}</span>
-          <span data-testid="debug-error">{(error as any) ? (error as any).message : 'null'}</span>
-          <span data-testid="debug-count">{notifications?.length || '0'}</span>
-        </div>
         {/* Header */}
         <div className="mb-8">
           {/* WebSocket Connection Status */}

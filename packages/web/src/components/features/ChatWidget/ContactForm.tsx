@@ -15,13 +15,18 @@ interface ContactFormProps {
   }) => void;
   isLoading: boolean;
   config: any;
+  initialData?: {
+    name?: string;
+    email?: string;
+    phone?: string;
+  } | null;
 }
 
-export function ContactForm({ onSubmit, isLoading, config }: ContactFormProps) {
+export function ContactForm({ onSubmit, isLoading, config, initialData }: ContactFormProps) {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
+    name: initialData?.name || '',
+    email: initialData?.email || '',
+    phone: initialData?.phone || '',
     message: '',
   });
 
@@ -40,20 +45,20 @@ export function ContactForm({ onSubmit, isLoading, config }: ContactFormProps) {
   };
 
   return (
-    <div className="p-4 space-y-4">
+    <div className="p-3 space-y-3">
       <div className="text-center">
-        <h3 className="font-semibold text-lg">
+        <h3 className="font-semibold text-base">
           {config?.welcomeMessage || 'Start a conversation'}
         </h3>
-        <p className="text-sm text-gray-600 mt-1">
+        <p className="text-xs text-gray-600 mt-0.5">
           {config?.contactFormMessage ||
             'Please provide your contact information to start chatting with us.'}
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-3">
+      <form onSubmit={handleSubmit} className="space-y-2">
         <div>
-          <Label htmlFor="name">Name *</Label>
+          <Label htmlFor="name" className="text-xs">Name *</Label>
           <Input
             id="name"
             type="text"
@@ -61,12 +66,13 @@ export function ContactForm({ onSubmit, isLoading, config }: ContactFormProps) {
             onChange={(e) => handleChange('name', e.target.value)}
             placeholder="Your name"
             required
+            className="h-8 text-sm"
             disabled={isLoading}
           />
         </div>
 
         <div>
-          <Label htmlFor="email">Email *</Label>
+          <Label htmlFor="email" className="text-xs">Email *</Label>
           <Input
             id="email"
             type="email"
@@ -74,19 +80,21 @@ export function ContactForm({ onSubmit, isLoading, config }: ContactFormProps) {
             onChange={(e) => handleChange('email', e.target.value)}
             placeholder="your@email.com"
             required
+            className="h-8 text-sm"
             disabled={isLoading}
           />
         </div>
 
         {config?.showPhoneField && (
           <div>
-            <Label htmlFor="phone">Phone</Label>
+            <Label htmlFor="phone" className="text-xs">Phone</Label>
             <Input
               id="phone"
               type="tel"
               value={formData.phone}
               onChange={(e) => handleChange('phone', e.target.value)}
               placeholder="Your phone number"
+              className="h-8 text-sm"
               disabled={isLoading}
             />
           </div>
@@ -94,13 +102,14 @@ export function ContactForm({ onSubmit, isLoading, config }: ContactFormProps) {
 
         {config?.showMessageField && (
           <div>
-            <Label htmlFor="message">Initial Message</Label>
+            <Label htmlFor="message" className="text-xs">Initial Message</Label>
             <Textarea
               id="message"
               value={formData.message}
               onChange={(e) => handleChange('message', e.target.value)}
               placeholder="How can we help you?"
-              rows={3}
+              rows={2}
+              className="min-h-[60px] text-sm"
               disabled={isLoading}
             />
           </div>
@@ -108,7 +117,7 @@ export function ContactForm({ onSubmit, isLoading, config }: ContactFormProps) {
 
         <Button
           type="submit"
-          className="w-full"
+          className="w-full h-8 text-sm"
           disabled={isLoading || !formData.name || !formData.email}
           style={{
             backgroundColor: config?.primaryColor || '#007ee6',
@@ -119,7 +128,7 @@ export function ContactForm({ onSubmit, isLoading, config }: ContactFormProps) {
         </Button>
       </form>
 
-      <p className="text-xs text-gray-500 text-center">
+      <p className="text-[10px] text-gray-500 text-center">
         {config?.privacyMessage ||
           'Your information is secure and will not be shared.'}
       </p>

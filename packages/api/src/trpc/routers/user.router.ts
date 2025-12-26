@@ -21,8 +21,13 @@ export const createUserRouter = (
   emailService: EmailService,
 ) =>
   t.router({
-    me: t.procedure.query(({ ctx }) => {
-      return ctx.user || null;
+    me: t.procedure.query(async ({ ctx }) => {
+      if (!ctx.user) return null;
+      try {
+        return await usersService.findOne(ctx.user.id);
+      } catch {
+        return null;
+      }
     }),
 
     register: t.procedure.input(registerSchema).mutation(async ({ input }) => {

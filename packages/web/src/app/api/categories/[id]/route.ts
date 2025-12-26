@@ -89,7 +89,7 @@ export async function GET(
 }
 
 /**
- * PUT /api/categories/[id]
+ * PATCH /api/categories/[id]
  *
  * Update a category (ALI-118)
  *
@@ -98,7 +98,7 @@ export async function GET(
  * @body UpdateCategoryInput (name)
  * @returns Updated Category object
  */
-export async function PUT(
+export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -124,7 +124,7 @@ export async function PUT(
 
     try {
       const response = await fetch(`${backendUrl}/categories/${id}`, {
-        method: 'PUT',
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,

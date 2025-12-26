@@ -21,7 +21,7 @@ import {
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/guards/roles.decorator';
-import { UserRole } from '@prisma/client';
+import { UserRole, NotificationType } from '@prisma/client';
 import { NotificationService } from './notification.service';
 import {
   CreateNotificationDto,
@@ -330,7 +330,7 @@ export class NotificationController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async deleteNotificationsByType(
     @Param('userId') userId: string,
-    @Param('type') type: string,
+    @Param('type') type: NotificationType,
   ) {
     return this.notificationService.deleteNotificationsByType(userId, type);
   }

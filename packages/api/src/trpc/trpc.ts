@@ -7,6 +7,11 @@ export interface Context {
   prisma: PrismaService;
   chatService: ChatService;
   chatbotConfigService: ChatbotConfigService;
+  user?: {
+    id: string;
+    email: string;
+    role: string;
+  };
 }
 
 export const t = initTRPC.context<Context>().create();

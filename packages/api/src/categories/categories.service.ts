@@ -40,6 +40,7 @@ export class CategoriesService {
       return await this.prisma.category.create({
         data: {
           ...createCategoryDto,
+          deletedAt: null, // Explicitly set to null for soft delete filtering
           createdBy: userId,
           updatedBy: userId,
         },
@@ -67,7 +68,7 @@ export class CategoriesService {
         orderBy: { name: 'asc' },
         include: {
           _count: {
-            select: { services: { where: { deletedAt: null } } },
+            select: { services: true },
           },
         },
       });

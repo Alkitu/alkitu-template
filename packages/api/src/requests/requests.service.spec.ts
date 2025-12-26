@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { RequestsService } from './requests.service';
 import { PrismaService } from '../prisma.service';
+import { NotificationService } from '../notification/notification.service';
 import { Request, RequestStatus, UserRole } from '@prisma/client';
 
 describe('RequestsService (ALI-119)', () => {
@@ -112,6 +113,7 @@ describe('RequestsService (ALI-119)', () => {
       },
       user: {
         findUnique: jest.fn().mockResolvedValue(mockEmployee),
+        findMany: jest.fn().mockResolvedValue([]),
       },
       request: {
         create: jest.fn().mockResolvedValue(mockRequestWithRelations),
@@ -122,12 +124,20 @@ describe('RequestsService (ALI-119)', () => {
       },
     };
 
+    const mockNotificationService = {
+      createNotification: jest.fn().mockResolvedValue({ id: 'notification-id' }),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         RequestsService,
         {
           provide: PrismaService,
           useValue: mockPrismaService,
+        },
+        {
+          provide: NotificationService,
+          useValue: mockNotificationService,
         },
       ],
     }).compile();
@@ -1181,6 +1191,395 @@ describe('RequestsService (ALI-119)', () => {
       await expect(service.count(mockUserId, UserRole.CLIENT)).rejects.toThrow(
         InternalServerErrorException,
       );
+    });
+  });
+
+  describe('Notification Integration (ALI-120)', () => {
+    let mockNotificationService: any;
+
+    beforeEach(() => {
+      mockNotificationService = {
+        createNotification: jest.fn().mockResolvedValue({ id: 'notification-id' }),
+      };
+      (service as any).notificationService = mockNotificationService;
+      (service as any).getAdminUserIds = jest
+        .fn()
+        .mockResolvedValue(['admin-1', 'admin-2']);
+    });
+
+    describe('Request Creation Notifications', () => {
+      it('should send notification to client when request is created', async () => {
+        prismaService.service.findFirst = jest.fn().mockResolvedValue(mockService);
+        prismaService.workLocation.findFirst = jest
+          .fn()
+          .mockResolvedValue(mockLocation);
+        prismaService.request.create = jest
+          .fn()
+          .mockResolvedValue(mockRequestWithRelations);
+
+        await service.create(createRequestDto, mockUserId);
+
+        expect(mockNotificationService.createNotification).toHaveBeenCalledWith(
+          expect.objectContaining({
+            userId: mockUserId,
+            type: 'REQUEST_CREATED',
+            message: expect.stringContaining('created successfully'),
+            data: expect.objectContaining({
+              requestId: mockRequestId,
+              serviceName: 'Emergency Plumbing',
+            }),
+          }),
+        );
+      });
+
+      it('should send notifications to all admins when request is created', async () => {
+        prismaService.service.findFirst = jest.fn().mockResolvedValue(mockService);
+        prismaService.workLocation.findFirst = jest
+          .fn()
+          .mockResolvedValue(mockLocation);
+        prismaService.request.create = jest
+          .fn()
+          .mockResolvedValue(mockRequestWithRelations);
+
+        await service.create(createRequestDto, mockUserId);
+
+        // Should call getAdminUserIds
+        expect((service as any).getAdminUserIds).toHaveBeenCalled();
+
+        // Should send to each admin (3 total: 1 client + 2 admins)
+        expect(mockNotificationService.createNotification).toHaveBeenCalledTimes(3);
+      });
+
+      it('should not fail request creation if notification fails', async () => {
+        prismaService.service.findFirst = jest.fn().mockResolvedValue(mockService);
+        prismaService.workLocation.findFirst = jest
+          .fn()
+          .mockResolvedValue(mockLocation);
+        prismaService.request.create = jest
+          .fn()
+          .mockResolvedValue(mockRequestWithRelations);
+        mockNotificationService.createNotification = jest
+          .fn()
+          .mockRejectedValue(new Error('Notification service unavailable'));
+
+        const result = await service.create(createRequestDto, mockUserId);
+
+        expect(result).toEqual(mockRequestWithRelations);
+      });
+
+      it('should log error if notification service fails', async () => {
+        const loggerSpy = jest.spyOn((service as any).logger, 'error');
+        prismaService.service.findFirst = jest.fn().mockResolvedValue(mockService);
+        prismaService.workLocation.findFirst = jest
+          .fn()
+          .mockResolvedValue(mockLocation);
+        prismaService.request.create = jest
+          .fn()
+          .mockResolvedValue(mockRequestWithRelations);
+        mockNotificationService.createNotification = jest
+          .fn()
+          .mockRejectedValue(new Error('Notification service error'));
+
+        await service.create(createRequestDto, mockUserId);
+
+        expect(loggerSpy).toHaveBeenCalledWith(
+          expect.stringContaining('Failed to send request creation notifications'),
+        );
+      });
+    });
+
+    describe('Request Assignment Notifications', () => {
+      it('should send notification to assigned employee', async () => {
+        const assignedRequest = {
+          ...mockRequestWithRelations,
+          assignedToId: mockEmployeeId,
+          status: RequestStatus.ONGOING,
+        };
+
+        prismaService.request.findFirst = jest.fn().mockResolvedValue(mockRequest);
+        prismaService.user.findUnique = jest.fn().mockResolvedValue(mockEmployee);
+        prismaService.request.update = jest.fn().mockResolvedValue(assignedRequest);
+
+        await service.assign(mockRequestId, { assignedToId: mockEmployeeId }, mockUserId, UserRole.ADMIN);
+
+        expect(mockNotificationService.createNotification).toHaveBeenCalledWith(
+          expect.objectContaining({
+            userId: mockEmployeeId,
+            type: 'REQUEST_ASSIGNED',
+            message: expect.stringContaining('assigned'),
+          }),
+        );
+      });
+
+      it('should send notification to request creator on assignment', async () => {
+        const assignedRequest = {
+          ...mockRequestWithRelations,
+          assignedToId: mockEmployeeId,
+          status: RequestStatus.ONGOING,
+        };
+
+        prismaService.request.findFirst = jest.fn().mockResolvedValue(mockRequest);
+        prismaService.user.findUnique = jest.fn().mockResolvedValue(mockEmployee);
+        prismaService.request.update = jest.fn().mockResolvedValue(assignedRequest);
+
+        await service.assign(mockRequestId, { assignedToId: mockEmployeeId }, mockUserId, UserRole.ADMIN);
+
+        expect(mockNotificationService.createNotification).toHaveBeenCalledWith(
+          expect.objectContaining({
+            userId: mockUserId,
+            type: 'REQUEST_ASSIGNED',
+          }),
+        );
+      });
+
+      it('should log error if notification fails but complete assignment', async () => {
+        const loggerSpy = jest.spyOn((service as any).logger, 'error');
+        const assignedRequest = {
+          ...mockRequestWithRelations,
+          assignedToId: mockEmployeeId,
+          status: RequestStatus.ONGOING,
+        };
+
+        prismaService.request.findFirst = jest.fn().mockResolvedValue(mockRequest);
+        prismaService.user.findUnique = jest.fn().mockResolvedValue(mockEmployee);
+        prismaService.request.update = jest.fn().mockResolvedValue(assignedRequest);
+        mockNotificationService.createNotification = jest
+          .fn()
+          .mockRejectedValue(new Error('Notification error'));
+
+        const result = await service.assign(mockRequestId, { assignedToId: mockEmployeeId }, mockUserId, UserRole.ADMIN);
+
+        expect(result).toEqual(assignedRequest);
+        expect(loggerSpy).toHaveBeenCalledWith(
+          expect.stringContaining('Failed to send assignment notifications'),
+        );
+      });
+    });
+
+    describe('Cancellation Request Notifications', () => {
+      it('should send cancellation notification to client for PENDING requests', async () => {
+        const cancelledRequest = {
+          ...mockRequestWithRelations,
+          status: RequestStatus.CANCELLED,
+        };
+
+        prismaService.request.findFirst = jest.fn().mockResolvedValue(mockRequest);
+        prismaService.request.update = jest.fn().mockResolvedValue(cancelledRequest);
+
+        await service.requestCancellation(
+          mockRequestId,
+          { reason: 'Test reason' },
+          mockUserId,
+          UserRole.CLIENT,
+        );
+
+        expect(mockNotificationService.createNotification).toHaveBeenCalledWith(
+          expect.objectContaining({
+            userId: mockUserId,
+            type: 'REQUEST_CANCELLED',
+            message: expect.stringContaining('cancelled'),
+          }),
+        );
+      });
+
+      it('should send cancellation request notification to admins for ONGOING requests', async () => {
+        const ongoingRequest = {
+          ...mockRequest,
+          status: RequestStatus.ONGOING,
+        };
+        const updatedRequest = {
+          ...mockRequestWithRelations,
+          status: RequestStatus.ONGOING,
+          cancellationRequested: true,
+        };
+
+        prismaService.request.findFirst = jest.fn().mockResolvedValue(ongoingRequest);
+        prismaService.request.update = jest.fn().mockResolvedValue(updatedRequest);
+
+        await service.requestCancellation(
+          mockRequestId,
+          { reason: 'Test reason' },
+          mockUserId,
+          UserRole.CLIENT,
+        );
+
+        // Should call getAdminUserIds
+        expect((service as any).getAdminUserIds).toHaveBeenCalled();
+
+        // Should send to admins (2 admins)
+        expect(mockNotificationService.createNotification).toHaveBeenCalledTimes(2);
+      });
+
+      it('should send cancellation request notification to employee for ONGOING requests', async () => {
+        const ongoingRequest = {
+          ...mockRequest,
+          status: RequestStatus.ONGOING,
+          assignedToId: mockEmployeeId,
+        };
+        const updatedRequest = {
+          ...mockRequestWithRelations,
+          status: RequestStatus.ONGOING,
+          assignedToId: mockEmployeeId,
+          cancellationRequested: true,
+        };
+
+        prismaService.request.findFirst = jest.fn().mockResolvedValue(ongoingRequest);
+        prismaService.request.update = jest.fn().mockResolvedValue(updatedRequest);
+
+        await service.requestCancellation(
+          mockRequestId,
+          { reason: 'Test reason' },
+          mockUserId,
+          UserRole.CLIENT,
+        );
+
+        // Should send to admins + employee (3 total)
+        expect(mockNotificationService.createNotification).toHaveBeenCalledTimes(3);
+      });
+
+      it('should not send employee notification if request unassigned', async () => {
+        const ongoingRequest = {
+          ...mockRequest,
+          status: RequestStatus.ONGOING,
+          assignedToId: null,
+        };
+        const updatedRequest = {
+          ...mockRequestWithRelations,
+          status: RequestStatus.ONGOING,
+          assignedToId: null,
+          cancellationRequested: true,
+        };
+
+        prismaService.request.findFirst = jest.fn().mockResolvedValue(ongoingRequest);
+        prismaService.request.update = jest.fn().mockResolvedValue(updatedRequest);
+
+        await service.requestCancellation(
+          mockRequestId,
+          { reason: 'Test reason' },
+          mockUserId,
+          UserRole.CLIENT,
+        );
+
+        // Should only send to admins (2 total)
+        expect(mockNotificationService.createNotification).toHaveBeenCalledTimes(2);
+      });
+    });
+
+    describe('Completion Notifications', () => {
+      it('should send completion notification to client', async () => {
+        const ongoingRequest = {
+          ...mockRequest,
+          status: RequestStatus.ONGOING,
+          assignedToId: mockEmployeeId,
+        };
+        const completedRequest = {
+          ...mockRequestWithRelations,
+          status: RequestStatus.COMPLETED,
+        };
+
+        prismaService.request.findFirst = jest.fn().mockResolvedValue(ongoingRequest);
+        prismaService.request.update = jest.fn().mockResolvedValue(completedRequest);
+
+        await service.complete(
+          mockRequestId,
+          { notes: 'Work completed successfully' },
+          mockEmployeeId,
+          UserRole.EMPLOYEE,
+        );
+
+        expect(mockNotificationService.createNotification).toHaveBeenCalledWith(
+          expect.objectContaining({
+            userId: mockUserId,
+            type: 'REQUEST_COMPLETED',
+            message: expect.stringContaining('completed'),
+          }),
+        );
+      });
+
+      it('should include completion notes in notification data', async () => {
+        const ongoingRequest = {
+          ...mockRequest,
+          status: RequestStatus.ONGOING,
+          assignedToId: mockEmployeeId,
+        };
+        const completedRequest = {
+          ...mockRequestWithRelations,
+          status: RequestStatus.COMPLETED,
+        };
+        const completionNotes = 'Work completed successfully';
+
+        prismaService.request.findFirst = jest.fn().mockResolvedValue(ongoingRequest);
+        prismaService.request.update = jest.fn().mockResolvedValue(completedRequest);
+
+        await service.complete(
+          mockRequestId,
+          { notes: completionNotes },
+          mockEmployeeId,
+          UserRole.EMPLOYEE,
+        );
+
+        expect(mockNotificationService.createNotification).toHaveBeenCalledWith(
+          expect.objectContaining({
+            data: expect.objectContaining({
+              completionNotes: completionNotes,
+            }),
+          }),
+        );
+      });
+    });
+
+    describe('Error Handling', () => {
+      it('should handle NotificationService being unavailable', async () => {
+        (service as any).notificationService = null;
+
+        prismaService.service.findFirst = jest.fn().mockResolvedValue(mockService);
+        prismaService.workLocation.findFirst = jest
+          .fn()
+          .mockResolvedValue(mockLocation);
+        prismaService.request.create = jest
+          .fn()
+          .mockResolvedValue(mockRequestWithRelations);
+
+        // Should not throw, just complete the operation
+        await expect(service.create(createRequestDto, mockUserId)).resolves.toBeDefined();
+      });
+
+      it('should handle getAdminUserIds returning empty array', async () => {
+        (service as any).getAdminUserIds = jest.fn().mockResolvedValue([]);
+
+        prismaService.service.findFirst = jest.fn().mockResolvedValue(mockService);
+        prismaService.workLocation.findFirst = jest
+          .fn()
+          .mockResolvedValue(mockLocation);
+        prismaService.request.create = jest
+          .fn()
+          .mockResolvedValue(mockRequestWithRelations);
+
+        await service.create(createRequestDto, mockUserId);
+
+        // Should still send client notification (1 call)
+        expect(mockNotificationService.createNotification).toHaveBeenCalledTimes(1);
+      });
+
+      it('should properly log all notification errors', async () => {
+        const loggerSpy = jest.spyOn((service as any).logger, 'error');
+        mockNotificationService.createNotification = jest
+          .fn()
+          .mockRejectedValue(new Error('Test error'));
+
+        prismaService.service.findFirst = jest.fn().mockResolvedValue(mockService);
+        prismaService.workLocation.findFirst = jest
+          .fn()
+          .mockResolvedValue(mockLocation);
+        prismaService.request.create = jest
+          .fn()
+          .mockResolvedValue(mockRequestWithRelations);
+
+        await service.create(createRequestDto, mockUserId);
+
+        expect(loggerSpy).toHaveBeenCalled();
+        expect(loggerSpy.mock.calls[0][0]).toContain('Failed to send');
+      });
     });
   });
 });

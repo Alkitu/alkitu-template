@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CreateServiceSchema } from '@alkitu/shared';
 import { Button } from '@/components/primitives/ui/button';
@@ -12,6 +12,68 @@ import type {
   ServiceFormData,
 } from './ServiceFormOrganism.types';
 import type { Category } from '@/components/molecules/category';
+import { z } from 'zod';
+
+// Local schema override - accepts requestTemplate as object (Controller ensures it's always an object)
+const LocalServiceSchema = z.object({
+  name: z
+    .string()
+    .min(2, 'Service name must be at least 2 characters long')
+    .max(200, 'Service name cannot exceed 200 characters')
+    .trim(),
+  categoryId: z.string().min(1, 'Category is required'),
+  thumbnail: z.string().url('Thumbnail must be a valid URL').optional().or(z.literal('')),
+  requestTemplate: z.any(), // Accept any value - Controller ensures it's always a valid object
+});
+
+/**
+ * JSON Textarea Component for Controller
+ * Extracted to avoid hooks violation in Controller render
+ */
+interface JsonTextareaProps {
+  value: any;
+  onChange: (value: any) => void;
+  disabled?: boolean;
+  hasError?: boolean;
+}
+
+const JsonTextarea: React.FC<JsonTextareaProps> = ({ value, onChange, disabled, hasError }) => {
+  const [textValue, setTextValue] = useState(() =>
+    typeof value === 'string' ? value : JSON.stringify(value, null, 2)
+  );
+  const [jsonError, setJsonError] = useState<string>('');
+
+  // Sync textValue when value prop changes (e.g., form reset)
+  useEffect(() => {
+    const newText = typeof value === 'string' ? value : JSON.stringify(value, null, 2);
+    setTextValue(newText);
+  }, [value]);
+
+  return (
+    <>
+      <textarea
+        id="requestTemplate"
+        rows={8}
+        className={`mt-1 block w-full rounded-md border ${hasError || jsonError ? 'border-red-500' : 'border-gray-300'} px-3 py-2 font-mono text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500`}
+        disabled={disabled}
+        value={textValue}
+        onChange={(e) => {
+          const val = e.target.value;
+          setTextValue(val);
+          try {
+            const parsed = JSON.parse(val);
+            onChange(parsed);
+            setJsonError('');
+          } catch {
+            // Don't update field value if JSON is invalid
+            setJsonError('Invalid JSON format');
+          }
+        }}
+      />
+      {jsonError && <p className="mt-1 text-sm text-red-600">{jsonError}</p>}
+    </>
+  );
+};
 
 /**
  * ServiceFormOrganism - Organism Component (ALI-118)
@@ -80,8 +142,9 @@ export const ServiceFormOrganism: React.FC<ServiceFormOrganismProps> = ({
     reset,
     setValue,
     watch,
+    control,
   } = useForm<ServiceFormData>({
-    resolver: zodResolver(CreateServiceSchema),
+    resolver: zodResolver(LocalServiceSchema),
     defaultValues: initialData
       ? {
           name: initialData.name,
@@ -96,8 +159,6 @@ export const ServiceFormOrganism: React.FC<ServiceFormOrganismProps> = ({
           requestTemplate: defaultTemplate,
         },
   });
-
-  const requestTemplate = watch('requestTemplate');
 
   /**
    * Fetch categories for dropdown
@@ -128,11 +189,13 @@ export const ServiceFormOrganism: React.FC<ServiceFormOrganismProps> = ({
    * Handle form submission (create or update)
    */
   const onSubmit = async (data: ServiceFormData) => {
+    console.log('🚀 onSubmit called with data:', data);
     try {
       setIsLoading(true);
 
       // Parse and validate JSON template
       let parsedTemplate = data.requestTemplate;
+      console.log('📋 requestTemplate:', parsedTemplate, 'Type:', typeof parsedTemplate);
       if (typeof parsedTemplate === 'string') {
         try {
           parsedTemplate = JSON.parse(parsedTemplate);
@@ -150,7 +213,7 @@ export const ServiceFormOrganism: React.FC<ServiceFormOrganismProps> = ({
       const endpoint = isEditMode
         ? `/api/services/${initialData.id}`
         : '/api/services';
-      const method = isEditMode ? 'PUT' : 'POST';
+      const method = isEditMode ? 'PATCH' : 'POST';
 
       const response = await fetch(endpoint, {
         method,
@@ -278,25 +341,17 @@ export const ServiceFormOrganism: React.FC<ServiceFormOrganismProps> = ({
           JSON template for the service request form (Phase 8 will have visual
           builder)
         </p>
-        <textarea
-          id="requestTemplate"
-          {...register('requestTemplate')}
-          rows={8}
-          className={`mt-1 block w-full rounded-md border ${errors.requestTemplate ? 'border-red-500' : 'border-gray-300'} px-3 py-2 font-mono text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500`}
-          disabled={isLoading}
-          value={
-            typeof requestTemplate === 'string'
-              ? requestTemplate
-              : JSON.stringify(requestTemplate, null, 2)
-          }
-          onChange={(e) => {
-            try {
-              const parsed = JSON.parse(e.target.value);
-              setValue('requestTemplate', parsed);
-            } catch {
-              setValue('requestTemplate', e.target.value);
-            }
-          }}
+        <Controller
+          name="requestTemplate"
+          control={control}
+          render={({ field }) => (
+            <JsonTextarea
+              value={field.value}
+              onChange={field.onChange}
+              disabled={isLoading}
+              hasError={!!errors.requestTemplate}
+            />
+          )}
         />
         {errors.requestTemplate && (
           <p className="mt-1 text-sm text-red-600">

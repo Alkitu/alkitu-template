@@ -117,15 +117,23 @@ export default function NewRequestWizardPage() {
     setIsSubmitting(true);
     setError(null);
     try {
+      // Default execution date to tomorrow at 9 AM
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      tomorrow.setHours(9, 0, 0, 0);
+
       const response = await fetch('/api/requests', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           serviceId: formData.serviceId,
           locationId: formData.locationId,
-          title: formData.title,
-          description: formData.description,
-          priority: formData.priority,
+          executionDateTime: tomorrow.toISOString(),
+          templateResponses: {
+            title: formData.title,
+            description: formData.description,
+            priority: formData.priority,
+          },
         }),
       });
 
@@ -230,6 +238,7 @@ export default function NewRequestWizardPage() {
           {services.map((service) => (
             <Card
               key={service.id}
+              data-testid="service-card"
               className={`p-6 cursor-pointer transition-all hover:shadow-lg ${
                 formData.serviceId === service.id
                   ? 'border-primary ring-2 ring-primary/20'
@@ -361,6 +370,7 @@ export default function NewRequestWizardPage() {
               {locations.map((location) => (
                 <Card
                   key={location.id}
+                  data-testid="location-card"
                   className={`p-6 cursor-pointer transition-all hover:shadow-lg ${
                     formData.locationId === location.id
                       ? 'border-primary ring-2 ring-primary/20'

@@ -249,7 +249,10 @@ export const CategoryListOrganism: React.FC<CategoryListOrganismProps> = ({
 
       {/* Edit Category Form */}
       {state.editingCategory && (
-        <div className="mb-6 rounded-lg border border-gray-200 bg-gray-50 p-4">
+        <div
+          data-testid="category-edit-form"
+          className="mb-6 rounded-lg border border-gray-200 bg-gray-50 p-4"
+        >
           <h3 className="mb-4 font-medium text-gray-900">Edit Category</h3>
           <CategoryFormOrganism
             initialData={state.editingCategory}

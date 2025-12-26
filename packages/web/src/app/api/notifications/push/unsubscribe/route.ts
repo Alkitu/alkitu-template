@@ -1,48 +1,50 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { subscriptions } from '../subscribe/route';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 interface UnsubscribeRequest {
-  userId: string;
+  userId?: string;
   endpoint: string;
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body: UnsubscribeRequest = await request.json();
-    const { userId, endpoint } = body;
+    const { endpoint } = body;
 
-    if (!userId || !endpoint) {
+    if (!endpoint) {
       return NextResponse.json(
-        { error: 'Missing userId or endpoint' },
+        { error: 'Missing endpoint' },
         { status: 400 },
       );
     }
 
-    // Get existing subscriptions for user
-    const userSubscriptions = subscriptions.get(userId) || [];
+    // Mark subscription as inactive instead of deleting
+    // This preserves audit trail and allows for reactivation
+    const result = await prisma.pushSubscription.updateMany({
+      where: { endpoint },
+      data: { active: false },
+    });
 
-    // Find and remove the subscription
-    const updatedSubscriptions = userSubscriptions.filter(
-      (sub) => sub.endpoint !== endpoint,
-    );
+    const removedCount = result.count;
 
-    // Update stored subscriptions
-    if (updatedSubscriptions.length === 0) {
-      subscriptions.delete(userId);
-    } else {
-      subscriptions.set(userId, updatedSubscriptions);
+    console.log(`Push subscription deactivated for endpoint:`, endpoint);
+
+    // Count remaining active subscriptions for user if userId provided
+    let remainingCount = 0;
+    if (body.userId) {
+      remainingCount = await prisma.pushSubscription.count({
+        where: { userId: body.userId, active: true },
+      });
     }
-
-    const removedCount = userSubscriptions.length - updatedSubscriptions.length;
-
-    console.log(`Push subscription removed for user ${userId}:`, endpoint);
 
     return NextResponse.json(
       {
         success: true,
         message: 'Push subscription removed successfully',
         removedCount,
-        remainingCount: updatedSubscriptions.length,
+        remainingCount,
       },
       { status: 200 },
     );

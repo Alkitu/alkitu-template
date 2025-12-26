@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TrpcService } from './trpc.service';
 import { TrpcRouter } from './trpc.router';
+import { JwtModule } from '@nestjs/jwt';
 import { PrismaService } from '../prisma.service';
 import { UsersModule } from '../users/users.module';
 import { EmailModule } from '../email/email.module';
@@ -19,6 +20,10 @@ import { ThemeModule } from '../theme/theme.module';
     ChatModule,
     ChatbotConfigModule,
     ThemeModule,
+    JwtModule.register({
+      secret: process.env.JWT_SECRET || 'fallback-secret-key',
+      signOptions: { expiresIn: '1d' },
+    }),
   ],
   providers: [TrpcService, TrpcRouter, PrismaService],
   exports: [TrpcService],

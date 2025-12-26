@@ -4,6 +4,7 @@ import {
   BadRequestException,
   InternalServerErrorException,
   ForbiddenException,
+  Logger,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import {
@@ -18,14 +19,34 @@ import {
   validateStatusTransition,
   validateStatusTransitionRules,
 } from './validators/status-transition.validator';
+import { NotificationService } from '../notification/notification.service';
+import { RequestNotificationBuilder } from './builders/request-notification.builder';
 
 /**
- * Service for managing service requests lifecycle (ALI-119)
+ * Service for managing service requests lifecycle (ALI-119 + ALI-120)
  * @class RequestsService
  */
 @Injectable()
 export class RequestsService {
-  constructor(private readonly prisma: PrismaService) {}
+  private readonly logger = new Logger(RequestsService.name);
+
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notificationService: NotificationService,
+  ) {}
+
+  /**
+   * Get all admin user IDs for notifications (ALI-120)
+   * @private
+   * @returns {Promise<string[]>} Array of admin user IDs
+   */
+  private async getAdminUserIds(): Promise<string[]> {
+    const admins = await this.prisma.user.findMany({
+      where: { role: UserRole.ADMIN },
+      select: { id: true },
+    });
+    return admins.map((admin) => admin.id);
+  }
 
   /**
    * Create a new service request
@@ -77,7 +98,7 @@ export class RequestsService {
       // and if the data matches the expected types
 
       // Create the request with audit logging
-      return await this.prisma.request.create({
+      const createdRequest = await this.prisma.request.create({
         data: {
           userId,
           serviceId: createRequestDto.serviceId,
@@ -135,6 +156,51 @@ export class RequestsService {
           },
         },
       });
+
+      // ALI-120: Send multi-channel notifications
+      try {
+        // Notify client (confirmation)
+        const clientNotif = RequestNotificationBuilder.buildCreatedNotification(
+          createdRequest,
+          'client',
+        );
+        await this.notificationService.sendMultiChannelNotification(userId, {
+          type: clientNotif.type,
+          message: clientNotif.message,
+          data: clientNotif.data,
+          link: clientNotif.link,
+        });
+        this.logger.log(
+          `Sent multi-channel REQUEST_CREATED notification to client ${userId} for request ${createdRequest.id}`,
+        );
+
+        // Notify all admins (new request alert)
+        const adminIds = await this.getAdminUserIds();
+        const adminNotif = RequestNotificationBuilder.buildCreatedNotification(
+          createdRequest,
+          'admin',
+        );
+        await Promise.all(
+          adminIds.map((adminId) =>
+            this.notificationService.sendMultiChannelNotification(adminId, {
+              type: adminNotif.type,
+              message: adminNotif.message,
+              data: adminNotif.data,
+              link: adminNotif.link,
+            }),
+          ),
+        );
+        this.logger.log(
+          `Sent multi-channel REQUEST_CREATED notifications to ${adminIds.length} admins for request ${createdRequest.id}`,
+        );
+      } catch (error) {
+        this.logger.error(
+          `Failed to send request creation notifications: ${(error as Error).message}`,
+        );
+        throw error; // DEBUG: identifying why notifications fail
+      }
+
+      return createdRequest;
     } catch (error) {
       if (
         error instanceof NotFoundException ||
@@ -634,7 +700,7 @@ export class RequestsService {
       }
 
       // Update request with assignment and change status to ONGOING
-      return await this.prisma.request.update({
+      const updatedRequest = await this.prisma.request.update({
         where: { id },
         data: {
           assignedToId: assignRequestDto.assignedToId,
@@ -687,6 +753,53 @@ export class RequestsService {
           },
         },
       });
+
+      // ALI-120: Send multi-channel notifications
+      try {
+        // Notify assigned employee
+        const employeeNotif =
+          RequestNotificationBuilder.buildAssignedNotification(
+            updatedRequest,
+            'employee',
+          );
+        await this.notificationService.sendMultiChannelNotification(
+          assignRequestDto.assignedToId,
+          {
+            type: employeeNotif.type,
+            message: employeeNotif.message,
+            data: employeeNotif.data,
+            link: employeeNotif.link,
+          },
+        );
+        this.logger.log(
+          `Sent multi-channel REQUEST_ASSIGNED notification to employee ${assignRequestDto.assignedToId} for request ${id}`,
+        );
+
+        // Notify request creator
+        const clientNotif = RequestNotificationBuilder.buildAssignedNotification(
+          updatedRequest,
+          'client',
+        );
+        await this.notificationService.sendMultiChannelNotification(
+          updatedRequest.userId,
+          {
+            type: clientNotif.type,
+            message: clientNotif.message,
+            data: clientNotif.data,
+            link: clientNotif.link,
+          },
+        );
+        this.logger.log(
+          `Sent multi-channel REQUEST_ASSIGNED notification to client ${updatedRequest.userId} for request ${id}`,
+        );
+      } catch (error) {
+        this.logger.error(
+          `Failed to send assignment notifications: ${(error as Error).message}`,
+        );
+        // Don't fail the assignment if notifications fail
+      }
+
+      return updatedRequest;
     } catch (error) {
       if (
         error instanceof NotFoundException ||
@@ -750,7 +863,7 @@ export class RequestsService {
       }
 
       // Update cancellationRequested flag
-      return await this.prisma.request.update({
+      const updatedRequest = await this.prisma.request.update({
         where: { id },
         data: {
           cancellationRequested: true,
@@ -807,6 +920,77 @@ export class RequestsService {
           },
         },
       });
+
+      // ALI-120: Send multi-channel notifications based on status
+      try {
+        if (updatedRequest.status === RequestStatus.CANCELLED) {
+          // Auto-approved (PENDING requests or ADMIN) - notify client
+          const cancelledNotif =
+            RequestNotificationBuilder.buildCancelledNotification(updatedRequest);
+          await this.notificationService.sendMultiChannelNotification(
+            updatedRequest.userId,
+            {
+              type: cancelledNotif.type,
+              message: cancelledNotif.message,
+              data: cancelledNotif.data,
+              link: cancelledNotif.link,
+            },
+          );
+          this.logger.log(
+            `Sent multi-channel REQUEST_CANCELLED notification to client ${updatedRequest.userId} for request ${id}`,
+          );
+        } else if (request.status === RequestStatus.ONGOING) {
+          // Needs approval - notify admins and assigned employee
+          const adminIds = await this.getAdminUserIds();
+          const adminNotif =
+            RequestNotificationBuilder.buildCancellationRequestedNotification(
+              updatedRequest,
+              cancellationDto.reason,
+              'admin',
+            );
+          await Promise.all(
+            adminIds.map((adminId) =>
+              this.notificationService.sendMultiChannelNotification(adminId, {
+                type: adminNotif.type,
+                message: adminNotif.message,
+                data: adminNotif.data,
+                link: adminNotif.link,
+              }),
+            ),
+          );
+          this.logger.log(
+            `Sent multi-channel REQUEST_CANCELLATION_REQUESTED notifications to ${adminIds.length} admins for request ${id}`,
+          );
+
+          if (updatedRequest.assignedToId) {
+            const employeeNotif =
+              RequestNotificationBuilder.buildCancellationRequestedNotification(
+                updatedRequest,
+                cancellationDto.reason,
+                'employee',
+              );
+            await this.notificationService.sendMultiChannelNotification(
+              updatedRequest.assignedToId,
+              {
+                type: employeeNotif.type,
+                message: employeeNotif.message,
+                data: employeeNotif.data,
+                link: employeeNotif.link,
+              },
+            );
+            this.logger.log(
+              `Sent multi-channel REQUEST_CANCELLATION_REQUESTED notification to employee ${updatedRequest.assignedToId} for request ${id}`,
+            );
+          }
+        }
+      } catch (error) {
+        this.logger.error(
+          `Failed to send cancellation notifications: ${(error as Error).message}`,
+        );
+        // Don't fail the cancellation request if notifications fail
+      }
+
+      return updatedRequest;
     } catch (error) {
       if (
         error instanceof NotFoundException ||
@@ -869,7 +1053,7 @@ export class RequestsService {
       }
 
       // Update status to COMPLETED
-      return await this.prisma.request.update({
+      const completedRequest = await this.prisma.request.update({
         where: { id },
         data: {
           status: RequestStatus.COMPLETED,
@@ -931,6 +1115,34 @@ export class RequestsService {
           },
         },
       });
+
+      // ALI-120: Send multi-channel notification to client
+      try {
+        const completedNotif =
+          RequestNotificationBuilder.buildCompletedNotification(
+            completedRequest,
+            completeDto.notes,
+          );
+        await this.notificationService.sendMultiChannelNotification(
+          completedRequest.userId,
+          {
+            type: completedNotif.type,
+            message: completedNotif.message,
+            data: completedNotif.data,
+            link: completedNotif.link,
+          },
+        );
+        this.logger.log(
+          `Sent multi-channel REQUEST_COMPLETED notification to client ${completedRequest.userId} for request ${id}`,
+        );
+      } catch (error) {
+        this.logger.error(
+          `Failed to send completion notification: ${(error as Error).message}`,
+        );
+        // Don't fail the completion if notification fails
+      }
+
+      return completedRequest;
     } catch (error) {
       if (
         error instanceof NotFoundException ||

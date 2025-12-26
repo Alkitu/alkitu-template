@@ -3,12 +3,13 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import {
   CreateNotificationDto,
   NotificationType,
 } from './dto/create-notification.dto';
+import { PushNotificationService } from './push-notification.service';
 
 interface Notification {
   id: string;
@@ -56,10 +57,172 @@ interface QueryOptions {
 export class NotificationService {
   private notificationGateway?: NotificationGateway;
 
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private pushNotificationService: PushNotificationService,
+  ) {}
 
   setNotificationGateway(gateway: NotificationGateway) {
     this.notificationGateway = gateway;
+  }
+
+  /**
+   * ALI-120: Send notification via all enabled channels
+   * Respects user preferences and quiet hours
+   * Channels: In-App, WebSocket (real-time), Push (offline)
+   *
+   * @param userId - Target user ID
+   * @param notification - Notification payload
+   */
+  async sendMultiChannelNotification(
+    userId: string,
+    notification: {
+      type: NotificationType;
+      message: string;
+      data?: any;
+      link?: string;
+    },
+  ): Promise<void> {
+    const logger = new Logger('NotificationService');
+
+    try {
+      // Fetch user preferences
+      const preferences = await this.getUserPreferences(userId);
+
+      // 1. IN-APP: Always save to database (user can read later)
+      let savedNotification = null;
+      const shouldSendInApp = await this.shouldSendNotification(
+        userId,
+        notification.type,
+        'inApp',
+      );
+
+      if (shouldSendInApp) {
+        savedNotification = await this.createNotification({
+          userId,
+          type: notification.type,
+          message: notification.message,
+          data: notification.data,
+          link: notification.link,
+        });
+        logger.debug(
+          `In-app notification created for user ${userId}: ${savedNotification.id}`,
+        );
+      }
+
+      // 2. WEBSOCKET: Send real-time if user is online
+      if (this.notificationGateway && savedNotification) {
+        try {
+          await this.notificationGateway.sendNotificationToUser(userId, {
+            type: 'notification:new',
+            notification: {
+              id: savedNotification.id,
+              type: notification.type,
+              message: notification.message,
+              data: notification.data,
+              link: notification.link,
+              createdAt: savedNotification.createdAt,
+            },
+          });
+          logger.debug(`WebSocket notification sent to user ${userId}`);
+        } catch (error) {
+          // User not online, that's OK - they'll see it in-app
+          logger.debug(
+            `WebSocket failed for user ${userId} (likely offline): ${error}`,
+          );
+        }
+      }
+
+      // 3. PUSH: Send browser push if enabled and not in quiet hours
+      const shouldSendPush = await this.shouldSendNotification(
+        userId,
+        notification.type,
+        'push',
+      );
+
+      // Check quiet hours (only for push, not for in-app)
+      const isQuiet = preferences?.quietHoursEnabled
+        ? await this.isInQuietHours(userId)
+        : false;
+
+      if (shouldSendPush && !isQuiet) {
+        try {
+          const hasSubscriptions =
+            await this.pushNotificationService.hasActiveSubscriptions(userId);
+
+          if (hasSubscriptions) {
+            await this.pushNotificationService.sendToUser(userId, {
+              title: this.getNotificationTitle(notification.type),
+              body: notification.message,
+              icon: '/favicon.ico',
+              data: {
+                ...notification.data,
+                notificationType: notification.type,
+                link: notification.link,
+              },
+              actions: [
+                { action: 'view', title: 'Ver' },
+                { action: 'dismiss', title: 'Descartar' },
+              ],
+            });
+            logger.debug(`Push notification sent to user ${userId}`);
+          }
+        } catch (error) {
+          logger.error(
+            `Failed to send push notification to user ${userId}:`,
+            error,
+          );
+        }
+      } else if (isQuiet) {
+        logger.debug(`Push notification skipped for user ${userId}: quiet hours`);
+      }
+
+      // 4. EMAIL: TODO - Implement in future (ALI-121)
+      // For now, just log
+      const shouldSendEmail = await this.shouldSendNotification(
+        userId,
+        notification.type,
+        'email',
+      );
+      if (shouldSendEmail) {
+        logger.debug(
+          `Email notification queued for user ${userId} (not implemented)`,
+        );
+      }
+
+      logger.log(
+        `Multi-channel notification sent to user ${userId} (type: ${notification.type})`,
+      );
+    } catch (error) {
+      logger.error(
+        `Failed to send multi-channel notification to user ${userId}:`,
+        error,
+      );
+      throw error;
+    }
+  }
+
+  /**
+   * Get user-friendly notification title based on type
+   */
+  private getNotificationTitle(type: NotificationType): string {
+    const titles: Record<NotificationType, string> = {
+      [NotificationType.REQUEST_CREATED]: 'Nueva Solicitud',
+      [NotificationType.REQUEST_ASSIGNED]: 'Solicitud Asignada',
+      [NotificationType.REQUEST_STATUS_CHANGED]: 'Estado Actualizado',
+      [NotificationType.REQUEST_CANCELLATION_REQUESTED]:
+        'Cancelación Solicitada',
+      [NotificationType.REQUEST_CANCELLED]: 'Solicitud Cancelada',
+      [NotificationType.REQUEST_COMPLETED]: 'Solicitud Completada',
+      [NotificationType.INFO]: 'Información',
+      [NotificationType.WARNING]: 'Advertencia',
+      [NotificationType.ERROR]: 'Error',
+      [NotificationType.SUCCESS]: 'Éxito',
+      [NotificationType.CHAT_NEW_CONVERSATION]: 'Nueva Conversación',
+      [NotificationType.CHAT_NEW_MESSAGE]: 'Nuevo Mensaje',
+    };
+
+    return titles[type] || 'Notificación';
   }
 
   async createNotification(createNotificationDto: CreateNotificationDto) {
@@ -648,7 +811,7 @@ export class NotificationService {
     return result;
   }
 
-  async deleteNotificationsByType(userId: string, type: string) {
+  async deleteNotificationsByType(userId: string, type: NotificationType) {
     const result = await this.prisma.notification.deleteMany({
       where: {
         userId,
@@ -990,7 +1153,7 @@ export class NotificationService {
         where: { userId, read: false },
       }),
       this.prisma.notification.count({
-        where: { userId, type: 'urgent', read: false },
+        where: { userId, type: NotificationType.ERROR, read: false },
       }),
     ]);
 

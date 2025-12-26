@@ -45,6 +45,7 @@ export class ServicesService {
       return await this.prisma.service.create({
         data: {
           ...createServiceDto,
+          deletedAt: null, // Explicitly set to null for soft delete queries
           createdBy: userId,
           updatedBy: userId,
         },

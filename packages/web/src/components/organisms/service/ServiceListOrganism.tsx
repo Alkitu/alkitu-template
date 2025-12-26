@@ -250,7 +250,10 @@ export const ServiceListOrganism: React.FC<ServiceListOrganismProps> = ({
 
       {/* Edit Service Form */}
       {state.editingService && (
-        <div className="mb-6 rounded-lg border border-gray-200 bg-gray-50 p-4">
+        <div
+          data-testid="service-edit-form"
+          className="mb-6 rounded-lg border border-gray-200 bg-gray-50 p-4"
+        >
           <h3 className="mb-4 font-medium text-gray-900">Edit Service</h3>
           <ServiceFormOrganism
             initialData={state.editingService}

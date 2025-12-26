@@ -5,6 +5,7 @@ export * from "./types/category";
 export * from "./types/service";
 export * from "./types/request-template";
 export * from "./types/request";
+export * from "./types/notification"; // ALI-120
 
 // Schemas
 export * from "./schemas/auth";
@@ -13,6 +14,7 @@ export * from "./schemas/category";
 export * from "./schemas/service";
 export * from "./schemas/request-template";
 export * from "./schemas/request";
+export * from "./schemas/notification"; // ALI-120
 
 // Constants
 export * from "./constants/api";

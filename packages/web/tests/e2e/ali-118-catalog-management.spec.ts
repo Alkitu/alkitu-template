@@ -67,7 +67,7 @@ const testService = {
   },
 };
 
-test.describe('ALI-118: Service Catalog Management', () => {
+test.describe.serial('ALI-118: Service Catalog Management', () => {
   let createdCategoryId: string;
   let createdServiceId: string;
 
@@ -78,7 +78,7 @@ test.describe('ALI-118: Service Catalog Management', () => {
     await authenticatedAdminPage.setViewportSize({ width: 1280, height: 720 });
   });
 
-  test.describe('Categories CRUD', () => {
+  test.describe.serial('Categories CRUD', () => {
     test('1. Create new category', async ({ authenticatedAdminPage }) => {
       const page = authenticatedAdminPage;
       // Navigate to categories page
@@ -140,7 +140,7 @@ test.describe('ALI-118: Service Catalog Management', () => {
       await categoryCard.locator('button[aria-label="Edit category"]').click();
 
       // Wait for edit form
-      await page.waitForSelector('h3:has-text("Edit Category")');
+      await page.waitForSelector('[data-testid="category-edit-form"]', { timeout: 5000 });
 
       // Update name
       await page.fill('input[name="name"]', updatedCategoryName);
@@ -166,7 +166,7 @@ test.describe('ALI-118: Service Catalog Management', () => {
     });
   });
 
-  test.describe('Services CRUD', () => {
+  test.describe.serial('Services CRUD', () => {
     test('5. Create new service', async ({ authenticatedAdminPage }) => {
       const page = authenticatedAdminPage;
       // Navigate to services page
@@ -192,19 +192,25 @@ test.describe('ALI-118: Service Catalog Management', () => {
 
       // Update request template JSON
       const templateJson = JSON.stringify(testService.requestTemplate, null, 2);
-      await page.fill('textarea[name="requestTemplate"]', templateJson);
+      await page.fill('textarea#requestTemplate', templateJson);
 
       // Submit
       await page.click('button:has-text("Create Service")');
 
-      // Wait for success
-      await page.waitForTimeout(1500);
+      // Wait for form to close (indicates success)
+      await page.waitForSelector('[data-testid="service-form"]', {
+        state: 'hidden',
+        timeout: 10000
+      });
+
+      // Wait for network to be idle after form submission
+      await page.waitForLoadState('networkidle');
 
       // Verify service appears in list
       const serviceCard = page.locator(
         `[data-testid="service-card"]:has-text("${testService.name}")`,
       );
-      await expect(serviceCard).toBeVisible();
+      await expect(serviceCard).toBeVisible({ timeout: 10000 });
 
       // Verify category name is shown
       await expect(
@@ -245,7 +251,7 @@ test.describe('ALI-118: Service Catalog Management', () => {
       await serviceCard.locator('button[aria-label="Edit service"]').click();
 
       // Wait for edit form
-      await page.waitForSelector('h3:has-text("Edit Service")');
+      await page.waitForSelector('[data-testid="service-edit-form"]', { timeout: 5000 });
 
       // Update name
       const updatedName = `${testService.name} - Updated`;
@@ -263,6 +269,10 @@ test.describe('ALI-118: Service Catalog Management', () => {
 
     test('8. Delete service', async ({ authenticatedAdminPage }) => {
       const page = authenticatedAdminPage;
+
+      // Set up dialog handler once
+      page.on('dialog', (dialog) => dialog.accept());
+
       await page.goto('http://localhost:3000/es/admin/catalog/services');
       await page.waitForLoadState('networkidle');
 
@@ -274,7 +284,6 @@ test.describe('ALI-118: Service Catalog Management', () => {
         .first();
 
       // Click delete and confirm
-      page.on('dialog', (dialog) => dialog.accept());
       await serviceCard.locator('button[aria-label="Delete service"]').click();
 
       // Wait for deletion
@@ -305,25 +314,33 @@ test.describe('ALI-118: Service Catalog Management', () => {
       });
 
       const templateJson = JSON.stringify(testService.requestTemplate, null, 2);
-      await page.fill('textarea[name="requestTemplate"]', templateJson);
+      await page.fill('textarea#requestTemplate', templateJson);
 
       await page.click('button:has-text("Create Service")');
-      await page.waitForTimeout(1500);
+
+      // Wait for form to close (indicates success)
+      await page.waitForSelector('[data-testid="service-form"]', {
+        state: 'hidden',
+        timeout: 10000
+      });
+
+      // Wait for network to be idle after form submission
+      await page.waitForLoadState('networkidle');
 
       // Get the service ID from the card (we'll need to fetch it via API or extract from DOM)
       const serviceCard = page
         .locator('[data-testid="service-card"]')
         .filter({ hasText: 'Form Renderer Test Service' })
         .first();
-      await expect(serviceCard).toBeVisible();
+      await expect(serviceCard).toBeVisible({ timeout: 10000 });
 
       // TODO: Navigate to service request page when we have service listing
       // For now, verify the template is stored correctly
-      await page.click('button[aria-label="Edit service"]');
-      await page.waitForSelector('textarea[name="requestTemplate"]');
+      await serviceCard.locator('button[aria-label="Edit service"]').click();
+      await page.waitForSelector('textarea#requestTemplate');
 
       const templateValue = await page.inputValue(
-        'textarea[name="requestTemplate"]',
+        'textarea#requestTemplate',
       );
       const parsedTemplate = JSON.parse(templateValue);
 
@@ -347,7 +364,7 @@ test.describe('ALI-118: Service Catalog Management', () => {
 
       // Should show validation error
       await expect(
-        page.locator('text=/Category name.*required/i'),
+        page.locator('p.text-red-600').filter({ hasText: /category name/i }).first(),
       ).toBeVisible();
     });
 
@@ -373,17 +390,24 @@ test.describe('ALI-118: Service Catalog Management', () => {
       await page.goto('http://localhost:3000/es/admin/catalog/categories');
       await page.waitForLoadState('networkidle');
 
+      // Wait for category cards to load
+      await page.waitForSelector('[data-testid="category-card"]', { timeout: 10000 });
+
       // Find our category (it should have services)
       const categoryCard = page
         .locator('[data-testid="category-card"]')
         .filter({ hasText: updatedCategoryName })
         .first();
 
+      // Wait for the category card to be visible
+      await expect(categoryCard).toBeVisible({ timeout: 5000 });
+
       // Check if it has services
       const serviceCountText = await categoryCard
         .locator('text=/\\d+ service/i')
-        .textContent();
-      const hasServices = !serviceCountText?.includes('0 service');
+        .first()
+        .textContent({ timeout: 5000 });
+      const hasServices = serviceCountText && !serviceCountText.includes('0 service');
 
       if (hasServices) {
         // Delete button should be disabled
@@ -398,27 +422,45 @@ test.describe('ALI-118: Service Catalog Management', () => {
   test.describe('Cleanup', () => {
     test('13. Clean up test data', async ({ authenticatedAdminPage }) => {
       const page = authenticatedAdminPage;
-      // Delete remaining test services first
+
+      // Set up dialog handler once for all dialogs in this test
+      page.on('dialog', (dialog) => dialog.accept());
+
+      // Delete remaining test services first - loop until all are gone
       await page.goto('http://localhost:3000/es/admin/catalog/services');
       await page.waitForLoadState('networkidle');
 
-      const testServices = page.locator('[data-testid="service-card"]').filter({
-        hasText: /Form Renderer Test Service|E2E Test Service/,
-      });
+      // Keep deleting services until none match our filter
+      let remainingServices = await page
+        .locator('[data-testid="service-card"]')
+        .filter({ hasText: /Form Renderer Test Service|E2E Test Service/ })
+        .count();
 
-      const count = await testServices.count();
-      for (let i = 0; i < count; i++) {
-        const serviceCard = testServices.first();
+      while (remainingServices > 0) {
+        const serviceCard = page
+          .locator('[data-testid="service-card"]')
+          .filter({ hasText: /Form Renderer Test Service|E2E Test Service/ })
+          .first();
+
         if (await serviceCard.isVisible()) {
-          page.on('dialog', (dialog) => dialog.accept());
-          await serviceCard
-            .locator('button[aria-label="Delete service"]')
-            .click();
-          await page.waitForTimeout(500);
+          const deleteButton = serviceCard.locator(
+            'button[aria-label="Delete service"]',
+          );
+          await deleteButton.click();
+
+          // Wait for the service to be removed from the list
+          await page.waitForTimeout(1000);
+          await page.waitForLoadState('networkidle');
         }
+
+        // Recount remaining services
+        remainingServices = await page
+          .locator('[data-testid="service-card"]')
+          .filter({ hasText: /Form Renderer Test Service|E2E Test Service/ })
+          .count();
       }
 
-      // Now delete test category
+      // Now delete test category - only if it has no services
       await page.goto('http://localhost:3000/es/admin/catalog/categories');
       await page.waitForLoadState('networkidle');
 
@@ -428,11 +470,22 @@ test.describe('ALI-118: Service Catalog Management', () => {
         .first();
 
       if (await categoryCard.isVisible()) {
-        page.on('dialog', (dialog) => dialog.accept());
-        await categoryCard
-          .locator('button[aria-label="Delete category"]')
-          .click();
-        await page.waitForTimeout(500);
+        // Check if the category has services
+        const serviceCountText = await categoryCard
+          .locator('text=/\\d+ service/i')
+          .first()
+          .textContent();
+
+        // Only try to delete if it has 0 services
+        if (serviceCountText && serviceCountText.includes('0 service')) {
+          const deleteButton = categoryCard.locator(
+            'button[aria-label="Delete category"]',
+          );
+          if (await deleteButton.isEnabled()) {
+            await deleteButton.click();
+            await page.waitForTimeout(500);
+          }
+        }
       }
     });
   });

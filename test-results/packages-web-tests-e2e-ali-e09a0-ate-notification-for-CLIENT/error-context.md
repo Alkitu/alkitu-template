@@ -1,0 +1,338 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e6]:
+        - generic [ref=e8]:
+          - generic [ref=e9]:
+            - generic [ref=e10]: 📊 RESUMEN
+            - list [ref=e11]:
+              - listitem [ref=e12]:
+                - link "Dashboard" [ref=e13] [cursor=pointer]:
+                  - /url: /admin/dashboard
+                  - img [ref=e14]
+                  - generic: Dashboard
+          - generic [ref=e17]:
+            - generic [ref=e18]: 👥 GESTIÓN
+            - list [ref=e19]:
+              - listitem [ref=e20]:
+                - button "Usuarios" [ref=e21]:
+                  - img [ref=e22]
+                  - generic [ref=e27]: Usuarios
+                  - img [ref=e28]
+              - listitem [ref=e30]:
+                - button "Catálogo" [ref=e31]:
+                  - img [ref=e32]
+                  - generic [ref=e35]: Catálogo
+                  - img [ref=e36]
+          - generic [ref=e38]:
+            - generic [ref=e39]: 💬 COMUNICACIÓN
+            - list [ref=e40]:
+              - listitem [ref=e41]:
+                - button "Chat" [ref=e42]:
+                  - img [ref=e43]
+                  - generic [ref=e45]: Chat
+                  - img [ref=e46]
+              - listitem [ref=e48]:
+                - button "Notificaciones" [ref=e49]:
+                  - img [ref=e50]
+                  - generic [ref=e53]: Notificaciones
+                  - img [ref=e54]
+          - generic [ref=e56]:
+            - generic [ref=e57]: ⚙️ CONFIGURACIÓN
+            - list [ref=e58]:
+              - listitem [ref=e59]:
+                - button "Configuración" [ref=e60]:
+                  - img [ref=e61]
+                  - generic [ref=e64]: Configuración
+                  - img [ref=e65]
+          - button "Toggle language" [ref=e68] [cursor=pointer]:
+            - img [ref=e69]
+            - generic [ref=e72]: Toggle language
+        - generic [ref=e73]:
+          - button "Cambiar a modo oscuro" [ref=e75]:
+            - img [ref=e76]
+          - list [ref=e78]:
+            - listitem [ref=e79]:
+              - button "Toggle language" [ref=e80] [cursor=pointer]:
+                - img [ref=e81]
+                - generic [ref=e84]: Toggle language
+              - button "CN" [ref=e85]:
+                - generic [ref=e88]: CN
+                - img [ref=e89]
+        - button "Toggle Sidebar" [ref=e92]
+      - main [ref=e93]:
+        - generic [ref=e94]:
+          - button "Toggle Sidebar" [ref=e95] [cursor=pointer]:
+            - img [ref=e96]
+            - generic [ref=e98]: Toggle Sidebar
+          - generic [ref=e105]:
+            - link "Ir a client" [ref=e106] [cursor=pointer]:
+              - /url: /es/client
+              - img [ref=e107]
+              - paragraph [ref=e110]: Ir a client
+            - navigation "breadcrumb" [ref=e111]:
+              - list [ref=e112]:
+                - listitem [ref=e113]:
+                  - link "Dashboard" [ref=e114] [cursor=pointer]:
+                    - /url: /
+                - listitem [ref=e115]:
+                  - img [ref=e116]
+                - listitem:
+                  - link "notifications" [disabled]
+            - generic [ref=e118]:
+              - img [ref=e119]
+              - text: "0"
+              - list
+        - generic [ref=e126]:
+          - generic [ref=e127]:
+            - generic [ref=e129]:
+              - img [ref=e130]
+              - generic [ref=e137]: Reconectando...
+            - generic [ref=e138]:
+              - generic [ref=e139]:
+                - heading "Notificaciones 11 nuevas" [level=1] [ref=e140]:
+                  - img [ref=e141]
+                  - text: Notificaciones
+                  - generic [ref=e144]: 11 nuevas
+                - paragraph [ref=e145]: Mantente al día con todas tus actualizaciones
+              - button "Marcar todas como leídas" [ref=e146] [cursor=pointer]:
+                - img [ref=e147]
+                - text: Marcar todas como leídas
+            - generic [ref=e150]:
+              - button "Todas (11)" [ref=e151] [cursor=pointer]
+              - button "No leídas (11)" [ref=e152] [cursor=pointer]:
+                - img [ref=e153]
+                - text: No leídas (11)
+              - button "Leídas (0)" [ref=e155] [cursor=pointer]
+          - generic [ref=e156]:
+            - generic [ref=e158] [cursor=pointer]:
+              - img [ref=e160]
+              - generic [ref=e163]:
+                - generic [ref=e164]:
+                  - generic [ref=e165]:
+                    - heading "Your service request for \"E2E Notification Test Service\" has been created successfully" [level=3] [ref=e166]: Your service request for "E2E Notification Test Service" has been created successfully
+                    - paragraph [ref=e168]:
+                      - text: "Servicio:"
+                      - strong [ref=e169]: E2E Notification Test Service
+                    - generic [ref=e170]:
+                      - img [ref=e171]
+                      - text: Hace menos de una hora
+                  - generic [ref=e174]:
+                    - button "Marcar como leída" [ref=e175]:
+                      - img [ref=e176]
+                    - button "Eliminar" [ref=e179]:
+                      - img [ref=e180]
+                - link "Ver Solicitud" [ref=e184]:
+                  - /url: /client/requests/694e106e8b6819601c92131a
+                  - button "Ver Solicitud" [ref=e185]
+            - generic [ref=e187] [cursor=pointer]:
+              - img [ref=e189]
+              - generic [ref=e192]:
+                - generic [ref=e193]:
+                  - generic [ref=e194]:
+                    - heading "Your service request for \"E2E Notification Test Service\" has been created successfully" [level=3] [ref=e195]: Your service request for "E2E Notification Test Service" has been created successfully
+                    - paragraph [ref=e197]:
+                      - text: "Servicio:"
+                      - strong [ref=e198]: E2E Notification Test Service
+                    - generic [ref=e199]:
+                      - img [ref=e200]
+                      - text: Hace menos de una hora
+                  - generic [ref=e203]:
+                    - button "Marcar como leída" [ref=e204]:
+                      - img [ref=e205]
+                    - button "Eliminar" [ref=e208]:
+                      - img [ref=e209]
+                - link "Ver Solicitud" [ref=e213]:
+                  - /url: /client/requests/694e106b8b6819601c92130e
+                  - button "Ver Solicitud" [ref=e214]
+            - generic [ref=e216] [cursor=pointer]:
+              - img [ref=e218]
+              - generic [ref=e221]:
+                - generic [ref=e222]:
+                  - generic [ref=e223]:
+                    - heading "Your service request for \"E2E Notification Test Service\" has been created successfully" [level=3] [ref=e224]: Your service request for "E2E Notification Test Service" has been created successfully
+                    - paragraph [ref=e226]:
+                      - text: "Servicio:"
+                      - strong [ref=e227]: E2E Notification Test Service
+                    - generic [ref=e228]:
+                      - img [ref=e229]
+                      - text: Hace menos de una hora
+                  - generic [ref=e232]:
+                    - button "Marcar como leída" [ref=e233]:
+                      - img [ref=e234]
+                    - button "Eliminar" [ref=e237]:
+                      - img [ref=e238]
+                - link "Ver Solicitud" [ref=e242]:
+                  - /url: /client/requests/694e0eb5009e4abbb6b11ad6
+                  - button "Ver Solicitud" [ref=e243]
+            - generic [ref=e245] [cursor=pointer]:
+              - img [ref=e247]
+              - generic [ref=e250]:
+                - generic [ref=e251]:
+                  - generic [ref=e252]:
+                    - heading "Your service request for \"E2E Notification Test Service\" has been created successfully" [level=3] [ref=e253]: Your service request for "E2E Notification Test Service" has been created successfully
+                    - paragraph [ref=e255]:
+                      - text: "Servicio:"
+                      - strong [ref=e256]: E2E Notification Test Service
+                    - generic [ref=e257]:
+                      - img [ref=e258]
+                      - text: Hace menos de una hora
+                  - generic [ref=e261]:
+                    - button "Marcar como leída" [ref=e262]:
+                      - img [ref=e263]
+                    - button "Eliminar" [ref=e266]:
+                      - img [ref=e267]
+                - link "Ver Solicitud" [ref=e271]:
+                  - /url: /client/requests/694e0e69009e4abbb6b11ac8
+                  - button "Ver Solicitud" [ref=e272]
+            - generic [ref=e274] [cursor=pointer]:
+              - img [ref=e276]
+              - generic [ref=e279]:
+                - generic [ref=e280]:
+                  - generic [ref=e281]:
+                    - heading "Your service request for \"E2E Notification Test Service\" has been created successfully" [level=3] [ref=e282]: Your service request for "E2E Notification Test Service" has been created successfully
+                    - paragraph [ref=e284]:
+                      - text: "Servicio:"
+                      - strong [ref=e285]: E2E Notification Test Service
+                    - generic [ref=e286]:
+                      - img [ref=e287]
+                      - text: Hace menos de una hora
+                  - generic [ref=e290]:
+                    - button "Marcar como leída" [ref=e291]:
+                      - img [ref=e292]
+                    - button "Eliminar" [ref=e295]:
+                      - img [ref=e296]
+                - link "Ver Solicitud" [ref=e300]:
+                  - /url: /client/requests/694e0db7009e4abbb6b11aba
+                  - button "Ver Solicitud" [ref=e301]
+            - generic [ref=e303] [cursor=pointer]:
+              - img [ref=e305]
+              - generic [ref=e308]:
+                - generic [ref=e309]:
+                  - generic [ref=e310]:
+                    - heading "Your service request for \"E2E Notification Test Service\" has been created successfully" [level=3] [ref=e311]: Your service request for "E2E Notification Test Service" has been created successfully
+                    - paragraph [ref=e313]:
+                      - text: "Servicio:"
+                      - strong [ref=e314]: E2E Notification Test Service
+                    - generic [ref=e315]:
+                      - img [ref=e316]
+                      - text: Hace menos de una hora
+                  - generic [ref=e319]:
+                    - button "Marcar como leída" [ref=e320]:
+                      - img [ref=e321]
+                    - button "Eliminar" [ref=e324]:
+                      - img [ref=e325]
+                - link "Ver Solicitud" [ref=e329]:
+                  - /url: /client/requests/694e0c91ef68ca2fd099be0c
+                  - button "Ver Solicitud" [ref=e330]
+            - generic [ref=e332] [cursor=pointer]:
+              - img [ref=e334]
+              - generic [ref=e337]:
+                - generic [ref=e338]:
+                  - generic [ref=e339]:
+                    - heading "Your service request for \"E2E Notification Test Service\" has been created successfully" [level=3] [ref=e340]: Your service request for "E2E Notification Test Service" has been created successfully
+                    - paragraph [ref=e342]:
+                      - text: "Servicio:"
+                      - strong [ref=e343]: E2E Notification Test Service
+                    - generic [ref=e344]:
+                      - img [ref=e345]
+                      - text: Hace menos de una hora
+                  - generic [ref=e348]:
+                    - button "Marcar como leída" [ref=e349]:
+                      - img [ref=e350]
+                    - button "Eliminar" [ref=e353]:
+                      - img [ref=e354]
+                - link "Ver Solicitud" [ref=e358]:
+                  - /url: /client/requests/694e0be80328726e534b42ae
+                  - button "Ver Solicitud" [ref=e359]
+            - generic [ref=e361] [cursor=pointer]:
+              - img [ref=e363]
+              - generic [ref=e366]:
+                - generic [ref=e367]:
+                  - generic [ref=e368]:
+                    - heading "Your service request for \"E2E Notification Test Service\" has been created successfully" [level=3] [ref=e369]: Your service request for "E2E Notification Test Service" has been created successfully
+                    - paragraph [ref=e371]:
+                      - text: "Servicio:"
+                      - strong [ref=e372]: E2E Notification Test Service
+                    - generic [ref=e373]:
+                      - img [ref=e374]
+                      - text: Hace menos de una hora
+                  - generic [ref=e377]:
+                    - button "Marcar como leída" [ref=e378]:
+                      - img [ref=e379]
+                    - button "Eliminar" [ref=e382]:
+                      - img [ref=e383]
+                - link "Ver Solicitud" [ref=e387]:
+                  - /url: /client/requests/694e0b570328726e534b4295
+                  - button "Ver Solicitud" [ref=e388]
+            - generic [ref=e390] [cursor=pointer]:
+              - img [ref=e392]
+              - generic [ref=e395]:
+                - generic [ref=e396]:
+                  - generic [ref=e397]:
+                    - heading "Your service request for \"E2E Notification Test Service\" has been created successfully" [level=3] [ref=e398]: Your service request for "E2E Notification Test Service" has been created successfully
+                    - paragraph [ref=e400]:
+                      - text: "Servicio:"
+                      - strong [ref=e401]: E2E Notification Test Service
+                    - generic [ref=e402]:
+                      - img [ref=e403]
+                      - text: Hace menos de una hora
+                  - generic [ref=e406]:
+                    - button "Marcar como leída" [ref=e407]:
+                      - img [ref=e408]
+                    - button "Eliminar" [ref=e411]:
+                      - img [ref=e412]
+                - link "Ver Solicitud" [ref=e416]:
+                  - /url: /client/requests/694e0b560328726e534b4294
+                  - button "Ver Solicitud" [ref=e417]
+            - generic [ref=e419] [cursor=pointer]:
+              - img [ref=e421]
+              - generic [ref=e424]:
+                - generic [ref=e425]:
+                  - generic [ref=e426]:
+                    - heading "Your service request for \"E2E Notification Test Service\" has been created successfully" [level=3] [ref=e427]: Your service request for "E2E Notification Test Service" has been created successfully
+                    - paragraph [ref=e429]:
+                      - text: "Servicio:"
+                      - strong [ref=e430]: E2E Notification Test Service
+                    - generic [ref=e431]:
+                      - img [ref=e432]
+                      - text: Hace menos de una hora
+                  - generic [ref=e435]:
+                    - button "Marcar como leída" [ref=e436]:
+                      - img [ref=e437]
+                    - button "Eliminar" [ref=e440]:
+                      - img [ref=e441]
+                - link "Ver Solicitud" [ref=e445]:
+                  - /url: /client/requests/694e0a9f50799391244a0521
+                  - button "Ver Solicitud" [ref=e446]
+            - generic [ref=e448] [cursor=pointer]:
+              - img [ref=e450]
+              - generic [ref=e453]:
+                - generic [ref=e454]:
+                  - generic [ref=e455]:
+                    - heading "Your service request for \"E2E Notification Test Service\" has been created successfully" [level=3] [ref=e456]: Your service request for "E2E Notification Test Service" has been created successfully
+                    - paragraph [ref=e458]:
+                      - text: "Servicio:"
+                      - strong [ref=e459]: E2E Notification Test Service
+                    - generic [ref=e460]:
+                      - img [ref=e461]
+                      - text: Hace menos de una hora
+                  - generic [ref=e464]:
+                    - button "Marcar como leída" [ref=e465]:
+                      - img [ref=e466]
+                    - button "Eliminar" [ref=e469]:
+                      - img [ref=e470]
+                - link "Ver Solicitud" [ref=e474]:
+                  - /url: /client/requests/694e09f750799391244a0510
+                  - button "Ver Solicitud" [ref=e475]
+    - region "Notifications (F8)":
+      - list
+  - button [ref=e477] [cursor=pointer]:
+    - img [ref=e478]
+  - button "Open Next.js Dev Tools" [ref=e485] [cursor=pointer]:
+    - img [ref=e486]
+  - alert [ref=e489]
+```

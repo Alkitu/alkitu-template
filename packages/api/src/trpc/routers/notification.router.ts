@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { t } from '../trpc';
 import { NotificationService } from '../../notification/notification.service';
+import { NotificationType } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 
 export const createNotificationRouter = (
@@ -252,7 +253,7 @@ export const createNotificationRouter = (
       }),
 
     deleteNotificationsByType: t.procedure
-      .input(z.object({ userId: z.string(), type: z.string() }))
+      .input(z.object({ userId: z.string(), type: z.nativeEnum(NotificationType) }))
       .mutation(async ({ input }) => {
         try {
           return await notificationService.deleteNotificationsByType(

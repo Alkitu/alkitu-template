@@ -42,6 +42,11 @@ export default async function RootLayout({ children, params }: LayoutProps) {
   return (
     <html lang={locale} suppressHydrationWarning>
       <head>
+        {/* PWA Manifest */}
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#000000" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
         {/* Inject theme CSS server-side to prevent FOUC */}
         {themeCSS && (
           <style

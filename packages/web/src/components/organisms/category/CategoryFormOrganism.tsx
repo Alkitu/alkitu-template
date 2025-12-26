@@ -81,7 +81,7 @@ export const CategoryFormOrganism: React.FC<CategoryFormOrganismProps> = ({
       const endpoint = isEditMode
         ? `/api/categories/${initialData.id}`
         : '/api/categories';
-      const method = isEditMode ? 'PUT' : 'POST';
+      const method = isEditMode ? 'PATCH' : 'POST';
 
       const response = await fetch(endpoint, {
         method,

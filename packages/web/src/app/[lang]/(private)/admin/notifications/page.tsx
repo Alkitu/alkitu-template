@@ -32,6 +32,8 @@ import {
   BarChart3,
   Zap,
   Loader2,
+  Wifi,
+  WifiOff,
 } from 'lucide-react';
 import { BulkActions } from '@/components/features/notifications/bulk-actions';
 import { NotificationFilters } from '@/components/features/notifications/notification-filters';
@@ -49,8 +51,8 @@ import { useInfiniteNotifications } from '@/hooks/use-infinite-scroll';
 import Link from 'next/link';
 import { Switch } from '@/components/primitives/ui/switch';
 import { cn } from '@/lib/utils';
-
-const TEST_USER_ID = '6861ea1a1c0cf932169adce4';
+import { useWebSocket } from '@/hooks/use-websocket';
+import { trpc } from '@/lib/trpc';
 
 interface Notification {
   id: string;
@@ -118,6 +120,8 @@ const NotificationCard = React.memo(function NotificationCard({
 
   return (
     <Card
+      data-testid="notification-card"
+      data-notification-type={notification.type}
       className={`transition-all duration-200 ${!notification.read ? 'border-l-4 border-l-blue-500 bg-blue-50/30 dark:bg-blue-950/20' : 'hover:shadow-md'}`}
     >
       <CardHeader className="pb-3">
@@ -395,6 +399,26 @@ export default function NotificationsPage() {
   const t = useTranslations('notifications');
   const { filters, isQuickFilterLoading } = useNotificationFiltersStore();
 
+  // Use TRPC to get current user info (securely from HttpOnly cookie)
+  const {
+    data: user,
+    isLoading: isUserLoading
+  } = trpc.user.me.useQuery(undefined, {
+    retry: 1,
+    refetchOnWindowFocus: false,
+  });
+
+  const userId = user?.id || null;
+  // We can't access HttpOnly cookie in JS, so we pass null and let WS fail or use mock
+  const authToken = null;
+
+  // Debug - log user ID from TRPC
+  useEffect(() => {
+    if (user?.id) {
+      console.log('[ADMIN PAGE] userId from TRPC me endpoint:', user.id);
+    }
+  }, [user?.id]);
+
   // State
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [hasFetchedOnce, setHasFetchedOnce] = useState(false);
@@ -429,7 +453,7 @@ export default function NotificationsPage() {
     refresh: infiniteRefresh,
     loadMoreRef,
   } = useInfiniteNotifications({
-    userId: TEST_USER_ID,
+    userId: userId || '',
     limit: pagination.pageSize,
     search: filters.search,
     types: filters.types.length > 0 ? filters.types : undefined,
@@ -437,7 +461,32 @@ export default function NotificationsPage() {
     dateFrom: filters.dateRange?.from,
     dateTo: filters.dateRange?.to,
     sortBy: filters.sortBy,
-    enabled: infiniteScrollEnabled,
+    enabled: infiniteScrollEnabled && !!userId,
+  });
+
+  // WebSocket for real-time notifications
+  const { connected, error: wsError } = useWebSocket({
+    userId: userId || '',
+    token: authToken || '',
+    enabled: !!userId && !!authToken,
+    onNewNotification: (notification) => {
+      console.log('New notification received via WebSocket:', notification);
+      // Refresh based on current mode
+      if (infiniteScrollEnabled) {
+        infiniteRefresh();
+      } else {
+        fetchNotifications(filters, pagination.currentPage);
+      }
+    },
+    onCountUpdate: () => {
+      console.log('Notification count updated via WebSocket');
+      // Refresh based on current mode
+      if (infiniteScrollEnabled) {
+        infiniteRefresh();
+      } else {
+        fetchNotifications(filters, pagination.currentPage);
+      }
+    },
   });
 
   // Derived state
@@ -468,7 +517,7 @@ export default function NotificationsPage() {
   // Fetch notifications
   const fetchNotifications = useCallback(
     async (targetFilters: NotificationFiltersType = filters, page = 1) => {
-      if (infiniteScrollEnabled || !mountedRef.current) return;
+      if (infiniteScrollEnabled || !mountedRef.current || !userId) return;
       abortControllerRef.current?.abort();
       abortControllerRef.current = new AbortController();
 
@@ -490,7 +539,7 @@ export default function NotificationsPage() {
               : 'getNotifications';
         const limit = pagination.pageSize;
         const offset = (page - 1) * limit;
-        let input: any = { userId: TEST_USER_ID, limit, offset };
+        let input: any = { userId: userId!, limit, offset };
 
         if (endpoint === 'getNotificationsWithFilters') {
           setIsFilteredFetch(true);
@@ -544,7 +593,7 @@ export default function NotificationsPage() {
         if (mountedRef.current) setLoading(false);
       }
     },
-    [filters, infiniteScrollEnabled, pagination.pageSize],
+    [filters, infiniteScrollEnabled, pagination.pageSize, userId],
   );
 
   // Debounced fetch
@@ -589,15 +638,16 @@ export default function NotificationsPage() {
   // Effects
   useEffect(() => {
     mountedRef.current = true;
-    if (!infiniteScrollEnabled) {
-      // Call fetchNotifications directly without dependencies to avoid infinite loops
+    if (!infiniteScrollEnabled && userId) {
+      // Call fetchNotifications only when userId is available
       fetchNotifications(filters, 1);
     }
     return () => {
       mountedRef.current = false;
       abortControllerRef.current?.abort();
     };
-  }, [infiniteScrollEnabled, fetchNotifications, filters]); // Only depend on infiniteScrollEnabled
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [infiniteScrollEnabled, userId]); // Only re-fetch when these change
 
   // Toggle infinite scroll
   const toggleInfiniteScroll = useCallback(() => {
@@ -684,7 +734,7 @@ export default function NotificationsPage() {
   };
 
   // Render
-  if (!hasFetchedOnce && currentLoading) {
+  if ((!hasFetchedOnce && currentLoading) || !userId || isUserLoading) {
     return (
       <div className="p-6 max-w-4xl mx-auto">
         <NotificationListSkeleton />
@@ -694,6 +744,33 @@ export default function NotificationsPage() {
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
+      {/* DEBUG INFO */}
+      <div className="hidden" data-testid="debug-info">
+        <span data-testid="debug-user-id">{userId || 'null'}</span>
+        <span data-testid="debug-loading">{currentLoading ? 'true' : 'false'}</span>
+        <span data-testid="debug-error">{currentError ? currentError : 'null'}</span>
+        <span data-testid="debug-count">{currentNotifications?.length || '0'}</span>
+      </div>
+      {/* WebSocket Connection Status */}
+      <div className="mb-4">
+        {connected ? (
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400 rounded-md text-sm">
+            <Wifi className="h-4 w-4" />
+            <span>Conectado en tiempo real</span>
+          </div>
+        ) : (
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-gray-100 dark:bg-gray-900/20 text-gray-600 dark:text-gray-400 rounded-md text-sm">
+            <WifiOff className="h-4 w-4" />
+            <span>Reconectando...</span>
+          </div>
+        )}
+        {wsError && (
+          <div className="mt-2 text-xs text-red-600 dark:text-red-400">
+            {wsError}
+          </div>
+        )}
+      </div>
+
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-3xl font-bold">{t('title')}</h1>
@@ -813,7 +890,7 @@ export default function NotificationsPage() {
       />
       {currentNotifications.length > 0 && (
         <BulkActions
-          userId={TEST_USER_ID}
+          userId={userId!}
           notifications={currentNotifications.map((n) => ({
             id: n.id,
             type: n.type,

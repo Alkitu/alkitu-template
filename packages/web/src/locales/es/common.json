@@ -296,6 +296,7 @@
   "dashboard": {
     "nav": {
       "overview": "Dashboard",
+      "dashboard": "Panel",
       "users": "Usuarios",
       "userList": "Lista de Usuarios",
       "createUser": "Crear Usuario",
@@ -331,7 +332,10 @@
       "help": "Ayuda",
       "dashboard": "Dashboard",
       "home": "Inicio",
-      "preferences": "Preferencias"
+      "preferences": "Preferencias",
+      "catalog": "Catálogo",
+      "categories": "Categorías",
+      "services": "Servicios"
     },
     "projects": {
       "alkitu": "Plataforma Alkitu"
@@ -543,6 +547,30 @@
         "features": {
           "label": "Nuevas características",
           "description": "Actualizaciones de producto y nuevas características"
+        },
+        "REQUEST_CREATED": {
+          "label": "Solicitud Creada",
+          "description": "Se ha creado una nueva solicitud de servicio"
+        },
+        "REQUEST_ASSIGNED": {
+          "label": "Solicitud Asignada",
+          "description": "Solicitud de servicio asignada a un empleado"
+        },
+        "REQUEST_STATUS_CHANGED": {
+          "label": "Estado Cambiado",
+          "description": "El estado de la solicitud ha sido actualizado"
+        },
+        "REQUEST_CANCELLATION_REQUESTED": {
+          "label": "Cancelación Solicitada",
+          "description": "El cliente solicitó la cancelación de un servicio"
+        },
+        "REQUEST_CANCELLED": {
+          "label": "Solicitud Cancelada",
+          "description": "La solicitud de servicio ha sido cancelada"
+        },
+        "REQUEST_COMPLETED": {
+          "label": "Solicitud Completada",
+          "description": "La solicitud de servicio ha sido completada"
         }
       }
     }

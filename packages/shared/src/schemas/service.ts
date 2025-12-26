@@ -16,7 +16,19 @@ export const CreateServiceSchema = z.object({
     .trim(),
   categoryId: z.string().min(1, 'Category ID is required'),
   thumbnail: z.string().url('Thumbnail must be a valid URL').optional(),
-  requestTemplate: RequestTemplateSchema,
+  requestTemplate: z
+    .union([z.string(), RequestTemplateSchema])
+    .transform((val) => {
+      if (typeof val === 'string') {
+        try {
+          return JSON.parse(val);
+        } catch {
+          throw new Error('Invalid JSON in request template');
+        }
+      }
+      return val;
+    })
+    .pipe(RequestTemplateSchema),
 });
 
 /**
@@ -35,7 +47,20 @@ export const UpdateServiceSchema = z.object({
     .url('Thumbnail must be a valid URL')
     .nullable()
     .optional(),
-  requestTemplate: RequestTemplateSchema.optional(),
+  requestTemplate: z
+    .union([z.string(), RequestTemplateSchema])
+    .transform((val) => {
+      if (typeof val === 'string') {
+        try {
+          return JSON.parse(val);
+        } catch {
+          throw new Error('Invalid JSON in request template');
+        }
+      }
+      return val;
+    })
+    .pipe(RequestTemplateSchema)
+    .optional(),
 });
 
 /**

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, use } from 'react';
 import { Card } from '@/components/primitives/Card';
 import { Button } from '@/components/primitives/Button';
 import {
@@ -23,14 +23,14 @@ import { useRouter } from 'next/navigation';
  */
 
 interface RequestDetailPageProps {
-  params: {
+  params: Promise<{
     requestId: string;
-  };
+  }>;
 }
 
 export default function RequestDetailPage({ params }: RequestDetailPageProps) {
   const router = useRouter();
-  const { requestId } = params;
+  const { requestId } = use(params);
 
   // Mock data - will be replaced with API call
   const [request] = useState({

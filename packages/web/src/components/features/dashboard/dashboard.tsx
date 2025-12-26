@@ -220,8 +220,8 @@ function Dashboard({ children, showWelcome = false, userRole = 'admin' }: Dashbo
   // Determine header type and home label based on role
   const headerType = userRole === 'admin' ? 'admin' : 'user';
   const homeLabel = userRole === 'admin'
-    ? (t?.('dashboard') || 'Dashboard')
-    : (t?.('home') || 'Inicio');
+    ? (t?.('nav.dashboard') || 'Dashboard')
+    : (t?.('nav.home') || 'Inicio');
 
   return (
     <SidebarProvider defaultOpen={false}>

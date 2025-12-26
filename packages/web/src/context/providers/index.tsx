@@ -6,6 +6,7 @@ import { Translations } from '@/types/translations';
 import { GlobalThemeProvider } from '@/context/GlobalThemeProvider';
 import { ThemeErrorBoundaryClass } from './ThemeErrorBoundary';
 import { TooltipProvider } from '@/components/primitives/ui/tooltip';
+import { ServiceWorkerRegistration } from '@/components/features/ServiceWorkerRegistration';
 
 interface ProvidersProps {
   children: React.ReactNode;
@@ -34,6 +35,7 @@ export function Providers({
                 initialLocale={initialLocale}
                 initialTranslations={initialTranslations}
               >
+                <ServiceWorkerRegistration />
                 {children}
               </TranslationsProvider>
             </TooltipProvider>

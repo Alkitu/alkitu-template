@@ -91,6 +91,7 @@ model User {
   accounts                Account[]
   notifications           Notification[]
   notificationPreferences NotificationPreference?
+  pushSubscriptions       PushSubscription[]       // ALI-120: Web Push subscriptions
   billings                Billing[]
   groupIds                String[]                @db.ObjectId
   groups                  Group[]                 @relation(fields: [groupIds], references: [id])
@@ -143,19 +144,67 @@ model NotificationPreference {
   @@map("notification_preferences")
 }
 
-// Notification model
-model Notification {
+/// ALI-120: Push Subscription Model for Web Push Notifications
+model PushSubscription {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   userId    String   @db.ObjectId
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  message   String
-  type      String?  @default("info")
-  link      String?
-  read      Boolean  @default(false)
+
+  // Push subscription data
+  endpoint  String   @unique
+  p256dh    String   // Public key
+  auth      String   // Auth secret
+
+  // Device info (optional but useful)
+  userAgent String?
+  deviceType String? // 'mobile', 'desktop', 'tablet'
+
+  // Status
+  active    Boolean  @default(true)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([userId])
+  @@map("push_subscriptions")
+}
+
+/// ALI-120: Notification Types Enum
+enum NotificationType {
+  // Generic system notifications (existing)
+  INFO
+  WARNING
+  ERROR
+  SUCCESS
+  CHAT_NEW_CONVERSATION
+  CHAT_NEW_MESSAGE
+
+  // Request lifecycle notifications (ALI-120)
+  REQUEST_CREATED
+  REQUEST_ASSIGNED
+  REQUEST_STATUS_CHANGED
+  REQUEST_CANCELLATION_REQUESTED
+  REQUEST_CANCELLED
+  REQUEST_COMPLETED
+}
+
+/// ALI-120: Enhanced Notification Model with structured payload support
+model Notification {
+  id        String           @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String           @db.ObjectId
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  message   String
+  type      NotificationType @default(INFO) // ✅ Changed from String? to enum
+  link      String?          // Keep for backward compatibility
+  data      Json?            // ✅ NEW: Structured payload (requestId, status, context)
+  read      Boolean          @default(false)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  @@index([userId])
+  @@index([type])   // ✅ NEW: Index for filtering by type
+  @@index([read])   // ✅ NEW: Index for filtering by read status
+  @@map("notifications")
 }
 
 // Billing model

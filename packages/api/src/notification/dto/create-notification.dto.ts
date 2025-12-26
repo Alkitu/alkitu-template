@@ -8,15 +8,35 @@ import {
   IsUrl,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { NotificationType } from '@prisma/client'; // ALI-120: Import from Prisma
+// ALI-120: Define NotificationDataSchema locally to avoid import issues
+const RequestNotificationDataSchema = z.object({
+  requestId: z.string(),
+  serviceId: z.string().optional(),
+  serviceName: z.string().optional(),
+  clientId: z.string().optional(),
+  clientName: z.string().optional(),
+  employeeId: z.string().optional(),
+  employeeName: z.string().optional(),
+  previousStatus: z
+    .enum(['PENDING', 'ONGOING', 'COMPLETED', 'CANCELLED'])
+    .optional(),
+  newStatus: z.enum(['PENDING', 'ONGOING', 'COMPLETED', 'CANCELLED']).optional(),
+  cancellationReason: z.string().optional(),
+  completionNotes: z.string().optional(),
+});
 
-export enum NotificationType {
-  INFO = 'info',
-  WARNING = 'warning',
-  ERROR = 'error',
-  SUCCESS = 'success',
-  CHAT_NEW_CONVERSATION = 'chat_new_conversation',
-  CHAT_NEW_MESSAGE = 'chat_new_message',
-}
+const GenericNotificationDataSchema = z.object({
+  metadata: z.record(z.any()).optional(),
+});
+
+const NotificationDataSchema = z.union([
+  GenericNotificationDataSchema,
+  RequestNotificationDataSchema,
+]);
+
+// Re-export NotificationType for convenience
+export { NotificationType };
 
 export const CreateNotificationSchema = z.object({
   userId: z.string().min(1, 'User ID is required'),
@@ -24,25 +44,9 @@ export const CreateNotificationSchema = z.object({
     .string()
     .min(1, 'Message is required')
     .max(500, 'Message is too long'),
-  type: z
-    .enum(
-      [
-        NotificationType.INFO,
-        NotificationType.WARNING,
-        NotificationType.ERROR,
-        NotificationType.SUCCESS,
-        NotificationType.CHAT_NEW_CONVERSATION,
-        NotificationType.CHAT_NEW_MESSAGE,
-      ],
-      {
-        errorMap: () => ({
-          message:
-            'Type must be one of: info, warning, error, success, chat_new_conversation, chat_new_message',
-        }),
-      },
-    )
-    .default(NotificationType.INFO),
-  link: z.string().url('Link must be a valid URL').optional(),
+  type: z.nativeEnum(NotificationType).default(NotificationType.INFO), // ALI-120: Use nativeEnum
+  link: z.string().url('Link must be a valid URL').optional().or(z.literal('')),
+  data: NotificationDataSchema.optional(), // ALI-120: Add structured data field
 });
 
 export class CreateNotificationDto {
@@ -77,6 +81,18 @@ export class CreateNotificationDto {
   @IsOptional()
   @IsUrl({}, { message: 'Link must be a valid URL' })
   link?: string;
+
+  @ApiPropertyOptional({
+    description:
+      'Structured notification payload (requestId, status changes, context, etc.)',
+    example: {
+      requestId: '507f1f77bcf86cd799439011',
+      serviceName: 'Plumbing Repair',
+      clientName: 'John Doe',
+    },
+  })
+  @IsOptional()
+  data?: Record<string, any>; // ALI-120: Structured data payload
 }
 
 export class BulkMarkAsReadDto {

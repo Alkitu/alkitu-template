@@ -76,9 +76,9 @@ export const ServiceQuerySchema = z.object({
 });
 
 /**
- * Inferred types from schemas
+ * Inferred types from schemas (types exported from types/service.ts to avoid duplicates)
  */
-export type CreateServiceInput = z.infer<typeof CreateServiceSchema>;
-export type UpdateServiceInput = z.infer<typeof UpdateServiceSchema>;
+// export type CreateServiceInput = z.infer<typeof CreateServiceSchema>;
+// export type UpdateServiceInput = z.infer<typeof UpdateServiceSchema>;
 export type ServiceIdInput = z.infer<typeof ServiceIdSchema>;
 export type ServiceQueryInput = z.infer<typeof ServiceQuerySchema>;

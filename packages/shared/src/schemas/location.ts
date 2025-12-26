@@ -76,7 +76,7 @@ export const LocationIdSchema = z.object({
   id: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid location ID'),
 });
 
-// Type inference
-export type CreateLocationInput = z.infer<typeof CreateLocationSchema>;
-export type UpdateLocationInput = z.infer<typeof UpdateLocationSchema>;
+// Type inference (types exported from types/location.ts to avoid duplicates)
+// export type CreateLocationInput = z.infer<typeof CreateLocationSchema>;
+// export type UpdateLocationInput = z.infer<typeof UpdateLocationSchema>;
 export type LocationIdInput = z.infer<typeof LocationIdSchema>;

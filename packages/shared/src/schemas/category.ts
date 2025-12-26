@@ -33,8 +33,8 @@ export const UpdateCategorySchema = z.object({
 export const CategoryIdSchema = z.string().min(1, 'Category ID is required');
 
 /**
- * Inferred types from schemas
+ * Inferred types from schemas (types exported from types/category.ts to avoid duplicates)
  */
-export type CreateCategoryInput = z.infer<typeof CreateCategorySchema>;
-export type UpdateCategoryInput = z.infer<typeof UpdateCategorySchema>;
+// export type CreateCategoryInput = z.infer<typeof CreateCategorySchema>;
+// export type UpdateCategoryInput = z.infer<typeof UpdateCategorySchema>;
 export type CategoryIdInput = z.infer<typeof CategoryIdSchema>;

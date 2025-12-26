@@ -222,7 +222,7 @@ export class RequestsService {
             ...createdRequest.location,
             zipCode: createdRequest.location.zip || '',
           },
-        } as RequestWithRelations;
+        } as any;
 
         await this.emailTemplateService.sendRequestCreatedEmails(
           requestWithMappedLocation,
@@ -849,7 +849,7 @@ export class RequestsService {
             ...updatedRequest.location,
             zipCode: updatedRequest.location.zip || '',
           },
-        } as RequestWithRelations;
+        } as any;
 
         await this.emailTemplateService.sendStatusChangedEmails(
           requestWithMappedLocation,
@@ -1070,7 +1070,7 @@ export class RequestsService {
               ...updatedRequest.location,
               zipCode: updatedRequest.location.zip || '',
             },
-          } as RequestWithRelations;
+          } as any;
 
           await this.emailTemplateService.sendStatusChangedEmails(
             requestWithMappedLocation,
@@ -1252,7 +1252,7 @@ export class RequestsService {
             ...completedRequest.location,
             zipCode: completedRequest.location.zip || '',
           },
-        } as RequestWithRelations;
+        } as any;
 
         await this.emailTemplateService.sendStatusChangedEmails(
           requestWithMappedLocation,

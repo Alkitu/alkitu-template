@@ -9,10 +9,11 @@ const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const cookieStore = cookies();
+    const { id } = await params;
+    const cookieStore = await cookies();
     const token = cookieStore.get('auth-token')?.value;
 
     if (!token) {
@@ -21,7 +22,7 @@ export async function POST(
 
     const body = await request.json();
 
-    const response = await fetch(`${BACKEND_URL}/requests/${params.id}/assign`, {
+    const response = await fetch(`${BACKEND_URL}/requests/${id}/assign`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -41,7 +42,8 @@ export async function POST(
     const data = await response.json();
     return NextResponse.json(data);
   } catch (error) {
-    console.error(`POST /api/requests/${params.id}/assign error:`, error);
+    const { id } = await params;
+    console.error(`POST /api/requests/${id}/assign error:`, error);
     return NextResponse.json(
       { message: 'Internal server error' },
       { status: 500 },

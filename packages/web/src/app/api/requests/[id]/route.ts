@@ -9,9 +9,10 @@ const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id } = await params;
     const cookieStore = await cookies();
     const token = cookieStore.get('auth-token')?.value;
 
@@ -19,7 +20,7 @@ export async function GET(
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    const response = await fetch(`${BACKEND_URL}/requests/${params.id}`, {
+    const response = await fetch(`${BACKEND_URL}/requests/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
@@ -37,7 +38,8 @@ export async function GET(
     const data = await response.json();
     return NextResponse.json(data);
   } catch (error) {
-    console.error(`GET /api/requests/${params.id} error:`, error);
+    const { id } = await params;
+    console.error(`GET /api/requests/${id} error:`, error);
     return NextResponse.json(
       { message: 'Internal server error' },
       { status: 500 },
@@ -51,9 +53,10 @@ export async function GET(
  */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id } = await params;
     const cookieStore = await cookies();
     const token = cookieStore.get('auth-token')?.value;
 
@@ -63,7 +66,7 @@ export async function PATCH(
 
     const body = await request.json();
 
-    const response = await fetch(`${BACKEND_URL}/requests/${params.id}`, {
+    const response = await fetch(`${BACKEND_URL}/requests/${id}`, {
       method: 'PATCH',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -83,7 +86,8 @@ export async function PATCH(
     const data = await response.json();
     return NextResponse.json(data);
   } catch (error) {
-    console.error(`PATCH /api/requests/${params.id} error:`, error);
+    const { id } = await params;
+    console.error(`PATCH /api/requests/${id} error:`, error);
     return NextResponse.json(
       { message: 'Internal server error' },
       { status: 500 },
@@ -97,9 +101,10 @@ export async function PATCH(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id } = await params;
     const cookieStore = await cookies();
     const token = cookieStore.get('auth-token')?.value;
 
@@ -107,7 +112,7 @@ export async function DELETE(
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    const response = await fetch(`${BACKEND_URL}/requests/${params.id}`, {
+    const response = await fetch(`${BACKEND_URL}/requests/${id}`, {
       method: 'DELETE',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -125,7 +130,8 @@ export async function DELETE(
 
     return NextResponse.json({ success: true }, { status: 204 });
   } catch (error) {
-    console.error(`DELETE /api/requests/${params.id} error:`, error);
+    const { id } = await params;
+    console.error(`DELETE /api/requests/${id} error:`, error);
     return NextResponse.json(
       { message: 'Internal server error' },
       { status: 500 },

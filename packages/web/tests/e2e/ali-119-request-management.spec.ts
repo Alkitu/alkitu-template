@@ -544,10 +544,18 @@ test.describe('ALI-119: ADMIN Role - Full Management', () => {
       await page.waitForURL(/\/requests\/[a-f0-9]{24}/, { timeout: 5000 });
       await page.waitForLoadState('networkidle');
 
+      // Wait for request details to load (check for service name or any content)
+      await page.waitForTimeout(2000);
+
       // Verify ADMIN has access to action buttons (assign, cancel, complete, delete)
-      // At least one action button should be visible
-      const actionButtons = page.getByRole('button', { name: /assign|cancel|complete|delete/i });
-      const buttonCount = await actionButtons.count();
+      // Check for specific button texts that exist in RequestDetailOrganism
+      const assignButton = page.getByRole('button', { name: /assign request/i });
+      const completeButton = page.getByRole('button', { name: /mark as completed|complete/i });
+      const cancelButton = page.getByRole('button', { name: /^cancel$/i });
+
+      const buttonCount = (await assignButton.count()) +
+                         (await completeButton.count()) +
+                         (await cancelButton.count());
 
       expect(buttonCount).toBeGreaterThan(0);
       console.log(`ADMIN has access to ${buttonCount} action buttons`);

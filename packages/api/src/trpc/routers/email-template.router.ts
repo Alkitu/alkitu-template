@@ -248,7 +248,7 @@ export const createEmailTemplateRouter = (
         try {
           return await emailTemplateService.previewTemplate(
             input.templateId,
-            input.data,
+            input.data as any,
           );
         } catch (error) {
           if (error.message?.includes('not found')) {

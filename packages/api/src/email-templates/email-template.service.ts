@@ -1,6 +1,5 @@
-import { Injectable, Logger, NotFoundException, ConflictException, BadRequestException } from '@nestjs/common';
-import { PrismaClient, EmailTemplate, TemplateTrigger, RequestStatus, Request, User, Service, WorkLocation } from '@prisma/client';
-import prisma from '../../prisma/database';
+import { Injectable, Logger, NotFoundException, ConflictException, BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import { EmailTemplate, TemplateTrigger, RequestStatus, Request, User, Service, WorkLocation } from '@prisma/client';
 import {
   CreateEmailTemplateInput,
   UpdateEmailTemplateInput,
@@ -8,6 +7,7 @@ import {
   AVAILABLE_PLACEHOLDERS
 } from '@alkitu/shared';
 import { EmailService } from '../email/email.service';
+import { PrismaService } from '../prisma.service';
 
 // Type for Request with all necessary relations
 export type RequestWithRelations = Request & {
@@ -21,11 +21,11 @@ export type RequestWithRelations = Request & {
 @Injectable()
 export class EmailTemplateService {
   private readonly logger = new Logger(EmailTemplateService.name);
-  private readonly prisma: PrismaClient;
 
-  constructor(private readonly emailService: EmailService) {
-    this.prisma = prisma;
-  }
+  constructor(
+    private readonly emailService: EmailService,
+    private readonly prisma: PrismaService,
+  ) {}
 
   /**
    * Initialize default email templates if none exist
@@ -92,7 +92,7 @@ export class EmailTemplateService {
         throw error;
       }
       this.logger.error(`Failed to create email template: ${error.message}`, error.stack);
-      throw new Error(`Failed to create email template: ${error.message}`);
+      throw new InternalServerErrorException(`Failed to create email template: ${error.message}`);
     }
   }
 
@@ -149,7 +149,7 @@ export class EmailTemplateService {
       });
 
       if (!template) {
-        throw new NotFoundException(`Email template with ID "${id}" not found`);
+        throw new NotFoundException(`Email template with id "${id}" not found`);
       }
 
       return template;
@@ -202,29 +202,30 @@ export class EmailTemplateService {
         throw error;
       }
       this.logger.error(`Failed to update email template ${id}: ${error.message}`, error.stack);
-      throw new Error(`Failed to update email template: ${error.message}`);
+      throw new InternalServerErrorException(`Failed to update email template: ${error.message}`);
     }
   }
 
   /**
    * Delete an email template
    */
-  async delete(id: string): Promise<void> {
+  async delete(id: string): Promise<EmailTemplate> {
     try {
       // Verify template exists
       await this.findOne(id);
 
-      await this.prisma.emailTemplate.delete({
+      const deleted = await this.prisma.emailTemplate.delete({
         where: { id },
       });
 
       this.logger.log(`Deleted email template: ${id}`);
+      return deleted;
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;
       }
       this.logger.error(`Failed to delete email template ${id}: ${error.message}`, error.stack);
-      throw new Error(`Failed to delete email template: ${error.message}`);
+      throw new InternalServerErrorException(`Failed to delete email template: ${error.message}`);
     }
   }
 
@@ -616,11 +617,26 @@ Equipo Alkitu`,
 
       const placeholderData = this.buildPlaceholderData(request);
 
-      // Send emails in parallel
+      // Send emails in parallel, determining recipient based on template name
       await Promise.all(
-        templates.map((template) =>
-          this.sendTemplatedEmail(template, request.user.email, placeholderData),
-        ),
+        templates.map((template) => {
+          // Determine recipient based on template naming convention
+          let recipientEmail: string | null = null;
+
+          if (template.name.endsWith('_client')) {
+            recipientEmail = request.user.email;
+          } else if (template.name.endsWith('_employee')) {
+            recipientEmail = request.assignedTo?.email || null;
+          } else {
+            // Default to client if no suffix matches
+            recipientEmail = request.user.email;
+          }
+
+          // Only send if we have a valid recipient
+          if (recipientEmail) {
+            return this.sendTemplatedEmail(template, recipientEmail, placeholderData);
+          }
+        }),
       );
 
       this.logger.log(

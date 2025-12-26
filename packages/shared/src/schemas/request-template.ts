@@ -87,8 +87,9 @@ export const RequestTemplateSchema = z.object({
 
 /**
  * Template responses schema (dynamic based on template)
+ * Commented out to avoid duplicate export - use from schemas/request.ts instead
  */
-export const TemplateResponsesSchema = z.record(z.any());
+// export const TemplateResponsesSchema = z.record(z.any());
 
 /**
  * Inferred types from schemas
@@ -97,4 +98,4 @@ export type FieldOptionInput = z.infer<typeof FieldOptionSchema>;
 export type FieldValidationInput = z.infer<typeof FieldValidationSchema>;
 export type RequestTemplateFieldInput = z.infer<typeof RequestTemplateFieldSchema>;
 export type RequestTemplateInput = z.infer<typeof RequestTemplateSchema>;
-export type TemplateResponsesInput = z.infer<typeof TemplateResponsesSchema>;
+// TemplateResponsesInput inferred from request.ts TemplateResponsesSchema

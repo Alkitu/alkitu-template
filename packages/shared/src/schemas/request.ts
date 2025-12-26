@@ -137,13 +137,13 @@ export const StatusTransitionSchema = z.object({
 });
 
 /**
- * Inferred types from schemas
+ * Inferred types from schemas (types exported from types/request.ts to avoid duplicates)
  */
-export type CreateRequestInput = z.infer<typeof CreateRequestSchema>;
-export type UpdateRequestInput = z.infer<typeof UpdateRequestSchema>;
-export type AssignRequestInput = z.infer<typeof AssignRequestSchema>;
-export type RequestCancellationInput = z.infer<typeof RequestCancellationSchema>;
-export type CompleteRequestInput = z.infer<typeof CompleteRequestSchema>;
+// export type CreateRequestInput = z.infer<typeof CreateRequestSchema>;
+// export type UpdateRequestInput = z.infer<typeof UpdateRequestSchema>;
+// export type AssignRequestInput = z.infer<typeof AssignRequestSchema>;
+// export type RequestCancellationInput = z.infer<typeof RequestCancellationSchema>;
+// export type CompleteRequestInput = z.infer<typeof CompleteRequestSchema>;
 export type RequestIdInput = z.infer<typeof RequestIdSchema>;
 export type RequestQueryInput = z.infer<typeof RequestQuerySchema>;
 export type StatusTransitionInput = z.infer<typeof StatusTransitionSchema>;

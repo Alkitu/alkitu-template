@@ -127,6 +127,10 @@ export const PROTECTED_ROUTES: ProtectedRoute[] = [
     roles: [UserRole.ADMIN],
   },
   {
+    path: '/admin/email-templates',
+    roles: [UserRole.ADMIN],
+  },
+  {
     path: '/admin/dashboard',
     roles: [UserRole.ADMIN],
   },

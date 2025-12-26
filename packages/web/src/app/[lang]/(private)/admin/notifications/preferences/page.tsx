@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useParams } from 'next/navigation'; // Added
+import { AdminPageHeader } from '@/components/molecules/admin-page-header'; // Added
 import { trpc } from '@/lib/trpc';
 import {
   Card,
@@ -80,6 +82,7 @@ type PreferencesFormData = z.infer<typeof preferencesSchema>;
 
 export default function NotificationPreferencesPage() {
   const t = useTranslations('notifications');
+  const { lang } = useParams(); // Added
 
   // Get notification types with translations
   const getNotificationTypes = () => [
@@ -226,29 +229,26 @@ export default function NotificationPreferencesPage() {
   const notificationTypes = getNotificationTypes();
 
   return (
-    <div className="p-6 max-w-4xl mx-auto space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold flex items-center gap-2">
-            <Bell className="w-8 h-8" />
-            {t('preferences.title')}
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            {t('preferences.subtitle')}
-          </p>
-        </div>
-        <Button
-          variant="outline"
-          onClick={resetToDefaults}
-          disabled={deletePreferences.isPending}
-          className="flex items-center gap-2"
-        >
-          <RotateCcw className="w-4 h-4" />
-          {deletePreferences.isPending
-            ? t('preferences.resetting')
-            : t('preferences.resetToDefaults')}
-        </Button>
-      </div>
+    <div className="p-6 space-y-6">
+      <AdminPageHeader
+        title={t('preferences.title')}
+        description={t('preferences.subtitle')}
+        backHref={`/${lang}/admin/notifications`}
+        backLabel="Back to Notifications"
+        actions={
+          <Button
+            variant="outline"
+            onClick={resetToDefaults}
+            disabled={deletePreferences.isPending}
+            className="flex items-center gap-2"
+          >
+            <RotateCcw className="w-4 h-4" />
+            {deletePreferences.isPending
+              ? t('preferences.resetting')
+              : t('preferences.resetToDefaults')}
+          </Button>
+        }
+      />
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">

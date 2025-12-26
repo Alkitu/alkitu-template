@@ -11,6 +11,7 @@ import { AssignmentSelect } from '@/components/features/chat/AssignmentSelect';
 import { StatusSelect } from '@/components/features/chat/StatusSelect';
 import { InternalNotes } from '@/components/features/chat/InternalNotes';
 import { Typography } from '@/components/atoms/typography';
+import { AdminPageHeader } from '@/components/molecules/admin-page-header';
 
 export default function ConversationDetailPage() {
   const params = useParams();
@@ -100,24 +101,25 @@ export default function ConversationDetailPage() {
   if (!conversation) return <div>Conversation not found.</div>;
 
   return (
-    <div className="container mx-auto py-10">
-      <Typography
-        variant="h1"
-        className="text-3xl font-bold mb-6"
-        migrated={true}
-      >
-        Conversation with {conversationId}
-      </Typography>
-      <div className="flex space-x-4 mb-4">
-        <AssignmentSelect
-          currentAssignment={conversation.assignedToId}
-          onAssign={assignMutation.mutate}
-        />
-        <StatusSelect
-          currentStatus={conversation.status as any}
-          onStatusChange={updateStatusMutation.mutate}
-        />
-      </div>
+    <div className="p-6 space-y-6">
+      <AdminPageHeader
+        title={`Conversation with ${conversationId}`}
+        description="Manage support conversation"
+        backHref={`/admin/chat`}
+        backLabel="Back to Chat"
+        actions={
+          <>
+            <AssignmentSelect
+              currentAssignment={conversation.assignedToId}
+              onAssign={assignMutation.mutate}
+            />
+            <StatusSelect
+              currentStatus={conversation.status as any}
+              onStatusChange={updateStatusMutation.mutate}
+            />
+          </>
+        }
+      />
       <ConversationDetail messages={messages} />
       <ReplyForm
         onSend={replyMutation.mutate}

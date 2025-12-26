@@ -5,6 +5,7 @@ import { ConversationList } from '@/components/features/chat/ConversationList';
 import { ConversationFilters } from '@/components/features/chat/ConversationFilters';
 import { Typography } from '@/components/atoms/typography';
 import { useState } from 'react';
+import { AdminPageHeader } from '@/components/molecules/admin-page-header';
 
 export default function ChatDashboardPage() {
   const [filters, setFilters] = useState({});
@@ -32,10 +33,11 @@ export default function ChatDashboardPage() {
   if (helloError) return <div>tRPC Error: {helloError.message}</div>;
 
   return (
-    <div className="space-y-6">
-      <Typography variant="h1" className="text-3xl font-bold">
-        Chat Conversations
-      </Typography>
+    <div className="p-6 space-y-6">
+      <AdminPageHeader
+        title="Chat Conversations"
+        description="Monitor and manage support conversations"
+      />
 
       {/* Debug info */}
       {helloData && (

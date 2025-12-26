@@ -46,6 +46,7 @@ import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { UserRole } from '@alkitu/shared';
 import { toast } from 'sonner';
+import { AdminPageHeader } from '@/components/molecules/admin-page-header';
 
 interface User {
   id: string;
@@ -56,6 +57,7 @@ interface User {
   role: string;
   createdAt: string;
   lastLogin: string | null;
+  address?: string | null; // ALI-122: CLIENT-specific field
 }
 
 interface FilteredUsersResponse {
@@ -82,6 +84,7 @@ interface UserFilters {
 const UsersPage = () => {
   const { lang } = useParams();
   const router = useRouter();
+  const [activeTab, setActiveTab] = useState<'team' | 'clients'>('team'); // ALI-122: Team & Clients tabs
   const [filters, setFilters] = useState<UserFilters>({
     search: '',
     role: '',
@@ -105,7 +108,7 @@ const UsersPage = () => {
     return () => clearTimeout(timer);
   }, [filters]);
 
-  // Build query parameters, excluding empty values
+  // ALI-122: Build query parameters based on active tab
   const queryParams = useMemo(() => {
     const params: any = {
       page: debouncedFilters.page,
@@ -114,9 +117,21 @@ const UsersPage = () => {
       sortOrder: debouncedFilters.sortOrder,
     };
     if (debouncedFilters.search) params.search = debouncedFilters.search;
-    if (debouncedFilters.role) params.role = debouncedFilters.role;
+
+    // ALI-122: Filter by tab
+    if (activeTab === 'team') {
+      // Team tab: Show ADMIN and EMPLOYEE only
+      params.role = debouncedFilters.role && debouncedFilters.role !== 'ALL'
+        ? debouncedFilters.role
+        : undefined; // Let backend handle team filter
+      params.teamOnly = true; // Custom filter for ADMIN + EMPLOYEE
+    } else {
+      // Clients tab: Show CLIENT only
+      params.role = 'CLIENT';
+    }
+
     return params;
-  }, [debouncedFilters]);
+  }, [debouncedFilters, activeTab]);
 
   const {
     data: usersData,
@@ -140,7 +155,7 @@ const UsersPage = () => {
 
   const handleAddUser = () => {
     // Use Next.js router for proper navigation
-    router.push(`/${lang}/dashboard/users/create`);
+    router.push(`/${lang}/admin/users/create`);
   };
 
   const handleUserSelect = (userId: string, checked: boolean) => {
@@ -289,34 +304,75 @@ const UsersPage = () => {
   const users = usersData?.users || [];
   const pagination = usersData?.pagination;
 
+  // ALI-122: Check if current tab is read-only
+  const isReadOnly = activeTab === 'clients';
+
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>User Management</CardTitle>
-              <CardDescription>
-                Manage your application users. Total: {pagination?.total || 0}{' '}
-                users
-              </CardDescription>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                onClick={() => setShowFilters(!showFilters)}
-              >
-                <Filter className="h-4 w-4 mr-2" />
-                Filters
-              </Button>
+    <div className="space-y-6 p-6">
+      <AdminPageHeader
+        title="User Management"
+        description={
+            <>
+              {activeTab === 'team'
+                ? 'Manage team members (Admins & Employees). Total: '
+                : 'View clients. Total: '}
+              {pagination?.total || 0} users
+            </>
+        }
+        actions={
+          <>
+            <Button
+              variant="outline"
+              onClick={() => setShowFilters(!showFilters)}
+            >
+              <Filter className="h-4 w-4 mr-2" />
+              Filters
+            </Button>
+            {/* ALI-122: Only show Add User button in Team tab */}
+            {activeTab === 'team' && (
               <Button onClick={handleAddUser}>
                 <Plus className="h-4 w-4 mr-2" />
                 Add User
               </Button>
-            </div>
+            )}
+          </>
+        }
+      />
+
+      <Card>
+        {/* ALI-122: Team & Clients Tabs */}
+        <CardContent className="pt-6">
+          <div className="flex gap-4">
+            <button
+              onClick={() => {
+                setActiveTab('team');
+                setFilters(prev => ({ ...prev, page: 1 }));
+                setSelectedUsers([]);
+              }}
+              className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                activeTab === 'team'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+              }`}
+            >
+              Team (Admins & Employees)
+            </button>
+            <button
+              onClick={() => {
+                setActiveTab('clients');
+                setFilters(prev => ({ ...prev, page: 1 }));
+                setSelectedUsers([]);
+              }}
+              className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                activeTab === 'clients'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+              }`}
+            >
+              Clients
+            </button>
           </div>
-        </CardHeader>
+        </CardContent>
 
         {/* Filters */}
         {showFilters && (
@@ -331,21 +387,24 @@ const UsersPage = () => {
                   className="pl-10"
                 />
               </div>
-              <Select
-                value={filters.role}
-                onValueChange={(value) => handleFilterChange('role', value)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Filter by role" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">All Roles</SelectItem>
-                  <SelectItem value="ADMIN">Admin</SelectItem>
-                  <SelectItem value="EMPLOYEE">Employee</SelectItem>
-                  <SelectItem value="CLIENT">Client</SelectItem>
-                  <SelectItem value="LEAD">Lead</SelectItem>
-                </SelectContent>
-              </Select>
+              {/* ALI-122: Hide role filter in Clients tab (role is always CLIENT) */}
+              {activeTab === 'team' && (
+                <Select
+                  value={filters.role}
+                  onValueChange={(value) => handleFilterChange('role', value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Filter by role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ALL">All Roles</SelectItem>
+                    <SelectItem value="ADMIN">Admin</SelectItem>
+                    <SelectItem value="EMPLOYEE">Employee</SelectItem>
+                    <SelectItem value="CLIENT">Client</SelectItem>
+                    <SelectItem value="LEAD">Lead</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
               <Select
                 value={filters.sortBy}
                 onValueChange={(value) => handleFilterChange('sortBy', value)}
@@ -380,7 +439,8 @@ const UsersPage = () => {
       </Card>
 
       {/* Bulk Actions */}
-      {selectedUsers.length > 0 && (
+      {/* ALI-122: Hide bulk actions in Clients tab (read-only) */}
+      {selectedUsers.length > 0 && !isReadOnly && (
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
@@ -427,49 +487,63 @@ const UsersPage = () => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-12">
-                  <Checkbox
-                    checked={
-                      users.length > 0 && selectedUsers.length === users.length
-                    }
-                    onCheckedChange={handleSelectAll}
-                  />
-                </TableHead>
+                {/* ALI-122: Disable checkboxes in Clients tab (read-only) */}
+                {!isReadOnly && (
+                  <TableHead className="w-12">
+                    <Checkbox
+                      checked={
+                        users.length > 0 && selectedUsers.length === users.length
+                      }
+                      onCheckedChange={handleSelectAll}
+                    />
+                  </TableHead>
+                )}
                 <TableHead>Email</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Role</TableHead>
+                {/* ALI-122: Show address column in Clients tab */}
+                {activeTab === 'clients' && <TableHead>Address</TableHead>}
                 <TableHead>Created At</TableHead>
                 <TableHead>Last Login</TableHead>
-                <TableHead className="w-12"></TableHead>
+                {/* ALI-122: Hide actions column in Clients tab (read-only) */}
+                {!isReadOnly && <TableHead className="w-12"></TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
-              {users.map((user: User) => (
+              {users.map((user) => (
                 <TableRow key={user.id}>
-                  <TableCell>
-                    <Checkbox
-                      checked={selectedUsers.includes(user.id)}
-                      onCheckedChange={(checked) =>
-                        handleUserSelect(user.id, checked as boolean)
-                      }
-                    />
-                  </TableCell>
+                  {/* ALI-122: Hide checkboxes in Clients tab (read-only) */}
+                  {!isReadOnly && (
+                    <TableCell>
+                      <Checkbox
+                        checked={selectedUsers.includes(user.id)}
+                        onCheckedChange={(checked) =>
+                          handleUserSelect(user.id, checked as boolean)
+                        }
+                      />
+                    </TableCell>
+                  )}
                   <TableCell>
                     <Link
-                      href={`/${lang}/dashboard/users/${encodeURIComponent(user.email)}`}
+                      href={`/${lang}/admin/users/${encodeURIComponent(user.email)}`}
                       className="text-blue-600 hover:underline"
                     >
                       {user.email}
                     </Link>
                   </TableCell>
                   <TableCell>
-                    {user.name || ''} {user.lastName || ''}
+                    {/* Handle potential field name differences from API */}
+                    {(user as any).name || (user as any).firstname || ''} {(user as any).lastName || (user as any).lastname || ''}
                   </TableCell>
                   <TableCell>
                     <Badge variant={getRoleBadgeVariant(user.role)}>
                       {user.role}
                     </Badge>
                   </TableCell>
+                  {/* ALI-122: Show address column in Clients tab */}
+                  {activeTab === 'clients' && (
+                    <TableCell>{user.address || 'N/A'}</TableCell>
+                  )}
                   <TableCell>
                     {new Date(user.createdAt).toLocaleDateString()}
                   </TableCell>
@@ -478,49 +552,52 @@ const UsersPage = () => {
                       ? new Date(user.lastLogin).toLocaleDateString()
                       : 'Never'}
                   </TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem asChild>
-                          <Link
-                            href={`/${lang}/dashboard/users/${encodeURIComponent(user.email)}`}
+                  {/* ALI-122: Hide actions dropdown in Clients tab (read-only) */}
+                  {!isReadOnly && (
+                    <TableCell>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem asChild>
+                            <Link
+                              href={`/${lang}/admin/users/${encodeURIComponent(user.email)}`}
+                            >
+                              Edit User
+                            </Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() =>
+                              handleUserAction('resetPassword', user.id)
+                            }
                           >
-                            Edit User
-                          </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() =>
-                            handleUserAction('resetPassword', user.id)
-                          }
-                        >
-                          Reset Password
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => handleUserAction('activate', user.id)}
-                        >
-                          Activate User
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() =>
-                            handleUserAction('deactivate', user.id)
-                          }
-                        >
-                          Deactivate User
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          className="text-red-600"
-                          onClick={() => handleUserAction('delete', user.id)}
-                        >
-                          Delete User
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
+                            Reset Password
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleUserAction('activate', user.id)}
+                          >
+                            Activate User
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() =>
+                              handleUserAction('deactivate', user.id)
+                            }
+                          >
+                            Deactivate User
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            className="text-red-600"
+                            onClick={() => handleUserAction('delete', user.id)}
+                          >
+                            Delete User
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  )}
                 </TableRow>
               ))}
             </TableBody>

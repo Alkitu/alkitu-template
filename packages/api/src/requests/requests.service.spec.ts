@@ -126,6 +126,16 @@ describe('RequestsService (ALI-119)', () => {
 
     const mockNotificationService = {
       createNotification: jest.fn().mockResolvedValue({ id: 'notification-id' }),
+      sendMultiChannelNotification: jest.fn().mockImplementation(async (userId, notification) => {
+        // Simulate the real implementation: calls createNotification internally
+        return mockNotificationService.createNotification({
+          userId,
+          type: notification.type,
+          message: notification.message,
+          data: notification.data,
+          link: notification.link,
+        });
+      }),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -169,6 +179,7 @@ describe('RequestsService (ALI-119)', () => {
           templateResponses: { issue: 'Leaking pipe' },
           note: undefined,
           status: RequestStatus.PENDING,
+          deletedAt: null,
           createdBy: mockUserId,
           updatedBy: mockUserId,
         },
@@ -1200,6 +1211,16 @@ describe('RequestsService (ALI-119)', () => {
     beforeEach(() => {
       mockNotificationService = {
         createNotification: jest.fn().mockResolvedValue({ id: 'notification-id' }),
+        sendMultiChannelNotification: jest.fn().mockImplementation(async (userId, notification) => {
+          // Simulate the real implementation: calls createNotification internally
+          return mockNotificationService.createNotification({
+            userId,
+            type: notification.type,
+            message: notification.message,
+            data: notification.data,
+            link: notification.link,
+          });
+        }),
       };
       (service as any).notificationService = mockNotificationService;
       (service as any).getAdminUserIds = jest
@@ -1284,6 +1305,7 @@ describe('RequestsService (ALI-119)', () => {
 
         expect(loggerSpy).toHaveBeenCalledWith(
           expect.stringContaining('Failed to send request creation notifications'),
+          expect.any(Object),
         );
       });
     });

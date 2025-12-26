@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import { usePathname } from 'next/navigation';
+import { trpc } from '@/lib/trpc';
 import {
   SidebarInset,
   SidebarProvider,
@@ -58,6 +59,18 @@ const getTransformedData = (t: any, pathname: string, userRole: 'admin' | 'user'
         },
 
         // GESTIÓN SECTION
+        {
+          title: t?.('nav.requests') || 'Solicitudes',
+          url: '/admin/requests',
+          icon: FileText,
+          section: 'management',
+          items: [
+            {
+              title: t?.('nav.requestList') || 'Lista de Solicitudes',
+              url: '/admin/requests',
+            },
+          ],
+        },
         {
           title: t?.('nav.users') || 'Usuarios',
           url: '/admin/users',
@@ -131,7 +144,7 @@ const getTransformedData = (t: any, pathname: string, userRole: 'admin' | 'user'
 
         // CONFIGURACIÓN SECTION
         {
-          title: t?.('nav.settings') || 'Configuración',
+          title: t?.('nav.settings') || 'Ajustes',
           url: '/admin/settings',
           icon: Settings,
           section: 'settings',
@@ -215,7 +228,22 @@ interface DashboardProps {
 function Dashboard({ children, showWelcome = false, userRole = 'admin' }: DashboardProps) {
   const t = useTranslations('dashboard');
   const pathname = usePathname();
+  const { data: sessionUser } = trpc.user.me.useQuery();
+  const { data: fullUser } = trpc.user.getUserByEmail.useQuery(
+    { email: sessionUser?.email || '' },
+    { enabled: !!sessionUser?.email }
+  );
+  
   const transformedData = getTransformedData(t, pathname, userRole);
+
+  const currentUser = fullUser || sessionUser;
+
+  const user = currentUser ? {
+    id: currentUser.id || 'user',
+    name: (currentUser as any).name || `${(currentUser as any).firstname || ''} ${(currentUser as any).lastname || ''}`.trim() || (currentUser as any).role || 'User',
+    email: currentUser.email || '',
+    avatar: (currentUser as any).avatar || '/avatars/default.jpg',
+  } : transformedData.user;
 
   // Determine header type and home label based on role
   const headerType = userRole === 'admin' ? 'admin' : 'user';
@@ -225,7 +253,7 @@ function Dashboard({ children, showWelcome = false, userRole = 'admin' }: Dashbo
 
   return (
     <SidebarProvider defaultOpen={false}>
-      <AppSidebar {...transformedData} />
+      <AppSidebar {...transformedData} user={user} />
 
       <SidebarInset className="flex flex-col min-h-screen overflow-hidden">
         <div className="flex sticky top-0 bg-background h-16 shrink-0 items-center gap-2 border-b px-4 w-full">
@@ -236,6 +264,7 @@ function Dashboard({ children, showWelcome = false, userRole = 'admin' }: Dashbo
               homeLabel={homeLabel}
               dropdownSliceEnd={-1}
               separator
+              userId={user?.id}
             />
           </div>
         </div>

@@ -346,8 +346,9 @@ test.describe('ALI-119: CLIENT Role - Create and Manage Requests', () => {
     const pendingRequest = page.locator('[class*="border"]').filter({ hasText: /pending/i }).first();
 
     if (await pendingRequest.isVisible({ timeout: 2000 }).catch(() => false)) {
-      // Click on request to view details
-      await pendingRequest.click();
+      // Click "Ver Detalles" button to view details
+      const viewDetailsButton = pendingRequest.getByRole('button', { name: /ver detalles|view details/i });
+      await viewDetailsButton.click();
       await page.waitForURL(/\/requests\/[a-f0-9]{24}/, { timeout: 5000 });
       await page.waitForLoadState('networkidle');
 
@@ -533,11 +534,13 @@ test.describe('ALI-119: ADMIN Role - Full Management', () => {
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
 
-    // Find any request
-    const anyRequest = page.locator('[class*="border"]').filter({ hasText: /pending|ongoing|completed/i }).first();
+    // Find any PENDING or ONGOING request (not COMPLETED - they have no action buttons)
+    const anyRequest = page.locator('[class*="border"]').filter({ hasText: /pending|ongoing/i }).first();
 
     if (await anyRequest.isVisible({ timeout: 2000 }).catch(() => false)) {
-      await anyRequest.click();
+      // Click "Ver Detalles" button to view details
+      const viewDetailsButton = anyRequest.getByRole('button', { name: /ver detalles|view details/i });
+      await viewDetailsButton.click();
       await page.waitForURL(/\/requests\/[a-f0-9]{24}/, { timeout: 5000 });
       await page.waitForLoadState('networkidle');
 

@@ -1,4 +1,4 @@
-import { RequestDetail } from '@alkitu/shared';
+import { RequestDetail, UserRole } from '@alkitu/shared';
 
 /**
  * Props for RequestDetailOrganism component
@@ -12,7 +12,7 @@ export interface RequestDetailOrganismProps {
   /**
    * User role (determines which actions are shown)
    */
-  userRole: 'CLIENT' | 'EMPLOYEE' | 'ADMIN';
+  userRole: UserRole;
 
   /**
    * Additional CSS classes

@@ -21,9 +21,10 @@ import {
 } from './validators/status-transition.validator';
 import { NotificationService } from '../notification/notification.service';
 import { RequestNotificationBuilder } from './builders/request-notification.builder';
+import { EmailTemplateService, RequestWithRelations } from '../email-templates/email-template.service';
 
 /**
- * Service for managing service requests lifecycle (ALI-119 + ALI-120)
+ * Service for managing service requests lifecycle (ALI-119 + ALI-120 + ALI-121)
  * @class RequestsService
  */
 @Injectable()
@@ -33,6 +34,7 @@ export class RequestsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly notificationService: NotificationService,
+    private readonly emailTemplateService: EmailTemplateService,
   ) {}
 
   /**
@@ -209,6 +211,35 @@ export class RequestsService {
           },
         );
         // Don't throw - request creation succeeded, notification is best-effort
+      }
+
+      // ALI-121: Send email templates for request creation
+      try {
+        // Map location.zip to location.zipCode for email templates
+        const requestWithMappedLocation = {
+          ...createdRequest,
+          location: {
+            ...createdRequest.location,
+            zipCode: createdRequest.location.zip || '',
+          },
+        } as RequestWithRelations;
+
+        await this.emailTemplateService.sendRequestCreatedEmails(
+          requestWithMappedLocation,
+        );
+        this.logger.log(
+          `Sent email templates for request creation ${createdRequest.id}`,
+        );
+      } catch (error) {
+        this.logger.error(
+          `⚠️  Failed to send email templates for request ${createdRequest.id}`,
+          {
+            error: (error as Error).message,
+            stack: (error as Error).stack,
+            requestId: createdRequest.id,
+          },
+        );
+        // Don't throw - request creation succeeded, email is best-effort
       }
 
       return createdRequest;
@@ -810,6 +841,35 @@ export class RequestsService {
         // Don't fail the assignment if notifications fail
       }
 
+      // ALI-121: Send email templates for status change to ONGOING
+      try {
+        const requestWithMappedLocation = {
+          ...updatedRequest,
+          location: {
+            ...updatedRequest.location,
+            zipCode: updatedRequest.location.zip || '',
+          },
+        } as RequestWithRelations;
+
+        await this.emailTemplateService.sendStatusChangedEmails(
+          requestWithMappedLocation,
+          RequestStatus.ONGOING,
+        );
+        this.logger.log(
+          `Sent email templates for status change to ONGOING for request ${id}`,
+        );
+      } catch (error) {
+        this.logger.error(
+          `⚠️  Failed to send email templates for request ${id} status change to ONGOING`,
+          {
+            error: (error as Error).message,
+            stack: (error as Error).stack,
+            requestId: id,
+          },
+        );
+        // Don't throw - assignment succeeded, email is best-effort
+      }
+
       return updatedRequest;
     } catch (error) {
       if (
@@ -1001,6 +1061,37 @@ export class RequestsService {
         // Don't fail the cancellation request if notifications fail
       }
 
+      // ALI-121: Send email templates if status changed to CANCELLED
+      if (updatedRequest.status === RequestStatus.CANCELLED) {
+        try {
+          const requestWithMappedLocation = {
+            ...updatedRequest,
+            location: {
+              ...updatedRequest.location,
+              zipCode: updatedRequest.location.zip || '',
+            },
+          } as RequestWithRelations;
+
+          await this.emailTemplateService.sendStatusChangedEmails(
+            requestWithMappedLocation,
+            RequestStatus.CANCELLED,
+          );
+          this.logger.log(
+            `Sent email templates for status change to CANCELLED for request ${id}`,
+          );
+        } catch (error) {
+          this.logger.error(
+            `⚠️  Failed to send email templates for request ${id} status change to CANCELLED`,
+            {
+              error: (error as Error).message,
+              stack: (error as Error).stack,
+              requestId: id,
+            },
+          );
+          // Don't throw - cancellation succeeded, email is best-effort
+        }
+      }
+
       return updatedRequest;
     } catch (error) {
       if (
@@ -1151,6 +1242,35 @@ export class RequestsService {
           `Failed to send completion notification: ${(error as Error).message}`,
         );
         // Don't fail the completion if notification fails
+      }
+
+      // ALI-121: Send email templates for status change to COMPLETED
+      try {
+        const requestWithMappedLocation = {
+          ...completedRequest,
+          location: {
+            ...completedRequest.location,
+            zipCode: completedRequest.location.zip || '',
+          },
+        } as RequestWithRelations;
+
+        await this.emailTemplateService.sendStatusChangedEmails(
+          requestWithMappedLocation,
+          RequestStatus.COMPLETED,
+        );
+        this.logger.log(
+          `Sent email templates for status change to COMPLETED for request ${id}`,
+        );
+      } catch (error) {
+        this.logger.error(
+          `⚠️  Failed to send email templates for request ${id} status change to COMPLETED`,
+          {
+            error: (error as Error).message,
+            stack: (error as Error).stack,
+            requestId: id,
+          },
+        );
+        // Don't throw - completion succeeded, email is best-effort
       }
 
       return completedRequest;

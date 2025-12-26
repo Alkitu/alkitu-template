@@ -89,9 +89,10 @@ export const CancelRequestModal: React.FC<CancelRequestModalProps> = ({
             {request && (
               <>
                 {t('description') || 'Please provide a reason for canceling this request.'}
-                <div className="mt-2 text-sm font-medium text-gray-700">
+                <br />
+                <span className="mt-2 inline-block text-sm font-medium text-gray-700">
                   {request.service?.name || 'Service Request'}
-                </div>
+                </span>
               </>
             )}
           </DialogDescription>

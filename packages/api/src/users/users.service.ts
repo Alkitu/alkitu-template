@@ -125,6 +125,7 @@ export class UsersService {
     const {
       search,
       role,
+      teamOnly,
       createdFrom,
       createdTo,
       page = 1,
@@ -140,7 +141,7 @@ export class UsersService {
         firstname?: { contains: string; mode: 'insensitive' };
         lastname?: { contains: string; mode: 'insensitive' };
       }>;
-      role?: UserRole;
+      role?: UserRole | { in: UserRole[] };
       createdAt?: {
         gte?: Date;
         lte?: Date;
@@ -155,7 +156,10 @@ export class UsersService {
       ];
     }
 
-    if (role) {
+    // ALI-122: Handle teamOnly filter (ADMIN + EMPLOYEE)
+    if (teamOnly) {
+      where.role = { in: [UserRole.ADMIN, UserRole.EMPLOYEE] };
+    } else if (role) {
       where.role = role;
     }
 

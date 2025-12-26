@@ -10,9 +10,11 @@ import { createUserRouter } from './routers/user.router';
 import { chatRouter } from './routers/chat.router';
 import { chatbotConfigRouter } from './routers/chatbot-config.router';
 import { createThemeRouter } from './routers/theme.router';
+import { createEmailTemplateRouter } from './routers/email-template.router';
 import { t } from './trpc';
 import { ChatbotConfigService } from '../chatbot-config/chatbot-config.service';
 import { ThemeService } from '../theme/theme.service';
+import { EmailTemplateService } from '../email-templates/email-template.service';
 
 @Injectable()
 export class TrpcRouter {
@@ -23,6 +25,7 @@ export class TrpcRouter {
     private notificationService: NotificationService,
     private chatbotConfigService: ChatbotConfigService,
     private themeService: ThemeService,
+    private emailTemplateService: EmailTemplateService,
   ) {}
 
   appRouter() {
@@ -40,6 +43,7 @@ export class TrpcRouter {
       chat: chatRouter, // Incluir el router de chat
       chatbotConfig: chatbotConfigRouter, // Incluir el router de configuración del chatbot
       theme: createThemeRouter(this.themeService), // Incluir el router de temas
+      emailTemplate: createEmailTemplateRouter(this.emailTemplateService), // ALI-121: Router de email templates
     });
   }
 }

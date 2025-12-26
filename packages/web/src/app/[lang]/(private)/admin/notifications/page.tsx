@@ -53,6 +53,7 @@ import { Switch } from '@/components/primitives/ui/switch';
 import { cn } from '@/lib/utils';
 import { useWebSocket } from '@/hooks/use-websocket';
 import { trpc } from '@/lib/trpc';
+import { AdminPageHeader } from '@/components/molecules/admin-page-header';
 
 interface Notification {
   id: string;
@@ -771,117 +772,121 @@ export default function NotificationsPage() {
         )}
       </div>
 
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-3xl font-bold">{t('title')}</h1>
-          <p className="text-muted-foreground mt-1">{t('subtitle')}</p>
-          {totalCount > 0 && (
-            <p className="text-sm text-muted-foreground mt-1">
-              {isFilteredFetch ? t('filteredResults') : t('allNotifications')} •{' '}
-              {infiniteScrollEnabled
-                ? `${currentNotifications.length} ${t('loaded')}${infiniteHasMore ? ` (${t('moreAvailable')})` : ''}`
-                : `Page ${pagination.currentPage} of ${pagination.totalPages} • ${pagination.totalCount} ${t('total')}`}
-            </p>
-          )}
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2">
-            <Label className="text-sm">
-              <Zap className="w-4 h-4 inline mr-1" />
-              {t('fastMode')}
-            </Label>
-            <Switch
-              checked={performanceMode}
-              onCheckedChange={(v) => {
-                setPerformanceMode(v);
-                performanceModeRef.current = v;
-              }}
-            />
+      <AdminPageHeader
+        title={t('title')}
+        description={
+          <div className="flex flex-col gap-1">
+            <span>{t('subtitle')}</span>
+            {totalCount > 0 && (
+              <span className="text-sm">
+                {isFilteredFetch ? t('filteredResults') : t('allNotifications')} •{' '}
+                {infiniteScrollEnabled
+                  ? `${currentNotifications.length} ${t('loaded')}${infiniteHasMore ? ` (${t('moreAvailable')})` : ''}`
+                  : `Page ${pagination.currentPage} of ${pagination.totalPages} • ${pagination.totalCount} ${t('total')}`}
+              </span>
+            )}
           </div>
-          <Badge
-            variant="secondary"
-            className={cn(
-              'transition-all duration-200',
-              isQuickFilterLoading && 'opacity-70',
-            )}
-          >
-            {isQuickFilterLoading ? (
-              <Loader2 className="w-4 h-4 mr-1 animate-spin" />
-            ) : (
-              <Bell className="w-4 h-4 mr-1" />
-            )}
-            {unreadCount} {t('unread')}{' '}
-            {infiniteScrollEnabled ? t('loaded') : t('onPage')}
-          </Badge>
-          <Button asChild variant="outline" size="sm">
-            <Link
-              href="/dashboard/notifications/analytics"
-              className="flex items-center gap-1"
+        }
+        actions={
+          <>
+            <div className="flex items-center gap-2">
+              <Label className="text-sm">
+                <Zap className="w-4 h-4 inline mr-1" />
+                {t('fastMode')}
+              </Label>
+              <Switch
+                checked={performanceMode}
+                onCheckedChange={(v) => {
+                  setPerformanceMode(v);
+                  performanceModeRef.current = v;
+                }}
+              />
+            </div>
+            <Badge
+              variant="secondary"
+              className={cn(
+                'transition-all duration-200',
+                isQuickFilterLoading && 'opacity-70',
+              )}
             >
-              <BarChart3 className="w-4 h-4" />
-              {t('buttomAnalytics')}
-            </Link>
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleExport}
-            disabled={!totalCount || currentLoading}
-            className="flex items-center gap-1"
-            title="Exportar notificaciones en formato CSV"
-          >
-            <Download className="w-4 h-4" />
-            {t('exportCsv')}
-          </Button>
-          <Button asChild variant="outline" size="sm">
-            <Link
-              href="/dashboard/notifications/preferences"
-              className="flex items-center gap-1"
-            >
-              <Settings className="w-4 h-4" />
-              {t('preferencesButton')}
-            </Link>
-          </Button>
-          {unreadCount > 0 && (
+              {isQuickFilterLoading ? (
+                <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+              ) : (
+                <Bell className="w-4 h-4 mr-1" />
+              )}
+              {unreadCount} {t('unread')}{' '}
+              {infiniteScrollEnabled ? t('loaded') : t('onPage')}
+            </Badge>
+            <Button asChild variant="outline" size="sm">
+              <Link
+                href="/dashboard/notifications/analytics"
+                className="flex items-center gap-1"
+              >
+                <BarChart3 className="w-4 h-4" />
+                {t('buttomAnalytics')}
+              </Link>
+            </Button>
             <Button
-              onClick={markAllAsRead}
               variant="outline"
               size="sm"
-              title="Marcar todas las notificaciones como leídas"
+              onClick={handleExport}
+              disabled={!totalCount || currentLoading}
+              className="flex items-center gap-1"
+              title="Exportar notificaciones en formato CSV"
             >
-              <Check className="w-4 h-4 mr-1" />
-              {infiniteScrollEnabled
-                ? t('markLoadedAsRead')
-                : t('markPageAsRead')}
+              <Download className="w-4 h-4" />
+              {t('exportCsv')}
             </Button>
-          )}
-          <Button
-            onClick={() => {
-              // Marcar notificaciones no leídas
-              const unreadNotifications = currentNotifications.filter(
-                (n) => n.read,
-              );
-              unreadNotifications.forEach((n) => {
-                setNotifications((prev) =>
-                  prev.map((notification) =>
-                    notification.id === n.id
-                      ? { ...notification, read: false }
-                      : notification,
-                  ),
+            <Button asChild variant="outline" size="sm">
+              <Link
+                href="/dashboard/notifications/preferences"
+                className="flex items-center gap-1"
+              >
+                <Settings className="w-4 h-4" />
+                {t('preferencesButton')}
+              </Link>
+            </Button>
+            {unreadCount > 0 && (
+              <Button
+                onClick={markAllAsRead}
+                variant="outline"
+                size="sm"
+                title="Marcar todas las notificaciones como leídas"
+              >
+                <Check className="w-4 h-4 mr-1" />
+                {infiniteScrollEnabled
+                  ? t('markLoadedAsRead')
+                  : t('markPageAsRead')}
+              </Button>
+            )}
+            <Button
+              onClick={() => {
+                // Marcar notificaciones no leídas
+                const unreadNotifications = currentNotifications.filter(
+                  (n) => n.read,
                 );
-              });
-            }}
-            variant="outline"
-            size="sm"
-            disabled={unreadCount === currentNotifications.length}
-            title="Marcar notificaciones como no leídas"
-            className="text-orange-600 hover:text-orange-700 hover:bg-orange-50"
-          >
-            <Bell className="w-4 h-4 mr-1" />
-            Marcar como no leídas
-          </Button>
-        </div>
-      </div>
+                unreadNotifications.forEach((n) => {
+                  setNotifications((prev) =>
+                    prev.map((notification) =>
+                      notification.id === n.id
+                        ? { ...notification, read: false }
+                        : notification,
+                    ),
+                  );
+                });
+              }}
+              variant="outline"
+              size="sm"
+              disabled={unreadCount === currentNotifications.length}
+              title="Marcar notificaciones como no leídas"
+              className="text-orange-600 hover:text-orange-700 hover:bg-orange-50"
+            >
+              <Bell className="w-4 h-4 mr-1" />
+              Marcar como no leídas
+            </Button>
+          </>
+        }
+      />
 
       <NotificationFilters
         onFiltersChange={handleFiltersChange}

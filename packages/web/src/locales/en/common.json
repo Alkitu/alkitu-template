@@ -260,6 +260,8 @@
       "users": "Users",
       "userList": "User List",
       "createUser": "Create User",
+      "requests": "Requests",
+      "requestList": "Request List",
       "companies": "Companies",
       "companiesList": "All Companies",
       "createCompany": "New Company",

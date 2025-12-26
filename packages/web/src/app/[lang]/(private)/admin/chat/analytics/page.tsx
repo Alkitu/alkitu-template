@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { trpc } from '@/lib/trpc';
 import { ChatAnalyticsDashboard } from '@/components/features/chat/ChatAnalyticsDashboard';
 import { Typography } from '@/components/atoms/typography';
+import { AdminPageHeader } from '@/components/molecules/admin-page-header';
 
 export default function ChatAnalyticsPage() {
   const {
@@ -19,10 +20,13 @@ export default function ChatAnalyticsPage() {
   if (error) return <div>Error loading analytics: {error.message}</div>;
 
   return (
-    <div className="container mx-auto py-10">
-      <Typography variant="h1" className="text-3xl font-bold mb-6">
-        Chatbot Analytics
-      </Typography>
+    <div className="p-6 space-y-6">
+      <AdminPageHeader
+        title="Chatbot Analytics"
+        description="View chatbot performance metrics"
+        backHref={`/admin/chat`}
+        backLabel="Back to Chat"
+      />
       <ChatAnalyticsDashboard
         analytics={
           analytics || {

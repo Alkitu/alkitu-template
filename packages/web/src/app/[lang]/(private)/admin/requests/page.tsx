@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { RequestListOrganism } from '@/components/organisms/request';
+import { AdminPageHeader } from '@/components/molecules/admin-page-header';
 
 /**
  * Admin Service Requests Page (ALI-119)
@@ -25,17 +26,11 @@ export default function AdminRequestsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold tracking-tight">
-            Service Requests
-          </h1>
-          <p className="mt-2 text-muted-foreground">
-            Manage all service requests
-          </p>
-        </div>
+    <div className="p-6 space-y-6">
+      <AdminPageHeader
+        title="Service Requests"
+        description="Manage all service requests"
+      />
 
         {/* Request List */}
         <RequestListOrganism
@@ -43,6 +38,5 @@ export default function AdminRequestsPage() {
           onRequestClick={handleRequestClick}
         />
       </div>
-    </div>
   );
 }

@@ -73,6 +73,7 @@ import {
 } from 'lucide-react';
 import { UserRole } from '@alkitu/shared';
 import Link from 'next/link';
+import { AdminPageHeader } from '@/components/molecules/admin-page-header';
 
 interface PasswordValidation {
   minLength: boolean;
@@ -166,10 +167,10 @@ const UserDetailPage = ({
   React.useEffect(() => {
     if (user) {
       setFormData({
-        name: user.name || '',
-        lastName: user.lastName || '',
+        name: (user as any).name || (user as any).firstname || '',
+        lastName: (user as any).lastName || (user as any).lastname || '',
         email: user.email,
-        contactNumber: user.contactNumber || '',
+        contactNumber: (user as any).contactNumber || (user as any).phone || '',
         role: user.role as keyof typeof UserRole,
       });
       // Initialize tags if available
@@ -307,7 +308,7 @@ const UserDetailPage = ({
         userIds: [user.id],
       });
       toast.success('User deleted successfully');
-      router.push(`/${lang}/dashboard/users`);
+      router.push(`/${lang}/admin/users`);
     } catch (error) {
       toast.error('Failed to delete user');
     }
@@ -369,40 +370,25 @@ const UserDetailPage = ({
   const passwordValidation = validatePassword(newPassword);
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Link href={`/${lang}/dashboard/users`}>
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Users
-            </Button>
-          </Link>
-          <div>
-            <Typography
-              variant="h1"
-              className="text-2xl font-bold flex items-center gap-2"
+    <div className="p-6 space-y-6">
+      <AdminPageHeader
+        title={(user as any).name || user.email}
+        description={user.email}
+        backHref={`/${lang}/admin/users`}
+        backLabel="Back to Users"
+        actions={
+          <>
+            <Badge variant={getRoleBadgeVariant(user.role)}>{user.role}</Badge>
+            <Button
+              variant={editMode ? 'default' : 'outline'}
+              onClick={() => setEditMode(!editMode)}
             >
-              <User className="h-6 w-6" />
-              {user.name || user.email}
-            </Typography>
-            <Typography variant="p" className="text-gray-600">
-              {user.email}
-            </Typography>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <Badge variant={getRoleBadgeVariant(user.role)}>{user.role}</Badge>
-          <Button
-            variant={editMode ? 'default' : 'outline'}
-            onClick={() => setEditMode(!editMode)}
-          >
-            <Edit className="h-4 w-4 mr-2" />
-            {editMode ? 'Cancel Edit' : 'Edit Profile'}
-          </Button>
-        </div>
-      </div>
+              <Edit className="h-4 w-4 mr-2" />
+              {editMode ? 'Cancel Edit' : 'Edit Profile'}
+            </Button>
+          </>
+        }
+      />
 
       <Tabs defaultValue="profile" className="space-y-6">
         <TabsList>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { RequestDetailOrganism } from '@/components/organisms/request';
 import { ArrowLeft } from 'lucide-react';
@@ -28,8 +28,9 @@ import type { UserRole } from '@alkitu/shared';
 export default function RequestDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string; lang: string }>;
 }) {
+  const { id } = use(params);
   const router = useRouter();
   const [userRole, setUserRole] = useState<UserRole | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -114,7 +115,7 @@ export default function RequestDetailPage({
 
         {/* Request Detail */}
         <RequestDetailOrganism
-          requestId={params.id}
+          requestId={id}
           userRole={userRole}
           onUpdate={handleUpdate}
           onBack={handleBack}

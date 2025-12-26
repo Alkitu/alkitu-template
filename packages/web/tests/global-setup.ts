@@ -51,14 +51,25 @@ async function globalSetup(config: FullConfig) {
 
     try {
       // Navigate to login page
-      await page.goto(`${baseURL}/es/auth/login`);
+      await page.goto(`${baseURL}/es/auth/login`, { waitUntil: 'networkidle' });
+
+      // Wait for page to be fully loaded and any overlays to disappear
+      await page.waitForTimeout(1000);
+
+      // Close any Next.js development overlays if present
+      const closeOverlayButton = page.locator('[data-nextjs-dialog-overlay]');
+      if (await closeOverlayButton.isVisible({ timeout: 2000 }).catch(() => false)) {
+        await closeOverlayButton.click();
+        await page.waitForTimeout(500);
+      }
 
       // Fill login form
       await page.getByLabel(/correo/i).fill(user.email);
       await page.locator('input[type="password"]').first().fill(user.password);
 
-      // Submit login
-      await page.getByRole('button', { name: /iniciar sesión/i }).click();
+      // Submit login - use force click to bypass any overlays
+      const submitButton = page.getByRole('button', { name: /iniciar sesión/i });
+      await submitButton.click({ force: true });
 
       // Wait for successful redirect to any dashboard
       // Note: We don't validate the specific role dashboard since

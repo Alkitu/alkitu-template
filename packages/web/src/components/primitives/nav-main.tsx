@@ -20,7 +20,7 @@ import {
 import type { NavItem } from '@/types';
 import { useCallback, useState } from 'react';
 
-import { LanguageSwitcherNavbar } from './language-switcher-navbar';
+
 
 export function NavMain({ items }: { items: NavItem[] }) {
   // Estado para tracking de qué menús están abiertos
@@ -127,9 +127,7 @@ export function NavMain({ items }: { items: NavItem[] }) {
           </SidebarMenu>
         </SidebarGroup>
       ))}
-      <SidebarGroup>
-        <LanguageSwitcherNavbar />
-      </SidebarGroup>
+
     </>
   );
 }

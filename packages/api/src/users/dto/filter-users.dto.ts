@@ -6,6 +6,7 @@ import {
   IsEnum,
   IsDateString,
   IsInt,
+  IsBoolean,
   Min,
   Max,
 } from 'class-validator';
@@ -21,6 +22,15 @@ export class FilterUsersDto {
   @IsOptional()
   @IsEnum(UserRole)
   role?: UserRole;
+
+  @ApiPropertyOptional({
+    description: 'ALI-122: Filter to show only team members (ADMIN + EMPLOYEE)',
+    default: false,
+  })
+  @IsOptional()
+  @Transform(({ value }) => value === 'true' || value === true)
+  @IsBoolean()
+  teamOnly?: boolean = false;
 
   @ApiPropertyOptional({
     description: 'Filter by creation date from (ISO string)',

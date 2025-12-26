@@ -10,6 +10,7 @@ import {
   Moon,
   Sparkles,
   Sun,
+  Globe,
 } from 'lucide-react';
 
 import {
@@ -36,10 +37,10 @@ import type { User } from '@/types';
 import { useTranslations } from '@/context/TranslationsContext';
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useCallback } from 'react';
 
-import { LanguageSwitcher } from './language-switcher';
+// import { LanguageSwitcher } from './language-switcher';
 import { NotificationBadge } from './notification-badge';
 import { useNotificationCount } from '@/hooks/use-notification-count';
 
@@ -48,10 +49,16 @@ export function NavUser({ user }: { user: User }) {
   const t = useTranslations('userNav');
   const { setTheme } = useTheme();
   const router = useRouter();
+  const pathname = usePathname();
   const { count: unreadCount } = useNotificationCount({
     userId: user.id,
     enabled: !!user.id,
   });
+
+  const handleLanguageChange = (lang: string) => {
+    const newPath = `/${lang}${pathname.substring(3)}`;
+    router.push(newPath);
+  };
 
   const handleSignOut = useCallback(async () => {
     try {
@@ -89,7 +96,7 @@ export function NavUser({ user }: { user: User }) {
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <LanguageSwitcher />
+        {/* <LanguageSwitcher /> - Removed to avoid duplication and move to dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
@@ -109,7 +116,7 @@ export function NavUser({ user }: { user: User }) {
           </DropdownMenuTrigger>
           <DropdownMenuContent
             className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-            side={isMobile ? 'bottom' : 'right'}
+            side={isMobile ? 'top' : 'right'}
             align="end"
             sideOffset={4}
           >
@@ -152,6 +159,17 @@ export function NavUser({ user }: { user: User }) {
                   </div>
                   {t('notifications')}
                 </Link>
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuItem onClick={() => handleLanguageChange('en')}>
+                <Globe className="mr-2 h-4 w-4" />
+                <span>English</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleLanguageChange('es')}>
+                <Globe className="mr-2 h-4 w-4" />
+                <span>Español</span>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />

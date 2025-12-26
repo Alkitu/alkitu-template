@@ -17,15 +17,17 @@ import { ServiceListOrganism } from '@/components/organisms/service';
  * @route /admin/catalog/services
  * @access ADMIN only
  */
+import { AdminPageHeader } from '@/components/molecules/admin-page-header';
+
+// (imports)
+
 export default function ServicesPage() {
   return (
-    <div className="container mx-auto max-w-7xl space-y-6 px-4 py-8">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Services</h1>
-        <p className="mt-2 text-gray-600">
-          Manage services and their request form templates
-        </p>
-      </div>
+    <div className="p-6 space-y-6">
+      <AdminPageHeader
+        title="Services"
+        description="Manage services and their request form templates"
+      />
 
       <ServiceListOrganism showAddButton />
     </div>

@@ -6,6 +6,7 @@ import { AppearanceForm } from '@/components/features/chatbot-settings/Appearanc
 import { ContactFormFields } from '@/components/features/chatbot-settings/ContactFormFields';
 import { MessagesForm } from '@/components/features/chatbot-settings/MessagesForm';
 import { Typography } from '@/components/atoms/typography';
+import { AdminPageHeader } from '@/components/molecules/admin-page-header';
 
 export default function ChatbotSettingsPage() {
   const {
@@ -21,10 +22,13 @@ export default function ChatbotSettingsPage() {
   if (error) return <div>Error loading settings: {error.message}</div>;
 
   return (
-    <div className="container mx-auto py-10">
-      <Typography variant="h1" className="text-3xl font-bold mb-6">
-        Chatbot Settings
-      </Typography>
+    <div className="p-6 space-y-6">
+      <AdminPageHeader
+        title="Chatbot Settings"
+        description="Configure chatbot appearance and behavior"
+        backHref={`/admin/settings`}
+        backLabel="Back to Settings"
+      />
       <div className="space-y-8">
         <AppearanceForm initialConfig={config || {}} />
         <ContactFormFields initialConfig={config || {}} />

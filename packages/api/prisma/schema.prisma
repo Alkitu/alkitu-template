@@ -617,3 +617,39 @@ model Request {
   @@index([createdAt])
   @@map("requests")
 }
+
+/// ALI-121: Email Templates & Automation
+enum TemplateTrigger {
+  ON_REQUEST_CREATED    // Triggered when a new request is created
+  ON_STATUS_CHANGED     // Triggered when request status changes
+}
+
+/// ALI-121: Email Templates for automated notifications
+model EmailTemplate {
+  id        String          @id @default(auto()) @map("_id") @db.ObjectId
+
+  // Template identification
+  name      String          @unique  // Internal identifier (e.g., "request_created_notification")
+
+  // Email content
+  subject   String                   // Email subject line (supports placeholders)
+  body      String                   // Email body content (supports placeholders, HTML allowed)
+
+  // Trigger configuration
+  trigger   TemplateTrigger          // When to send this email
+  status    RequestStatus?           // Only for ON_STATUS_CHANGED - which status triggers this
+
+  // Metadata
+  active    Boolean         @default(true)  // Enable/disable template without deleting
+
+  // Timestamps
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  // Performance indexes
+  @@index([trigger])                 // Filter templates by trigger type
+  @@index([trigger, status])         // Filter by trigger + specific status
+  @@index([active])                  // Only fetch active templates
+
+  @@map("email_templates")
+}

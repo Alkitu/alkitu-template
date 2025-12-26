@@ -101,6 +101,7 @@ export const createUserRouter = (
         z.object({
           search: z.string().optional(),
           role: z.enum(['ADMIN', 'EMPLOYEE', 'CLIENT', 'LEAD']).optional(),
+          teamOnly: z.boolean().optional(), // ALI-122: Filter to show only ADMIN + EMPLOYEE
           createdFrom: z.string().optional(),
           createdTo: z.string().optional(),
           page: z.number().min(1).default(1),

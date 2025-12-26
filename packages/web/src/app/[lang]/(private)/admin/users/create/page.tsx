@@ -25,6 +25,7 @@ import { toast } from 'sonner';
 import { ArrowLeft, User, Save } from 'lucide-react';
 import Link from 'next/link';
 import { UserRole } from '@alkitu/shared';
+import { AdminPageHeader } from '@/components/molecules/admin-page-header';
 
 interface CreateUserForm {
   name: string;
@@ -86,7 +87,7 @@ const CreateUserPage = () => {
     // TODO: Implement this
     onSuccess: () => {
       toast.success('User created successfully!');
-      router.push(`/${lang}/dashboard/users`);
+      router.push(`/${lang}/admin/users`);
     },
     onError: (error) => {
       // TODO: Implement this
@@ -163,28 +164,13 @@ const CreateUserPage = () => {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-4">
-        <Link href={`/${lang}/dashboard/users`}>
-          <Button variant="ghost" size="sm">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Users
-          </Button>
-        </Link>
-        <div>
-          <Typography
-            variant="h1"
-            className="text-2xl font-bold flex items-center gap-2"
-          >
-            <User className="h-6 w-6" />
-            Create New User
-          </Typography>
-          <Typography variant="p" className="text-gray-600">
-            Add a new user to the system
-          </Typography>
-        </div>
-      </div>
+    <div className="p-6 space-y-6">
+      <AdminPageHeader
+        title="Create New User"
+        description="Add a new user to the system"
+        backHref={`/${lang}/admin/users`}
+        backLabel="Back to Users"
+      />
 
       {/* Form */}
       <Card>
@@ -341,7 +327,7 @@ const CreateUserPage = () => {
                 <Save className="h-4 w-4 mr-2" />
                 {registerMutation.isPending ? 'Creating...' : 'Create User'}
               </Button>
-              <Link href={`/${lang}/dashboard/users`}>
+              <Link href={`/${lang}/admin/users`}>
                 <Button variant="outline" type="button">
                   Cancel
                 </Button>

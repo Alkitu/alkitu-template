@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { RequestListOrganism } from '@/components/organisms/request';
-import type { UserRole } from '@alkitu/shared';
+import type { UserRole, RequestListItem } from '@alkitu/shared';
 
 /**
  * Service Requests List Page (ALI-119)
@@ -55,8 +55,8 @@ export default function RequestsPage() {
     void fetchUserRole();
   }, [router]);
 
-  const handleRequestClick = (requestId: string) => {
-    router.push(`/requests/${requestId}`);
+  const handleRequestClick = (request: RequestListItem) => {
+    router.push(`/requests/${request.id}`);
   };
 
   const handleCreateRequest = () => {

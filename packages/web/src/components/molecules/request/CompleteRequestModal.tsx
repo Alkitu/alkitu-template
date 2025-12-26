@@ -77,9 +77,10 @@ export const CompleteRequestModal: React.FC<CompleteRequestModalProps> = ({
             {request && (
               <>
                 {t('description') || 'Mark this request as completed. You can add optional completion notes.'}
-                <div className="mt-2 text-sm font-medium text-gray-700">
+                <br />
+                <span className="mt-2 inline-block text-sm font-medium text-gray-700">
                   {request.service?.name || 'Service Request'}
-                </div>
+                </span>
               </>
             )}
           </DialogDescription>

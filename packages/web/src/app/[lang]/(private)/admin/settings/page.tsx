@@ -7,6 +7,7 @@ import { Card } from '@/components/primitives/Card';
 import { Badge } from '@/components/atoms/badge';
 import { Icon } from '@/components/atoms/icons/Icon';
 import { cn } from '@/lib/utils';
+import { AdminPageHeader } from '@/components/molecules/admin-page-header';
 
 const settingsOptions = [
   {
@@ -42,13 +43,11 @@ export default function SettingsPage() {
   const t = useTranslations('dashboard.settings');
 
   return (
-    <div className="space-y-6">
-      <div>
-        <Typography variant="h1">Settings</Typography>
-        <Typography variant="p">
-          Manage your application preferences and configuration
-        </Typography>
-      </div>
+    <div className="p-6 space-y-6">
+      <AdminPageHeader
+        title="Settings"
+        description="Manage your application preferences and configuration"
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {settingsOptions.map((option) => (

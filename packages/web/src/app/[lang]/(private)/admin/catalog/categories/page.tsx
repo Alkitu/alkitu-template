@@ -17,17 +17,17 @@ import { CategoryListOrganism } from '@/components/organisms/category';
  * @route /admin/catalog/categories
  * @access ADMIN only
  */
+import { AdminPageHeader } from '@/components/molecules/admin-page-header';
+
+// (imports)
+
 export default function CategoriesPage() {
   return (
-    <div className="container mx-auto max-w-7xl space-y-6 px-4 py-8">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">
-          Service Categories
-        </h1>
-        <p className="mt-2 text-gray-600">
-          Manage categories for organizing your services
-        </p>
-      </div>
+    <div className="p-6 space-y-6">
+      <AdminPageHeader
+        title="Service Categories"
+        description="Manage categories for organizing your services"
+      />
 
       <CategoryListOrganism showAddButton />
     </div>

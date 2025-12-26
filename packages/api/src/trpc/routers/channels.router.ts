@@ -10,18 +10,19 @@ export const channelsRouter = createTRPCRouter({
       return await ctx.channelsService.createChannel(input, ctx.user.id);
     }),
 
-  getMyChannels: protectedProcedure
-    .query(async ({ ctx }) => {
-      // @ts-ignore
-      return await ctx.channelsService.getUserChannels(ctx.user.id);
-    }),
+  getMyChannels: protectedProcedure.query(async ({ ctx }) => {
+    // @ts-ignore
+    return await ctx.channelsService.getUserChannels(ctx.user.id);
+  }),
 
   getChannel: protectedProcedure
     .input(channelsSchemas.getChannel)
     .query(async ({ input, ctx }) => {
       // @ts-ignore
-      const channel = await ctx.channelsService.getChannelDetails(input.channelId);
-      
+      const channel = await ctx.channelsService.getChannelDetails(
+        input.channelId,
+      );
+
       // Basic security: Check if user is member?
       // Ideally the service should handle this or we filtered by finding if member exists.
       // For now assuming if you have ID you can view (or service handles it)
@@ -68,20 +69,40 @@ export const channelsRouter = createTRPCRouter({
     .input(channelsSchemas.createDM)
     .mutation(async ({ input, ctx }) => {
       // @ts-ignore
-      return await ctx.channelsService.createDM(ctx.user.id, input.targetUserIds);
+      return await ctx.channelsService.createDM(
+        ctx.user.id,
+        input.targetUserIds,
+      );
     }),
 
   toggleFavorite: protectedProcedure
     .input(channelsSchemas.toggleFavorite)
     .mutation(async ({ input, ctx }) => {
       // @ts-ignore
-      return await ctx.channelsService.toggleFavorite(input.channelId, ctx.user.id);
+      return await ctx.channelsService.toggleFavorite(
+        input.channelId,
+        ctx.user.id,
+      );
     }),
 
   markAsRead: protectedProcedure
     .input(channelsSchemas.markAsRead)
     .mutation(async ({ input, ctx }) => {
       // @ts-ignore
-      return await ctx.channelsService.markMessagesAsRead(input.channelId, ctx.user.id);
+      return await ctx.channelsService.markMessagesAsRead(
+        input.channelId,
+        ctx.user.id,
+      );
+    }),
+
+  addMember: protectedProcedure
+    .input(channelsSchemas.addMember)
+    .mutation(async ({ input, ctx }) => {
+      // @ts-ignore
+      return await ctx.channelsService.addMember(
+        input.channelId as string,
+        input.userId as string,
+        input.role,
+      );
     }),
 });

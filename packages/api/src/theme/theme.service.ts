@@ -208,7 +208,10 @@ export class ThemeService {
   /**
    * Get themes by company ID
    */
-  async getCompanyThemes(companyId: string, activeOnly = false): Promise<Theme[]> {
+  async getCompanyThemes(
+    companyId: string,
+    activeOnly = false,
+  ): Promise<Theme[]> {
     const where: any = { companyId };
 
     if (activeOnly) {
@@ -238,7 +241,11 @@ export class ThemeService {
   /**
    * Set a theme as the default theme for a company
    */
-  async setDefaultTheme(themeId: string, companyId: string, userId?: string): Promise<Theme> {
+  async setDefaultTheme(
+    themeId: string,
+    companyId: string,
+    userId?: string,
+  ): Promise<Theme> {
     const theme = await this.prisma.theme.findUnique({
       where: { id: themeId },
     });

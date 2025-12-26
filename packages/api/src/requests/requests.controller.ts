@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import {
   Controller,
@@ -379,8 +378,7 @@ export class RequestsController {
    */
   @Get('stats/count')
   @ApiOperation({
-    summary:
-      'Get total count of requests (role-based: own, assigned, or all)',
+    summary: 'Get total count of requests (role-based: own, assigned, or all)',
   })
   @ApiQuery({
     name: 'status',
@@ -417,6 +415,10 @@ export class RequestsController {
     if (serviceId) filters.serviceId = serviceId;
     if (assignedToId) filters.assignedToId = assignedToId;
 
-    return this.requestsService.count(req.user?.userId, req.user?.role, filters);
+    return this.requestsService.count(
+      req.user?.userId,
+      req.user?.role,
+      filters,
+    );
   }
 }

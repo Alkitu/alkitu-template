@@ -6,11 +6,7 @@ import { PrismaModule } from '../prisma.module';
 
 @Module({
   imports: [PrismaModule],
-  providers: [
-    ChannelsService,
-    ChannelRepository,
-    ChannelMessageRepository,
-  ],
+  providers: [ChannelsService, ChannelRepository, ChannelMessageRepository],
   exports: [ChannelsService],
 })
 export class ChannelsModule {}

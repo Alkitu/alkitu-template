@@ -26,8 +26,7 @@ export class PushNotificationService {
 
   constructor(private readonly prisma: PrismaService) {
     // Configure VAPID details for Web Push
-    const vapidSubject =
-      process.env.VAPID_SUBJECT || 'mailto:admin@alkitu.com';
+    const vapidSubject = process.env.VAPID_SUBJECT || 'mailto:admin@alkitu.com';
     const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
     const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY;
 
@@ -35,9 +34,7 @@ export class PushNotificationService {
       this.logger.warn(
         'VAPID keys not configured. Push notifications will not work.',
       );
-      this.logger.warn(
-        'Generate keys with: npx web-push generate-vapid-keys',
-      );
+      this.logger.warn('Generate keys with: npx web-push generate-vapid-keys');
     } else {
       webPush.setVapidDetails(vapidSubject, vapidPublicKey, vapidPrivateKey);
       this.logger.log('Push notification service initialized with VAPID keys');

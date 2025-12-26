@@ -6,8 +6,9 @@ import { Button } from '@/components/primitives/ui/button';
 import { Input } from '@/components/primitives/ui/input';
 import { Label } from '@/components/primitives/ui/label';
 import { Textarea } from '@/components/primitives/ui/textarea';
-import { Loader2 } from 'lucide-react';
+import { Hash, Lock, Loader2 } from 'lucide-react';
 import { Separator } from '@/components/primitives/ui/separator';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/primitives/ui/select';
 
 interface ChannelSettingsTabProps {
   channelId: string;
@@ -20,11 +21,14 @@ export function ChannelSettingsTab({ channelId, isOwner }: ChannelSettingsTabPro
   
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [type, setType] = useState<'PUBLIC' | 'PRIVATE'>('PUBLIC');
 
   useEffect(() => {
     if (channel) {
         setName(channel.name || '');
         setDescription(channel.description || '');
+        // @ts-ignore
+        setType(channel.type || 'PUBLIC');
     }
   }, [channel]);
 
@@ -40,6 +44,8 @@ export function ChannelSettingsTab({ channelId, isOwner }: ChannelSettingsTabPro
           channelId: channelId,
           name,
           description,
+          // @ts-ignore
+          type,
           allowedRoles: channel?.allowedRoles // preserve roles
       });
   };
@@ -70,6 +76,35 @@ export function ChannelSettingsTab({ channelId, isOwner }: ChannelSettingsTabPro
                     onChange={(e) => setDescription(e.target.value)} 
                     placeholder="What's this channel about?"
                 />
+            </div>
+
+            <div className="grid gap-2">
+                <Label htmlFor="type">Channel Type</Label>
+                <Select value={type} onValueChange={(value: 'PUBLIC' | 'PRIVATE') => setType(value)}>
+                  <SelectTrigger id="type" className="w-full">
+                    <div className="flex items-center gap-2">
+                      {type === 'PUBLIC' ? <Hash className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
+                      <SelectValue />
+                    </div>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="PUBLIC">
+                      <div className="flex items-center gap-2">
+                        <Hash className="w-4 h-4" />
+                        <span>Public - Anyone can join</span>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="PRIVATE">
+                      <div className="flex items-center gap-2">
+                        <Lock className="w-4 h-4" />
+                        <span>Private - Invite only</span>
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-gray-500">
+                  {type === 'PUBLIC' ? 'Public channels are visible to everyone and anyone can join.' : 'Private channels require an invitation to join.'}
+                </p>
             </div>
 
             <div className="pt-2">

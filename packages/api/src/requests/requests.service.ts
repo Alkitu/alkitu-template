@@ -21,7 +21,10 @@ import {
 } from './validators/status-transition.validator';
 import { NotificationService } from '../notification/notification.service';
 import { RequestNotificationBuilder } from './builders/request-notification.builder';
-import { EmailTemplateService, RequestWithRelations } from '../email-templates/email-template.service';
+import {
+  EmailTemplateService,
+  RequestWithRelations,
+} from '../email-templates/email-template.service';
 
 /**
  * Service for managing service requests lifecycle (ALI-119 + ALI-120 + ALI-121)
@@ -375,7 +378,11 @@ export class RequestsService {
    * @throws {NotFoundException} If request not found or access denied
    * @throws {InternalServerErrorException} On database errors
    */
-  async findOne(id: string, userId: string, userRole: UserRole): Promise<Request> {
+  async findOne(
+    id: string,
+    userId: string,
+    userRole: UserRole,
+  ): Promise<Request> {
     try {
       const request = await this.prisma.request.findFirst({
         where: { id, deletedAt: null },
@@ -500,7 +507,10 @@ export class RequestsService {
           );
         }
         // Clients cannot change status or assignedToId
-        if (updateRequestDto.status || updateRequestDto.assignedToId !== undefined) {
+        if (
+          updateRequestDto.status ||
+          updateRequestDto.assignedToId !== undefined
+        ) {
           throw new ForbiddenException(
             'You cannot change status or assignment as a client',
           );
@@ -640,7 +650,11 @@ export class RequestsService {
    * @throws {ForbiddenException} If user doesn't have permission
    * @throws {InternalServerErrorException} On database errors
    */
-  async remove(id: string, userId: string, userRole: UserRole): Promise<Request> {
+  async remove(
+    id: string,
+    userId: string,
+    userRole: UserRole,
+  ): Promise<Request> {
     try {
       const request = await this.prisma.request.findFirst({
         where: { id, deletedAt: null },
@@ -705,7 +719,9 @@ export class RequestsService {
     try {
       // Only EMPLOYEE or ADMIN can assign
       if (userRole === UserRole.CLIENT) {
-        throw new ForbiddenException('Only employees and admins can assign requests');
+        throw new ForbiddenException(
+          'Only employees and admins can assign requests',
+        );
       }
 
       const request = await this.prisma.request.findFirst({
@@ -735,7 +751,10 @@ export class RequestsService {
         );
       }
 
-      if (assignee.role !== UserRole.EMPLOYEE && assignee.role !== UserRole.ADMIN) {
+      if (
+        assignee.role !== UserRole.EMPLOYEE &&
+        assignee.role !== UserRole.ADMIN
+      ) {
         throw new BadRequestException(
           'Can only assign to users with EMPLOYEE or ADMIN role',
         );
@@ -818,10 +837,11 @@ export class RequestsService {
         );
 
         // Notify request creator
-        const clientNotif = RequestNotificationBuilder.buildAssignedNotification(
-          updatedRequest,
-          'client',
-        );
+        const clientNotif =
+          RequestNotificationBuilder.buildAssignedNotification(
+            updatedRequest,
+            'client',
+          );
         await this.notificationService.sendMultiChannelNotification(
           updatedRequest.userId,
           {
@@ -997,7 +1017,9 @@ export class RequestsService {
         if (updatedRequest.status === RequestStatus.CANCELLED) {
           // Auto-approved (PENDING requests or ADMIN) - notify client
           const cancelledNotif =
-            RequestNotificationBuilder.buildCancelledNotification(updatedRequest);
+            RequestNotificationBuilder.buildCancelledNotification(
+              updatedRequest,
+            );
           await this.notificationService.sendMultiChannelNotification(
             updatedRequest.userId,
             {
@@ -1129,7 +1151,9 @@ export class RequestsService {
     try {
       // Only EMPLOYEE or ADMIN can complete
       if (userRole === UserRole.CLIENT) {
-        throw new ForbiddenException('Only employees and admins can complete requests');
+        throw new ForbiddenException(
+          'Only employees and admins can complete requests',
+        );
       }
 
       const request = await this.prisma.request.findFirst({

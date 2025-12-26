@@ -6,7 +6,13 @@ import { ChannelMessage } from '@prisma/client';
 export class ChannelMessageRepository {
   constructor(private prisma: PrismaService) {}
 
-  async create(data: { channelId: string; content: string; senderId: string; attachments?: any; parentId?: string }): Promise<ChannelMessage> {
+  async create(data: {
+    channelId: string;
+    content: string;
+    senderId: string;
+    attachments?: any;
+    parentId?: string;
+  }): Promise<ChannelMessage> {
     if (data.parentId) {
       // Transaction to create reply and increment parent replyCount
       const [message] = await this.prisma.$transaction([
@@ -25,9 +31,9 @@ export class ChannelMessageRepository {
                 firstname: true,
                 lastname: true,
                 image: true,
-              }
-            }
-          }
+              },
+            },
+          },
         }),
         this.prisma.channelMessage.update({
           where: { id: data.parentId },
@@ -51,15 +57,18 @@ export class ChannelMessageRepository {
             firstname: true,
             lastname: true,
             image: true,
-          }
-        }
-      }
+          },
+        },
+      },
     });
   }
 
-  async findByChannel(channelId: string, limit: number = 50): Promise<ChannelMessage[]> {
+  async findByChannel(
+    channelId: string,
+    limit: number = 50,
+  ): Promise<ChannelMessage[]> {
     return this.prisma.channelMessage.findMany({
-      where: { 
+      where: {
         channelId,
         parentId: null, // Only top-level messages
       },
@@ -72,9 +81,9 @@ export class ChannelMessageRepository {
             firstname: true,
             lastname: true,
             image: true,
-          }
-        }
-      }
+          },
+        },
+      },
     });
   }
 
@@ -89,9 +98,9 @@ export class ChannelMessageRepository {
             firstname: true,
             lastname: true,
             image: true,
-          }
-        }
-      }
+          },
+        },
+      },
     });
   }
 }

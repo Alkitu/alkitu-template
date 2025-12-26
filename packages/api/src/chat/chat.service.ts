@@ -57,7 +57,9 @@ export class ChatService {
 
   private sanitizeMessage(message: any): any {
     if (message.senderUser) {
-      message.senderName = `${message.senderUser.firstname} ${message.senderUser.lastname}`.trim() || 'Support';
+      message.senderName =
+        `${message.senderUser.firstname} ${message.senderUser.lastname}`.trim() ||
+        'Support';
       message.senderRole = message.senderUser.role;
     }
     return message;
@@ -106,30 +108,30 @@ export class ChatService {
       } catch (error: any) {
         // Handle race condition: Unique constraint violation
         // Check both Prisma code P2002 and error message string as fallback
-        const isUniqueConstraintError = 
-          error.code === 'P2002' || 
+        const isUniqueConstraintError =
+          error.code === 'P2002' ||
           (error.message && error.message.includes('Unique constraint failed'));
 
         if (isUniqueConstraintError) {
           // Robust Recovery: Try to find the existing record by ANY provided unique identifier
           const conditions: any[] = [];
-          
+
           if (userId) conditions.push({ userId });
           if (email) conditions.push({ email });
           if (phone) conditions.push({ phone });
 
           if (conditions.length > 0) {
             contactInfo = await this.prisma.contactInfo.findFirst({
-              where: { 
-                OR: conditions 
-              }
+              where: {
+                OR: conditions,
+              },
             });
           }
-          
+
           if (!contactInfo) {
-            console.error('Failed to recover from unique constraint error:', { 
-              error: error.message, 
-              data: { userId, email, phone } 
+            console.error('Failed to recover from unique constraint error:', {
+              error: error.message,
+              data: { userId, email, phone },
             });
             throw error; // If still not found, it's unrecoverable
           }
@@ -195,11 +197,14 @@ export class ChatService {
   }
 
   async getMessages(conversationId: string): Promise<ChatMessage[]> {
-    const messages = await this.messageRepository.findByConversationId(conversationId);
-    return messages.map(msg => this.sanitizeMessage(msg));
+    const messages =
+      await this.messageRepository.findByConversationId(conversationId);
+    return messages.map((msg) => this.sanitizeMessage(msg));
   }
 
-  async getConversationsVisitor(data: { conversationIds?: string[] }): Promise<Conversation[]> {
+  async getConversationsVisitor(data: {
+    conversationIds?: string[];
+  }): Promise<Conversation[]> {
     if (!data.conversationIds || data.conversationIds.length === 0) return [];
 
     return this.conversationRepository.findAll({
@@ -326,7 +331,9 @@ export class ChatService {
     });
   }
 
-  async markAsRead(data: MarkAsReadDto & { isVisitor?: boolean }): Promise<void> {
+  async markAsRead(
+    data: MarkAsReadDto & { isVisitor?: boolean },
+  ): Promise<void> {
     // Mark messages as read based on who is doing the reading
     // If visitor is reading, mark messages FROM support as read
     // If admin is reading, mark messages FROM visitor as read
@@ -336,14 +343,16 @@ export class ChatService {
         isFromVisitor: data.isVisitor ? false : true,
         isRead: false,
       },
-      data: { 
+      data: {
         isRead: true,
-        isDelivered: true
+        isDelivered: true,
       },
     });
   }
 
-  async markAsDelivered(data: MarkAsReadDto & { isVisitor?: boolean }): Promise<void> {
+  async markAsDelivered(
+    data: MarkAsReadDto & { isVisitor?: boolean },
+  ): Promise<void> {
     // Mark messages as delivered when they are received by the client
     await (this.prisma.chatMessage as any).updateMany({
       where: {
@@ -398,16 +407,21 @@ export class ChatService {
     };
   }
 
-  async sendEmailTranscript(conversationId: string, email: string): Promise<void> {
-    const conversation = await this.conversationRepository.findById(conversationId);
+  async sendEmailTranscript(
+    conversationId: string,
+    email: string,
+  ): Promise<void> {
+    const conversation =
+      await this.conversationRepository.findById(conversationId);
     if (!conversation) throw new NotFoundException('Conversation not found');
 
-    const messages = await this.messageRepository.findByConversationId(conversationId);
-    
+    const messages =
+      await this.messageRepository.findByConversationId(conversationId);
+
     let transcriptHtml = `<h1>Chat Transcript - ${conversationId}</h1>`;
     transcriptHtml += `<p>Conversation started at: ${conversation.createdAt.toLocaleString()}</p><hr/>`;
-    
-    messages.forEach(msg => {
+
+    messages.forEach((msg) => {
       const sender = msg.isFromVisitor ? 'Visitor' : 'Support';
       transcriptHtml += `<p><strong>${sender}</strong> (${msg.createdAt.toLocaleString()}):<br/>${msg.content}</p>`;
     });

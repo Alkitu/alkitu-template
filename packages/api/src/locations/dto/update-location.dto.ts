@@ -22,8 +22,14 @@ export const UpdateLocationSchema = z
     floor: z.string().max(50).optional(),
     unit: z.string().max(50).optional(),
     city: z.string().min(1).max(100).optional(),
-    zip: z.string().regex(/^\d{5}(-\d{4})?$/).optional(),
-    state: z.string().regex(/^[A-Z]{2}$/).optional(),
+    zip: z
+      .string()
+      .regex(/^\d{5}(-\d{4})?$/)
+      .optional(),
+    state: z
+      .string()
+      .regex(/^[A-Z]{2}$/)
+      .optional(),
   })
   .partial();
 

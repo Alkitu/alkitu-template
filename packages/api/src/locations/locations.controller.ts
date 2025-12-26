@@ -69,7 +69,9 @@ export class LocationsController {
    */
   @Get()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get all work locations for current user (ALI-117)' })
+  @ApiOperation({
+    summary: 'Get all work locations for current user (ALI-117)',
+  })
   @ApiResponse({
     status: 200,
     description: 'List of user locations',
@@ -96,7 +98,10 @@ export class LocationsController {
     description: 'Location details',
   })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @ApiResponse({ status: 403, description: 'Forbidden - Not the location owner' })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - Not the location owner',
+  })
   @ApiResponse({ status: 404, description: 'Location not found' })
   async findOne(@Param('id') id: string, @Req() req: AuthenticatedRequest) {
     return this.locationsService.findOne(id, req.user.userId);
@@ -120,7 +125,10 @@ export class LocationsController {
   })
   @ApiResponse({ status: 400, description: 'Invalid input data' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @ApiResponse({ status: 403, description: 'Forbidden - Not the location owner' })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - Not the location owner',
+  })
   @ApiResponse({ status: 404, description: 'Location not found' })
   async update(
     @Param('id') id: string,
@@ -147,7 +155,10 @@ export class LocationsController {
     description: 'Location successfully deleted',
   })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @ApiResponse({ status: 403, description: 'Forbidden - Not the location owner' })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - Not the location owner',
+  })
   @ApiResponse({ status: 404, description: 'Location not found' })
   async remove(@Param('id') id: string, @Req() req: AuthenticatedRequest) {
     return this.locationsService.remove(id, req.user.userId);

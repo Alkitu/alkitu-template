@@ -108,5 +108,3 @@ export class UpdateProfileDto {
   @Type(() => ContactPersonDto)
   contactPerson?: ContactPersonDto;
 }
-
-

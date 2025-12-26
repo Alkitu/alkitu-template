@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import {
   Controller,
@@ -139,7 +138,11 @@ export class CategoriesController {
     @Body() updateCategoryDto: UpdateCategoryDto,
     @Request() req,
   ) {
-    return this.categoriesService.update(id, updateCategoryDto, req.user?.userId);
+    return this.categoriesService.update(
+      id,
+      updateCategoryDto,
+      req.user?.userId,
+    );
   }
 
   /**

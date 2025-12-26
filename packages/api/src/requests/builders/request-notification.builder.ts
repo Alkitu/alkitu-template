@@ -86,7 +86,7 @@ export class RequestNotificationBuilder {
       clientName: request.user
         ? `${request.user.firstname} ${request.user.lastname}`
         : undefined,
-      employeeId: request.assignedToId!,
+      employeeId: request.assignedToId,
       employeeName: request.assignedTo
         ? `${request.assignedTo.firstname} ${request.assignedTo.lastname}`
         : undefined,
@@ -96,7 +96,7 @@ export class RequestNotificationBuilder {
 
     if (recipient === 'employee') {
       return {
-        userId: request.assignedToId!,
+        userId: request.assignedToId,
         message: `You have been assigned to a service request for "${request.service?.name || 'service'}"`,
         type: NotificationType.REQUEST_ASSIGNED,
         link: `/requests/${request.id}`,
@@ -154,7 +154,7 @@ export class RequestNotificationBuilder {
     } else {
       // Employee notification
       return {
-        userId: request.assignedToId!,
+        userId: request.assignedToId,
         message: `Cancellation requested for your assigned service request - ${reason}`,
         type: NotificationType.REQUEST_CANCELLATION_REQUESTED,
         link: `/requests/${request.id}`,
@@ -177,7 +177,10 @@ export class RequestNotificationBuilder {
       requestId: request.id,
       serviceId: request.serviceId,
       serviceName: request.service?.name,
-      previousStatus: request.status === 'PENDING' ? ('PENDING' as const) : ('ONGOING' as const),
+      previousStatus:
+        request.status === 'PENDING'
+          ? ('PENDING' as const)
+          : ('ONGOING' as const),
       newStatus: 'CANCELLED' as const,
     };
 

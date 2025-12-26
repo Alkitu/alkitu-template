@@ -179,7 +179,9 @@ export class NotificationService {
           );
         }
       } else if (isQuiet) {
-        logger.debug(`Push notification skipped for user ${userId}: quiet hours`);
+        logger.debug(
+          `Push notification skipped for user ${userId}: quiet hours`,
+        );
       }
 
       // 4. EMAIL: TODO - Implement in future (ALI-121)
@@ -240,8 +242,10 @@ export class NotificationService {
     // TODO: Implement proper admin user lookup or use a system notification mechanism
     // Temporarily disabled notification creation to prevent ObjectID errors
     // The hardcoded userId 'admin' is not a valid MongoDB ObjectID
-    console.log(`New chat conversation from ${conversation.contactInfo?.name || conversation.contactInfo?.email || 'a visitor'}`);
-    
+    console.log(
+      `New chat conversation from ${conversation.contactInfo?.name || conversation.contactInfo?.email || 'a visitor'}`,
+    );
+
     // const adminUserId = 'admin'; // Invalid ObjectID
     // await this.createNotification({
     //   userId: adminUserId,
@@ -255,8 +259,10 @@ export class NotificationService {
     // TODO: Implement proper admin user lookup or use a system notification mechanism
     // Temporarily disabled notification creation to prevent ObjectID errors
     // The hardcoded userId 'admin' is not a valid MongoDB ObjectID
-    console.log(`New message in conversation ${message.conversationId}: ${message.content.substring(0, 50)}...`);
-    
+    console.log(
+      `New message in conversation ${message.conversationId}: ${message.content.substring(0, 50)}...`,
+    );
+
     // const adminUserId = 'admin'; // Invalid ObjectID
     // await this.createNotification({
     //   userId: adminUserId,

@@ -12,7 +12,7 @@ export class ChannelsService {
 
   async createChannel(data: CreateChannelDto, userId: string) {
     const channel = await this.channelRepository.create(data, userId);
-    
+
     // Add other initial members if provided
     if (data.members && data.members.length > 0) {
       for (const memberId of data.members) {
@@ -21,7 +21,7 @@ export class ChannelsService {
         }
       }
     }
-    
+
     return channel;
   }
 
@@ -61,7 +61,10 @@ export class ChannelsService {
 
   async createDM(currentUser: string, targetUsers: string | string[]) {
     const targets = Array.isArray(targetUsers) ? targetUsers : [targetUsers];
-    return this.channelRepository.findOrCreateConversation(currentUser, targets);
+    return this.channelRepository.findOrCreateConversation(
+      currentUser,
+      targets,
+    );
   }
 
   async markMessagesAsRead(channelId: string, userId: string) {
@@ -70,5 +73,9 @@ export class ChannelsService {
 
   async toggleFavorite(channelId: string, userId: string) {
     return this.channelRepository.toggleFavorite(channelId, userId);
+  }
+
+  async addMember(channelId: string, userId: string, role?: any) {
+    return this.channelRepository.addMember(channelId, userId, role);
   }
 }

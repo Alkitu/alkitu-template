@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { trpc } from '@/lib/trpc';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { Button } from '@/components/primitives/ui/button';
-import { Plus, Hash, Lock, User as UserIcon, MoreHorizontal, Pencil, Trash, Star } from 'lucide-react';
+import { Plus, Hash, Lock, User as UserIcon, MoreHorizontal, Pencil, Trash, Star, Users, ChevronDown, ChevronRight, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { Skeleton } from '@/components/primitives/ui/skeleton';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/primitives/ui/avatar';
 import { CreateChannelDialog } from './CreateChannelDialog';
 import { EditChannelDialog } from './EditChannelDialog';
 import { DeleteChannelAlert } from './DeleteChannelAlert';
@@ -24,9 +25,60 @@ export function ChannelSidebar() {
   const [editingChannel, setEditingChannel] = useState<any>(null);
   const [deletingChannel, setDeletingChannel] = useState<any>(null);
   
+  // Collapsible sections state
+  const [favoritesExpanded, setFavoritesExpanded] = useState(true);
+  const [channelsExpanded, setChannelsExpanded] = useState(true);
+  const [dmsExpanded, setDmsExpanded] = useState(true);
+  
+  // Sidebar resize and collapse state
+  const [sidebarWidth, setSidebarWidth] = useState(256); // 16rem = 256px
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isResizing, setIsResizing] = useState(false);
+  const sidebarRef = useRef<HTMLDivElement>(null);
+  
   const params = useParams();
   const currentLang = params.lang as string || 'en';
   const currentChannelId = params.channelId as string;
+  
+  // Load sidebar preferences from localStorage
+  useEffect(() => {
+    const savedWidth = localStorage.getItem('sidebar-width');
+    const savedCollapsed = localStorage.getItem('sidebar-collapsed');
+    if (savedWidth) setSidebarWidth(parseInt(savedWidth));
+    if (savedCollapsed) setIsCollapsed(savedCollapsed === 'true');
+  }, []);
+  
+  // Handle resize
+  const startResizing = () => setIsResizing(true);
+  
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isResizing) return;
+      const newWidth = e.clientX;
+      if (newWidth >= 240 && newWidth <= 400) {
+        setSidebarWidth(newWidth);
+        localStorage.setItem('sidebar-width', newWidth.toString());
+      }
+    };
+    
+    const handleMouseUp = () => setIsResizing(false);
+    
+    if (isResizing) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    }
+    
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isResizing]);
+  
+  const toggleCollapse = () => {
+    const newState = !isCollapsed;
+    setIsCollapsed(newState);
+    localStorage.setItem('sidebar-collapsed', newState.toString());
+  };
   
   const { data: channels, isLoading: channelsLoading } = trpc.channels.getMyChannels.useQuery();
   const { data: me, isLoading: userLoading } = trpc.user.me.useQuery();
@@ -40,28 +92,58 @@ export function ChannelSidebar() {
   // @ts-ignore
   const directMessages = channels?.filter((c: any) => c.type === 'DM') || [];
 
-  const getDMName = (channel: any) => {
-    if (!channel.members) return 'Unknown User';
-    const otherMember = channel.members.find((m: any) => m.user.id !== me?.id);
-    return otherMember ? `${otherMember.user.firstname} ${otherMember.user.lastname}` : 'Unknown User';
+  const getDMDetails = (channel: any) => {
+    if (!channel.members) return { name: 'Unknown User', isGroup: false, count: 0 };
+    const others = channel.members.filter((m: any) => m.user.id !== me?.id);
+    
+    if (others.length === 0) return { name: 'Just You', isGroup: false, count: 0 };
+    
+    if (others.length === 1) {
+       const m = others[0];
+       return { name: `${m.user.firstname} ${m.user.lastname}`, isGroup: false, count: 1 };
+    }
+    
+    // Group DM
+    const names = others.map((m: any) => `${m.user.firstname} ${m.user.lastname}`).join(', ');
+    return { name: names, isGroup: true, count: others.length };
   };
 
   return (
     <>
-      <div className="w-64 border-r h-full bg-gray-50 flex flex-col shrink-0 text-sm">
+      <div 
+        ref={sidebarRef}
+        style={{ width: isCollapsed ? '64px' : `${sidebarWidth}px` }}
+        className="relative border-r h-full bg-gray-50 flex flex-col shrink-0 text-sm transition-all duration-200"
+      >
         <div className="p-4 border-b flex justify-between items-center bg-white sticky top-0 h-14">
-          <h2 className="font-bold text-gray-800">Team Chat</h2>
+          {!isCollapsed && <h2 className="font-bold text-gray-800">Team Chat</h2>}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleCollapse}
+            className="h-8 w-8 shrink-0"
+            title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          >
+            {isCollapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
+          </Button>
         </div>
 
-        <div className="flex-1 overflow-y-auto py-4 px-3 space-y-6">
+        {!isCollapsed && (<div className="flex-1 overflow-y-auto py-4 px-3 space-y-6">
           {/* Favorites Section */}
           <div>
-            <div className="flex items-center justify-between px-2 mb-2 group">
-                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Favorites</h3>
+            <div 
+              className="flex items-center justify-between w-full px-2 mb-2 hover:bg-gray-100 rounded transition-colors cursor-pointer"
+              onClick={() => setFavoritesExpanded(!favoritesExpanded)}
+            >
+              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider py-1">Favorites</h3>
+              {favoritesExpanded ? <ChevronDown className="h-3 w-3 text-gray-400" /> : <ChevronRight className="h-3 w-3 text-gray-400" />}
             </div>
-            <div className="space-y-0.5">
+            {favoritesExpanded && (
+              <div className="space-y-0.5">
                {/* @ts-ignore */}
-               {channels?.filter(c => c.members?.find(m => m.userId === me?.id)?.isFavorite).map((channel: any) => (
+               {channels?.filter(c => c.members?.find(m => m.userId === me?.id)?.isFavorite).map((channel: any) => {
+                 const dmInfo = getDMDetails(channel);
+                 return (
                  <div 
                     key={`fav-${channel.id}`} 
                     className={`group flex items-center justify-between px-2 py-1.5 rounded-md transition-colors ${
@@ -78,33 +160,47 @@ export function ChannelSidebar() {
                        channel.type === 'PUBLIC' ? <Hash className="w-3.5 h-3.5 opacity-70 shrink-0" /> :
                        <UserIcon className="w-3.5 h-3.5 opacity-70 shrink-0" />}
                       <span className="truncate font-medium">
-                          {channel.name || getDMName(channel)}
+                          {channel.name || dmInfo.name}
                       </span>
+                      {dmInfo.isGroup && (
+                          <span className="bg-gray-800 text-white text-[10px] font-medium px-1.5 rounded-md min-w-[20px] text-center shrink-0">
+                               {dmInfo.count}
+                          </span>
+                      )}
                     </Link>
                 </div>
-               ))}
+               )})}
                {/* @ts-ignore */}
                {(!channels?.some(c => c.members?.find(m => m.userId === me?.id)?.isFavorite)) && (
                    <p className="text-xs text-gray-400 px-2 italic">No favorites.</p>
                )}
-            </div>
-          </div>
+              </div>
+            )}
 
           {/* Channels Section */}
           <div>
-            <div className="flex items-center justify-between px-2 mb-2 group">
-                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Channels</h3>
-                <Button 
-                  size="icon" 
-                  variant="ghost" 
-                  className="h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity" 
-                  onClick={() => setIsCreateOpen(true)} 
-                  title="Create Channel"
-                >
-                  <Plus className="h-3 w-3" />
-                </Button>
+            <div 
+              className="flex items-center justify-between w-full px-2 mb-2 group hover:bg-gray-100 rounded transition-colors"
+            >
+              <div 
+                className="flex-1 flex items-center gap-2 cursor-pointer"
+                onClick={() => setChannelsExpanded(!channelsExpanded)}
+              >
+                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider py-1">Channels</h3>
+                {channelsExpanded ? <ChevronDown className="h-3 w-3 text-gray-400" /> : <ChevronRight className="h-3 w-3 text-gray-400" />}
+              </div>
+              <Button 
+                size="icon" 
+                variant="ghost" 
+                className="h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity" 
+                onClick={(e) => { e.stopPropagation(); setIsCreateOpen(true); }} 
+                title="Create Channel"
+              >
+                <Plus className="h-3 w-3" />
+              </Button>
             </div>
-            <div className="space-y-0.5">
+            {channelsExpanded && (
+              <div className="space-y-0.5">
               {groupChannels.map((channel: any) => (
                 <div 
                     key={channel.id} 
@@ -146,25 +242,38 @@ export function ChannelSidebar() {
               {groupChannels.length === 0 && (
                 <p className="text-xs text-gray-400 px-2 italic">No channels yet.</p>
               )}
+              </div>
+            )}
             </div>
           </div>
 
             {/* Direct Messages Section */}
           <div>
-            <div className="flex items-center justify-between px-2 mb-2 group">
-                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Direct Messages</h3>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity"
-                  onClick={() => setIsNewDMOpen(true)}
-                  title="New Message"
-                >
-                  <Plus className="h-3 w-3" />
-                </Button>
+            <div 
+              className="flex items-center justify-between w-full px-2 mb-2 group hover:bg-gray-100 rounded transition-colors"
+            >
+              <div 
+                className="flex-1 flex items-center gap-2 cursor-pointer"
+                onClick={() => setDmsExpanded(!dmsExpanded)}
+              >
+                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider py-1">Direct Messages</h3>
+                {dmsExpanded ? <ChevronDown className="h-3 w-3 text-gray-400" /> : <ChevronRight className="h-3 w-3 text-gray-400" />}
+              </div>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity"
+                onClick={(e) => { e.stopPropagation(); setIsNewDMOpen(true); }}
+                title="New Message"
+              >
+                <Plus className="h-3 w-3" />
+              </Button>
             </div>
-            <div className="space-y-0.5">
-              {directMessages.map((channel: any) => (
+            {dmsExpanded && (
+              <div className="space-y-0.5">
+              {directMessages.map((channel: any) => {
+                 const dmInfo = getDMDetails(channel);
+                 return (
                  <div 
                     key={channel.id} 
                     className={`flex items-center justify-between px-2 py-1.5 rounded-md transition-colors ${
@@ -177,19 +286,44 @@ export function ChannelSidebar() {
                       href={`/${currentLang}/admin/channels/${channel.id}`}
                       className="flex-1 flex items-center gap-2 min-w-0"
                     >
-                      <UserIcon className="w-3.5 h-3.5 opacity-70 shrink-0" />
-                      <span className="truncate">{getDMName(channel)}</span>
+                      {dmInfo.isGroup ? (
+                        <Users className="w-3.5 h-3.5 opacity-70 shrink-0" />
+                      ) : (
+                        <Avatar className="h-5 w-5 shrink-0">
+                          <AvatarImage src={channel.members?.find((m: any) => m.user.id !== me?.id)?.user.image || undefined} />
+                          <AvatarFallback className="text-[10px]">
+                            {channel.members?.find((m: any) => m.user.id !== me?.id)?.user.firstname?.[0] || 'U'}
+                          </AvatarFallback>
+                        </Avatar>
+                      )}
+                      <span className="truncate">{dmInfo.name}</span>
+                      {dmInfo.isGroup && (
+                          <span className="bg-gray-800 text-white text-[10px] font-medium px-1.5 rounded-md min-w-[20px] text-center shrink-0">
+                               {dmInfo.count}
+                          </span>
+                      )}
                     </Link>
                 </div>
-              ))}
+              )})}
                {directMessages.length === 0 && (
                 <p className="text-xs text-gray-400 px-2 italic">No DMs yet.</p>
               )}
-            </div>
+              </div>
+            )}
           </div>
-        </div>
+        </div>)}
+        
+        {/* Resize Handle */}
+        {!isCollapsed && (
+          <div
+            onMouseDown={startResizing}
+            className="absolute top-0 right-0 w-1 h-full cursor-col-resize hover:bg-blue-500 transition-colors group"
+          >
+            <div className="absolute top-1/2 right-0 w-1 h-8 bg-gray-300 group-hover:bg-blue-500 rounded-l" />
+          </div>
+        )}
       </div>
-      
+
       <CreateChannelDialog open={isCreateOpen} onOpenChange={setIsCreateOpen} />
       <NewDMDialog open={isNewDMOpen} onOpenChange={setIsNewDMOpen} />
       

@@ -25,7 +25,10 @@ export class ServicesService {
    * @throws {BadRequestException} If requestTemplate is invalid
    * @throws {InternalServerErrorException} On database errors
    */
-  async create(createServiceDto: CreateServiceDto, userId?: string): Promise<Service> {
+  async create(
+    createServiceDto: CreateServiceDto,
+    userId?: string,
+  ): Promise<Service> {
     try {
       // Validate category exists (excluding soft-deleted)
       const category = await this.prisma.category.findFirst({

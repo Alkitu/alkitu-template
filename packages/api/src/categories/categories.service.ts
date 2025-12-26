@@ -23,7 +23,10 @@ export class CategoriesService {
    * @throws {ConflictException} If category name already exists
    * @throws {InternalServerErrorException} On database errors
    */
-  async create(createCategoryDto: CreateCategoryDto, userId?: string): Promise<Category> {
+  async create(
+    createCategoryDto: CreateCategoryDto,
+    userId?: string,
+  ): Promise<Category> {
     try {
       // Check if category with this name already exists (excluding soft-deleted)
       const existing = await this.prisma.category.findFirst({

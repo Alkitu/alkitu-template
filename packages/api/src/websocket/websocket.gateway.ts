@@ -54,13 +54,28 @@ export class NotificationGateway
 
   async handleConnection(client: AuthenticatedSocket) {
     try {
-      // Extract token from query params or headers
-      const token =
+      let token =
         client.handshake.auth?.token || client.handshake.query?.token;
 
-      if (!token || typeof token !== 'string') {
+      // If no token provided or it is 'mock-token', try to get from cookies
+      if (!token || token === 'mock-token') {
+        const cookieHeader = client.handshake.headers.cookie;
+        if (cookieHeader) {
+          const cookies = cookieHeader.split(';').reduce((acc, cookie) => {
+            const [key, value] = cookie.trim().split('=');
+            acc[key] = value;
+            return acc;
+          }, {} as Record<string, string>);
+          
+          if (cookies['auth-token']) {
+            token = cookies['auth-token'];
+          }
+        }
+      }
+
+      if (!token || typeof token !== 'string' || token === 'mock-token') {
         this.logger.warn(
-          `Client ${client.id} attempted to connect without token`,
+          `Client ${client.id} attempted to connect without valid token`,
         );
         client.disconnect();
         return;

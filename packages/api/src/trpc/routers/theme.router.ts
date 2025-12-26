@@ -216,7 +216,11 @@ export function createThemeRouter(themeService: ThemeService) {
         }),
       )
       .mutation(async ({ input }) => {
-        return themeService.setDefaultTheme(input.themeId, input.companyId, input.userId);
+        return themeService.setDefaultTheme(
+          input.themeId,
+          input.companyId,
+          input.userId,
+        );
       }),
   });
 }

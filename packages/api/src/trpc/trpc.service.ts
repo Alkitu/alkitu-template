@@ -26,19 +26,22 @@ export class TrpcService {
         router: this.trpcRouter.appRouter(),
         createContext: ({ req }) => {
           let user = undefined;
-          
+
           try {
             // Parse auth-token from cookies
             const cookieHeader = req.headers.cookie;
             if (cookieHeader) {
-              const cookies = cookieHeader.split(';').reduce((acc, cookie) => {
-                const [key, value] = cookie.trim().split('=');
-                acc[key] = value;
-                return acc;
-              }, {} as Record<string, string>);
-              
+              const cookies = cookieHeader.split(';').reduce(
+                (acc, cookie) => {
+                  const [key, value] = cookie.trim().split('=');
+                  acc[key] = value;
+                  return acc;
+                },
+                {} as Record<string, string>,
+              );
+
               const token = cookies['auth-token'];
-              
+
               if (token) {
                 const decoded = this.jwtService.verify(token);
                 if (decoded) {

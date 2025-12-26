@@ -31,20 +31,27 @@ export const chatRouter = createTRPCRouter({
   markAsReadVisitor: publicProcedure
     .input(z.object({ conversationId: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      return await ctx.chatService.markAsRead({ conversationId: input.conversationId, userId: 'visitor', isVisitor: true });
+      return await ctx.chatService.markAsRead({
+        conversationId: input.conversationId,
+        userId: 'visitor',
+        isVisitor: true,
+      });
     }),
 
   markAsDeliveredVisitor: publicProcedure
     .input(chatSchemas.markAsDelivered)
     .mutation(async ({ input, ctx }) => {
-      return await ctx.chatService.markAsDelivered({ conversationId: input.conversationId, userId: 'visitor', isVisitor: true });
+      return await ctx.chatService.markAsDelivered({
+        conversationId: input.conversationId,
+        userId: 'visitor',
+        isVisitor: true,
+      });
     }),
 
-  getMyConversations: protectedProcedure
-    .query(async ({ ctx }) => {
-      // Access authenticated user via ctx.user
-      return await ctx.chatService.getUserConversations(ctx.user.id);
-    }),
+  getMyConversations: protectedProcedure.query(async ({ ctx }) => {
+    // Access authenticated user via ctx.user
+    return await ctx.chatService.getUserConversations(ctx.user.id);
+  }),
 
   // Admin API for internal management
   getConversations: protectedProcedure
@@ -96,6 +103,9 @@ export const chatRouter = createTRPCRouter({
     .input(chatSchemas.sendEmailTranscript)
     .mutation(async ({ input, ctx }) => {
       // @ts-ignore - Assuming chatService will have this method implemented
-      return await ctx.chatService.sendEmailTranscript(input.conversationId, input.email);
+      return await ctx.chatService.sendEmailTranscript(
+        input.conversationId,
+        input.email,
+      );
     }),
 });

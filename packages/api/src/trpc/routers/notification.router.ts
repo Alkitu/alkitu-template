@@ -253,7 +253,9 @@ export const createNotificationRouter = (
       }),
 
     deleteNotificationsByType: t.procedure
-      .input(z.object({ userId: z.string(), type: z.nativeEnum(NotificationType) }))
+      .input(
+        z.object({ userId: z.string(), type: z.nativeEnum(NotificationType) }),
+      )
       .mutation(async ({ input }) => {
         try {
           return await notificationService.deleteNotificationsByType(

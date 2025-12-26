@@ -21,7 +21,9 @@ const RequestNotificationDataSchema = z.object({
   previousStatus: z
     .enum(['PENDING', 'ONGOING', 'COMPLETED', 'CANCELLED'])
     .optional(),
-  newStatus: z.enum(['PENDING', 'ONGOING', 'COMPLETED', 'CANCELLED']).optional(),
+  newStatus: z
+    .enum(['PENDING', 'ONGOING', 'COMPLETED', 'CANCELLED'])
+    .optional(),
   cancellationReason: z.string().optional(),
   completionNotes: z.string().optional(),
 });

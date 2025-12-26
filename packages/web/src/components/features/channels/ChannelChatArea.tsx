@@ -36,14 +36,14 @@ export function ChannelChatArea({ channelId }: ChannelChatAreaProps) {
 
   const { data: me } = trpc.user.me.useQuery();
   const markAsReadMutation = trpc.channels.markAsRead.useMutation();
-  
+
   const toggleFavoriteMutation = trpc.channels.toggleFavorite.useMutation({
     onSuccess: () => {
        ctx.channels.getMyChannels.invalidate();
-       // Also invalidate individual channel if needed, though getMyChannels usually covers the sidebar list
        ctx.channels.getChannel.invalidate({ channelId });
     }
   });
+  
 
   // Determine permissions
   // @ts-ignore

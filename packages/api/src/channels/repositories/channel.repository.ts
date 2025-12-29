@@ -231,4 +231,42 @@ export class ChannelRepository {
       });
     }
   }
+
+  async archiveChannel(channelId: string, userId: string): Promise<void> {
+    const member = await this.prisma.channelMember.findUnique({
+      where: {
+        channelId_userId: { channelId, userId },
+      },
+    });
+
+    if (member) {
+      await this.prisma.channelMember.update({
+        where: { id: member.id },
+        data: { isArchived: !member.isArchived }, // Toggle
+      });
+    }
+  }
+
+  async hideChannel(channelId: string, userId: string): Promise<void> {
+    const member = await this.prisma.channelMember.findUnique({
+      where: {
+        channelId_userId: { channelId, userId },
+      },
+    });
+
+    if (member) {
+      await this.prisma.channelMember.update({
+        where: { id: member.id },
+        data: { isHidden: true },
+      });
+    }
+  }
+
+  async leaveChannel(channelId: string, userId: string): Promise<void> {
+    await this.prisma.channelMember.delete({
+where: {
+        channelId_userId: { channelId, userId },
+      },
+    });
+  }
 }

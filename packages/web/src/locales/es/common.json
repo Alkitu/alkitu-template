@@ -202,6 +202,19 @@
       "invalidCode": "Código inválido o expirado",
       "codeRequired": "Por favor ingresa el código completo de 6 dígitos"
     },
+    "verifyCode": {
+      "title": "Verifica Tu Código",
+      "description": "Hemos enviado un código de 6 dígitos a:",
+      "codeLabel": "Código de verificación",
+      "submit": "Verificar código"
+    },
+    "emailCode": {
+      "title": "Iniciar Sesión con Correo",
+      "description": "Ingresa tu dirección de correo y te enviaremos un código de acceso de 6 dígitos",
+      "emailLabel": "Correo electrónico",
+      "emailPlaceholder": "tu@email.com",
+      "submit": "Enviar código de acceso"
+    },
     "emailLogin": {
       "title": "Iniciar Sesión con Correo",
       "description": "Ingresa tu correo electrónico para recibir un código de inicio de sesión",
@@ -332,12 +345,12 @@
       "privacy": "Privacidad",
       "docs": "Documentación",
       "help": "Ayuda",
-      "dashboard": "Dashboard",
       "home": "Inicio",
       "preferences": "Preferencias",
       "catalog": "Catálogo",
       "categories": "Categorías",
-      "services": "Servicios"
+      "services": "Servicios",
+      "teamChat": "Chat de Equipo"
     },
     "projects": {
       "alkitu": "Plataforma Alkitu"

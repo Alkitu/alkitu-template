@@ -7,7 +7,7 @@
       - generic [ref=e6]:
         - generic [ref=e8]:
           - generic [ref=e9]:
-            - generic [ref=e10]: 📊 RESUMEN
+            - generic [ref=e10]: RESUMEN
             - list [ref=e11]:
               - listitem [ref=e12]:
                 - link "Dashboard" [ref=e13] [cursor=pointer]:
@@ -15,7 +15,7 @@
                   - img [ref=e14]
                   - generic: Dashboard
           - generic [ref=e17]:
-            - generic [ref=e18]: 👥 GESTIÓN
+            - generic [ref=e18]: GESTIÓN
             - list [ref=e19]:
               - listitem [ref=e20]:
                 - button "Usuarios" [ref=e21]:
@@ -28,7 +28,7 @@
                   - generic [ref=e35]: Catálogo
                   - img [ref=e36]
           - generic [ref=e38]:
-            - generic [ref=e39]: 💬 COMUNICACIÓN
+            - generic [ref=e39]: COMUNICACIÓN
             - list [ref=e40]:
               - listitem [ref=e41]:
                 - button "Chat" [ref=e42]:
@@ -41,7 +41,7 @@
                   - generic [ref=e53]: Notificaciones
                   - img [ref=e54]
           - generic [ref=e56]:
-            - generic [ref=e57]: ⚙️ CONFIGURACIÓN
+            - generic [ref=e57]: CONFIGURACIÓN
             - list [ref=e58]:
               - listitem [ref=e59]:
                 - button "Configuración" [ref=e60]:

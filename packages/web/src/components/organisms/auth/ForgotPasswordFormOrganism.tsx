@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import Link from 'next/link';
 import { Button } from '@/components/primitives/ui/button';
 import { Input } from '@/components/primitives/Input';
 import { Label } from '@/components/primitives/ui/label';
@@ -85,9 +84,6 @@ export const ForgotPasswordFormOrganism = React.forwardRef<
   return (
     <div ref={ref} className={className || 'space-y-6'}>
       <div className="space-y-2 text-center">
-        <h1 className="text-3xl font-bold">
-          {t('auth.forgotPassword.title') || '¿Olvidaste tu contraseña?'}
-        </h1>
         <p className="text-muted-foreground">
           {t('auth.forgotPassword.description') ||
             'Ingresa tu email y te enviaremos un enlace para restablecer tu contraseña'}
@@ -126,15 +122,6 @@ export const ForgotPasswordFormOrganism = React.forwardRef<
               'Enviar enlace de restablecimiento'}
         </Button>
       </form>
-
-      <div className="text-center">
-        <Link
-          href="/auth/login"
-          className="text-sm text-muted-foreground hover:text-primary underline-offset-4 hover:underline"
-        >
-          {t('auth.forgotPassword.backToLogin') || 'Volver al inicio de sesión'}
-        </Link>
-      </div>
     </div>
   );
 });

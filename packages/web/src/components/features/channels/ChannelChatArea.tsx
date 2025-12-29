@@ -5,7 +5,7 @@ import { trpc } from '@/lib/trpc';
 import { ScrollArea } from '@/components/primitives/ui/scroll-area';
 import { Input } from '@/components/primitives/ui/input';
 import { Button } from '@/components/primitives/ui/button';
-import { Send, Paperclip, Check, CheckCheck, Star } from 'lucide-react';
+import { Send, Paperclip, Check, CheckCheck, Star, PanelLeftClose, PanelLeftOpen, Hash, Lock, Users } from 'lucide-react';
 import { Skeleton } from '@/components/primitives/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/primitives/ui/avatar';
 import { format } from 'date-fns';
@@ -14,13 +14,15 @@ import { ThreadView } from './ThreadView';
 
 interface ChannelChatAreaProps {
   channelId: string;
+  onToggleSidebar?: () => void;
+  isSidebarCollapsed?: boolean;
 }
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/primitives/ui/tabs';
 import { ChannelMembersTab } from './ChannelMembersTab';
 import { ChannelSettingsTab } from './ChannelSettingsTab';
 
-export function ChannelChatArea({ channelId }: ChannelChatAreaProps) {
+export function ChannelChatArea({ channelId, onToggleSidebar, isSidebarCollapsed }: ChannelChatAreaProps) {
   const [activeThread, setActiveThread] = useState<any | null>(null);
   const [message, setMessage] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -49,6 +51,22 @@ export function ChannelChatArea({ channelId }: ChannelChatAreaProps) {
   // @ts-ignore
   const myMember = channel?.members?.find((m: any) => m.userId === me?.id);
   const isOwner = myMember?.role === 'OWNER';
+  const isDM = channel?.type === 'DM';
+  
+  // Get DM display name
+  const getDMName = () => {
+    if (!isDM || !channel?.members) return null;
+    const others = channel.members.filter((m: any) => m.user.id !== me?.id);
+    if (others.length === 0) return 'Just You';
+    if (others.length === 1) {
+      const user = others[0].user;
+      return `${user.firstname} ${user.lastname}`;
+    }
+    // Group DM
+    return others.map((m: any) => `${m.user.firstname} ${m.user.lastname}`).join(', ');
+  };
+  
+  const displayName = isDM ? getDMName() : channel?.name;
 
   const activeMessagesLength = messages?.length || 0;
   useEffect(() => {
@@ -98,7 +116,32 @@ export function ChannelChatArea({ channelId }: ChannelChatAreaProps) {
       {/* Header */}
       <div className="h-14 border-b flex items-center justify-between px-6 bg-white shrink-0">
         <div className="flex items-center gap-2 overflow-hidden">
-          <h2 className="font-semibold text-gray-800">#{channel?.name || 'Channel'}</h2>
+          {onToggleSidebar && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                console.log('Toggle clicked!', { onToggleSidebar, isSidebarCollapsed });
+                onToggleSidebar();
+              }}
+              className="h-8 w-8 shrink-0 mr-2"
+              title={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            >
+              {isSidebarCollapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
+            </Button>
+          )}
+          <div className="flex items-center gap-2">
+            {isDM ? (
+              channel.members && channel.members.filter((m: any) => m.user.id !== me?.id).length > 1 ? (
+                <Users className="w-5 h-5 text-gray-500" />
+              ) : null
+            ) : (
+              channel?.type === 'PRIVATE' ? <Lock className="w-5 h-5 text-gray-500" /> : <Hash className="w-5 h-5 text-gray-500" />
+            )}
+            <h2 className="font-semibold text-gray-800 truncate">
+              {isDM ? displayName : `#${displayName || 'Channel'}`}
+            </h2>
+          </div>
           {channel?.description && (
               <span className="ml-4 text-xs text-gray-500 truncate">{channel.description}</span>
           )}

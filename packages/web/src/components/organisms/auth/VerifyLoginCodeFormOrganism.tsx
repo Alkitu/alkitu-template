@@ -182,12 +182,9 @@ export const VerifyLoginCodeFormOrganism = React.forwardRef<
   return (
     <div ref={ref} className={className || 'space-y-6'}>
       <div className="space-y-2 text-center">
-        <h1 className="text-3xl font-bold">
-          {t('auth.verifyCode.title') || 'Verifica tu código'}
-        </h1>
         <p className="text-muted-foreground">
           {t('auth.verifyCode.description') ||
-            `Hemos enviado un código de 6 dígitos a:`}
+            'Hemos enviado un código de 6 dígitos a:'}
         </p>
         <p className="text-sm font-medium text-primary">{email}</p>
       </div>
@@ -253,20 +250,12 @@ export const VerifyLoginCodeFormOrganism = React.forwardRef<
           )}
         </div>
 
-        <div className="space-y-2">
-          <Link
-            href="/auth/email-login"
-            className="text-sm text-muted-foreground hover:text-primary underline-offset-4 hover:underline block"
-          >
-            Usar otro email
-          </Link>
-          <Link
-            href="/auth/login"
-            className="text-sm text-muted-foreground hover:text-primary underline-offset-4 hover:underline block"
-          >
-            Volver al inicio de sesión
-          </Link>
-        </div>
+        <Link
+          href="/auth/email-login"
+          className="text-sm text-muted-foreground hover:text-primary underline-offset-4 hover:underline block"
+        >
+          Usar otro email
+        </Link>
       </div>
     </div>
   );

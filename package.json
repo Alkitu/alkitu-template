@@ -59,7 +59,17 @@
     "db:migrate": "cd packages/api && npm run prisma:migrate",
     "db:push": "cd packages/api && npm run prisma:push",
     "db:studio": "cd packages/api && npm run prisma:studio",
-    "db:test": "node scripts/test-db-connection.js"
+    "db:test": "node scripts/test-db-connection.js",
+    "create:screenshot-users": "ts-node -P packages/api/tsconfig.json scripts/create-screenshot-users.ts",
+    "delete:screenshot-users": "ts-node -P packages/api/tsconfig.json scripts/delete-screenshot-users.ts",
+    "create:screenshot-data": "ts-node -P packages/api/tsconfig.json scripts/create-screenshot-data.ts",
+    "delete:screenshot-data": "ts-node -P packages/api/tsconfig.json scripts/delete-screenshot-data.ts",
+    "create:screenshot-services": "ts-node -P packages/api/tsconfig.json scripts/create-screenshot-services.ts",
+    "delete:screenshot-services": "ts-node -P packages/api/tsconfig.json scripts/delete-screenshot-services.ts",
+    "create:screenshot-requests": "ts-node -P packages/api/tsconfig.json scripts/create-screenshot-requests.ts",
+    "delete:screenshot-requests": "ts-node -P packages/api/tsconfig.json scripts/delete-screenshot-requests.ts",
+    "screenshots:capture": "ts-node -P packages/api/tsconfig.json scripts/capture-screenshots.ts",
+    "screenshots:upload": "ts-node -P packages/api/tsconfig.json scripts/upload-to-cloudinary.ts"
   },
   "devDependencies": {
     "@types/culori": "^4.0.0",

@@ -202,6 +202,19 @@
       "invalidCode": "Invalid or expired code",
       "codeRequired": "Please enter the complete 6-digit code"
     },
+    "verifyCode": {
+      "title": "Verify Your Code",
+      "description": "We've sent a 6-digit code to:",
+      "codeLabel": "Verification code",
+      "submit": "Verify code"
+    },
+    "emailCode": {
+      "title": "Sign In with Email",
+      "description": "Enter your email address and we'll send you a 6-digit access code",
+      "emailLabel": "Email address",
+      "emailPlaceholder": "your@email.com",
+      "submit": "Send access code"
+    },
     "emailLogin": {
       "title": "Sign In with Email",
       "description": "Enter your email address to receive a sign in code",
@@ -292,12 +305,12 @@
       "privacy": "Privacy",
       "docs": "Documentation",
       "help": "Help",
-      "dashboard": "Dashboard",
       "home": "Home",
       "preferences": "Preferences",
       "catalog": "Catalog",
       "categories": "Categories",
-      "services": "Services"
+      "services": "Services",
+      "teamChat": "Team Chat"
     },
     "projects": {
       "alkitu": "Alkitu Platform"

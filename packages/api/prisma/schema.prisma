@@ -447,8 +447,10 @@ model ChannelMember {
   joinedAt  DateTime    @default(now())
   
   // Custom preferences (e.g. notifications)
-  muted     Boolean     @default(false)
-  isFavorite Boolean    @default(false)
+  muted      Boolean     @default(false)
+  isFavorite Boolean     @default(false)
+  isArchived Boolean     @default(false) // User-specific archive state
+  isHidden   Boolean     @default(false) // "Delete for me" - hides from sidebar
 
   channel   Channel     @relation(fields: [channelId], references: [id], onDelete: Cascade)
   user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)

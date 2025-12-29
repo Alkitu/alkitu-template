@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   Card,
@@ -10,6 +9,7 @@ import {
   CardHeader,
 } from '@/components/primitives/Card';
 import { Button } from '@/components/primitives/ui/button';
+import { BackToLoginButton } from '@/components/atoms/buttons';
 import { getCurrentLocalizedRoute } from '@/lib/locale';
 import type { AuthCardWrapperProps } from './AuthCardWrapper.types';
 
@@ -113,10 +113,11 @@ export const AuthCardWrapper = React.forwardRef<
             )}
           </CardContent>
           {backButtonLabel && localizedBackButtonHref && (
-            <CardFooter>
-              <Button variant="link" className="w-full" asChild>
-                <Link href={localizedBackButtonHref}>{backButtonLabel}</Link>
-              </Button>
+            <CardFooter className="flex justify-center">
+              <BackToLoginButton
+                label={backButtonLabel}
+                href={localizedBackButtonHref}
+              />
             </CardFooter>
           )}
         </Card>

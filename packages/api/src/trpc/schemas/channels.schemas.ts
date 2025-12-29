@@ -61,4 +61,16 @@ export const channelsSchemas = {
   getChannel: z.object({
     channelId: z.string(),
   }),
+
+  archiveChannel: z.object({
+    channelId: z.string(),
+  }),
+
+  hideChannel: z.object({
+    channelId: z.string(),
+  }),
+
+  leaveChannel: z.object({
+    channelId: z.string(),
+  }),
 };

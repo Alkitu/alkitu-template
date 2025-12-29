@@ -19,13 +19,6 @@ const settingsOptions = [
     badge: 'New',
   },
   {
-    title: 'Theme Configuration',
-    description:
-      'Customize your application colors and appearance with Clean Architecture',
-    href: '/dashboard/settings/themes',
-    icon: 'zap' as const,
-  },
-  {
     title: 'Chatbot Settings',
     description: 'Configure chatbot behavior and appearance',
     href: '/dashboard/settings/chatbot',

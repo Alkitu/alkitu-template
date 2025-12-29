@@ -1,3 +1,5 @@
+'use client';
+
 import { ChannelSidebar } from '@/components/features/channels/ChannelSidebar';
 
 export default function ChannelsLayout({

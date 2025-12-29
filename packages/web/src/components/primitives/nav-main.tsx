@@ -46,11 +46,11 @@ export function NavMain({ items }: { items: NavItem[] }) {
   );
 
   const sectionLabels = {
-    overview: '📊 RESUMEN',
-    management: '👥 GESTIÓN',
-    communication: '💬 COMUNICACIÓN',
-    analytics: '📈 ANALÍTICAS',
-    settings: '⚙️ CONFIGURACIÓN',
+    overview: 'RESUMEN',
+    management: 'GESTIÓN',
+    communication: 'COMUNICACIÓN',
+    analytics: 'ANALÍTICAS',
+    settings: 'CONFIGURACIÓN',
     general: 'GENERAL',
   };
 

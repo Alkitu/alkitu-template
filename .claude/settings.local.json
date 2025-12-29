@@ -54,7 +54,16 @@
       "mcp__atlassian__getTransitionsForJiraIssue",
       "mcp__atlassian__transitionJiraIssue",
       "mcp__atlassian__addCommentToJiraIssue",
-      "Bash(cd /Users/luiseurdanetamartucci/Desktop/Proyectos en GitHub/Alkitu/alkitu-template/packages/web &&:*)"
+      "Bash(cd /Users/luiseurdanetamartucci/Desktop/Proyectos en GitHub/Alkitu/alkitu-template/packages/web &&:*)",
+      "Bash(head:*)",
+      "Bash(xargs basename:*)",
+      "mcp__atlassian__search",
+      "mcp__atlassian__searchJiraIssuesUsingJql",
+      "Bash(tree:*)",
+      "mcp__atlassian__createJiraIssue",
+      "mcp__atlassian__lookupJiraAccountId",
+      "mcp__atlassian__editJiraIssue",
+      "mcp__cloudinary-asset-mgmt__upload-asset"
     ],
     "deny": [],
     "ask": []

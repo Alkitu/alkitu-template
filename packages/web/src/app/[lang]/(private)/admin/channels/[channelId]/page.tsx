@@ -2,6 +2,7 @@
 
 import { use } from 'react';
 import { ChannelChatArea } from '@/components/features/channels/ChannelChatArea';
+import { useSidebarCollapse } from '@/components/features/channels/ChannelSidebar';
 
 interface PageProps {
   params: Promise<{
@@ -11,5 +12,7 @@ interface PageProps {
 
 export default function ChannelPage({ params }: PageProps) {
   const { channelId } = use(params);
-  return <ChannelChatArea channelId={channelId} />;
+  const { isCollapsed, toggleCollapse } = useSidebarCollapse();
+  
+  return <ChannelChatArea channelId={channelId} onToggleSidebar={toggleCollapse} isSidebarCollapsed={isCollapsed} />;
 }

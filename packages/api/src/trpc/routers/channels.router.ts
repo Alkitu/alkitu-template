@@ -105,4 +105,31 @@ export const channelsRouter = createTRPCRouter({
         input.role,
       );
     }),
+
+  archiveChannel: protectedProcedure
+    .input(channelsSchemas.archiveChannel)
+    .mutation(async ({ input, ctx }) => {
+      return await ctx.channelsService.archiveChannel(
+        input.channelId,
+        ctx.user.id,
+      );
+    }),
+
+  hideChannel: protectedProcedure
+    .input(channelsSchemas.hideChannel)
+    .mutation(async ({ input, ctx }) => {
+      return await ctx.channelsService.hideChannel(
+        input.channelId,
+        ctx.user.id,
+      );
+    }),
+
+  leaveChannel: protectedProcedure
+    .input(channelsSchemas.leaveChannel)
+    .mutation(async ({ input, ctx }) => {
+      return await ctx.channelsService.leaveChannel(
+        input.channelId,
+        ctx.user.id,
+      );
+    }),
 });

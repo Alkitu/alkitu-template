@@ -19,6 +19,24 @@ import {
   DropdownMenuTrigger,
 } from '@/components/primitives/ui/dropdown-menu';
 
+// Export custom hook for sidebar collapse state
+export function useSidebarCollapse() {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  
+  useEffect(() => {
+    const saved = localStorage.getItem('sidebar-collapsed');
+    if (saved) setIsCollapsed(saved === 'true');
+  }, []);
+  
+  const toggleCollapse = () => {
+    const newState = !isCollapsed;
+    setIsCollapsed(newState);
+    localStorage.setItem('sidebar-collapsed', newState.toString());
+  };
+  
+  return { isCollapsed, toggleCollapse };
+}
+
 export function ChannelSidebar() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isNewDMOpen, setIsNewDMOpen] = useState(false);
@@ -29,10 +47,11 @@ export function ChannelSidebar() {
   const [favoritesExpanded, setFavoritesExpanded] = useState(true);
   const [channelsExpanded, setChannelsExpanded] = useState(true);
   const [dmsExpanded, setDmsExpanded] = useState(true);
+  const [archivedExpanded, setArchivedExpanded] = useState(false); // Default collapsed
   
   // Sidebar resize and collapse state
   const [sidebarWidth, setSidebarWidth] = useState(256); // 16rem = 256px
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const { isCollapsed, toggleCollapse } = useSidebarCollapse();
   const [isResizing, setIsResizing] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
   
@@ -40,12 +59,10 @@ export function ChannelSidebar() {
   const currentLang = params.lang as string || 'en';
   const currentChannelId = params.channelId as string;
   
-  // Load sidebar preferences from localStorage
+  // Load sidebar width from localStorage (collapse state is handled by hook)
   useEffect(() => {
     const savedWidth = localStorage.getItem('sidebar-width');
-    const savedCollapsed = localStorage.getItem('sidebar-collapsed');
     if (savedWidth) setSidebarWidth(parseInt(savedWidth));
-    if (savedCollapsed) setIsCollapsed(savedCollapsed === 'true');
   }, []);
   
   // Handle resize
@@ -74,11 +91,7 @@ export function ChannelSidebar() {
     };
   }, [isResizing]);
   
-  const toggleCollapse = () => {
-    const newState = !isCollapsed;
-    setIsCollapsed(newState);
-    localStorage.setItem('sidebar-collapsed', newState.toString());
-  };
+
   
   const { data: channels, isLoading: channelsLoading } = trpc.channels.getMyChannels.useQuery();
   const { data: me, isLoading: userLoading } = trpc.user.me.useQuery();
@@ -87,10 +100,23 @@ export function ChannelSidebar() {
     return <SidebarSkeleton />;
   }
 
+  // Filter out hidden channels and separate active/archived
   // @ts-ignore
-  const groupChannels = channels?.filter((c: any) => c.type !== 'DM') || [];
+  const activeChannels = channels?.filter((c: any) => {
+    const myMember = c.members?.find((m: any) => m.userId === me?.id);
+    return !myMember?.isHidden && !myMember?.isArchived;
+  }) || [];
+  
   // @ts-ignore
-  const directMessages = channels?.filter((c: any) => c.type === 'DM') || [];
+  const archivedChannels = channels?.filter((c: any) => {
+    const myMember = c.members?.find((m: any) => m.userId === me?.id);
+    return !myMember?.isHidden && myMember?.isArchived;
+  }) || [];
+  
+  // @ts-ignore
+  const groupChannels = activeChannels.filter((c: any) => c.type !== 'DM');
+  // @ts-ignore
+  const directMessages = activeChannels.filter((c: any) => c.type === 'DM');
 
   const getDMDetails = (channel: any) => {
     if (!channel.members) return { name: 'Unknown User', isGroup: false, count: 0 };
@@ -117,15 +143,6 @@ export function ChannelSidebar() {
       >
         <div className="p-4 border-b flex justify-between items-center bg-white sticky top-0 h-14">
           {!isCollapsed && <h2 className="font-bold text-gray-800">Team Chat</h2>}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggleCollapse}
-            className="h-8 w-8 shrink-0"
-            title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          >
-            {isCollapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
-          </Button>
         </div>
 
         {!isCollapsed && (<div className="flex-1 overflow-y-auto py-4 px-3 space-y-6">
@@ -311,6 +328,56 @@ export function ChannelSidebar() {
               </div>
             )}
           </div>
+
+          {/* Archived Section */}
+          {archivedChannels.length > 0 && (
+            <div>
+              <div 
+                className="flex items-center justify-between w-full px-2 mb-2 hover:bg-gray-100 rounded transition-colors cursor-pointer"
+                onClick={() => setArchivedExpanded(!archivedExpanded)}
+              >
+                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider py-1">Archived</h3>
+                {archivedExpanded ? <ChevronDown className="h-3 w-3 text-gray-400" /> : <ChevronRight className="h-3 w-3 text-gray-400" />}
+              </div>
+              {archivedExpanded && (
+                <div className="space-y-0.5">
+                  {archivedChannels.map((channel: any) => {
+                    const dmInfo = channel.type === 'DM' ? getDMDetails(channel) : null;
+                    const isChannel = channel.type !== 'DM';
+                    return (
+                      <div 
+                        key={channel.id} 
+                        className={`flex items-center justify-between px-2 py-1.5 rounded-md transition-colors ${
+                            currentChannelId === channel.id 
+                              ? 'bg-blue-50 text-blue-700' 
+                              : 'text-gray-600 hover:bg-gray-100'
+                        }`}
+                      >
+                        <Link 
+                          href={`/${currentLang}/admin/channels/${channel.id}`}
+                          className="flex-1 flex items-center gap-2 min-w-0"
+                        >
+                          {isChannel ? (
+                            channel.type === 'PRIVATE' ? <Lock className="w-3.5 h-3.5 opacity-70 shrink-0" /> : <Hash className="w-3.5 h-3.5 opacity-70 shrink-0" />
+                          ) : dmInfo?.isGroup ? (
+                            <Users className="w-3.5 h-3.5 opacity-70 shrink-0" />
+                          ) : (
+                            <Avatar className="h-5 w-5 shrink-0">
+                              <AvatarImage src={channel.members?.find((m: any) => m.user.id !== me?.id)?.user.image || undefined} />
+                              <AvatarFallback className="text-[10px]">
+                                {channel.members?.find((m: any) => m.user.id !== me?.id)?.user.firstname?.[0] || 'U'}
+                              </AvatarFallback>
+                            </Avatar>
+                          )}
+                          <span className="truncate text-gray-500">{isChannel ? channel.name : dmInfo?.name}</span>
+                        </Link>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
         </div>)}
         
         {/* Resize Handle */}

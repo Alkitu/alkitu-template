@@ -78,4 +78,16 @@ export class ChannelsService {
   async addMember(channelId: string, userId: string, role?: any) {
     return this.channelRepository.addMember(channelId, userId, role);
   }
+
+  async archiveChannel(channelId: string, userId: string) {
+    return this.channelRepository.archiveChannel(channelId, userId);
+  }
+
+  async hideChannel(channelId: string, userId: string) {
+    return this.channelRepository.hideChannel(channelId, userId);
+  }
+
+  async leaveChannel(channelId: string, userId: string) {
+    return this.channelRepository.leaveChannel(channelId, userId);
+  }
 }

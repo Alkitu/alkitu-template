@@ -1,6 +1,5 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
 import { trpc } from '@/lib/trpc';
 import { AppearanceForm } from '@/components/features/chatbot-settings/AppearanceForm';
 import { ContactFormFields } from '@/components/features/chatbot-settings/ContactFormFields';
@@ -13,10 +12,7 @@ export default function ChatbotSettingsPage() {
     data: config,
     isLoading,
     error,
-  } = useQuery({
-    queryKey: ['chatbotConfig'],
-    queryFn: () => trpc.chatbotConfig.get.query(), // TODO: Implement this
-  });
+  } = trpc.chatbotConfig.get.useQuery();
 
   if (isLoading) return <div>Loading settings...</div>;
   if (error) return <div>Error loading settings: {error.message}</div>;

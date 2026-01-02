@@ -70,11 +70,11 @@ export const Hero = React.forwardRef<HTMLElement, HeroProps>(
       }
 
       if (image) {
-        return <>{image}</>;
+        return image;
       }
 
       if (imagePlaceholder) {
-        return <>{imagePlaceholder}</>;
+        return imagePlaceholder;
       }
 
       // Default placeholder

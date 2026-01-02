@@ -63,7 +63,8 @@
       "mcp__atlassian__createJiraIssue",
       "mcp__atlassian__lookupJiraAccountId",
       "mcp__atlassian__editJiraIssue",
-      "mcp__cloudinary-asset-mgmt__upload-asset"
+      "mcp__cloudinary-asset-mgmt__upload-asset",
+      "Bash(kill:*)"
     ],
     "deny": [],
     "ask": []

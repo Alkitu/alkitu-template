@@ -76,24 +76,22 @@ export default function BreadcrumbNavigation({
         </BreadcrumbItem>
         <BreadcrumbSeparator />
         {showDropdown && (
-          <>
-            <BreadcrumbItem>
-              <DropdownMenu>
-                <DropdownMenuTrigger className="flex items-center gap-1 capitalize">
-                  <BreadcrumbEllipsis className="h-4 w-4" />
-                  <span className="sr-only">menú desplegable</span>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  align="start"
-                  className="capitalize underline [&>*]:hover:text-zinc-400"
-                >
-                  {dropdownItems}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-          </>
+          <BreadcrumbItem>
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex items-center gap-1 capitalize">
+                <BreadcrumbEllipsis className="h-4 w-4" />
+                <span className="sr-only">menú desplegable</span>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="start"
+                className="capitalize underline [&>*]:hover:text-zinc-400"
+              >
+                {dropdownItems}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </BreadcrumbItem>
         )}
+        {showDropdown && <BreadcrumbSeparator />}
         <BreadcrumbItem className="hover:underline [&>*]:hover:text-zinc-400 pointer-events-none [&>*]:text-tiny">
           <BreadcrumbPage>
             {getTranslation(pathSegments[pathSegments.length - 1], 'es')}

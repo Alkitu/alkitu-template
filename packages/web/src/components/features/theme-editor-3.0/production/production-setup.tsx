@@ -114,7 +114,7 @@ const ProductionMonitoringWrapper: React.FC<{
     }
   }, [enableMonitoring, trackAction]);
 
-  return <>{children}</>;
+  return children;
 };
 
 // ===== SPECIALIZED WRAPPERS =====

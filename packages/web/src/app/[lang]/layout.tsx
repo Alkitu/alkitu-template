@@ -21,6 +21,7 @@ export default async function RootLayout({ children, params }: LayoutProps) {
   const translations = locale === 'en' ? enTranslations : esTranslations;
   // console.log('layout.tsx - Server Side Locale:', locale);
   // console.log('layout.tsx - Server Side Translations:', translations);
+  console.log('layout.tsx - Debug: NEXT_PUBLIC_API_URL =', process.env.NEXT_PUBLIC_API_URL);
 
   // TODO: Get companyId from session/auth context when available
   // For testing, use a valid 24-character MongoDB ObjectID format

@@ -70,16 +70,11 @@ export function ChatOptionsMenu({
         
         <DropdownMenuItem onClick={onToggleSound}>
           {soundEnabled ? (
-            <>
-              <Volume2 className="mr-2 h-4 w-4" />
-              Sound On
-            </>
+            <Volume2 className="mr-2 h-4 w-4" />
           ) : (
-            <>
-              <VolumeX className="mr-2 h-4 w-4" />
-              Sound Off
-            </>
+            <VolumeX className="mr-2 h-4 w-4" />
           )}
+          {soundEnabled ? 'Sound On' : 'Sound Off'}
         </DropdownMenuItem>
         
         {onPopOut && (

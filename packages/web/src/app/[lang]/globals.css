@@ -431,6 +431,23 @@
   aspect-ratio: 1 / 2;
 }
 
-.svg-container .svg-wrapper {
-  flex-shrink: 0;
+
+/* Autofill styles to match theme */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px var(--muted) inset !important;
+  -webkit-text-fill-color: var(--foreground) !important;
+  caret-color: var(--foreground) !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Dark mode specific autofill adjustment if needed, though var(--muted) handles it */
+.dark input:-webkit-autofill,
+.dark input:-webkit-autofill:hover,
+.dark input:-webkit-autofill:focus,
+.dark input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px var(--muted) inset !important;
+  -webkit-text-fill-color: var(--foreground) !important;
 }

@@ -18,6 +18,16 @@ export interface AuthPageOrganismProps {
   headerLabel: string;
 
   /**
+   * Optional icon name to display above the title
+   */
+  headerIcon?: string;
+
+  /**
+   * Optional subtitle text to display below the title
+   */
+  headerSubtitle?: string;
+
+  /**
    * Label for the back button (e.g., "Back to Login")
    */
   backButtonLabel?: string;

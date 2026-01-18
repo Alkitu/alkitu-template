@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/primitives/ui/button';
-import { Input } from '@/components/primitives/Input';
+import { InputGroup } from '@/components/molecules-alianza/InputGroup';
 import { Label } from '@/components/primitives/ui/label';
 import { Checkbox } from '@/components/primitives/ui/checkbox';
 import { useTranslations } from '@/context/TranslationsContext';
@@ -11,6 +11,7 @@ import { FormError } from '@/components/primitives/ui/form-error';
 import { FormSuccess } from '@/components/primitives/ui/form-success';
 import { PasswordStrengthIndicator } from '@/components/atoms/password-strength-indicator';
 import { getCurrentLocalizedRoute } from '@/lib/locale';
+import { Icon } from '@/components/atoms/icons/Icon';
 import type { RegisterFormOrganismProps } from './RegisterFormOrganism.types';
 
 /**
@@ -132,78 +133,78 @@ export const RegisterFormOrganism = React.forwardRef<
       onSubmit={handleSubmit}
       className={className || 'space-y-4'}
     >
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="firstname">{t('auth.register.name')}</Label>
-          <Input
-            id="firstname"
-            type="text"
-            value={formData.firstname}
-            onChange={(e) => handleChange('firstname', e.target.value)}
-            placeholder={t('auth.register.name')}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* First Name */}
+        <InputGroup
+           label={t('auth.register.name')}
+           id="firstname"
+           type="text"
+           value={formData.firstname}
+           onChange={(e) => handleChange('firstname', e.target.value)}
+           placeholder={t('auth.register.name') || 'Juan Pérez'}
+           required
+           disabled={isLoading}
+           iconLeft={<Icon name="user" size="sm" className="text-muted-foreground" />}
+        />
+
+        {/* Last Name */}
+        <InputGroup
+           label={t('auth.register.lastName')}
+           id="lastname"
+           type="text"
+           value={formData.lastname}
+           onChange={(e) => handleChange('lastname', e.target.value)}
+           placeholder={t('auth.register.lastName') || 'Apellido'}
+           required
+           disabled={isLoading}
+           iconLeft={<Icon name="user" size="sm" className="text-muted-foreground" />}
+        />
+      </div>
+
+      {/* Email */}
+      <InputGroup
+         label={t('auth.register.email')}
+         id="email"
+         type="email"
+         value={formData.email}
+         onChange={(e) => handleChange('email', e.target.value)}
+         placeholder={t('auth.register.email') || 'tu@email.com'}
+         required
+         disabled={isLoading}
+         iconLeft={<Icon name="mail" size="sm" className="text-muted-foreground" />}
+      />
+
+      {/* Password */}
+      <div className="space-y-2">
+         <InputGroup
+            label={t('auth.register.password')}
+            id="password"
+            type="password"
+            value={formData.password}
+            onChange={(e) => handleChange('password', e.target.value)}
+            placeholder={t('auth.register.password') || '••••••••'}
             required
             disabled={isLoading}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="lastname">{t('auth.register.lastName')}</Label>
-          <Input
-            id="lastname"
-            type="text"
-            value={formData.lastname}
-            onChange={(e) => handleChange('lastname', e.target.value)}
-            placeholder={t('auth.register.lastName')}
-            required
-            disabled={isLoading}
-          />
-        </div>
+            minLength={8}
+            iconLeft={<Icon name="lock" size="sm" className="text-muted-foreground" />}
+         />
+         <PasswordStrengthIndicator password={formData.password} minLength={8} />
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="email">{t('auth.register.email')}</Label>
-        <Input
-          id="email"
-          type="email"
-          value={formData.email}
-          onChange={(e) => handleChange('email', e.target.value)}
-          placeholder={t('auth.register.email')}
-          required
-          disabled={isLoading}
-        />
-      </div>
+      {/* Confirm Password */}
+      <InputGroup
+         label={t('auth.register.confirmPassword')}
+         id="confirmPassword"
+         type="password"
+         value={formData.confirmPassword}
+         onChange={(e) => handleChange('confirmPassword', e.target.value)}
+         placeholder={t('auth.register.confirmPassword') || '••••••••'}
+         required
+         disabled={isLoading}
+         iconLeft={<Icon name="lock" size="sm" className="text-muted-foreground" />}
+      />
 
-      <div className="space-y-2">
-        <Label htmlFor="password">{t('auth.register.password')}</Label>
-        <Input
-          id="password"
-          type="password"
-          value={formData.password}
-          onChange={(e) => handleChange('password', e.target.value)}
-          placeholder={t('auth.register.password')}
-          required
-          disabled={isLoading}
-          minLength={8}
-        />
-        <PasswordStrengthIndicator password={formData.password} minLength={8} />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="confirmPassword">
-          {t('auth.register.confirmPassword')}
-        </Label>
-        <Input
-          id="confirmPassword"
-          type="password"
-          value={formData.confirmPassword}
-          onChange={(e) => handleChange('confirmPassword', e.target.value)}
-          placeholder={t('auth.register.confirmPassword')}
-          required
-          disabled={isLoading}
-        />
-      </div>
-
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center space-x-2 pt-2">
         <Checkbox
           id="terms"
           checked={formData.terms}
@@ -212,7 +213,7 @@ export const RegisterFormOrganism = React.forwardRef<
           }
           disabled={isLoading}
         />
-        <Label htmlFor="terms" className="text-sm">
+        <Label htmlFor="terms" className="text-body-sm font-light text-foreground">
           {t('auth.register.terms')}
         </Label>
       </div>
@@ -220,8 +221,8 @@ export const RegisterFormOrganism = React.forwardRef<
       <FormError message={error} />
       <FormSuccess message={success} />
 
-      <Button type="submit" className="w-full" disabled={isLoading}>
-        {isLoading ? t('Common.general.loading') : t('auth.register.submit')}
+      <Button type="submit" className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-[48px] rounded-lg mt-4" disabled={isLoading}>
+        {isLoading ? t('Common.general.loading') : t('auth.register.submit') || 'Crear Cuenta'}
       </Button>
     </form>
   );

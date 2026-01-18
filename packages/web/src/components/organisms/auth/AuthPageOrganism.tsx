@@ -42,6 +42,8 @@ export const AuthPageOrganism = React.forwardRef<HTMLDivElement, AuthPageOrganis
     {
       children,
       headerLabel,
+      headerIcon,
+      headerSubtitle,
       backButtonLabel,
       backButtonHref,
       showSocial = false,
@@ -60,6 +62,8 @@ export const AuthPageOrganism = React.forwardRef<HTMLDivElement, AuthPageOrganis
       <div ref={ref} className={className} style={themeOverride} {...props}>
         <AuthCardWrapper
           headerLabel={headerLabel}
+          headerIcon={headerIcon}
+          headerSubtitle={headerSubtitle}
           backButtonLabel={backButtonLabel}
           backButtonHref={backButtonHref}
           showSocial={showSocial}

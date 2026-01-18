@@ -1,7 +1,7 @@
 'use client';
 
 import { AuthPageOrganism, VerifyLoginCodeFormOrganism } from '@/components/organisms';
-import { Typography } from '@/components/atoms/typography';
+import { FormError } from '@/components/primitives/ui/form-error';
 import { useTranslations } from '@/context/TranslationsContext';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
@@ -23,12 +23,12 @@ function VerifyLoginCodeContent() {
     return (
       <AuthPageOrganism
         headerLabel={t('auth.verifyLoginCode.title')}
+        headerIcon="lock"
+        headerSubtitle={t('auth.verifyLoginCode.description') || 'Hemos enviado un código de 6 dígitos'}
         backButtonLabel={t('auth.backToLogin')}
         backButtonHref="/auth/login"
       >
-        <Typography variant="p" className="text-center text-destructive">
-          {t('auth.verifyLoginCode.emailMissing')}
-        </Typography>
+        <FormError message={t('auth.verifyLoginCode.emailMissing')} />
       </AuthPageOrganism>
     );
   }
@@ -36,6 +36,8 @@ function VerifyLoginCodeContent() {
   return (
     <AuthPageOrganism
       headerLabel={t('auth.verifyCode.title')}
+      headerIcon="lock"
+      headerSubtitle={t('auth.verifyLoginCode.description') || 'Hemos enviado un código de 6 dígitos'}
       backButtonLabel={t('auth.backToLogin')}
       backButtonHref="/auth/login"
     >

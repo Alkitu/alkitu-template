@@ -10,6 +10,8 @@ export default function VerifyRequestPage() {
   return (
     <AuthPageOrganism
       headerLabel={t('auth.verifyRequest.title')}
+      headerIcon="mail"
+      headerSubtitle={t('auth.verifyRequest.message1') + ' ' + t('auth.verifyRequest.message2')}
       backButtonLabel={t('auth.backToLogin')}
       backButtonHref="/auth/login"
     >

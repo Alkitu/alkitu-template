@@ -20,6 +20,8 @@ export default function EmailLoginPage() {
   return (
     <AuthPageOrganism
       headerLabel={t('auth.emailLogin.title')}
+      headerIcon="mail"
+      headerSubtitle={t('auth.emailLogin.description') || 'Ingresa tu correo y te enviaremos un código para iniciar sesión'}
       backButtonLabel={t('auth.backToLogin')}
       backButtonHref="/auth/login"
     >

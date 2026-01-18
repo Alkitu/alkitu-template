@@ -20,6 +20,8 @@ export default function NewPasswordPage() {
   return (
     <AuthPageOrganism
       headerLabel={t('auth.newPassword.title')}
+      headerIcon="key"
+      headerSubtitle={t('auth.newPassword.description') || 'Introduce una nueva contraseña'}
       backButtonLabel={t('auth.backToLogin')}
       backButtonHref="/auth/login"
     >

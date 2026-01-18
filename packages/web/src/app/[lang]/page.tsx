@@ -1,6 +1,6 @@
 'use client';
 
-import { LandingNavbar } from '../../components/primitives/ui/landing-navbar';
+import { HeaderAlianza } from '@/components/organisms-alianza';
 import { Hero, FeatureGrid, PricingCard, Footer } from '@/components/organisms';
 import { useTranslations } from '@/context/TranslationsContext';
 
@@ -135,7 +135,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <LandingNavbar />
+      <HeaderAlianza />
       <Hero {...heroProps} />
       <FeatureGrid {...featuresProps} />
       <PricingCard {...pricingProps} />

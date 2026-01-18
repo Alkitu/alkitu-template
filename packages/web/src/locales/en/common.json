@@ -127,6 +127,7 @@
     "register": {
       "title": "Create an account",
       "subtitle": "Fill in the following fields to create your account",
+      "alreadyHaveAccount": "Already have an account?",
       "email": "Email",
       "password": "Password",
       "confirmPassword": "Confirm password",

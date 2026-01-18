@@ -163,17 +163,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           {...getAccessibilityProps()}
           {...restProps}
         >
-          {loading ? (
-            <div className="flex items-center gap-2">
-              <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-              {restProps.children}
-            </div>
-          ) : (
-            <>
-              {icon && <span className="mr-2">{icon}</span>}
-              {restProps.children}
-            </>
-          )}
+          {restProps.children}
         </Comp>
       );
     }

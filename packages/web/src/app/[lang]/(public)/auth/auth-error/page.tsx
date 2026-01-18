@@ -1,7 +1,7 @@
 'use client';
 
 import { AuthPageOrganism } from '@/components/organisms';
-import { Typography } from '@/components/atoms';
+import { FormError } from '@/components/primitives/ui/form-error';
 import { useTranslations } from '@/context/TranslationsContext';
 
 /**
@@ -17,12 +17,12 @@ export default function AuthErrorPage() {
   return (
     <AuthPageOrganism
       headerLabel={t('auth.error.title')}
+      headerIcon="alertTriangle"
+      headerSubtitle={t('auth.error.message') || 'Algo salió mal. Por favor, inténtalo de nuevo.'}
       backButtonLabel={t('auth.backToLogin')}
       backButtonHref="/auth/login"
     >
-      <Typography variant="p" className="text-destructive text-center">
-        {t('auth.error.message')}
-      </Typography>
+      <FormError message={t('auth.error.message')} />
     </AuthPageOrganism>
   );
 }

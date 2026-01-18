@@ -1,7 +1,7 @@
 'use client';
 
-import { ResetPasswordFormOrganism } from '@/components/organisms';
-import { Typography } from '@/components/atoms/typography';
+import { AuthPageOrganism, ResetPasswordFormOrganism } from '@/components/organisms';
+import { FormError } from '@/components/primitives/ui/form-error';
 import { useTranslations } from '@/context/TranslationsContext';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
@@ -21,18 +21,28 @@ function ResetPasswordContent() {
 
   if (!token) {
     return (
-      <div className="text-center space-y-4">
-        <h1 className="text-3xl font-bold text-destructive">
-          {t('auth.resetPassword.invalidToken')}
-        </h1>
-        <Typography variant="p" className="text-muted-foreground">
-          {t('auth.resetPassword.tokenMissing')}
-        </Typography>
-      </div>
+      <AuthPageOrganism
+        headerLabel={t('auth.resetPassword.invalidToken')}
+        headerIcon="mail"
+        backButtonLabel={t('auth.backToLogin')}
+        backButtonHref="/auth/login"
+      >
+        <FormError message={t('auth.resetPassword.tokenMissing')} />
+      </AuthPageOrganism>
     );
   }
 
-  return <ResetPasswordFormOrganism token={token} />;
+  return (
+    <AuthPageOrganism
+      headerLabel={t('auth.resetPassword.title')}
+      headerIcon="mail"
+      headerSubtitle={t('auth.resetPassword.description') || 'Ingresa tu nueva contraseña'}
+      backButtonLabel={t('auth.backToLogin')}
+      backButtonHref="/auth/login"
+    >
+      <ResetPasswordFormOrganism token={token} />
+    </AuthPageOrganism>
+  );
 }
 
 export default function ResetPasswordPage() {

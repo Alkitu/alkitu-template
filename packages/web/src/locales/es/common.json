@@ -127,6 +127,7 @@
     "register": {
       "title": "Crear una cuenta",
       "subtitle": "Completa los siguientes campos para crear tu cuenta",
+      "alreadyHaveAccount": "¿Ya tienes una cuenta?",
       "email": "Correo electrónico",
       "password": "Contraseña",
       "confirmPassword": "Confirmar contraseña",

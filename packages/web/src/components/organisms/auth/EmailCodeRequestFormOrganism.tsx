@@ -4,11 +4,11 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/primitives/ui/button';
-import { Input } from '@/components/primitives/Input';
-import { Label } from '@/components/primitives/ui/label';
+import { InputGroup } from '@/components/molecules-alianza/InputGroup';
 import { useTranslations } from '@/context/TranslationsContext';
 import { FormError } from '@/components/primitives/ui/form-error';
 import { FormSuccess } from '@/components/primitives/ui/form-success';
+import { Icon } from '@/components/atoms/icons/Icon';
 import type { EmailCodeRequestFormOrganismProps } from './EmailCodeRequestFormOrganism.types';
 
 /**
@@ -103,25 +103,26 @@ export const EmailCodeRequestFormOrganism = React.forwardRef<
         className="space-y-4"
         suppressHydrationWarning
       >
-        <div className="space-y-2" suppressHydrationWarning>
-          <Label htmlFor="email">
-            {t('auth.emailCode.emailLabel') || 'Correo electrónico'}
-          </Label>
-          <Input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder={t('auth.emailCode.emailPlaceholder') || 'tu@email.com'}
-            required
-            disabled={isLoading}
-          />
-        </div>
+        <InputGroup
+          label={t('auth.emailCode.emailLabel') || 'Correo electrónico'}
+          id="email"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder={t('auth.emailCode.emailPlaceholder') || 'tu@email.com'}
+          required
+          disabled={isLoading}
+          iconLeft={<Icon name="mail" size="sm" className="text-muted-foreground" />}
+        />
 
         <FormError message={error} />
         <FormSuccess message={success} />
 
-        <Button type="submit" className="w-full" disabled={isLoading}>
+        <Button 
+          type="submit" 
+          className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-[48px] rounded-lg mt-2 font-medium"
+          disabled={isLoading}
+        >
           {isLoading
             ? t('Common.general.loading') || 'Enviando...'
             : t('auth.emailCode.submit') || 'Enviar código de acceso'}

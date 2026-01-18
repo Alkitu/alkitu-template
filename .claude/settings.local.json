@@ -64,7 +64,9 @@
       "mcp__atlassian__lookupJiraAccountId",
       "mcp__atlassian__editJiraIssue",
       "mcp__cloudinary-asset-mgmt__upload-asset",
-      "Bash(kill:*)"
+      "Bash(kill:*)",
+      "mcp__playwright__browser_resize",
+      "Bash(exit 0)"
     ],
     "deny": [],
     "ask": []

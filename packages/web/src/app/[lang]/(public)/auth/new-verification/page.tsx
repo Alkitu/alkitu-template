@@ -20,6 +20,8 @@ export default function NewVerificationPage() {
   return (
     <AuthPageOrganism
       headerLabel={t('auth.newVerification.title')}
+      headerIcon="mail"
+      headerSubtitle={t('auth.newVerification.message') || 'Verificando tu correo electrónico...'}
       backButtonLabel={t('auth.backToLogin')}
       backButtonHref="/auth/login"
     >

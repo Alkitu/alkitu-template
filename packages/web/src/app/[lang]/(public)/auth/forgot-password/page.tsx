@@ -20,6 +20,8 @@ export default function ForgotPasswordPage() {
   return (
     <AuthPageOrganism
       headerLabel={t('auth.forgotPassword.title')}
+      headerIcon="key"
+      headerSubtitle={t('auth.forgotPassword.description') || 'Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña'}
       backButtonLabel={t('auth.backToLogin')}
       backButtonHref="/auth/login"
     >

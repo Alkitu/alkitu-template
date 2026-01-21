@@ -9,20 +9,12 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/primitives/Card';
-import { Input } from '@/components/primitives/Input';
-import { Label } from '@/components/primitives/ui/label';
-import { Button } from '@/components/primitives/ui/button';
-import { Typography } from '@/components/atoms/typography';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/primitives/Select';
-import { Checkbox } from '@/components/primitives/ui/checkbox';
+import { Button } from '@/components/molecules-alianza/Button';
+import { FormInput } from '@/components/molecules-alianza/FormInput';
+import { FormSelect } from '@/components/molecules-alianza/FormSelect';
+import { Checkbox } from '@/components/molecules-alianza/Checkbox';
 import { toast } from 'sonner';
-import { ArrowLeft, User, Save } from 'lucide-react';
+import { Save, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 import { UserRole } from '@alkitu/shared';
 import { AdminPageHeader } from '@/components/molecules/admin-page-header';
@@ -84,13 +76,11 @@ const CreateUserPage = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const registerMutation = trpc.user.register.useMutation({
-    // TODO: Implement this
     onSuccess: () => {
       toast.success('User created successfully!');
       router.push(`/${lang}/admin/users`);
     },
     onError: (error) => {
-      // TODO: Implement this
       toast.error(`Failed to create user: ${error.message}`);
     },
   });
@@ -156,6 +146,7 @@ const CreateUserPage = () => {
         email: formData.email,
         password: formData.password,
         contactNumber: formData.contactNumber || undefined,
+        role: formData.role,
         terms: formData.terms,
       });
     } catch (error) {
@@ -184,147 +175,119 @@ const CreateUserPage = () => {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">First Name *</Label>
-                <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => handleInputChange('name', e.target.value)}
-                  className={errors.name ? 'border-red-500' : ''}
-                  placeholder="Enter first name"
-                />
-                {errors.name && (
-                  <p className="text-sm text-red-500">{errors.name}</p>
-                )}
-              </div>
+              <FormInput
+                label="First Name *"
+                id="name"
+                value={formData.name}
+                onChange={(e) => handleInputChange('name', e.target.value)}
+                error={errors.name}
+                placeholder="Enter first name"
+              />
+
+              <FormInput
+                label="Last Name *"
+                id="lastName"
+                value={formData.lastName}
+                onChange={(e) => handleInputChange('lastName', e.target.value)}
+                error={errors.lastName}
+                placeholder="Enter last name"
+              />
+
+              <FormInput
+                label="Email Address *"
+                id="email"
+                type="email"
+                value={formData.email}
+                onChange={(e) => handleInputChange('email', e.target.value)}
+                error={errors.email}
+                placeholder="user@example.com"
+              />
+
+              <FormInput
+                label="Contact Number"
+                id="contactNumber"
+                value={formData.contactNumber}
+                onChange={(e) => handleInputChange('contactNumber', e.target.value)}
+                placeholder="+1 (555) 123-4567"
+              />
 
               <div className="space-y-2">
-                <Label htmlFor="lastName">Last Name *</Label>
-                <Input
-                  id="lastName"
-                  value={formData.lastName}
-                  onChange={(e) =>
-                    handleInputChange('lastName', e.target.value)
-                  }
-                  className={errors.lastName ? 'border-red-500' : ''}
-                  placeholder="Enter last name"
-                />
-                {errors.lastName && (
-                  <p className="text-sm text-red-500">{errors.lastName}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="email">Email Address *</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
-                  className={errors.email ? 'border-red-500' : ''}
-                  placeholder="user@example.com"
-                />
-                {errors.email && (
-                  <p className="text-sm text-red-500">{errors.email}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="contactNumber">Contact Number</Label>
-                <Input
-                  id="contactNumber"
-                  value={formData.contactNumber}
-                  onChange={(e) =>
-                    handleInputChange('contactNumber', e.target.value)
-                  }
-                  placeholder="+1 (555) 123-4567"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="password">Password *</Label>
-                <Input
+                <FormInput
+                  label="Password *"
                   id="password"
                   type={showPassword ? 'text' : 'password'}
                   value={formData.password}
                   onChange={(e) =>
                     handleInputChange('password', e.target.value)
                   }
-                  className={errors.password ? 'border-red-500' : ''}
+                  error={errors.password}
                   placeholder="Enter password"
-                />
-                {errors.password && (
-                  <p className="text-sm text-red-500">{errors.password}</p>
-                )}
-                <p className="text-xs text-gray-500">
-                  8-50 characters, uppercase, lowercase, number, and special
-                  character
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password *</Label>
-                <Input
-                  id="confirmPassword"
-                  type={showPassword ? 'text' : 'password'}
-                  value={formData.confirmPassword}
-                  onChange={(e) =>
-                    handleInputChange('confirmPassword', e.target.value)
+                  iconRight={
+                    <Button
+                      type="button"
+                      variant="nude"
+                      size="sm"
+                      iconOnly
+                      iconLeft={showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      onClick={() => setShowPassword(!showPassword)}
+                    />
                   }
-                  className={errors.confirmPassword ? 'border-red-500' : ''}
-                  placeholder="Confirm password"
                 />
-                {errors.confirmPassword && (
-                  <p className="text-sm text-red-500">
-                    {errors.confirmPassword}
+                {!errors.password && (
+                  <p className="text-xs text-gray-500 mt-1">
+                    8-50 characters, uppercase, lowercase, number, and special character
                   </p>
                 )}
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="role">Role</Label>
-                <Select
-                  value={formData.role}
-                  onValueChange={(value) =>
-                    handleInputChange('role', value as keyof typeof UserRole)
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="CLIENT">Client</SelectItem>
-                    <SelectItem value="LEAD">Lead</SelectItem>
-                    <SelectItem value="EMPLOYEE">Employee</SelectItem>
-                    <SelectItem value="ADMIN">Admin</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              <FormInput
+                label="Confirm Password *"
+                id="confirmPassword"
+                type={showPassword ? 'text' : 'password'}
+                value={formData.confirmPassword}
+                onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                error={errors.confirmPassword}
+                placeholder="Confirm password"
+              />
+
+              <FormSelect
+                label="Role"
+                value={formData.role}
+                onValueChange={(value) => handleInputChange('role', value as keyof typeof UserRole)}
+                options={[
+                  { value: 'CLIENT', label: 'Client' },
+                  { value: 'LEAD', label: 'Lead' },
+                  { value: 'EMPLOYEE', label: 'Employee' },
+                  { value: 'ADMIN', label: 'Admin' },
+                ]}
+              />
             </div>
 
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="terms"
-                checked={formData.terms}
-                onCheckedChange={(checked) =>
-                  handleInputChange('terms', checked as boolean)
-                }
-              />
-              <Label htmlFor="terms" className="text-sm">
-                I accept the terms and conditions *
-              </Label>
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  checked={formData.terms}
+                  onCheckedChange={(checked) => handleInputChange('terms', checked)}
+                />
+                <label 
+                  className="text-sm cursor-pointer select-none"
+                  onClick={() => handleInputChange('terms', !formData.terms)}
+                >
+                  I accept the terms and conditions *
+                </label>
+              </div>
+              {errors.terms && (
+                <p className="text-sm text-red-500">{errors.terms}</p>
+              )}
             </div>
-            {errors.terms && (
-              <p className="text-sm text-red-500">{errors.terms}</p>
-            )}
 
             <div className="flex gap-2 pt-4">
               <Button
                 type="submit"
                 disabled={registerMutation.isPending}
                 className="min-w-[120px]"
+                iconLeft={<Save className="h-4 w-4" />}
               >
-                <Save className="h-4 w-4 mr-2" />
                 {registerMutation.isPending ? 'Creating...' : 'Create User'}
               </Button>
               <Link href={`/${lang}/admin/users`}>

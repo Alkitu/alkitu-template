@@ -3,12 +3,13 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const chipVariants = cva(
-  "inline-flex items-center justify-center rounded-[var(--radius-md)] px-[var(--space-3)] transition-colors whitespace-nowrap h-[var(--chip-height)]",
+  "inline-flex items-center justify-center rounded-[8px] px-[12px] transition-colors whitespace-nowrap h-[36px] overflow-clip",
   {
     variants: {
       variant: {
-        outline: "border border-primary-1 text-primary-1 bg-transparent font-light body-sm",
-        solid: "bg-primary-1 text-primary-foreground-1 border border-transparent font-medium body-md",
+        outline: "border border-secondary-foreground text-secondary-foreground bg-secondary font-light text-sm",
+        solid: "bg-primary text-primary-foreground border border-transparent font-light text-sm",
+        destructive: "bg-destructive text-destructive-foreground border border-transparent font-light text-sm",
       },
     },
     defaultVariants: {

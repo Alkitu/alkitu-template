@@ -4,10 +4,12 @@ import {
   IsOptional,
   MinLength,
   ValidateNested,
+  IsEnum,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { ContactPersonDto } from './create-user.dto';
+import { UserRole } from '@prisma/client';
 
 /**
  * Contact person schema for Zod validation (ALI-116)
@@ -22,7 +24,7 @@ const ContactPersonSchema = z.object({
 /**
  * Update profile schema (ALI-116)
  * Used for user self-service profile updates.
- * Does NOT allow changing: email, password, role, status, profileComplete
+ * Does NOT allow changing: email, password, status, profileComplete
  */
 export const UpdateProfileSchema = z.object({
   firstname: z
@@ -37,6 +39,7 @@ export const UpdateProfileSchema = z.object({
   company: z.string().optional(),
   address: z.string().optional(),
   contactPerson: ContactPersonSchema.optional(),
+  role: z.enum(['ADMIN', 'EMPLOYEE', 'CLIENT', 'LEAD']).optional(),
 });
 
 /**
@@ -46,7 +49,6 @@ export const UpdateProfileSchema = z.object({
  * It's more restrictive than UpdateUserDto:
  * - Cannot change email (security concern)
  * - Cannot change password (use change-password endpoint)
- * - Cannot change role (admin only)
  * - Cannot change status (admin only)
  * - Cannot change profileComplete (automatic)
  *
@@ -107,4 +109,13 @@ export class UpdateProfileDto {
   @ValidateNested()
   @Type(() => ContactPersonDto)
   contactPerson?: ContactPersonDto;
+
+  @ApiPropertyOptional({
+    description: 'User role',
+    enum: UserRole,
+    example: UserRole.CLIENT,
+  })
+  @IsOptional()
+  @IsEnum(UserRole, { message: 'Role must be a valid UserRole' })
+  role?: UserRole;
 }

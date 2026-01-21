@@ -2,19 +2,94 @@ import { z } from 'zod';
 import { UsersService } from '../../users/users.service';
 import { EmailService } from '../../email/email.service';
 import { t } from '../trpc';
-import { UserStatus } from '@prisma/client';
+import { UserStatus, UserRole } from '@prisma/client';
+import { TRPCError } from '@trpc/server';
+import { CreateUserDto } from '../../users/dto/create-user.dto';
+import { UpdateProfileDto } from '../../users/dto/update-profile.dto';
+import { FilterUsersDto } from '../../users/dto/filter-users.dto';
+import {
+  BulkDeleteUsersDto,
+  BulkUpdateRoleDto,
+  BulkUpdateStatusDto,
+  AdminResetPasswordDto,
+} from '../../users/dto/bulk-users.dto';
 
-// Define the registration input schema
+// --- Zod Schemas ---
+
 const registerSchema = z.object({
   email: z.string().email('Invalid email format'),
   name: z.string().min(2, 'Name must be at least 2 characters'),
   lastName: z.string().min(2, 'Last name must be at least 2 characters'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
   contactNumber: z.string().optional(),
+  role: z.enum(['ADMIN', 'EMPLOYEE', 'CLIENT', 'LEAD']).optional(),
   terms: z.boolean().refine((val) => val === true, {
     message: 'You must accept the terms and conditions',
   }),
 });
+
+const updateProfileSchema = z.object({
+  id: z.string(),
+  name: z.string().optional(),
+  lastName: z.string().optional(),
+  contactNumber: z.string().optional(),
+  role: z.enum(['ADMIN', 'EMPLOYEE', 'CLIENT', 'LEAD']).optional(),
+});
+
+const getUserByEmailSchema = z.object({ email: z.string().email() });
+
+const getFilteredUsersSchema = z.object({
+  search: z.string().optional(),
+  role: z.enum(['ADMIN', 'EMPLOYEE', 'CLIENT', 'LEAD']).optional(),
+  teamOnly: z.boolean().optional(),
+  createdFrom: z.string().optional(),
+  createdTo: z.string().optional(),
+  page: z.number().min(1).default(1),
+  limit: z.number().min(1).max(100).default(20),
+  sortBy: z
+    .enum(['email', 'name', 'createdAt', 'lastLogin'])
+    .default('createdAt'),
+  sortOrder: z.enum(['asc', 'desc']).default('desc'),
+});
+
+const bulkDeleteUsersSchema = z.object({ userIds: z.array(z.string()) });
+
+const bulkUpdateRoleSchema = z.object({
+  userIds: z.array(z.string()),
+  role: z.enum(['ADMIN', 'EMPLOYEE', 'CLIENT', 'LEAD']),
+});
+
+const bulkUpdateStatusSchema = z.object({
+  userIds: z.array(z.string()),
+  isActive: z.boolean(),
+});
+
+const resetUserPasswordSchema = z.object({
+  userId: z.string(),
+  sendEmail: z.boolean().default(true),
+});
+
+const adminChangePasswordSchema = z.object({
+  userId: z.string(),
+  newPassword: z.string().min(8, 'Password must be at least 8 characters'),
+});
+
+const sendMessageToUserSchema = z.object({
+  userId: z.string(),
+  message: z
+    .string()
+    .min(1, 'Message is required')
+    .max(500, 'Message too long'),
+});
+
+const anonymizeUserSchema = z.object({ userId: z.string() });
+
+const createImpersonationTokenSchema = z.object({
+  adminId: z.string(),
+  targetUserId: z.string(),
+});
+
+// --- Router ---
 
 export const createUserRouter = (
   usersService: UsersService,
@@ -25,14 +100,26 @@ export const createUserRouter = (
       if (!ctx.user) return null;
       try {
         return await usersService.findOne(ctx.user.id);
-      } catch {
+      } catch (error) {
+        console.error('[UserRouter] Me query failed:', error);
         return null;
       }
     }),
 
     register: t.procedure.input(registerSchema).mutation(async ({ input }) => {
       try {
-        const user = await usersService.create(input as any);
+        // Map fields from TRPC input to UsersService/Prisma expected fields
+        const createDto: CreateUserDto = {
+          email: input.email,
+          password: input.password,
+          firstname: input.name,
+          lastname: input.lastName,
+          phone: input.contactNumber,
+          role: input.role as UserRole | undefined,
+          terms: input.terms,
+        };
+
+        const user = await usersService.create(createDto);
 
         // Send welcome email
         try {
@@ -64,61 +151,98 @@ export const createUserRouter = (
       } catch (error: unknown) {
         const errorMessage =
           error instanceof Error ? error.message : 'Registration failed';
-        throw new Error(errorMessage);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: errorMessage,
+          cause: error,
+        });
       }
     }),
 
     updateProfile: t.procedure
-      .input(
-        z.object({
-          id: z.string(),
-          name: z.string().optional(),
-          lastName: z.string().optional(),
-          contactNumber: z.string().optional(),
-        }),
-      )
+      .input(updateProfileSchema)
       .mutation(async ({ input }) => {
-        // Placeholder implementation - in real scenario this would call a service
-        await Promise.resolve(); // Adding await to satisfy linter
-        return {
-          id: input.id,
-          name: input.name || 'John',
-          lastName: input.lastName || 'Doe',
-          email: 'user@example.com',
-          contactNumber: input.contactNumber || '+1234567890',
-          role: 'CLIENT',
-          message: 'Profile updated successfully (placeholder)',
-        };
+        try {
+          const updateDto: UpdateProfileDto = {
+            firstname: input.name,
+            lastname: input.lastName,
+            phone: input.contactNumber,
+            role: input.role as UserRole | undefined,
+          };
+          const updatedUser = await usersService.updateProfile(
+            input.id,
+            updateDto,
+          );
+
+          console.log(`[UserRouter] Profile updated for user ${input.id}`);
+
+          return {
+            id: updatedUser.id,
+            name: updatedUser.firstname,
+            lastName: updatedUser.lastname,
+            email: updatedUser.email,
+            contactNumber: updatedUser.phone,
+            role: updatedUser.role,
+            message: 'Profile updated successfully',
+          };
+        } catch (error) {
+          console.error(
+            `[UserRouter] Failed to update profile for ${input.id}:`,
+            error,
+          );
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Failed to update profile',
+            cause: error,
+          });
+        }
       }),
 
     getAllUsers: t.procedure.query(async () => {
-      return usersService.findAll();
+      try {
+        return await usersService.findAll();
+      } catch (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to fetch users',
+          cause: error,
+        });
+      }
     }),
 
     getUserByEmail: t.procedure
-      .input(z.object({ email: z.string().email() }))
+      .input(getUserByEmailSchema)
       .query(async ({ input }) => {
-        return usersService.findByEmail(input.email);
+        try {
+          return await usersService.findByEmail(input.email);
+        } catch (error) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'User not found',
+            cause: error,
+          });
+        }
       }),
 
     getFilteredUsers: t.procedure
-      .input(
-        z.object({
-          search: z.string().optional(),
-          role: z.enum(['ADMIN', 'EMPLOYEE', 'CLIENT', 'LEAD']).optional(),
-          teamOnly: z.boolean().optional(), // ALI-122: Filter to show only ADMIN + EMPLOYEE
-          createdFrom: z.string().optional(),
-          createdTo: z.string().optional(),
-          page: z.number().min(1).default(1),
-          limit: z.number().min(1).max(100).default(20),
-          sortBy: z
-            .enum(['email', 'name', 'createdAt', 'lastLogin'])
-            .default('createdAt'),
-          sortOrder: z.enum(['asc', 'desc']).default('desc'),
-        }),
-      )
+      .input(getFilteredUsersSchema)
       .query(async ({ input }) => {
-        return usersService.findAllWithFilters(input);
+        try {
+          // Construct filter DTO explicitly to avoid any casting
+          const filterDto: FilterUsersDto = {
+            ...input,
+            role: input.role as UserRole | undefined,
+            sortOrder: input.sortOrder,
+          };
+
+          return await usersService.findAllWithFilters(filterDto);
+        } catch (error) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Failed to filter users',
+            cause: error,
+          });
+        }
       }),
 
     getUserStats: t.procedure.query(async () => {
@@ -126,32 +250,25 @@ export const createUserRouter = (
     }),
 
     bulkDeleteUsers: t.procedure
-      .input(z.object({ userIds: z.array(z.string()) }))
+      .input(bulkDeleteUsersSchema)
       .mutation(async ({ input }) => {
-        return usersService.bulkDeleteUsers(input as any);
+        return usersService.bulkDeleteUsers(input as BulkDeleteUsersDto);
       }),
 
     bulkUpdateRole: t.procedure
-      .input(
-        z.object({
-          userIds: z.array(z.string()),
-          role: z.enum(['ADMIN', 'EMPLOYEE', 'CLIENT', 'LEAD']),
-        }),
-      )
+      .input(bulkUpdateRoleSchema)
       .mutation(async ({ input }) => {
-        return usersService.bulkUpdateRole(input as any);
+        return usersService.bulkUpdateRole({
+          userIds: input.userIds,
+          role: input.role as UserRole,
+        } as BulkUpdateRoleDto);
       }),
 
     bulkUpdateStatus: t.procedure
-      .input(
-        z.object({
-          userIds: z.array(z.string()),
-          isActive: z.boolean(),
-        }),
-      )
+      .input(bulkUpdateStatusSchema)
       .mutation(async ({ input }) => {
         // Convert isActive boolean to UserStatus enum
-        const statusDto = {
+        const statusDto: BulkUpdateStatusDto = {
           userIds: input.userIds,
           status: input.isActive ? UserStatus.ACTIVE : UserStatus.SUSPENDED,
         };
@@ -159,64 +276,57 @@ export const createUserRouter = (
       }),
 
     resetUserPassword: t.procedure
-      .input(
-        z.object({
-          userId: z.string(),
-          sendEmail: z.boolean().default(true),
-        }),
-      )
+      .input(resetUserPasswordSchema)
       .mutation(async ({ input }) => {
-        return usersService.resetUserPassword(input as any);
+        try {
+          return await usersService.resetUserPassword(
+            input as AdminResetPasswordDto,
+          );
+        } catch (error) {
+          console.error(
+            `[UserRouter] Failed to reset password for ${input.userId}:`,
+            error,
+          );
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Failed to reset password',
+            cause: error,
+          });
+        }
       }),
 
     // New admin functions
     adminChangePassword: t.procedure
-      .input(
-        z.object({
-          userId: z.string(),
-          newPassword: z
-            .string()
-            .min(8, 'Password must be at least 8 characters'),
-        }),
-      )
+      .input(adminChangePasswordSchema)
       .mutation(async ({ input }) => {
-        return usersService.adminChangePassword(
-          input.userId,
-          input.newPassword,
-        );
+        try {
+          return await usersService.adminChangePassword(
+            input.userId,
+            input.newPassword,
+          );
+        } catch (error) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Failed to change password',
+            cause: error,
+          });
+        }
       }),
 
     sendMessageToUser: t.procedure
-      .input(
-        z.object({
-          userId: z.string(),
-          message: z
-            .string()
-            .min(1, 'Message is required')
-            .max(500, 'Message too long'),
-        }),
-      )
+      .input(sendMessageToUserSchema)
       .mutation(async ({ input }) => {
         return usersService.sendMessageToUser(input.userId, input.message);
       }),
 
     anonymizeUser: t.procedure
-      .input(
-        z.object({
-          userId: z.string(),
-        }),
-      )
+      .input(anonymizeUserSchema)
       .mutation(async ({ input }) => {
         return usersService.anonymizeUser(input.userId);
       }),
 
     createImpersonationToken: t.procedure
-      .input(
-        z.object({
-          adminId: z.string(),
-          targetUserId: z.string(),
-        }),
-      )
+      .input(createImpersonationTokenSchema)
       .mutation(async ({ input }) => {
         return usersService.createImpersonationToken(
           input.adminId,

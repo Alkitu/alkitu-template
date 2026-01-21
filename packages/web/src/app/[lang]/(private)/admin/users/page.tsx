@@ -1,52 +1,22 @@
 'use client';
+
 import React, { useState, useMemo } from 'react';
 import { trpc } from '@/lib/trpc';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/primitives/Card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/primitives/ui/table';
-import { Input } from '@/components/primitives/Input';
-import { Button } from '@/components/primitives/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/primitives/Select';
-import { Badge } from '@/components/atoms/badge';
-import { Checkbox } from '@/components/primitives/ui/checkbox';
-import {
-  SearchIcon,
-  Filter,
-  MoreHorizontal,
-  Plus,
-  Trash2,
-  UserCheck,
-  UserX,
-} from 'lucide-react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/primitives/DropdownMenu';
-import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { UserRole } from '@alkitu/shared';
+import { Plus, Search } from 'lucide-react';
 import { toast } from 'sonner';
-import { AdminPageHeader } from '@/components/molecules/admin-page-header';
+
+// Alianza Components (Atomic Design)
+import { Heading } from '@/components/atoms-alianza/Typography';
+import { UserStatsCard } from '@/components/atoms-alianza/UserStatsCard';
+import { Button } from '@/components/molecules-alianza/Button';
+import { InputGroup } from '@/components/molecules-alianza/InputGroup';
+import { UserFilterButtons, type UserFilterType } from '@/components/molecules-alianza/UserFilterButtons';
+import { UsersTableAlianza, type UserTableItem } from '@/components/organisms-alianza/UsersTableAlianza';
+import { UsersTableSkeleton } from '@/components/organisms-alianza/UsersTableSkeleton';
+import { UserPagination } from '@/components/molecules-alianza/UserPagination';
+
+
 
 interface User {
   id: string;
@@ -57,19 +27,6 @@ interface User {
   role: string;
   createdAt: string;
   lastLogin: string | null;
-  address?: string | null; // ALI-122: CLIENT-specific field
-}
-
-interface FilteredUsersResponse {
-  users: User[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-    hasNext: boolean;
-    hasPrev: boolean;
-  };
 }
 
 interface UserFilters {
@@ -84,7 +41,10 @@ interface UserFilters {
 const UsersPage = () => {
   const { lang } = useParams();
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'team' | 'clients'>('team'); // ALI-122: Team & Clients tabs
+  
+  // State
+  const [activeFilter, setActiveFilter] = useState<UserFilterType>('all');
+  const [searchValue, setSearchValue] = useState('');
   const [filters, setFilters] = useState<UserFilters>({
     search: '',
     role: '',
@@ -93,8 +53,6 @@ const UsersPage = () => {
     sortBy: 'createdAt',
     sortOrder: 'desc',
   });
-  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
-  const [showFilters, setShowFilters] = useState(false);
 
   // Debounced filters for API calls
   const [debouncedFilters, setDebouncedFilters] = useState(filters);
@@ -102,13 +60,17 @@ const UsersPage = () => {
   // Debounce effect for search
   React.useEffect(() => {
     const timer = setTimeout(() => {
-      setDebouncedFilters(filters);
-    }, 300); // 300ms debounce
+      setDebouncedFilters((prev) => ({ 
+        ...prev, 
+        search: searchValue,
+        page: 1 
+      }));
+    }, 300);
 
     return () => clearTimeout(timer);
-  }, [filters]);
+  }, [searchValue]);
 
-  // ALI-122: Build query parameters based on active tab
+  // Build query parameters based on active filter
   const queryParams = useMemo(() => {
     const params: any = {
       page: debouncedFilters.page,
@@ -116,526 +78,195 @@ const UsersPage = () => {
       sortBy: debouncedFilters.sortBy,
       sortOrder: debouncedFilters.sortOrder,
     };
-    if (debouncedFilters.search) params.search = debouncedFilters.search;
+    
+    if (debouncedFilters.search) {
+      params.search = debouncedFilters.search;
+    }
 
-    // ALI-122: Filter by tab
-    if (activeTab === 'team') {
-      // Team tab: Show ADMIN and EMPLOYEE only
-      params.role = debouncedFilters.role && debouncedFilters.role !== 'ALL'
-        ? debouncedFilters.role
-        : undefined; // Let backend handle team filter
-      params.teamOnly = true; // Custom filter for ADMIN + EMPLOYEE
-    } else {
-      // Clients tab: Show CLIENT only
-      params.role = 'CLIENT';
+    // Map filter to role
+    switch (activeFilter) {
+      case 'admin':
+        params.role = 'ADMIN';
+        break;
+      case 'employee':
+        params.role = 'EMPLOYEE';
+        break;
+      case 'client':
+        params.role = 'CLIENT';
+        break;
+      case 'all':
+      default:
+        // No role filter = all users
+        break;
     }
 
     return params;
-  }, [debouncedFilters, activeTab]);
+  }, [debouncedFilters, activeFilter]);
 
+  // Fetch users
   const {
     data: usersData,
     isLoading,
     isError,
     refetch,
-  } = trpc.user.getFilteredUsers.useQuery(queryParams); // TODO: Implement this
+  } = trpc.user.getFilteredUsers.useQuery(queryParams);
 
-  // Add mutations for bulk actions
-  const bulkUpdateStatusMutation = trpc.user.bulkUpdateStatus.useMutation(); // TODO: Implement this
-  const bulkDeleteUsersMutation = trpc.user.bulkDeleteUsers.useMutation(); // TODO: Implement this
-  const bulkUpdateRoleMutation = trpc.user.bulkUpdateRole.useMutation(); // TODO: Implement this
+  // Fetch user stats using dedicated endpoint
+  const { data: statsData } = trpc.user.getUserStats.useQuery();
 
-  const handleFilterChange = (key: keyof UserFilters, value: any) => {
-    setFilters((prev) => ({ ...prev, [key]: value, page: 1 })); // Reset to page 1 when filtering
+  const stats = useMemo(() => {
+    if (!statsData) {
+      return { total: 0, admins: 0, employees: 0, clients: 0 };
+    }
+    return {
+      total: statsData.total || 0,
+      admins: statsData.byRole?.ADMIN || 0,
+      employees: statsData.byRole?.EMPLOYEE || 0,
+      clients: statsData.byRole?.CLIENT || 0,
+    };
+  }, [statsData]);
+
+  // Mutations
+  const bulkDeleteUsersMutation = trpc.user.bulkDeleteUsers.useMutation();
+
+  // Handlers
+  const handleFilterChange = (filter: UserFilterType) => {
+    setActiveFilter(filter);
+    setDebouncedFilters((prev) => ({ ...prev, page: 1 }));
   };
 
-  const handlePageChange = (newPage: number) => {
-    setFilters((prev) => ({ ...prev, page: newPage }));
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchValue(e.target.value);
   };
 
   const handleAddUser = () => {
-    // Use Next.js router for proper navigation
     router.push(`/${lang}/admin/users/create`);
   };
 
-  const handleUserSelect = (userId: string, checked: boolean) => {
-    if (checked) {
-      setSelectedUsers((prev) => [...prev, userId]);
-    } else {
-      setSelectedUsers((prev) => prev.filter((id) => id !== userId));
-    }
+  const handleEditUser = (userId: string, email: string) => {
+    router.push(`/${lang}/admin/users/${encodeURIComponent(email)}`);
   };
 
-  const handleSelectAll = (checked: boolean) => {
-    if (checked && usersData?.users) {
-      setSelectedUsers(usersData.users.map((user) => user.id));
-    } else {
-      setSelectedUsers([]);
-    }
-  };
-
-  const getRoleBadgeVariant = (role: string) => {
-    switch (role) {
-      case 'ADMIN':
-        return 'destructive';
-      case 'EMPLOYEE':
-        return 'default';
-      case 'CLIENT':
-        return 'secondary';
-      case 'LEAD':
-        return 'outline';
-      default:
-        return 'secondary';
-    }
-  };
-
-  const handleBulkActivate = async () => {
-    try {
-      await bulkUpdateStatusMutation.mutateAsync({
-        userIds: selectedUsers,
-        isActive: true,
-      });
-      toast.success(`${selectedUsers.length} user(s) activated successfully`);
-      setSelectedUsers([]);
-      refetch();
-    } catch (error) {
-      toast.error('Failed to activate users');
-    }
-  };
-
-  const handleBulkDeactivate = async () => {
-    try {
-      await bulkUpdateStatusMutation.mutateAsync({
-        userIds: selectedUsers,
-        isActive: false,
-      });
-      toast.success(`${selectedUsers.length} user(s) deactivated successfully`);
-      setSelectedUsers([]);
-      refetch();
-    } catch (error) {
-      toast.error('Failed to deactivate users');
-    }
-  };
-
-  const handleBulkDelete = async () => {
-    if (
-      !confirm(
-        `Are you sure you want to delete ${selectedUsers.length} user(s)? This action cannot be undone.`,
-      )
-    ) {
+  const handleDeleteUser = async (userId: string) => {
+    if (!confirm('¿Estás seguro de que deseas eliminar este usuario? Esta acción no se puede deshacer.')) {
       return;
     }
 
     try {
-      await bulkDeleteUsersMutation.mutateAsync({
-        userIds: selectedUsers,
-      });
-      toast.success(`${selectedUsers.length} user(s) deleted successfully`);
-      setSelectedUsers([]);
+      await bulkDeleteUsersMutation.mutateAsync({ userIds: [userId] });
+      toast.success('Usuario eliminado exitosamente');
       refetch();
     } catch (error) {
-      toast.error('Failed to delete users');
+      toast.error('Error al eliminar usuario');
     }
   };
 
-  const handleUserAction = async (action: string, userId: string) => {
-    try {
-      switch (action) {
-        case 'activate':
-          await bulkUpdateStatusMutation.mutateAsync({
-            userIds: [userId],
-            isActive: true,
-          });
-          toast.success('User activated successfully');
-          break;
-
-        case 'deactivate':
-          await bulkUpdateStatusMutation.mutateAsync({
-            userIds: [userId],
-            isActive: false,
-          });
-          toast.success('User deactivated successfully');
-          break;
-
-        case 'resetPassword':
-          // Find user email for reset
-          const userForReset = usersData?.users.find((u) => u.id === userId);
-          if (userForReset) {
-            // TODO: Implement reset password when available
-            toast.success('Password reset email sent');
-          }
-          break;
-
-        case 'delete':
-          if (
-            confirm(
-              'Are you sure you want to delete this user? This action cannot be undone.',
-            )
-          ) {
-            await bulkDeleteUsersMutation.mutateAsync({
-              userIds: [userId],
-            });
-            toast.success('User deleted successfully');
-          }
-          break;
-      }
-      refetch();
-    } catch (error) {
-      toast.error('Action failed');
-    }
+  const handlePageChange = (newPage: number) => {
+    setDebouncedFilters((prev) => ({ ...prev, page: newPage }));
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-lg">Loading users...</div>
-      </div>
-    );
-  }
-
+  // Error state
   if (isError) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-lg text-red-500">Error loading users.</div>
+        <div className="text-lg text-destructive">Error al cargar usuarios.</div>
       </div>
     );
   }
 
-  const users = usersData?.users || [];
+  const users: UserTableItem[] = (usersData?.users || []).map((user: any) => ({
+    id: user.id,
+    email: user.email,
+    name: user.firstname || user.name,
+    lastName: user.lastname || user.lastName,
+    contactNumber: user.phone || user.contactNumber,
+    role: user.role,
+  }));
   const pagination = usersData?.pagination;
 
-  // ALI-122: Check if current tab is read-only
-  const isReadOnly = activeTab === 'clients';
-
   return (
-    <div className="space-y-6 p-6">
-      <AdminPageHeader
-        title="User Management"
-        description={
-            <>
-              {activeTab === 'team'
-                ? 'Manage team members (Admins & Employees). Total: '
-                : 'View clients. Total: '}
-              {pagination?.total || 0} users
-            </>
-        }
-        actions={
-          <>
-            <Button
-              variant="outline"
-              onClick={() => setShowFilters(!showFilters)}
-            >
-              <Filter className="h-4 w-4 mr-2" />
-              Filters
-            </Button>
-            {/* ALI-122: Only show Add User button in Team tab */}
-            {activeTab === 'team' && (
-              <Button onClick={handleAddUser}>
-                <Plus className="h-4 w-4 mr-2" />
-                Add User
-              </Button>
-            )}
-          </>
-        }
-      />
+    <div className="flex flex-col gap-[36px] p-6">
+      {/* Page Title */}
+      <Heading level={1} className="text-foreground">
+        Usuarios
+      </Heading>
 
-      <Card>
-        {/* ALI-122: Team & Clients Tabs */}
-        <CardContent className="pt-6">
-          <div className="flex gap-4">
-            <button
-              onClick={() => {
-                setActiveTab('team');
-                setFilters(prev => ({ ...prev, page: 1 }));
-                setSelectedUsers([]);
-              }}
-              className={`px-4 py-2 rounded-md font-medium transition-colors ${
-                activeTab === 'team'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
-              }`}
-            >
-              Team (Admins & Employees)
-            </button>
-            <button
-              onClick={() => {
-                setActiveTab('clients');
-                setFilters(prev => ({ ...prev, page: 1 }));
-                setSelectedUsers([]);
-              }}
-              className={`px-4 py-2 rounded-md font-medium transition-colors ${
-                activeTab === 'clients'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
-              }`}
-            >
-              Clients
-            </button>
-          </div>
-        </CardContent>
+      {/* Stats Cards */}
+      <div className="flex gap-[42px] items-center overflow-x-auto pb-4 scrollbar-hide">
+        <UserStatsCard 
+          label="Total de Usuarios" 
+          value={stats.total} 
+          variant="default"
+        />
+        <UserStatsCard 
+          label="Administradores" 
+          value={stats.admins} 
+          variant="accent"
+        />
+        <UserStatsCard 
+          label="Employee" 
+          value={stats.employees} 
+          variant="accent"
+        />
+        <UserStatsCard 
+          label="Clientes" 
+          value={stats.clients} 
+          variant="accent"
+        />
+      </div>
 
-        {/* Filters */}
-        {showFilters && (
-          <CardContent className="border-t">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="relative">
-                <SearchIcon className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                <Input
-                  placeholder="Search users..."
-                  value={filters.search}
-                  onChange={(e) => handleFilterChange('search', e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              {/* ALI-122: Hide role filter in Clients tab (role is always CLIENT) */}
-              {activeTab === 'team' && (
-                <Select
-                  value={filters.role}
-                  onValueChange={(value) => handleFilterChange('role', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Filter by role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="ALL">All Roles</SelectItem>
-                    <SelectItem value="ADMIN">Admin</SelectItem>
-                    <SelectItem value="EMPLOYEE">Employee</SelectItem>
-                    <SelectItem value="CLIENT">Client</SelectItem>
-                    <SelectItem value="LEAD">Lead</SelectItem>
-                  </SelectContent>
-                </Select>
-              )}
-              <Select
-                value={filters.sortBy}
-                onValueChange={(value) => handleFilterChange('sortBy', value)}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="createdAt">Created Date</SelectItem>
-                  <SelectItem value="email">Email</SelectItem>
-                  <SelectItem value="name">Name</SelectItem>
-                  <SelectItem value="lastLogin">Last Login</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select
-                value={filters.sortOrder}
-                onValueChange={(value) =>
-                  handleFilterChange('sortOrder', value as 'asc' | 'desc')
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="desc">Newest First</SelectItem>
-                  <SelectItem value="asc">Oldest First</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </CardContent>
-        )}
-      </Card>
+      {/* Filter Bar */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        {/* Filter Buttons */}
+        <UserFilterButtons
+          activeFilter={activeFilter}
+          onFilterChange={handleFilterChange}
+        />
 
-      {/* Bulk Actions */}
-      {/* ALI-122: Hide bulk actions in Clients tab (read-only) */}
-      {selectedUsers.length > 0 && !isReadOnly && (
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">
-                {selectedUsers.length} user(s) selected
-              </span>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleBulkActivate}
-                  disabled={bulkUpdateStatusMutation.isPending}
-                >
-                  <UserCheck className="h-4 w-4 mr-2" />
-                  Activate
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleBulkDeactivate}
-                  disabled={bulkUpdateStatusMutation.isPending}
-                >
-                  <UserX className="h-4 w-4 mr-2" />
-                  Deactivate
-                </Button>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={handleBulkDelete}
-                  disabled={bulkDeleteUsersMutation.isPending}
-                >
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Delete
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+        {/* Search + Create Button */}
+        <div className="flex items-center gap-3">
+          <InputGroup
+            placeholder="Buscar usuarios..."
+            value={searchValue}
+            onChange={handleSearchChange}
+            iconLeft={<Search className="h-4 w-4 text-muted-foreground" />}
+            className="w-[200px] md:w-[250px]"
+          />
+          <Button 
+            variant="active" 
+            onClick={handleAddUser}
+            iconLeft={<Plus className="h-4 w-4" />}
+          >
+            Crear nuevo usuario
+          </Button>
+        </div>
+      </div>
 
       {/* Users Table */}
-      <Card>
-        <CardContent className="pt-6">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                {/* ALI-122: Disable checkboxes in Clients tab (read-only) */}
-                {!isReadOnly && (
-                  <TableHead className="w-12">
-                    <Checkbox
-                      checked={
-                        users.length > 0 && selectedUsers.length === users.length
-                      }
-                      onCheckedChange={handleSelectAll}
-                    />
-                  </TableHead>
-                )}
-                <TableHead>Email</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Role</TableHead>
-                {/* ALI-122: Show address column in Clients tab */}
-                {activeTab === 'clients' && <TableHead>Address</TableHead>}
-                <TableHead>Created At</TableHead>
-                <TableHead>Last Login</TableHead>
-                {/* ALI-122: Hide actions column in Clients tab (read-only) */}
-                {!isReadOnly && <TableHead className="w-12"></TableHead>}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {users.map((user) => (
-                <TableRow key={user.id}>
-                  {/* ALI-122: Hide checkboxes in Clients tab (read-only) */}
-                  {!isReadOnly && (
-                    <TableCell>
-                      <Checkbox
-                        checked={selectedUsers.includes(user.id)}
-                        onCheckedChange={(checked) =>
-                          handleUserSelect(user.id, checked as boolean)
-                        }
-                      />
-                    </TableCell>
-                  )}
-                  <TableCell>
-                    <Link
-                      href={`/${lang}/admin/users/${encodeURIComponent(user.email)}`}
-                      className="text-blue-600 hover:underline"
-                    >
-                      {user.email}
-                    </Link>
-                  </TableCell>
-                  <TableCell>
-                    {/* Handle potential field name differences from API */}
-                    {(user as any).name || (user as any).firstname || ''} {(user as any).lastName || (user as any).lastname || ''}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={getRoleBadgeVariant(user.role)}>
-                      {user.role}
-                    </Badge>
-                  </TableCell>
-                  {/* ALI-122: Show address column in Clients tab */}
-                  {activeTab === 'clients' && (
-                    <TableCell>{user.address || 'N/A'}</TableCell>
-                  )}
-                  <TableCell>
-                    {new Date(user.createdAt).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell>
-                    {user.lastLogin
-                      ? new Date(user.lastLogin).toLocaleDateString()
-                      : 'Never'}
-                  </TableCell>
-                  {/* ALI-122: Hide actions dropdown in Clients tab (read-only) */}
-                  {!isReadOnly && (
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem asChild>
-                            <Link
-                              href={`/${lang}/admin/users/${encodeURIComponent(user.email)}`}
-                            >
-                              Edit User
-                            </Link>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() =>
-                              handleUserAction('resetPassword', user.id)
-                            }
-                          >
-                            Reset Password
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => handleUserAction('activate', user.id)}
-                          >
-                            Activate User
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() =>
-                              handleUserAction('deactivate', user.id)
-                            }
-                          >
-                            Deactivate User
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            className="text-red-600"
-                            onClick={() => handleUserAction('delete', user.id)}
-                          >
-                            Delete User
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  )}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+      <div className="bg-secondary border border-secondary-foreground rounded-[8px] overflow-hidden">
+        {isLoading ? (
+          <UsersTableSkeleton rowCount={debouncedFilters.limit} />
+        ) : (
+          <UsersTableAlianza
+            users={users}
+            lang={lang as string}
+            onEditUser={handleEditUser}
+            onDeleteUser={handleDeleteUser}
+          />
+        )}
+      </div>
 
-          {/* Pagination */}
-          {pagination && pagination.totalPages > 1 && (
-            <div className="flex items-center justify-between mt-6">
-              <div className="text-sm text-gray-600">
-                Showing {(pagination.page - 1) * pagination.limit + 1} to{' '}
-                {Math.min(pagination.page * pagination.limit, pagination.total)}{' '}
-                of {pagination.total} results
-              </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={!pagination.hasPrev}
-                  onClick={() => handlePageChange(pagination.page - 1)}
-                >
-                  Previous
-                </Button>
-                <span className="text-sm">
-                  Page {pagination.page} of {pagination.totalPages}
-                </span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={!pagination.hasNext}
-                  onClick={() => handlePageChange(pagination.page + 1)}
-                >
-                  Next
-                </Button>
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      {/* Pagination */}
+      {pagination && (
+        <UserPagination
+          currentPage={pagination.page}
+          totalPages={pagination.totalPages}
+          totalItems={pagination.total}
+          pageSize={debouncedFilters.limit}
+          onPageChange={(page) => handlePageChange(page)}
+          onPageSizeChange={(size) => setDebouncedFilters(prev => ({ ...prev, limit: size, page: 1 }))}
+        />
+      )}
     </div>
   );
 };

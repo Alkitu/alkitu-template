@@ -4,6 +4,7 @@ import {
   NotFoundException,
   BadRequestException,
   UnauthorizedException,
+  Logger,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -23,12 +24,16 @@ import { NotificationType } from '../notification/dto/create-notification.dto';
 import { UserRole, UserStatus } from '@prisma/client';
 import { UpdateUserTagsDto } from './dto/update-user-tags.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class UsersService {
+  private readonly logger = new Logger(UsersService.name);
+
   constructor(
     private prisma: PrismaService,
     private notificationService: NotificationService,
+    private emailService: EmailService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -83,9 +88,8 @@ export class UsersService {
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
-      console.log(
-        'Warning: Could not create welcome notification:',
-        errorMessage,
+      this.logger.warn(
+        `Warning: Could not create welcome notification: ${errorMessage}`,
       );
       // Continue without failing the user creation
     }
@@ -111,6 +115,7 @@ export class UsersService {
         contactPerson: true,
         profileComplete: true,
         role: true,
+        status: true,
         createdAt: true,
         lastLogin: true,
         emailVerified: true,
@@ -193,6 +198,7 @@ export class UsersService {
         contactPerson: true,
         profileComplete: true,
         role: true,
+        status: true,
         createdAt: true,
         lastLogin: true,
         emailVerified: true,
@@ -236,6 +242,7 @@ export class UsersService {
         contactPerson: true,
         profileComplete: true,
         role: true,
+        status: true,
         createdAt: true,
         lastLogin: true,
         emailVerified: true,
@@ -279,6 +286,7 @@ export class UsersService {
         contactPerson: true,
         profileComplete: true,
         role: true,
+        status: true,
         createdAt: true,
         emailVerified: true,
       },
@@ -318,6 +326,9 @@ export class UsersService {
     }
     if (updateProfileDto.company !== undefined) {
       updateData.company = updateProfileDto.company;
+    }
+    if (updateProfileDto.role !== undefined) {
+      updateData.role = updateProfileDto.role;
     }
 
     // Only CLIENT can update address and contactPerson
@@ -583,6 +594,20 @@ export class UsersService {
 
     if (sendEmail) {
       try {
+        const userName = `${user.firstname} ${user.lastname}`.trim() || user.email;
+        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+        
+        // 1. Send Email
+        await this.emailService.sendNotification(
+          user.email,
+          userName,
+          'Password Reset By Admin',
+          `Your password has been reset by an administrator. Your new temporary password is: <strong>${tempPassword}</strong><br>Please log in and change your password immediately.`,
+          'Login Now',
+          `${frontendUrl}/login`,
+        );
+
+        // 2. Create In-App Notification
         await this.notificationService.createNotification({
           userId,
           message: `Your password has been reset. Your temporary password is: ${tempPassword}`,
@@ -590,9 +615,8 @@ export class UsersService {
           link: '/auth/new-password',
         });
       } catch (error) {
-        console.log(
-          'Warning: Could not send password reset notification:',
-          error,
+        this.logger.warn(
+          `Warning: Could not send password reset notification: ${error}`,
         );
       }
     }
@@ -745,7 +769,7 @@ export class UsersService {
     }
 
     // Log the impersonation attempt
-    console.log(`Admin ${adminId} is impersonating user ${targetUserId}`);
+    this.logger.log(`Admin ${adminId} is impersonating user ${targetUserId}`);
 
     // Return target user info for session creation
     return {

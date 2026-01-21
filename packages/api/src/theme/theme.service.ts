@@ -31,6 +31,19 @@ export class ThemeService {
    * Save a new theme
    */
   async saveTheme(data: SaveThemeDto): Promise<Theme> {
+    // Verify authorization if userId is provided
+    if (data.userId) {
+      const user = await this.prisma.user.findUnique({
+        where: { id: data.userId },
+        select: { role: true },
+      });
+
+      // Only admins can create themes
+      if (user?.role !== 'ADMIN') {
+        throw new Error('Unauthorized to create themes. Only admins can create themes.');
+      }
+    }
+
     // If isActive is true, deactivate all other themes for this user
     if (data.isActive && data.userId) {
       await this.prisma.theme.updateMany({
@@ -72,6 +85,31 @@ export class ThemeService {
    */
   async updateTheme(data: UpdateThemeDto): Promise<Theme> {
     const { id, ...updateData } = data;
+
+    // Verify authorization if userId is provided
+    if (updateData.userId) {
+      const theme = await this.prisma.theme.findUnique({
+        where: { id },
+      });
+
+      if (!theme) {
+        throw new Error('Theme not found');
+      }
+
+      // Get user to check role
+      const user = await this.prisma.user.findUnique({
+        where: { id: updateData.userId },
+        select: { role: true },
+      });
+
+      // Allow if user is ADMIN or if user is the theme creator
+      const isAdmin = user?.role === 'ADMIN';
+      const isCreator = theme.userId === updateData.userId;
+
+      if (!isAdmin && !isCreator) {
+        throw new Error('Unauthorized to update this theme. Only admins or the theme creator can update themes.');
+      }
+    }
 
     // If isActive is true, deactivate all other themes for this user
     if (updateData.isActive && updateData.userId) {
@@ -135,14 +173,28 @@ export class ThemeService {
    * Delete a theme
    */
   async deleteTheme(id: string, userId?: string): Promise<Theme> {
-    // Verify ownership if userId is provided
+    // Verify authorization if userId is provided
     if (userId) {
       const theme = await this.prisma.theme.findUnique({
         where: { id },
       });
 
-      if (theme?.userId !== userId) {
-        throw new Error('Unauthorized to delete this theme');
+      if (!theme) {
+        throw new Error('Theme not found');
+      }
+
+      // Get user to check role
+      const user = await this.prisma.user.findUnique({
+        where: { id: userId },
+        select: { role: true },
+      });
+
+      // Allow if user is ADMIN or if user is the theme creator
+      const isAdmin = user?.role === 'ADMIN';
+      const isCreator = theme.userId === userId;
+
+      if (!isAdmin && !isCreator) {
+        throw new Error('Unauthorized to delete this theme. Only admins or the theme creator can delete themes.');
       }
     }
 
@@ -246,6 +298,19 @@ export class ThemeService {
     companyId: string,
     userId?: string,
   ): Promise<Theme> {
+    // Verify authorization if userId is provided
+    if (userId) {
+      const user = await this.prisma.user.findUnique({
+        where: { id: userId },
+        select: { role: true },
+      });
+
+      // Only admins can set default themes
+      if (user?.role !== 'ADMIN') {
+        throw new Error('Unauthorized to set default theme. Only admins can set default themes.');
+      }
+    }
+
     const theme = await this.prisma.theme.findUnique({
       where: { id: themeId },
     });

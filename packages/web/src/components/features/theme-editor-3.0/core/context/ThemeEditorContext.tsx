@@ -6,6 +6,7 @@ import { DEFAULT_THEME, DEFAULT_THEMES } from '../constants/default-themes';
 import { applyThemeToRoot, applyThemeMode, applyModeSpecificColors, applyTypographyElements, applyBorderElements, applyScrollElements, applyScrollbarColors, applyScrollbarUtilityClass } from '../../lib/utils/css/css-variables';
 import { DEFAULT_TYPOGRAPHY } from '../../theme-editor/editor/typography/types';
 import { trpc } from '@/lib/trpc';
+import { useThemeAuth } from '../hooks/useThemeAuth';
 
 // History interface for undo/redo functionality
 interface HistoryEntry {
@@ -70,6 +71,7 @@ type ThemeEditorAction =
   | { type: 'SET_ERROR'; payload: string | null }
   | { type: 'TOGGLE_UNSAVED_CHANGES'; payload: boolean }
   | { type: 'ADD_THEME'; payload: ThemeData }
+  | { type: 'REMOVE_THEME'; payload: string }
   | { type: 'UNDO' }
   | { type: 'REDO' };
 
@@ -337,7 +339,13 @@ function themeEditorReducer(state: ThemeEditorState, action: ThemeEditorAction):
         baseTheme: action.payload,
         editor: { ...state.editor, hasUnsavedChanges: false }
       };
-    
+
+    case 'REMOVE_THEME':
+      return {
+        ...state,
+        availableThemes: state.availableThemes.filter(t => t.id !== action.payload),
+      };
+
     case 'UNDO':
       const undoResult = performUndo(state.history);
       if (!undoResult) return state;
@@ -375,7 +383,7 @@ function themeEditorReducer(state: ThemeEditorState, action: ThemeEditorAction):
 interface ThemeEditorContextType {
   state: ThemeEditorState;
   dispatch: React.Dispatch<ThemeEditorAction>;
-  
+
   // Helper actions
   setTheme: (theme: ThemeData) => void;
   updateTheme: (theme: ThemeData) => void;
@@ -389,7 +397,8 @@ interface ThemeEditorContextType {
   markUnsaved: () => void;
   markSaved: () => void;
   addTheme: (theme: ThemeData) => void;
-  
+  removeTheme: (themeId: string) => void;
+
   // History actions
   undo: () => void;
   redo: () => void;
@@ -413,9 +422,19 @@ export function ThemeEditorProvider({ children, companyId: propCompanyId, initia
   // Initialize state with localStorage theme mode to prevent FOUC
   const [state, dispatch] = useReducer(themeEditorReducer, undefined, createInitialState);
 
+  // Get authenticated user data to determine correct companyId
+  const { userId, companyId: authCompanyId } = useThemeAuth();
+
   // Load themes from database
-  // Use prop if provided, otherwise fallback to hardcoded (TODO: Get from auth context)
-  const companyId = propCompanyId || '6733c2fd80b7b58d4c36d966';
+  // Logic: Use prop if provided and not default, otherwise try auth data (company or user), then fallback to hardcoded
+  // This matches the logic in useThemeSelector
+  const HARDCODED_ID = '6733c2fd80b7b58d4c36d966';
+  const companyId = (propCompanyId && propCompanyId !== HARDCODED_ID)
+    ? propCompanyId
+    : (authCompanyId || userId || propCompanyId || HARDCODED_ID);
+    
+  // Debug log to verify we are using the correct ID
+  // console.log('🔍 [ThemeEditorProvider] Loading themes for companyId:', companyId);
 
   // Always fetch from database to detect theme updates (favorite/default changes)
   const { data: dbThemes, refetch: refetchThemes } = trpc.theme.getCompanyThemes.useQuery(
@@ -427,6 +446,7 @@ export function ThemeEditorProvider({ children, companyId: propCompanyId, initia
       refetchOnMount: true,
       refetchOnWindowFocus: false,
       staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
+      enabled: !!companyId, // Only fetch if we have an ID
     }
   );
 
@@ -436,8 +456,13 @@ export function ThemeEditorProvider({ children, companyId: propCompanyId, initia
 
     // Priority 1 (HIGHEST): Database themes - check for isDefault or isFavorite
     if (dbThemes && dbThemes.length > 0) {
-      // Find default theme (starred theme)
-      themeToLoad = dbThemes.find(t => t.isDefault);
+      // Find active theme (user selected)
+      themeToLoad = dbThemes.find(t => t.isActive);
+
+      // If no active, find default theme (company default)
+      if (!themeToLoad) {
+        themeToLoad = dbThemes.find(t => t.isDefault);
+      }
 
       // If no default, find favorite theme
       if (!themeToLoad) {
@@ -464,6 +489,8 @@ export function ThemeEditorProvider({ children, companyId: propCompanyId, initia
     }
 
     // Convert theme to ThemeData format (works for both DB themes and initialTheme)
+    const dbThemeData = (themeToLoad.themeData as any) || {};
+
     const loadedTheme: ThemeData = {
       id: themeToLoad.id,
       name: themeToLoad.name,
@@ -471,14 +498,22 @@ export function ThemeEditorProvider({ children, companyId: propCompanyId, initia
       lightColors: themeToLoad.lightModeConfig as any,
       darkColors: themeToLoad.darkModeConfig as any,
       typography: themeToLoad.typography as any,
-      brand: {},
-      spacing: {},
-      borders: {},
-      shadows: {},
-      scroll: {},
+      brand: dbThemeData.brand || {
+        name: themeToLoad.name + ' Brand',
+        logos: { icon: null, horizontal: null, vertical: null }
+      },
+      spacing: dbThemeData.spacing || {},
+      borders: dbThemeData.borders || {},
+      shadows: dbThemeData.shadows || {},
+      scroll: dbThemeData.scroll || {},
       isDefault: themeToLoad.isDefault,
       isFavorite: themeToLoad.isFavorite,
     };
+
+    // Ensure brand logos structure exists
+    if (!loadedTheme.brand.logos) {
+      loadedTheme.brand.logos = { icon: null, horizontal: null, vertical: null };
+    }
 
     // Apply the loaded theme
     dispatch({ type: 'SET_THEME', payload: loadedTheme });
@@ -487,7 +522,9 @@ export function ThemeEditorProvider({ children, companyId: propCompanyId, initia
     applyModeSpecificColors(colors);
     applyThemeMode(state.themeMode);
     applyScrollElements(loadedTheme.scroll || {});
-    applyTypographyElements(loadedTheme.typography || DEFAULT_TYPOGRAPHY);
+    applyScrollElements(loadedTheme.scroll || {});
+    const typography = { ...DEFAULT_TYPOGRAPHY, ...(loadedTheme.typography || {}) };
+    applyTypographyElements(typography);
   }, [dbThemes, state.themeMode]); // Removed initialTheme from deps - only load it once on mount
 
   // Hydrate persisted active section after initial render to prevent hydration mismatch
@@ -575,7 +612,11 @@ export function ThemeEditorProvider({ children, companyId: propCompanyId, initia
   const addTheme = (theme: ThemeData) => {
     dispatch({ type: 'ADD_THEME', payload: theme });
   };
-  
+
+  const removeTheme = (themeId: string) => {
+    dispatch({ type: 'REMOVE_THEME', payload: themeId });
+  };
+
   // History functions
   const undo = () => {
     dispatch({ type: 'UNDO' });
@@ -606,6 +647,7 @@ export function ThemeEditorProvider({ children, companyId: propCompanyId, initia
     markUnsaved,
     markSaved,
     addTheme,
+    removeTheme,
     undo,
     redo,
     canUndo: canUndoValue,

@@ -6,20 +6,27 @@ import { DEFAULT_THEMES } from '../constants/default-themes';
 import { ThemeData } from '../types/theme.types';
 import { generateColorVariants } from '../../theme-editor/editor/brand/utils';
 import { trpc } from '@/lib/trpc';
+import { useThemeAuth } from './useThemeAuth';
 
 /**
  * Custom hook para el Theme Selector
  * Elimina la lógica duplicada de manejo de temas
  */
 export function useThemeSelector() {
-  const { state, setTheme } = useThemeEditor();
+  const { state, setTheme, removeTheme } = useThemeEditor();
   const [searchQuery, setSearchQuery] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  // Load themes from database
-  const companyId = '6733c2fd80b7b58d4c36d966'; // TODO: Get from auth context
+  // Get authenticated user data
+  const { userId, companyId, isAdmin } = useThemeAuth();
+
+  // Load themes from database - use companyId from auth or fallback to userId
+  // This ensures we use the same companyId that was used when saving themes
+  const effectiveCompanyId = companyId || userId || '6733c2fd80b7b58d4c36d966';
+  console.log('🔍 [ThemeSelector] Loading themes for companyId:', effectiveCompanyId);
+
   const { data: dbThemes, refetch: refetchThemes } = trpc.theme.getCompanyThemes.useQuery({
-    companyId,
+    companyId: effectiveCompanyId,
     activeOnly: false,
   });
 
@@ -32,6 +39,13 @@ export function useThemeSelector() {
 
   // Mutation to save built-in theme as favorite
   const createThemeMutation = trpc.theme.createTheme.useMutation({
+    onSuccess: () => {
+      refetchThemes();
+    },
+  });
+
+  // Mutation to delete theme
+  const deleteThemeMutation = trpc.theme.delete.useMutation({
     onSuccess: () => {
       refetchThemes();
     },
@@ -177,8 +191,8 @@ export function useThemeSelector() {
         name: theme.name,
         description: theme.description || `Built-in ${theme.name} theme`,
         author: theme.author || 'Alkitu',
-        companyId,
-        createdById: 'current-user-id', // TODO: Get from auth context
+        companyId: effectiveCompanyId,
+        createdById: userId || '',
         lightModeConfig: theme.lightColors,
         darkModeConfig: theme.darkColors,
         typography: theme.typography,
@@ -189,9 +203,45 @@ export function useThemeSelector() {
       // Saved theme: Toggle favorite in database
       toggleFavoriteMutation.mutate({
         themeId,
-        companyId,
-        userId: 'current-user-id', // TODO: Get from auth context
+        companyId: effectiveCompanyId,
+        userId: userId || '',
       });
+    }
+  };
+
+  /**
+   * Handle deleting a theme
+   * Only works for saved themes (not built-in themes) and only for admins
+   */
+  const handleDeleteTheme = async (themeId: string): Promise<void> => {
+    try {
+      // Validate admin role
+      if (!isAdmin) {
+        throw new Error('Only administrators can delete themes');
+      }
+
+      // Validate userId
+      if (!userId) {
+        throw new Error('Authentication required to delete themes');
+      }
+
+      // Delete from database
+      await deleteThemeMutation.mutateAsync({
+        id: themeId,
+        userId: userId,
+      });
+
+      // Remove from local state
+      removeTheme(themeId);
+
+      // If deleted theme was active, switch to first default theme
+      if (state.currentTheme?.id === themeId) {
+        const firstTheme = DEFAULT_THEMES[0];
+        setTheme(firstTheme);
+      }
+    } catch (error) {
+      console.error('Failed to delete theme:', error);
+      throw error; // Re-throw so DeleteThemeButton can handle it
     }
   };
 
@@ -212,6 +262,7 @@ export function useThemeSelector() {
     handleNextTheme,
     handleRandomTheme,
     handleToggleFavorite,
+    handleDeleteTheme,
 
     // Helper functions
     isBuiltInTheme,
@@ -220,5 +271,8 @@ export function useThemeSelector() {
     themes: allThemes,
     builtInThemes: DEFAULT_THEMES,
     isLoadingThemes: !dbThemes,
+
+    // Auth
+    isAdmin,
   };
 }

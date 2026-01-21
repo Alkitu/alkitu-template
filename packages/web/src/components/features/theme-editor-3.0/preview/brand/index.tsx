@@ -172,8 +172,8 @@ export function BrandPreview({ brand, className = "" }: BrandPreviewProps) {
   const variantBackgrounds = getVariantBackgrounds(isDarkMode);
   
   // Convertir objetos de brand.logos a array para usar logos por defecto si es necesario
-  const logos = [brand.logos.icon, brand.logos.horizontal, brand.logos.vertical];
-  
+  const logos = brand.logos ? [brand.logos.icon, brand.logos.horizontal, brand.logos.vertical] : [];
+
   // Filtrar solo logos que no son null (sin logos por defecto)
   const validLogos = logos.filter((logo): logo is LogoVariant => logo !== null);
 

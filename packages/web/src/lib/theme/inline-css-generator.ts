@@ -77,6 +77,23 @@ function generateColorCSS(colors: ThemeColors, mode: 'light' | 'dark'): string {
  * }
  * ```
  */
+import { DEFAULT_TYPOGRAPHY } from '@/components/features/theme-editor-3.0/theme-editor/editor/typography/types';
+
+/**
+ * Generate inline CSS from typography settings
+ */
+function generateTypographyCSS(typography: any): string {
+  // Merge provided typography with defaults to ensure all keys exist
+  const mergedTypography = { ...DEFAULT_TYPOGRAPHY, ...(typography || {}) };
+
+  return Object.entries(mergedTypography)
+    .map(([elementKey, element]: [string, any]) => {
+      const prefix = `--typography-${elementKey}`;
+      return `    ${prefix}-font-family: ${element.fontFamily};\n    ${prefix}-font-size: ${element.fontSize};\n    ${prefix}-font-weight: ${element.fontWeight};\n    ${prefix}-line-height: ${element.lineHeight};\n    ${prefix}-letter-spacing: ${element.letterSpacing};\n    ${prefix}-word-spacing: ${element.wordSpacing};\n    ${prefix}-text-decoration: ${element.textDecoration};\n    ${prefix}-font-style: ${element.fontStyle};`;
+    })
+    .join('\n');
+}
+
 export function generateInlineThemeCSS(theme: DbTheme | null): string {
   if (!theme) {
     return '';
@@ -84,6 +101,8 @@ export function generateInlineThemeCSS(theme: DbTheme | null): string {
 
   const lightColors = theme.lightModeConfig as ThemeColors;
   const darkColors = theme.darkModeConfig as ThemeColors;
+  // Use merged typography logic handled in generateTypographyCSS
+  const typography = theme.typography;
 
   if (!lightColors || !darkColors) {
     console.warn('[generateInlineThemeCSS] Theme missing color configurations');
@@ -92,10 +111,16 @@ export function generateInlineThemeCSS(theme: DbTheme | null): string {
 
   const lightCSS = generateColorCSS(lightColors, 'light');
   const darkCSS = generateColorCSS(darkColors, 'dark');
+  // Always generate typography CSS, using defaults if theme.typography is null/empty
+  const typographyCSS = generateTypographyCSS(typography);
 
   return `
 /* Theme: ${theme.name} (ID: ${theme.id}) */
 /* Generated server-side to prevent FOUC */
+
+  :root {
+${typographyCSS}
+  }
 
 ${lightCSS}
 

@@ -10,12 +10,15 @@ import { ViewportSize } from './viewport.types';
 // Import/Export handlers
 export type ThemeImportHandler = (theme: ThemeData) => void;
 export type ThemeImportErrorHandler = (error: string) => void;
-export type ThemeSaveHandler = (theme: ThemeData) => void;
+export type ThemeSaveHandler = (theme: ThemeData, isNewTheme: boolean) => Promise<void>;
 
 // History handlers
 export type UndoHandler = () => void;
 export type RedoHandler = () => void;
 export type ResetHandler = () => void;
+
+// Theme management handlers
+export type ThemeDeleteHandler = (themeId: string) => Promise<void>;
 
 // Viewport handlers
 export type ViewportChangeHandler = (viewport: ViewportSize) => void;
@@ -40,11 +43,11 @@ export interface ActionsBarLogic {
   };
   currentTheme: ThemeData;
   historyState: HistoryState;
-  
+
   // Setters
   setViewport: ViewportChangeHandler;
   setThemeMode: ThemeModeChangeHandler;
-  
+
   // Handlers
   handleUndo: UndoHandler;
   handleRedo: RedoHandler;
@@ -52,6 +55,7 @@ export interface ActionsBarLogic {
   handleImportError: ThemeImportErrorHandler;
   handleSave: ThemeSaveHandler;
   handleReset: ResetHandler;
+  handleDelete: ThemeDeleteHandler;
 }
 
 // Component Props

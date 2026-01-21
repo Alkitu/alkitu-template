@@ -7,8 +7,9 @@ import { ChatWidget } from '@/components/features/ChatWidget/ChatWidget';
 // import { SpeedInsights }m from '@vercel/speed-insights/next';
 import esTranslations from '../../locales/es/common.json';
 import enTranslations from '../../locales/en/common.json';
-import { getDefaultTheme } from '@/lib/server-trpc';
+import { getDefaultTheme, getUserActiveTheme } from '@/lib/server-trpc';
 import { generateInlineThemeCSS } from '@/lib/theme/inline-css-generator';
+import { cookies } from 'next/headers';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -32,9 +33,45 @@ export default async function RootLayout({ children, params }: LayoutProps) {
   let themeCSS = '';
 
   try {
-    defaultTheme = await getDefaultTheme(companyId);
-    themeCSS = generateInlineThemeCSS(defaultTheme);
-    // console.log('layout.tsx - Server Side Theme:', defaultTheme?.name || 'No theme loaded');
+    // Attempt to get user ID from cookies
+    const cookieStore = await cookies();
+    const token = cookieStore.get('auth-token')?.value;
+    let userId: string | null = null;
+
+    if (token) {
+      try {
+        const base64Url = token.split('.')[1];
+        if (base64Url) {
+          const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+          const jsonPayload = decodeURIComponent(
+            atob(base64)
+              .split('')
+              .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+              .join(''),
+          );
+          const payload = JSON.parse(jsonPayload);
+          userId = payload.sub || null;
+        }
+      } catch (e) {
+        console.warn('Failed to decode auth token in layout:', e);
+      }
+    }
+
+    // Priority 1: User's active theme
+    if (userId) {
+      defaultTheme = await getUserActiveTheme(userId);
+      // console.log('layout.tsx - Found user active theme:', defaultTheme?.name);
+    }
+
+    // Priority 2: Company default/favorite theme
+    if (!defaultTheme) {
+      defaultTheme = await getDefaultTheme(companyId);
+      // console.log('layout.tsx - Fallback to company theme:', defaultTheme?.name);
+    }
+
+    if (defaultTheme) {
+      themeCSS = generateInlineThemeCSS(defaultTheme);
+    }
   } catch (error) {
     console.error('layout.tsx - Failed to load theme server-side:', error);
     // Fallback: App will load theme client-side via ThemeEditorContext

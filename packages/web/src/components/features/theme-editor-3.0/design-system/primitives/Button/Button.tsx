@@ -85,7 +85,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       }),
 
       // Shadows - Use standardized shadow variables
-      boxShadow: loading ? 'none' : 'var(--shadow-button, var(--shadow-sm))',
+      boxShadow: (loading || variant === 'ghost' || variant === 'link') ? 'none' : 'var(--shadow-button, var(--shadow-sm))',
     };
 
     // Variant classes using global color system

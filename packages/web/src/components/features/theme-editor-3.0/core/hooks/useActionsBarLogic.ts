@@ -3,6 +3,7 @@
 import { useThemeEditor } from '../context/ThemeEditorContext';
 import { DEFAULT_THEMES } from '../constants/default-themes';
 import { trpc } from '@/lib/trpc';
+import { useThemeAuth } from './useThemeAuth';
 import {
   ActionsBarLogic,
   HistoryState,
@@ -11,8 +12,10 @@ import {
   ThemeSaveHandler,
   UndoHandler,
   RedoHandler,
-  ResetHandler
+  ResetHandler,
+  ThemeDeleteHandler
 } from '../types';
+import { DEFAULT_TYPOGRAPHY } from '../../theme-editor/editor/typography/types';
 
 /**
  * Custom hook para centralizar la lógica del Actions Bar
@@ -29,6 +32,7 @@ export function useActionsBarLogic(): ActionsBarLogic {
     markSaved,
     addTheme,
     updateTheme,
+    removeTheme,
     undo,
     redo,
     canUndo,
@@ -37,10 +41,17 @@ export function useActionsBarLogic(): ActionsBarLogic {
     redoCount
   } = useThemeEditor();
 
+  // Get authenticated user data
+  const { userId, companyId, isAdmin, isLoading: isLoadingAuth } = useThemeAuth();
+
+  // Get tRPC utils for cache invalidation
+  const utils = trpc.useUtils();
+
   // tRPC mutations for saving themes
   const createThemeMutation = trpc.theme.createTheme.useMutation();
   const updateThemeMutation = trpc.theme.updateTheme.useMutation();
   const setDefaultThemeMutation = trpc.theme.setDefaultTheme.useMutation();
+  const deleteThemeMutation = trpc.theme.delete.useMutation();
 
   // Get current theme or default (evita repetición del fallback)
   const currentTheme = state.currentTheme || DEFAULT_THEMES[0];
@@ -70,82 +81,126 @@ export function useActionsBarLogic(): ActionsBarLogic {
     setError(error);
   };
 
-  const handleSave: ThemeSaveHandler = async (theme) => {
+  const handleSave: ThemeSaveHandler = async (theme, isNewTheme) => {
+    console.log('🎯 [Frontend] handleSave called with:', {
+      themeName: theme.name,
+      isNewTheme,
+      userId,
+      companyId,
+      isAdmin
+    });
+
     try {
-      // Helper to check if ID is a valid MongoDB ObjectID (24 hex characters)
-      const isValidObjectId = (id: string): boolean => {
-        return /^[a-f\d]{24}$/i.test(id);
-      };
+      // Validate authentication
+      if (!userId) {
+        console.error('❌ [Frontend] Authentication failed: no userId');
+        setError('Authentication required to save themes');
+        return;
+      }
 
-      // TODO: Get from auth context
-      const companyId = '6733c2fd80b7b58d4c36d966';
-      const userId = '507f1f77bcf86cd799439011'; // Valid MongoDB ObjectID for testing
+      // Use userId as companyId if companyId is not set
+      // This allows themes to work for users without a company assigned
+      const effectiveCompanyId = companyId || userId;
+      console.log('🏢 [Frontend] Using companyId:', effectiveCompanyId, companyId ? '(from user)' : '(fallback to userId)');
 
-      // Check if it's a new theme or updating existing
-      // A theme is new if:
-      // 1. It's not in availableThemes (not in DB), OR
-      // 2. It has an invalid ObjectID (it's a built-in theme like "default", "modern", etc.)
-      const isBuiltInTheme = !isValidObjectId(theme.id);
-      const isNewTheme = isBuiltInTheme || !state.availableThemes.find(t => t.id === theme.id);
+      // Validate admin role
+      if (!isAdmin) {
+        console.error('❌ [Frontend] Not admin:', { isAdmin });
+        setError('Only administrators can create or update themes');
+        return;
+      }
 
       let themeIdToActivate: string;
 
+      // Ensure typography is complete
+      const completeTypography = { ...DEFAULT_TYPOGRAPHY, ...(theme.typography || {}) };
+
+      // ✅ SIMPLE: Use isNewTheme parameter directly (no inference!)
       if (isNewTheme) {
-        // Save as new theme to backend using createTheme endpoint
+        console.log('📝 [Frontend] Creating new theme...');
+        console.log('📝 [Frontend] Calling createThemeMutation with:', {
+          name: theme.name,
+          companyId: effectiveCompanyId,
+          createdById: userId,
+        });
+
+        // CREATE new theme
         const savedTheme = await createThemeMutation.mutateAsync({
           name: theme.name,
           description: theme.description,
           author: theme.author,
-          companyId: companyId,
+          companyId: effectiveCompanyId,
           createdById: userId,
           lightModeConfig: theme.lightColors,
           darkModeConfig: theme.darkColors,
-          typography: theme.typography,
+          typography: completeTypography,
           tags: theme.tags,
-          isDefault: false, // Will be set via setDefaultTheme mutation below
+          isDefault: false,
         });
-        console.log('Saved new theme to backend:', savedTheme);
+        console.log('✅ [Frontend] Created new theme:', savedTheme);
 
-        // Update local state with the new theme (with DB-generated ID)
-        const newTheme = {
+        // Add to local state with DB-generated ID
+        addTheme({
           ...theme,
-          id: savedTheme.id, // Use the ID from the backend
-        };
-        addTheme(newTheme);
+          id: savedTheme.id,
+          typography: completeTypography
+        });
         themeIdToActivate = savedTheme.id;
       } else {
-        // Update existing theme in backend using updateTheme endpoint
+        console.log('🔄 [Frontend] Updating existing theme...');
+        console.log('🔄 [Frontend] Calling updateThemeMutation with:', {
+          themeId: theme.id,
+          name: theme.name,
+          userId,
+        });
+
+        // UPDATE existing theme
         const updatedTheme = await updateThemeMutation.mutateAsync({
           themeId: theme.id,
-          userId: userId, // Uses the same valid ObjectID defined above
+          userId: userId,
           name: theme.name,
           description: theme.description,
           lightModeConfig: theme.lightColors,
           darkModeConfig: theme.darkColors,
-          typography: theme.typography,
+          typography: completeTypography,
           tags: theme.tags,
           isActive: true,
         });
-        console.log('Updated theme in backend:', updatedTheme);
+        console.log('✅ [Frontend] Updated existing theme:', updatedTheme);
 
         // Update local state
-        updateTheme(theme);
+        updateTheme({
+          ...theme,
+          typography: completeTypography
+        });
         themeIdToActivate = theme.id;
       }
 
-      // Mark this theme as the active default theme for the company
-      // This ensures it will be loaded globally across the application
+      // Set as default theme
+      console.log('⭐ [Frontend] Setting as default theme:', themeIdToActivate);
       await setDefaultThemeMutation.mutateAsync({
         themeId: themeIdToActivate,
-        companyId,
+        companyId: effectiveCompanyId,
         userId,
       });
-      console.log('Theme set as default for company');
+      console.log('✅ [Frontend] Set as default theme successfully');
+
+      // Invalidate theme queries to refresh the theme list
+      console.log('🔄 [Frontend] Invalidating theme cache...');
+      await utils.theme.getCompanyThemes.invalidate();
+      console.log('✅ [Frontend] Theme cache invalidated');
 
       markSaved();
+      console.log('✅ [Frontend] Save complete!');
     } catch (error: any) {
-      console.error('Failed to save theme:', error);
-      setError(error.message || 'Failed to save theme to backend');
+      console.error('❌ [Frontend] Failed to save theme:', error);
+      console.error('❌ [Frontend] Error details:', {
+        message: error.message,
+        stack: error.stack,
+        data: error.data
+      });
+      setError(error.message || 'Failed to save theme');
+      throw error; // Re-throw so toast shows error
     }
   };
 
@@ -154,6 +209,37 @@ export function useActionsBarLogic(): ActionsBarLogic {
     const originalTheme = DEFAULT_THEMES.find(t => t.id === currentTheme.id) || DEFAULT_THEMES[0];
     setTheme(originalTheme);
     markSaved();
+  };
+
+  const handleDelete: ThemeDeleteHandler = async (themeId: string) => {
+    try {
+      // Validate authentication
+      if (!userId) {
+        setError('Authentication required to delete themes');
+        return;
+      }
+
+      // Validate admin role
+      if (!isAdmin) {
+        setError('Only administrators can delete themes');
+        return;
+      }
+
+      // Call backend to delete theme
+      await deleteThemeMutation.mutateAsync({ id: themeId, userId });
+
+      // Remove from local state via context
+      removeTheme(themeId);
+
+      // If deleted theme was the active theme, switch to default
+      if (state.currentTheme?.id === themeId) {
+        setTheme(DEFAULT_THEMES[0]);
+      }
+    } catch (error: any) {
+      console.error('Failed to delete theme:', error);
+      setError(error.message || 'Failed to delete theme');
+      throw error; // Re-throw so DeleteThemeButton can handle it
+    }
   };
 
   return {
@@ -167,6 +253,7 @@ export function useActionsBarLogic(): ActionsBarLogic {
     handleImport,
     handleImportError,
     handleSave,
-    handleReset
+    handleReset,
+    handleDelete
   };
 }

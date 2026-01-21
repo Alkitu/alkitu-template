@@ -80,3 +80,15 @@ export const getDefaultTheme = cache(async (companyId: string) => {
 
   return defaultTheme;
 });
+
+/**
+ * Get the active theme for a specific user
+ */
+export const getUserActiveTheme = cache(async (userId: string) => {
+  try {
+    return await serverTrpc.theme.getActive.query({ userId });
+  } catch (error) {
+    console.error('Failed to fetch user active theme:', error);
+    return null;
+  }
+});

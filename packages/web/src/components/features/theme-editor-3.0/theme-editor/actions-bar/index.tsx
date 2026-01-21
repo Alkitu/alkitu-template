@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useActionsBarLogic } from '../../core/hooks/useActionsBarLogic';
+import { useThemeAuth } from '../../core/hooks/useThemeAuth';
 import { ViewportSelector } from './viewport-selector';
 import { ThemeMode } from './theme-mode';
 import { HistoryControls } from './history-controls';
@@ -23,6 +24,8 @@ export function ActionsBar() {
     handleSave,
     handleReset
   } = useActionsBarLogic();
+
+  const { isAdmin } = useThemeAuth();
 
   return (
     <div className="h-[75px] border-b border-border bg-card flex items-center justify-between px-4">
@@ -65,11 +68,13 @@ export function ActionsBar() {
             onImport={handleImport}
             onImportError={handleImportError}
           />
-          <SaveControls
-            theme={currentTheme}
-            onSave={handleSave}
-            hasUnsavedChanges={state.editor.hasUnsavedChanges}
-          />
+          {isAdmin && (
+            <SaveControls
+              theme={currentTheme}
+              onSave={handleSave}
+              hasUnsavedChanges={state.editor.hasUnsavedChanges}
+            />
+          )}
         </div>
       </div>
     </div>

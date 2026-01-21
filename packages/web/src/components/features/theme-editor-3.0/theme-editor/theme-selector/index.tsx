@@ -19,7 +19,9 @@ export function ThemeSelector() {
     handlePreviousTheme,
     handleNextTheme,
     handleRandomTheme,
-    handleToggleFavorite
+    handleToggleFavorite,
+    handleDeleteTheme,
+    isAdmin
   } = useThemeSelector();
 
   return (
@@ -36,7 +38,8 @@ export function ThemeSelector() {
           onOpenChange={setIsDropdownOpen}
           savedThemes={savedThemes}
           builtInThemes={builtInThemes}
-          onToggleFavorite={handleToggleFavorite}
+          onToggleFavorite={isAdmin ? handleToggleFavorite : undefined}
+          onDeleteTheme={isAdmin ? handleDeleteTheme : undefined}
         />
       </div>
 

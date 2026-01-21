@@ -163,7 +163,12 @@ export function createThemeRouter(themeService: ThemeService) {
         }),
       )
       .mutation(async ({ input }) => {
-        return themeService.createTheme({
+        console.log('📝 [tRPC] createTheme mutation called with:', {
+          name: input.name,
+          companyId: input.companyId,
+          createdById: input.createdById,
+        });
+        const result = await themeService.createTheme({
           name: input.name,
           description: input.description,
           author: input.author,
@@ -175,6 +180,8 @@ export function createThemeRouter(themeService: ThemeService) {
           tags: input.tags,
           isDefault: input.isDefault,
         });
+        console.log('✅ [tRPC] createTheme mutation successful, theme ID:', result.id);
+        return result;
       }),
 
     // Update an existing theme
@@ -193,7 +200,12 @@ export function createThemeRouter(themeService: ThemeService) {
         }),
       )
       .mutation(async ({ input }) => {
-        return themeService.updateTheme({
+        console.log('🔄 [tRPC] updateTheme mutation called with:', {
+          themeId: input.themeId,
+          name: input.name,
+          userId: input.userId,
+        });
+        const result = await themeService.updateTheme({
           id: input.themeId,
           name: input.name,
           description: input.description,
@@ -204,6 +216,8 @@ export function createThemeRouter(themeService: ThemeService) {
           tags: input.tags,
           isActive: input.isActive,
         });
+        console.log('✅ [tRPC] updateTheme mutation successful, theme ID:', result.id);
+        return result;
       }),
 
     // Set default theme for a company
@@ -216,11 +230,18 @@ export function createThemeRouter(themeService: ThemeService) {
         }),
       )
       .mutation(async ({ input }) => {
-        return themeService.setDefaultTheme(
+        console.log('⭐ [tRPC] setDefaultTheme mutation called with:', {
+          themeId: input.themeId,
+          companyId: input.companyId,
+          userId: input.userId,
+        });
+        const result = await themeService.setDefaultTheme(
           input.themeId,
           input.companyId,
           input.userId,
         );
+        console.log('✅ [tRPC] setDefaultTheme mutation successful');
+        return result;
       }),
   });
 }

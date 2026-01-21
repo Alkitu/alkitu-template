@@ -21,7 +21,8 @@ interface SaveThemeDialogProps {
   onOpenChange: (open: boolean) => void;
   currentTheme: ThemeData;
   existingThemeNames: string[];
-  onSave: (theme: ThemeData, isNewTheme: boolean) => void;
+  onSave: (theme: ThemeData, mode: 'update' | 'create') => void;
+  mode: 'update' | 'create';
 }
 
 export function SaveThemeDialog({
@@ -29,7 +30,8 @@ export function SaveThemeDialog({
   onOpenChange,
   currentTheme,
   existingThemeNames,
-  onSave
+  onSave,
+  mode
 }: SaveThemeDialogProps) {
   const [themeName, setThemeName] = useState(currentTheme.name);
   const [themeDescription, setThemeDescription] = useState(currentTheme.description || '');
@@ -43,31 +45,30 @@ export function SaveThemeDialog({
   }, [themeName, existingThemeNames, currentTheme.name]);
 
   const handleSave = async () => {
-    // Check if we're overwriting an existing theme
+    // Check if we're overwriting an existing theme (only relevant for 'create' mode)
     const isExistingTheme = existingThemeNames.includes(themeName);
-    const isCurrentTheme = themeName === currentTheme.name;
 
-    // Always show warning for existing themes, including current one
-    if (isExistingTheme) {
+    // Show warning if creating a new theme and the name already exists
+    if (mode === 'create' && isExistingTheme) {
       setShowOverwriteWarning(true);
       return;
     }
 
-    // If we're here, it's a new theme
     setIsSaving(true);
-    
+
     try {
       const updatedTheme: ThemeData = {
         ...currentTheme,
         name: themeName,
         description: themeDescription,
         updatedAt: new Date().toISOString(),
-        id: `theme-${Date.now()}` // Always new ID for new themes
+        // Use existing ID when updating, generate new ID when creating
+        id: mode === 'create' ? `theme-${Date.now()}` : currentTheme.id
       };
 
-      await onSave(updatedTheme, true); // Always treat as new theme
+      await onSave(updatedTheme, mode);
       onOpenChange(false);
-      
+
       // Reset state
       setShowOverwriteWarning(false);
     } catch (error) {
@@ -79,14 +80,6 @@ export function SaveThemeDialog({
 
   const handleOverwriteConfirm = async () => {
     setIsSaving(true);
-    const isCurrentTheme = themeName === currentTheme.name;
-
-    // Helper to check if ID is a valid MongoDB ObjectID (24 hex characters)
-    const isValidObjectId = (id: string): boolean => {
-      return /^[a-f\d]{24}$/i.test(id);
-    };
-
-    const isBuiltInTheme = !isValidObjectId(currentTheme.id);
 
     try {
       const updatedTheme: ThemeData = {
@@ -94,12 +87,11 @@ export function SaveThemeDialog({
         name: themeName,
         description: themeDescription,
         updatedAt: new Date().toISOString(),
-        // Keep same ID if updating current theme AND it's a DB theme (valid ObjectID)
-        // Otherwise generate new temporary ID
-        id: isCurrentTheme && !isBuiltInTheme ? currentTheme.id : `theme-${Date.now()}`
+        // Use existing ID when updating, generate new ID when creating
+        id: mode === 'create' ? `theme-${Date.now()}` : currentTheme.id
       };
 
-      await onSave(updatedTheme, !isCurrentTheme);
+      await onSave(updatedTheme, mode);
       onOpenChange(false);
 
       // Reset state
@@ -180,7 +172,7 @@ export function SaveThemeDialog({
                 onClick={handleOverwriteConfirm}
                 disabled={isSaving}
               >
-                {isSaving ? 'Saving...' : (themeName === currentTheme.name ? 'Update Theme' : 'Overwrite Theme')}
+                {isSaving ? 'Saving...' : (mode === 'update' ? 'Update Theme' : 'Overwrite Theme')}
               </Button>
             </>
           ) : (
@@ -188,7 +180,7 @@ export function SaveThemeDialog({
               onClick={handleSave}
               disabled={isSaving || !themeName.trim()}
             >
-              {isSaving ? 'Saving...' : 'Save as New Theme'}
+              {isSaving ? 'Saving...' : (mode === 'update' ? 'Update Theme' : 'Save as New Theme')}
             </Button>
           )}
         </DialogFooter>

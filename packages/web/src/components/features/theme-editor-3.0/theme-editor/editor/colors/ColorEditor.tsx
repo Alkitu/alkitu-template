@@ -31,26 +31,17 @@ export function ColorEditor() {
   // Handle color updates - this will automatically apply CSS variables
   const handleColorChange = (colorKey: keyof ThemeColors, newColorToken: import('../../../core/types/theme.types').ColorToken) => {
     if (!currentColors) return;
-    
+
     // Update the specific color in the current mode
     const updatedColors = {
       ...currentColors,
       [colorKey]: newColorToken
     };
 
-    // If this color has linked colors, update them too
-    if (newColorToken.linkedColors && newColorToken.linkedColors.length > 0) {
-      newColorToken.linkedColors.forEach(linkedColorKey => {
-        if (updatedColors[linkedColorKey as keyof ThemeColors]) {
-          updatedColors[linkedColorKey as keyof ThemeColors] = {
-            ...updatedColors[linkedColorKey as keyof ThemeColors],
-            ...newColorToken,
-            name: updatedColors[linkedColorKey as keyof ThemeColors].name,
-            linkedTo: colorKey
-          };
-        }
-      });
-    }
+    // Note: Removed automatic color propagation to linked colors
+    // Previously, this would copy ALL color properties from the changed color to its linked colors,
+    // which caused unwanted overwrites (e.g., changing Primary would overwrite Primary Foreground).
+    // Color linking is now only used for metadata tracking, not automatic color propagation.
 
     // This will automatically apply CSS variables for live preview
     updateCurrentModeColors(updatedColors);

@@ -8,6 +8,7 @@ import { Badge } from '../../design-system/primitives/badge';
 import { ThemeData } from '../../core/types/theme.types';
 import { ThemePreview } from './ThemePreview';
 import { ThemeSearch } from './ThemeSearch';
+import { DeleteThemeButton } from '../actions-bar/save-controls/DeleteThemeButton';
 
 interface ThemeDropdownProps {
   themes: ThemeData[];
@@ -20,6 +21,7 @@ interface ThemeDropdownProps {
   savedThemes?: ThemeData[];
   builtInThemes?: ThemeData[];
   onToggleFavorite?: (themeId: string) => void;
+  onDeleteTheme?: (themeId: string) => Promise<void>;
 }
 
 export function ThemeDropdown({
@@ -32,8 +34,14 @@ export function ThemeDropdown({
   onOpenChange,
   savedThemes = [],
   builtInThemes = [],
-  onToggleFavorite
+  onToggleFavorite,
+  onDeleteTheme
 }: ThemeDropdownProps) {
+
+  // Helper to check if theme ID is a built-in theme (not a MongoDB ObjectID)
+  const isBuiltInTheme = (id: string): boolean => {
+    return !/^[a-f\d]{24}$/i.test(id);
+  };
 
   // Filter saved themes and built-in themes separately
   const filteredSavedThemes = savedThemes.filter(theme =>
@@ -146,6 +154,13 @@ export function ThemeDropdown({
                           }`}
                         />
                       </button>
+                    )}
+                    {onDeleteTheme && !isBuiltInTheme(theme.id) && (
+                      <DeleteThemeButton
+                        themeId={theme.id}
+                        themeName={theme.name}
+                        onDelete={onDeleteTheme}
+                      />
                     )}
                     {theme.id === selectedTheme.id && (
                       <Check className="h-4 w-4 text-primary" />

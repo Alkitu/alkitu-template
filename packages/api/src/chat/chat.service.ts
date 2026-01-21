@@ -222,7 +222,7 @@ export class ChatService {
     });
   }
 
-  async getConversations(filter: GetConversationsDto): Promise<Conversation[]> {
+  async getConversations(filter: GetConversationsDto): Promise<{ conversations: Conversation[], total: number, page: number, limit: number, totalPages: number }> {
     interface WhereClause {
       status?: ConversationStatus;
       priority?: Priority;
@@ -264,16 +264,43 @@ export class ChatService {
       ];
     }
 
-    const conversations = await this.conversationRepository.findAll({
-      where: whereClause,
-      include: { contactInfo: true, messages: true },
-      skip: ((filter.page || 1) - 1) * (filter.limit || 10),
-      take: filter.limit || 10,
-    });
+    const page = filter.page || 1;
+    const limit = filter.limit || 10;
 
-    return conversations.map((conversation) =>
+    const [conversations, total] = await Promise.all([
+      this.conversationRepository.findAll({
+        where: whereClause,
+        include: { contactInfo: true, messages: true },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      this.prisma.conversation.count({ where: whereClause }),
+    ]);
+
+    const sanitizedConversations = conversations.map((conversation) =>
       this.sanitizeConversation(conversation),
     );
+
+    return {
+      conversations: sanitizedConversations,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
+  }
+
+  async getConversationById(conversationId: string): Promise<Conversation> {
+    const conversation = await this.conversationRepository.findAll({
+      where: { id: conversationId },
+      include: { contactInfo: true, messages: true },
+    });
+
+    if (!conversation || conversation.length === 0) {
+      throw new NotFoundException('Conversation not found');
+    }
+
+    return this.sanitizeConversation(conversation[0]);
   }
 
   async assignConversation(data: AssignConversationDto): Promise<Conversation> {

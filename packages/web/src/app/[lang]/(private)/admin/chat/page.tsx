@@ -1,7 +1,7 @@
 'use client';
 
 import { trpc } from '@/lib/trpc';
-import { ConversationList } from '@/components/features/chat/ConversationList';
+import { ChatConversationsTableAlianza } from '@/components/organisms-alianza/ChatConversationsTableAlianza';
 import { ConversationFilters } from '@/components/features/chat/ConversationFilters';
 import { Typography } from '@/components/atoms/typography';
 import { useState } from 'react';
@@ -9,6 +9,7 @@ import { AdminPageHeader } from '@/components/molecules/admin-page-header';
 
 export default function ChatDashboardPage() {
   const [filters, setFilters] = useState({});
+  const [pagination, setPagination] = useState({ page: 1, limit: 10 });
   const utils = trpc.useUtils();
 
   // Test con endpoint simple primero
@@ -20,13 +21,17 @@ export default function ChatDashboardPage() {
 
   // Usar el patrón tRPC recomendado con React Query integrado
   const {
-    data: conversations,
+    data: queryResult,
     isLoading,
     error,
-  } = trpc.chat.getConversations.useQuery(filters, {
+  } = trpc.chat.getConversations.useQuery({ ...filters, ...pagination }, {
     refetchOnWindowFocus: true,
     refetchInterval: 2000, // Poll every 2 seconds for real-time updates
   });
+
+  const conversations = queryResult?.conversations || [];
+  const total = queryResult?.total || 0;
+  const totalPages = queryResult?.totalPages || 1;
 
   // TODO: Implement delete conversation endpoint in backend
   // const deleteMutation = trpc.chat.deleteConversation.useMutation({
@@ -38,6 +43,14 @@ export default function ChatDashboardPage() {
   const handleDelete = (conversationId: string) => {
     // TODO: Implement when backend endpoint is ready
     alert(`Delete conversation ${conversationId}. Backend endpoint not implemented yet.`);
+  };
+
+  const handlePageChange = (page: number) => {
+    setPagination((prev) => ({ ...prev, page }));
+  };
+
+  const handlePageSizeChange = (limit: number) => {
+    setPagination((prev) => ({ ...prev, limit, page: 1 }));
   };
 
   if (helloLoading) return <div>Loading tRPC test...</div>;
@@ -58,9 +71,17 @@ export default function ChatDashboardPage() {
       )}
 
       <ConversationFilters onApplyFilters={setFilters} />
-      <ConversationList 
-        conversations={conversations || []} 
+      <ChatConversationsTableAlianza 
+        conversations={conversations} 
         onDelete={handleDelete}
+        pagination={{
+          page: pagination.page,
+          limit: pagination.limit,
+          total,
+          totalPages,
+          onPageChange: handlePageChange,
+          onPageSizeChange: handlePageSizeChange,
+        }}
       />
     </div>
   );

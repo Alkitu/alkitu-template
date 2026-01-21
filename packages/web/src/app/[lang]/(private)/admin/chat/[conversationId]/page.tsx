@@ -36,18 +36,13 @@ export default function ConversationDetailPage() {
 
   // Fetch conversation details (for metadata like status, assignment)
   const {
-    data: conversationsData,
+    data: conversation,
     isLoading: isLoadingConversation,
-  } = trpc.chat.getConversations.useQuery(
-    {},
+  } = trpc.chat.getConversation.useQuery(
+    { conversationId },
     {
       enabled: !!conversationId,
     }
-  );
-
-  // Find the specific conversation from the list
-  const conversation = conversationsData?.find(
-    (conv) => conv.id === conversationId,
   );
 
   const replyMutation = trpc.chat.replyToMessage.useMutation({

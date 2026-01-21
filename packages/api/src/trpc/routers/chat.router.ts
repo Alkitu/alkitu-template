@@ -60,6 +60,12 @@ export const chatRouter = createTRPCRouter({
       return await ctx.chatService.getConversations(input);
     }),
 
+  getConversation: protectedProcedure
+    .input(chatSchemas.getMessages) // Reuse getMessages schema as it only requires conversationId
+    .query(async ({ input, ctx }) => {
+      return await ctx.chatService.getConversationById(input.conversationId);
+    }),
+
   assignConversation: protectedProcedure
     .input(chatSchemas.assignConversation)
     .mutation(async ({ input, ctx }) => {

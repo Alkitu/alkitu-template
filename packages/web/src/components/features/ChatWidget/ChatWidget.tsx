@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { trpc } from '@/lib/trpc';
 import { useChat } from './hooks/useChat';
 import { useChatTheme } from './hooks/useChatTheme';
@@ -28,6 +29,7 @@ import { playNotificationSound, requestAudioPermission } from './utils/notificat
 type ViewState = 'welcome' | 'conversations' | 'contact' | 'chat' | 'rating';
 
 export function ChatWidget() {
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [view, setView] = useState<ViewState>('welcome');
   const [showQuickReplies, setShowQuickReplies] = useState(true);
@@ -58,6 +60,19 @@ export function ChatWidget() {
     lead,
     saveLead,
   } = useChat();
+
+  // Visibility logic: only show on public pages
+  // Private route segments based on application folder structure
+  const privateSegments = ['admin', 'client', 'employee', 'dashboard', 'locations', 'onboarding', 'profile', 'requests', 'services', 'chat'];
+  
+  const isPrivateRoute = privateSegments.some(segment => 
+    pathname?.includes(`/${segment}/`) || pathname?.endsWith(`/${segment}`)
+  );
+
+  // If we are in a private route, don't render the widget
+  if (isPrivateRoute) {
+    return null;
+  }
 
   const displayName = user 
     ? `${user.firstname} ${user.lastname}`.trim() 

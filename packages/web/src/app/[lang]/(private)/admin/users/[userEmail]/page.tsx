@@ -102,7 +102,7 @@ const UserDetailPage = ({
     name: '',
     lastName: '',
     email: '',
-    contactNumber: '',
+    phone: '',
     role: 'CLIENT' as keyof typeof UserRole,
   });
   const [newPassword, setNewPassword] = useState('');
@@ -146,7 +146,7 @@ const UserDetailPage = ({
         name: (user as any).name || (user as any).firstname || '',
         lastName: (user as any).lastName || (user as any).lastname || '',
         email: user.email,
-        contactNumber: (user as any).contactNumber || (user as any).phone || '',
+        phone: (user as any).phone || (user as any).contactNumber || '',
         role: user.role as keyof typeof UserRole,
       });
     }
@@ -159,7 +159,7 @@ const UserDetailPage = ({
         id: user.id,
         name: formData.name,
         lastName: formData.lastName,
-        contactNumber: formData.contactNumber,
+        phone: formData.phone,
         role: formData.role,
       });
       toast.success('Profile updated successfully');
@@ -376,9 +376,9 @@ const UserDetailPage = ({
               />
               <FormInput
                 label="Contact Number"
-                id="contactNumber"
-                value={formData.contactNumber}
-                onChange={(e) => setFormData({ ...formData, contactNumber: e.target.value })}
+                id="phone"
+                value={formData.phone}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 disabled={!editMode}
               />
               <FormSelect

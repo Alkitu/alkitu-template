@@ -26,7 +26,7 @@ export interface UserTableItem {
   email: string;
   name: string | null;
   lastName: string | null;
-  contactNumber: string | null;
+  phone: string | null;
   role: string;
 }
 
@@ -157,7 +157,7 @@ export function UsersTableAlianza({
 
               {/* Phone Column */}
               <TableCell className="body-sm text-muted-foreground py-4 bg-background group-hover:bg-muted/50 transition-colors">
-                {user.contactNumber || '—'}
+                {user.phone || '—'}
               </TableCell>
 
               {/* Actions Column */}

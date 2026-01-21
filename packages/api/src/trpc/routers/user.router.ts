@@ -21,7 +21,7 @@ const registerSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   lastName: z.string().min(2, 'Last name must be at least 2 characters'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
-  contactNumber: z.string().optional(),
+  phone: z.string().optional(),
   role: z.enum(['ADMIN', 'EMPLOYEE', 'CLIENT', 'LEAD']).optional(),
   terms: z.boolean().refine((val) => val === true, {
     message: 'You must accept the terms and conditions',
@@ -32,7 +32,7 @@ const updateProfileSchema = z.object({
   id: z.string(),
   name: z.string().optional(),
   lastName: z.string().optional(),
-  contactNumber: z.string().optional(),
+  phone: z.string().optional(),
   role: z.enum(['ADMIN', 'EMPLOYEE', 'CLIENT', 'LEAD']).optional(),
 });
 
@@ -109,13 +109,13 @@ export const createUserRouter = (
     register: t.procedure.input(registerSchema).mutation(async ({ input }) => {
       try {
         // Map fields from TRPC input to UsersService/Prisma expected fields
-        const createDto: CreateUserDto = {
+        const createDto = {
           email: input.email,
           password: input.password,
           firstname: input.name,
           lastname: input.lastName,
-          phone: input.contactNumber,
-          role: input.role as UserRole | undefined,
+          phone: input.phone,
+          role: input.role,
           terms: input.terms,
         };
 
@@ -163,11 +163,11 @@ export const createUserRouter = (
       .input(updateProfileSchema)
       .mutation(async ({ input }) => {
         try {
-          const updateDto: UpdateProfileDto = {
+          const updateDto = {
             firstname: input.name,
             lastname: input.lastName,
-            phone: input.contactNumber,
-            role: input.role as UserRole | undefined,
+            phone: input.phone,
+            role: input.role,
           };
           const updatedUser = await usersService.updateProfile(
             input.id,
@@ -181,7 +181,7 @@ export const createUserRouter = (
             name: updatedUser.firstname,
             lastName: updatedUser.lastname,
             email: updatedUser.email,
-            contactNumber: updatedUser.phone,
+            phone: updatedUser.phone,
             role: updatedUser.role,
             message: 'Profile updated successfully',
           };

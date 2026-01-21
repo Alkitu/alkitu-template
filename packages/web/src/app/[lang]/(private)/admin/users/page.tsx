@@ -23,7 +23,7 @@ interface User {
   email: string;
   name: string | null;
   lastName: string | null;
-  contactNumber: string | null;
+  phone: string | null;
   role: string;
   createdAt: string;
   lastLogin: string | null;
@@ -179,7 +179,7 @@ const UsersPage = () => {
     email: user.email,
     name: user.firstname || user.name,
     lastName: user.lastname || user.lastName,
-    contactNumber: user.phone || user.contactNumber,
+    phone: user.phone || user.contactNumber,
     role: user.role,
   }));
   const pagination = usersData?.pagination;

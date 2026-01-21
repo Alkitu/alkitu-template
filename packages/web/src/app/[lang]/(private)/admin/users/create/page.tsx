@@ -25,7 +25,7 @@ interface CreateUserForm {
   email: string;
   password: string;
   confirmPassword: string;
-  contactNumber: string;
+  phone: string;
   role: keyof typeof UserRole;
   terms: boolean;
 }
@@ -36,7 +36,7 @@ interface CreateUserFormErrors {
   email?: string;
   password?: string;
   confirmPassword?: string;
-  contactNumber?: string;
+  phone?: string;
   role?: string;
   terms?: string;
 }
@@ -67,7 +67,7 @@ const CreateUserPage = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    contactNumber: '',
+    phone: '',
     role: 'CLIENT',
     terms: false,
   });
@@ -145,7 +145,7 @@ const CreateUserPage = () => {
         lastName: formData.lastName,
         email: formData.email,
         password: formData.password,
-        contactNumber: formData.contactNumber || undefined,
+        phone: formData.phone || undefined,
         role: formData.role,
         terms: formData.terms,
       });
@@ -204,10 +204,11 @@ const CreateUserPage = () => {
               />
 
               <FormInput
-                label="Contact Number"
-                id="contactNumber"
-                value={formData.contactNumber}
-                onChange={(e) => handleInputChange('contactNumber', e.target.value)}
+                label="Phone Number"
+                id="phone"
+                value={formData.phone}
+                onChange={(e) => handleInputChange('phone', e.target.value)}
+                error={errors.phone}
                 placeholder="+1 (555) 123-4567"
               />
 

@@ -2,16 +2,15 @@
 
 import React, { useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Button } from '@/components/primitives/ui/button';
-import { InputGroup } from '@/components/molecules-alianza/InputGroup';
-import { Label } from '@/components/primitives/ui/label';
-import { Checkbox } from '@/components/primitives/ui/checkbox';
+import { Button } from '@/components/molecules-alianza/Button';
+import { FormInput } from '@/components/molecules-alianza/FormInput';
+import { Checkbox } from '@/components/molecules-alianza/Checkbox';
 import { useTranslations } from '@/context/TranslationsContext';
 import { FormError } from '@/components/primitives/ui/form-error';
 import { FormSuccess } from '@/components/primitives/ui/form-success';
 import { PasswordStrengthIndicator } from '@/components/atoms/password-strength-indicator';
 import { getCurrentLocalizedRoute } from '@/lib/locale';
-import { Icon } from '@/components/atoms/icons/Icon';
+import { User, Mail, Lock, Eye, EyeOff, Phone } from 'lucide-react';
 import type { RegisterFormOrganismProps } from './RegisterFormOrganism.types';
 
 /**
@@ -19,36 +18,6 @@ import type { RegisterFormOrganismProps } from './RegisterFormOrganism.types';
  *
  * A complete registration form organism that handles the entire user registration flow.
  * Follows Atomic Design principles as a self-contained feature component.
- *
- * Features:
- * - Minimal registration fields (firstname, lastname, email, password, terms)
- * - Password complexity validation (8+ chars, uppercase, lowercase, number)
- * - Real-time password strength indicator
- * - Password confirmation validation
- * - Terms and conditions checkbox
- * - tRPC API integration
- * - Loading states
- * - Error and success messages
- * - Automatic redirect to login after successful registration
- * - Locale-aware navigation
- * - Additional fields (phone, company, address) collected in onboarding
- *
- * Changes in ALI-115:
- * - Renamed: name → firstname, lastName → lastname
- * - Removed: contactNumber/phone (now in onboarding)
- * - Added: Password strength indicator
- * - Added: Password complexity requirements
- *
- * @example
- * ```tsx
- * <AuthPageOrganism
- *   headerLabel={t('auth.register.title')}
- *   backButtonLabel={t('auth.register.backButton')}
- *   backButtonHref="/auth/login"
- * >
- *   <RegisterFormOrganism />
- * </AuthPageOrganism>
- * ```
  */
 export const RegisterFormOrganism = React.forwardRef<
   HTMLFormElement,
@@ -61,10 +30,12 @@ export const RegisterFormOrganism = React.forwardRef<
     firstname: '',
     lastname: '',
     email: '',
+    phone: '',
     password: '',
     confirmPassword: '',
     terms: false,
   });
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -94,7 +65,6 @@ export const RegisterFormOrganism = React.forwardRef<
     try {
       const { confirmPassword, ...submitData } = formData;
 
-      // Use fetch to call Next.js API route
       const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: {
@@ -111,7 +81,6 @@ export const RegisterFormOrganism = React.forwardRef<
 
       setSuccess(t('auth.register.success'));
 
-      // Redirect to login with proper locale
       setTimeout(() => {
         const localizedLoginRoute = getCurrentLocalizedRoute(
           '/auth/login',
@@ -135,7 +104,7 @@ export const RegisterFormOrganism = React.forwardRef<
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* First Name */}
-        <InputGroup
+        <FormInput
            label={t('auth.register.name')}
            id="firstname"
            type="text"
@@ -144,11 +113,11 @@ export const RegisterFormOrganism = React.forwardRef<
            placeholder={t('auth.register.name') || 'Juan Pérez'}
            required
            disabled={isLoading}
-           iconLeft={<Icon name="user" size="sm" className="text-muted-foreground" />}
+           icon={<User className="h-4 w-4" />}
         />
 
         {/* Last Name */}
-        <InputGroup
+        <FormInput
            label={t('auth.register.lastName')}
            id="lastname"
            type="text"
@@ -157,12 +126,12 @@ export const RegisterFormOrganism = React.forwardRef<
            placeholder={t('auth.register.lastName') || 'Apellido'}
            required
            disabled={isLoading}
-           iconLeft={<Icon name="user" size="sm" className="text-muted-foreground" />}
+           icon={<User className="h-4 w-4" />}
         />
       </div>
 
       {/* Email */}
-      <InputGroup
+      <FormInput
          label={t('auth.register.email')}
          id="email"
          type="email"
@@ -171,57 +140,81 @@ export const RegisterFormOrganism = React.forwardRef<
          placeholder={t('auth.register.email') || 'tu@email.com'}
          required
          disabled={isLoading}
-         iconLeft={<Icon name="mail" size="sm" className="text-muted-foreground" />}
+         icon={<Mail className="h-4 w-4" />}
+      />
+
+      {/* Contact Number */}
+      <FormInput
+         label={t('auth.register.phone') || 'Teléfono'}
+         id="contactNumber"
+         type="tel"
+         value={formData.contactNumber}
+         onChange={(e) => handleChange('contactNumber', e.target.value)}
+         placeholder="+1234567890"
+         disabled={isLoading}
+         icon={<Phone className="h-4 w-4" />}
       />
 
       {/* Password */}
       <div className="space-y-2">
-         <InputGroup
+         <FormInput
             label={t('auth.register.password')}
             id="password"
-            type="password"
+            type={showPassword ? 'text' : 'password'}
             value={formData.password}
             onChange={(e) => handleChange('password', e.target.value)}
             placeholder={t('auth.register.password') || '••••••••'}
             required
             disabled={isLoading}
             minLength={8}
-            iconLeft={<Icon name="lock" size="sm" className="text-muted-foreground" />}
+            icon={<Lock className="h-4 w-4" />}
+            iconRight={
+              <Button
+                type="button"
+                variant="nude"
+                size="sm"
+                iconOnly
+                iconLeft={showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                onClick={() => setShowPassword(!showPassword)}
+              />
+            }
          />
          <PasswordStrengthIndicator password={formData.password} minLength={8} />
       </div>
 
       {/* Confirm Password */}
-      <InputGroup
+      <FormInput
          label={t('auth.register.confirmPassword')}
          id="confirmPassword"
-         type="password"
+         type={showPassword ? 'text' : 'password'}
          value={formData.confirmPassword}
          onChange={(e) => handleChange('confirmPassword', e.target.value)}
          placeholder={t('auth.register.confirmPassword') || '••••••••'}
          required
          disabled={isLoading}
-         iconLeft={<Icon name="lock" size="sm" className="text-muted-foreground" />}
+         icon={<Lock className="h-4 w-4" />}
       />
 
       <div className="flex items-center space-x-2 pt-2">
         <Checkbox
-          id="terms"
           checked={formData.terms}
           onCheckedChange={(checked) =>
-            handleChange('terms', checked as boolean)
+            handleChange('terms', checked)
           }
           disabled={isLoading}
         />
-        <Label htmlFor="terms" className="text-body-sm font-light text-foreground">
+        <label 
+          className="text-body-sm font-light text-foreground cursor-pointer select-none"
+          onClick={() => !isLoading && handleChange('terms', !formData.terms)}
+        >
           {t('auth.register.terms')}
-        </Label>
+        </label>
       </div>
 
       <FormError message={error} />
       <FormSuccess message={success} />
 
-      <Button type="submit" className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-[48px] rounded-lg mt-4" disabled={isLoading}>
+      <Button type="submit" className="w-full mt-4" disabled={isLoading}>
         {isLoading ? t('Common.general.loading') : t('auth.register.submit') || 'Crear Cuenta'}
       </Button>
     </form>

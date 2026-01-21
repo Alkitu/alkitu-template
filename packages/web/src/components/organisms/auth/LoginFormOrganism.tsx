@@ -2,14 +2,14 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Button } from '@/components/primitives/ui/button';
-import { InputGroup } from '@/components/molecules-alianza/InputGroup';
+import { Button } from '@/components/molecules-alianza/Button';
+import { FormInput } from '@/components/molecules-alianza/FormInput';
 import { useTranslations } from '@/context/TranslationsContext';
 import { FormError } from '@/components/primitives/ui/form-error';
 import { FormSuccess } from '@/components/primitives/ui/form-success';
 import { useAuthRedirect } from '@/hooks/useAuthRedirect';
 import { trpc } from '@/lib/trpc';
-import { Icon } from '@/components/atoms/icons/Icon';
+import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import type { LoginFormOrganismProps } from './LoginFormOrganism.types';
 
 /**
@@ -17,26 +17,6 @@ import type { LoginFormOrganismProps } from './LoginFormOrganism.types';
  *
  * A complete login form organism that handles the entire authentication flow.
  * Follows Atomic Design principles as a self-contained feature component.
- *
- * Features:
- * - Email and password inputs with validation
- * - API integration with /api/auth/login
- * - Loading states
- * - Error and success messages
- * - Automatic redirect after successful login
- * - Links to forgot password and email login
- * - Locale-aware navigation
- *
- * @example
- * ```tsx
- * <AuthPageOrganism
- *   headerLabel={t('auth.login.title')}
- *   backButtonLabel={t('auth.login.backButton')}
- *   backButtonHref="/"
- * >
- *   <LoginFormOrganism />
- * </AuthPageOrganism>
- * ```
  */
 export const LoginFormOrganism = React.forwardRef<
   HTMLFormElement,
@@ -59,7 +39,6 @@ export const LoginFormOrganism = React.forwardRef<
     setSuccess('');
 
     try {
-      // Use Next.js API route instead of direct backend call
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
@@ -74,16 +53,9 @@ export const LoginFormOrganism = React.forwardRef<
         throw new Error(data.message || 'Login failed');
       }
 
-      console.log('[LoginFormOrganism] Login successful, response data:', data);
       setSuccess(t('auth.login.success'));
-
-      // Remove client-side cookie setting - API route handles httpOnly cookies
-      // The /api/auth/login route already sets the httpOnly cookies properly
-
-      // Remove insecure localStorage usage
       localStorage.removeItem('user');
 
-      // ALI-115: Pass user data to redirect hook for profileComplete check
       const userData = data.user
         ? {
             profileComplete: data.user.profileComplete ?? true,
@@ -91,16 +63,8 @@ export const LoginFormOrganism = React.forwardRef<
           }
         : undefined;
 
-      console.log('[LoginFormOrganism] Prepared userData for redirect:', userData);
-      console.log('[LoginFormOrganism] About to call redirectAfterLogin()...');
-
-      // Invalidate TRPC user cache to ensure header updates immediately
       await trpcUtils.user.me.invalidate();
-
-      // Redirect immediately - cookies are already set in the HTTP response
       redirectAfterLogin(userData);
-
-      console.log('[LoginFormOrganism] redirectAfterLogin() called');
     } catch (err: any) {
       setError(err.message || t('auth.login.error'));
     } finally {
@@ -116,7 +80,7 @@ export const LoginFormOrganism = React.forwardRef<
       suppressHydrationWarning
     >
       <div className="space-y-4">
-        <InputGroup
+        <FormInput
           label={t('auth.login.email')}
           id="email"
           type="email"
@@ -125,24 +89,30 @@ export const LoginFormOrganism = React.forwardRef<
           placeholder={t('auth.login.email') || 'ejemplo@correo.com'}
           required
           disabled={isLoading}
-          iconLeft={<Icon name="mail" size="sm" className="text-muted-foreground" />}
+          icon={<Mail className="h-4 w-4" />}
         />
 
-        <div className="space-y-1">
-            <InputGroup
-            label={t('auth.login.password')}
-            id="password"
-            type={showPassword ? 'text' : 'password'}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder={t('auth.login.password') || '••••••••'}
-            required
-            disabled={isLoading}
-            iconLeft={<Icon name="lock" size="sm" className="text-muted-foreground" />}
-            iconRight={<Icon name={showPassword ? 'eyeOff' : 'eye'} size="sm" className="text-muted-foreground hover:text-foreground transition-colors" />}
-            onIconRightClick={() => setShowPassword(!showPassword)} 
+        <FormInput
+          label={t('auth.login.password')}
+          id="password"
+          type={showPassword ? 'text' : 'password'}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder={t('auth.login.password') || '••••••••'}
+          required
+          disabled={isLoading}
+          icon={<Lock className="h-4 w-4" />}
+          iconRight={
+            <Button
+              type="button"
+              variant="nude"
+              size="sm"
+              iconOnly
+              iconLeft={showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              onClick={() => setShowPassword(!showPassword)}
             />
-        </div>
+          }
+        />
       </div>
 
       <FormError message={error} />
@@ -150,7 +120,7 @@ export const LoginFormOrganism = React.forwardRef<
 
       <Button 
         type="submit" 
-        className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-[48px] rounded-lg mt-2 font-medium" 
+        className="w-full mt-2" 
         disabled={isLoading}
       >
         {isLoading ? t('Common.general.loading') : t('auth.login.submit') || 'Iniciar sesión con correo'}

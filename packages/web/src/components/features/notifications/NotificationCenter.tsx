@@ -1,15 +1,13 @@
+import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { trpc } from '@/lib/trpc';
-import { Button } from '@/components/primitives/ui/button';
-import { Bell, Check, Trash2, MailOpen, Mail } from 'lucide-react';
+import { Bell, Check, Trash2, MailOpen, Mail, Calendar, Info, Clock, CheckCheck } from 'lucide-react';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/primitives/ui/popover';
 import { ScrollArea } from '@/components/primitives/ui/scroll-area';
-import { Badge } from '@/components/primitives/ui/badge';
-import { Separator } from '@/components/primitives/ui/separator';
 import {
   Tabs,
   TabsContent,
@@ -19,6 +17,10 @@ import {
 import { useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { Heading, Caption, Body } from '@/components/atoms-alianza/Typography';
+import { Button } from '@/components/molecules-alianza/Button';
+import { Chip } from '@/components/atoms-alianza/Chip';
+import { cn } from '@/lib/utils';
 
 interface NotificationCenterProps {
   userId?: string;
@@ -26,38 +28,29 @@ interface NotificationCenterProps {
 
 export function NotificationCenter({ userId }: NotificationCenterProps) {
   const [open, setOpen] = useState(false);
+  const router = useRouter();
   const queryClient = useQueryClient();
-  const utils = trpc.useContext(); // Use trpc context for invalidation if preferred, or queryClient
+  const utils = trpc.useContext();
 
   const { data: notifications = [] } = trpc.notification.getNotifications.useQuery(
     { userId: userId! },
     { enabled: !!userId }
   );
 
-  const unreadCount = notifications.filter((n: any) => !n.read).length;
+  const unreadList = notifications.filter((n: any) => !n.read);
+  const readList = notifications.filter((n: any) => n.read);
+  const unreadCount = unreadList.length;
 
   const invalidateNotifications = () => {
-     queryClient.invalidateQueries({ queryKey: [['notification', 'getNotifications']] }); // Match trpc query key structure structure
-     // Or easier:
+     queryClient.invalidateQueries({ queryKey: [['notification', 'getNotifications']] });
      utils.notification.getNotifications.invalidate({ userId });
      utils.notification.getUnreadCount.invalidate({ userId });
   };
 
-  const markAsReadMutation = trpc.notification.markAsRead.useMutation({
-    onSuccess: invalidateNotifications,
-  });
-
-  const markAsUnreadMutation = trpc.notification.markAsUnread.useMutation({
-    onSuccess: invalidateNotifications,
-  });
-
-  const deleteMutation = trpc.notification.deleteNotification.useMutation({
-    onSuccess: invalidateNotifications,
-  });
-  
-  const markAllReadMutation = trpc.notification.markAllAsRead.useMutation({
-    onSuccess: invalidateNotifications,
-  });
+  const markAsReadMutation = trpc.notification.markAsRead.useMutation({ onSuccess: invalidateNotifications });
+  const markAsUnreadMutation = trpc.notification.markAsUnread.useMutation({ onSuccess: invalidateNotifications });
+  const deleteMutation = trpc.notification.deleteNotification.useMutation({ onSuccess: invalidateNotifications });
+  const markAllReadMutation = trpc.notification.markAllAsRead.useMutation({ onSuccess: invalidateNotifications });
 
   const handleMarkAsRead = (id: string, e?: React.MouseEvent) => {
     e?.stopPropagation();
@@ -78,132 +71,153 @@ export function NotificationCenter({ userId }: NotificationCenterProps) {
     if (userId) markAllReadMutation.mutate({ userId });
   };
 
+  // Helper to get icon (Consistent with page.tsx)
+  const getIcon = (n: any) => {
+    if (n.title?.toLowerCase().includes('servicio')) return <Check className="w-4 h-4 text-[#8B6D36]" />;
+    if (n.title?.toLowerCase().includes('recordatorio')) return <Calendar className="w-4 h-4 text-[#8B6D36]" />;
+    return <Info className="w-4 h-4 text-[#8B6D36]" />;
+  };
+
   const renderNotificationList = (list: any[]) => {
     if (list.length === 0) {
       return (
-        <div className="flex flex-col items-center justify-center h-full p-8 text-center text-muted-foreground">
-          <Bell className="h-8 w-8 mb-2 opacity-50" />
-          <p className="text-sm">No notifications found</p>
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <Bell className="h-8 w-8 mb-2 text-muted-foreground/30" />
+          <Caption>No hay notificaciones</Caption>
         </div>
       );
     }
 
     return (
-      <div className="flex flex-col">
-        {list.map((notification: any) => (
-          <div
-            key={notification.id}
-            className={`group relative flex flex-col gap-1 p-4 text-sm transition-colors hover:bg-muted/50 border-b last:border-0 ${
-              !notification.read ? 'bg-blue-50/50 dark:bg-blue-950/20' : ''
-            }`}
-          >
-            <div className="flex items-start justify-between gap-2">
-              <div className="flex-1 space-y-1">
-                <p className={`font-medium leading-none ${!notification.read ? 'text-foreground' : 'text-muted-foreground'}`}>
-                  {notification.title || 'Notification'}
-                </p>
-                <p className="text-muted-foreground line-clamp-2 text-xs">
-                  {notification.message}
-                </p>
-                <span className="text-[10px] text-muted-foreground block">
-                  {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true, locale: es })}
-                </span>
+      <div className="flex flex-col space-y-2 p-2">
+        {list.map((notification: any) => {
+            const isUnread = !notification.read;
+            return (
+              <div
+                key={notification.id}
+                className={cn(
+                  "group relative flex items-start gap-3 p-3 rounded-[16px] transition-colors",
+                  isUnread 
+                    ? "bg-[#F9F8F6]" 
+                    : "bg-background shadow-sm border border-border/40"
+                )}
+              >
+                 {/* Icon Circle */}
+                <div className="h-9 w-9 rounded-full bg-[#FDE68A] flex items-center justify-center shrink-0 shadow-inner mt-0.5">
+                    {getIcon(notification)}
+                </div>
+
+                <div className="flex-1 min-w-0 space-y-1 pr-6">
+                    <div className="flex items-start justify-between gap-2">
+                        <Heading level={6} className="text-sm font-semibold text-foreground leading-tight">
+                            {notification.title || 'Notificación'}
+                        </Heading>
+                        <span className="text-[10px] text-muted-foreground whitespace-nowrap">
+                           {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true, locale: es })}
+                        </span>
+                    </div>
+                    
+                    <div className="text-xs text-muted-foreground/90 line-clamp-2 leading-relaxed pb-6">
+                        {notification.message}
+                    </div>
+                </div>
+
+                {/* Read/Unread Toggle - Bottom Right */}
+                <div className="absolute bottom-3 right-3">
+                   {isUnread ? (
+                      <button
+                         className="flex items-center justify-center h-8 w-8 rounded-full text-foreground hover:text-primary hover:bg-primary/10 transition-colors focus:outline-none"
+                         onClick={(e) => handleMarkAsRead(notification.id, e)} 
+                         title="Marcar como leído"
+                         type="button"
+                      >
+                         <Mail className="h-5 w-5" />
+                      </button>
+                   ) : (
+                      <button
+                         className="flex items-center justify-center h-8 w-8 rounded-full text-muted-foreground/60 hover:text-foreground hover:bg-primary/10 transition-colors focus:outline-none"
+                         onClick={(e) => handleMarkAsUnread(notification.id, e)} 
+                         title="Marcar como no leído"
+                         type="button"
+                      >
+                         <MailOpen className="h-5 w-5" />
+                      </button>
+                   )}
+                </div>
               </div>
-              
-              <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                 {!notification.read ? (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-7 w-7 text-muted-foreground hover:text-foreground"
-                      onClick={(e) => handleMarkAsRead(notification.id, e)}
-                      title="Mark as read"
-                    >
-                      <Check className="h-3.5 w-3.5" />
-                    </Button>
-                 ) : (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-7 w-7 text-muted-foreground hover:text-foreground"
-                      onClick={(e) => handleMarkAsUnread(notification.id, e)}
-                      title="Mark as unread"
-                    >
-                      <Mail className="h-3.5 w-3.5" />
-                    </Button>
-                 )}
-                 <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7 text-destructive/70 hover:text-destructive hover:bg-destructive/10"
-                    onClick={(e) => handleDelete(notification.id, e)}
-                    title="Delete"
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
-              </div>
-            </div>
-          </div>
-        ))}
+            );
+        })}
       </div>
     );
   };
 
-  const unreadList = notifications.filter((n: any) => !n.read);
-  const readList = notifications.filter((n: any) => n.read);
-
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative group">
-          <Bell className="h-5 w-5 text-muted-foreground group-hover:text-foreground transition-colors" />
+        <Button variant="ghost" iconOnly className="relative group w-12 h-12 rounded-full hover:bg-muted/50 p-0">
+          <Bell className="h-7 w-7 text-muted-foreground group-hover:text-foreground transition-colors" />
           {unreadCount > 0 && (
-            <span className="absolute top-1.5 right-1.5 flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
-            </span>
+             <span className="absolute top-2.5 right-2.5 flex h-3 w-3">
+               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+               <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+             </span>
           )}
-          <span className="sr-only">Toggle notifications</span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[380px] p-0" align="end">
-        <Tabs defaultValue="all" className="w-full">
-          <div className="flex items-center justify-between px-4 py-3 border-b bg-muted/30">
-            <h4 className="font-semibold text-sm">Notifications</h4>
+      <PopoverContent className="w-[400px] p-0 rounded-xl overflow-clip border-border shadow-lg" align="end">
+        
+        {/* Header */}
+        <div className="flex items-center justify-between px-4 py-3 border-b bg-background">
+            <Heading level={5} className="font-bold text-sm">Notificaciones</Heading>
             {unreadCount > 0 && (
-               <Button 
-                variant="ghost" 
-                size="sm" 
-                className="h-auto p-0 text-xs text-primary hover:text-primary/80" 
-                onClick={handleMarkAllRead}
-               >
-                 Mark all read
-               </Button>
+                <button 
+                  onClick={handleMarkAllRead}
+                  className="flex items-center gap-1 text-xs text-[#F59E0B] hover:text-[#D97706] font-medium transition-colors"
+                >
+                  <CheckCheck className="w-3 h-3" />
+                  Marcar todas leídas
+                </button>
             )}
-          </div>
-          
-          <div className="px-4 py-2 border-b bg-muted/10">
-             <TabsList className="grid w-full grid-cols-3 h-8">
-              <TabsTrigger value="all" className="text-xs">All</TabsTrigger>
-              <TabsTrigger value="unread" className="text-xs">
-                Unread {unreadCount > 0 && `(${unreadCount})`}
+        </div>
+
+        <Tabs defaultValue="all" className="w-full">
+          <div className="px-4 py-2 bg-muted/20 border-b">
+             <TabsList className="grid w-full grid-cols-3 h-8 bg-muted/50 p-0.5 rounded-lg">
+              <TabsTrigger value="all" className="text-xs rounded-md data-[state=active]:bg-background data-[state=active]:shadow-sm">Todas</TabsTrigger>
+              <TabsTrigger value="unread" className="text-xs rounded-md data-[state=active]:bg-background data-[state=active]:shadow-sm">
+                No leídas {unreadCount > 0 && <span className="ml-1 text-[10px] bg-destructive text-white px-1 rounded-full">{unreadCount}</span>}
               </TabsTrigger>
-              <TabsTrigger value="read" className="text-xs">Read</TabsTrigger>
+              <TabsTrigger value="read" className="text-xs rounded-md data-[state=active]:bg-background data-[state=active]:shadow-sm">Leídas</TabsTrigger>
             </TabsList>
           </div>
 
           <ScrollArea className="h-[400px]">
-            <TabsContent value="all" className="m-0 border-none outline-none data-[state=active]:block hidden">
+            <TabsContent value="all" className="m-0 border-none outline-none">
               {renderNotificationList(notifications)}
             </TabsContent>
-            <TabsContent value="unread" className="m-0 border-none outline-none data-[state=active]:block hidden">
+            <TabsContent value="unread" className="m-0 border-none outline-none">
               {renderNotificationList(unreadList)}
             </TabsContent>
-             <TabsContent value="read" className="m-0 border-none outline-none data-[state=active]:block hidden">
+             <TabsContent value="read" className="m-0 border-none outline-none">
               {renderNotificationList(readList)}
             </TabsContent>
           </ScrollArea>
         </Tabs>
+
+        {/* Footer Link */}
+        <div className="p-2 border-t bg-muted/10 text-center">
+            <Button 
+                variant="ghost" 
+                size="sm" 
+                className="w-full text-xs h-8" 
+                onClick={() => {
+                    setOpen(false);
+                    router.push('/admin/notifications');
+                }}
+            >
+                Ver todas las notificaciones
+            </Button>
+        </div>
       </PopoverContent>
     </Popover>
   );

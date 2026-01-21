@@ -70,7 +70,10 @@ export const RegisterFormOrganism = React.forwardRef<
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(submitData),
+        body: JSON.stringify({
+          ...submitData,
+          phone: submitData.phone || undefined, // Ensure empty string becomes undefined if necessary
+        }),
       });
 
       const data = await response.json();
@@ -146,10 +149,10 @@ export const RegisterFormOrganism = React.forwardRef<
       {/* Contact Number */}
       <FormInput
          label={t('auth.register.phone') || 'Teléfono'}
-         id="contactNumber"
+         id="phone"
          type="tel"
-         value={formData.contactNumber}
-         onChange={(e) => handleChange('contactNumber', e.target.value)}
+         value={formData.phone}
+         onChange={(e) => handleChange('phone', e.target.value)}
          placeholder="+1234567890"
          disabled={isLoading}
          icon={<Phone className="h-4 w-4" />}

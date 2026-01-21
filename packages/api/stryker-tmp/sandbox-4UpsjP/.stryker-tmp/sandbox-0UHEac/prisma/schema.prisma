@@ -18,7 +18,6 @@ enum UserRole {
   CLIENT
   LEAD
   USER
-  MODERATOR
 }
 
 enum UserStatus {

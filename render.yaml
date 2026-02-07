@@ -78,3 +78,4 @@ services:
         sync: false # Secret - configurar en dashboard
       - key: VAPID_SUBJECT
         value: mailto:admin@alkitu.com
+# Deployment timestamp: Sat Feb  7 23:32:59 CET 2026

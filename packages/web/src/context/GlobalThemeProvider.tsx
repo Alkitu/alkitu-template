@@ -6,27 +6,28 @@ import { ThemeEditorProvider, useThemeEditor } from '@/components/features/theme
 /**
  * GlobalThemeProvider
  *
+ * MODIFIED: Simplified to handle global platform theme (no companyId needed)
+ *
  * Wrapper around ThemeEditorProvider for application-wide theme management.
  * This provider handles theme loading from database and applies themes globally.
  *
  * Features:
- * - Loads company themes from database
+ * - Loads global active theme from database
  * - Applies theme with light/dark mode support
  * - Maintains undo/redo history
  * - Syncs theme changes across the application
  *
- * @param companyId - Company ID for loading themes (TODO: get from auth context)
+ * @param initialTheme - Global active theme from server-side (SSR)
  * @param children - Child components
  */
 interface GlobalThemeProviderProps {
-  companyId?: string;
-  initialTheme?: any; // Theme from database (server-side)
+  initialTheme?: any; // Global active theme from database (server-side)
   children: ReactNode;
 }
 
-export function GlobalThemeProvider({ companyId, initialTheme, children }: GlobalThemeProviderProps) {
+export function GlobalThemeProvider({ initialTheme, children }: GlobalThemeProviderProps) {
   return (
-    <ThemeEditorProvider companyId={companyId} initialTheme={initialTheme} isEditorMode={false}>
+    <ThemeEditorProvider initialTheme={initialTheme} isEditorMode={false}>
       {children}
     </ThemeEditorProvider>
   );

@@ -28,4 +28,9 @@ export interface RequestDetailOrganismProps {
    * Callback when back button is clicked
    */
   onBack?: () => void;
+
+  /**
+   * Callback when edit button is clicked (admin-only)
+   */
+  onEdit?: () => void;
 }

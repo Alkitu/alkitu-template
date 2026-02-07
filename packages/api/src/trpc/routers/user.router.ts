@@ -18,8 +18,8 @@ import {
 
 const registerSchema = z.object({
   email: z.string().email('Invalid email format'),
-  name: z.string().min(2, 'Name must be at least 2 characters'),
-  lastName: z.string().min(2, 'Last name must be at least 2 characters'),
+  firstname: z.string().min(2, 'First name must be at least 2 characters'),
+  lastname: z.string().min(2, 'Last name must be at least 2 characters'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
   phone: z.string().optional(),
   role: z.enum(['ADMIN', 'EMPLOYEE', 'CLIENT', 'LEAD']).optional(),
@@ -30,8 +30,8 @@ const registerSchema = z.object({
 
 const updateProfileSchema = z.object({
   id: z.string(),
-  name: z.string().optional(),
-  lastName: z.string().optional(),
+  firstname: z.string().optional(),
+  lastname: z.string().optional(),
   phone: z.string().optional(),
   role: z.enum(['ADMIN', 'EMPLOYEE', 'CLIENT', 'LEAD']).optional(),
 });
@@ -47,7 +47,7 @@ const getFilteredUsersSchema = z.object({
   page: z.number().min(1).default(1),
   limit: z.number().min(1).max(100).default(20),
   sortBy: z
-    .enum(['email', 'name', 'createdAt', 'lastLogin'])
+    .enum(['email', 'firstname', 'lastname', 'createdAt', 'lastLogin'])
     .default('createdAt'),
   sortOrder: z.enum(['asc', 'desc']).default('desc'),
 });
@@ -112,8 +112,8 @@ export const createUserRouter = (
         const createDto = {
           email: input.email,
           password: input.password,
-          firstname: input.name,
-          lastname: input.lastName,
+          firstname: input.firstname,
+          lastname: input.lastname,
           phone: input.phone,
           role: input.role,
           terms: input.terms,
@@ -164,8 +164,8 @@ export const createUserRouter = (
       .mutation(async ({ input }) => {
         try {
           const updateDto = {
-            firstname: input.name,
-            lastname: input.lastName,
+            firstname: input.firstname,
+            lastname: input.lastname,
             phone: input.phone,
             role: input.role,
           };

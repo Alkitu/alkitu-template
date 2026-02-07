@@ -12,6 +12,9 @@ import { chatbotConfigRouter } from './routers/chatbot-config.router';
 import { channelsRouter } from './routers/channels.router';
 import { createThemeRouter } from './routers/theme.router';
 import { createEmailTemplateRouter } from './routers/email-template.router';
+import { createRequestRouter } from './routers/request.router';
+import { createServiceRouter } from './routers/service.router';
+import { createLocationRouter } from './routers/location.router';
 import { t } from './trpc';
 import { ChatbotConfigService } from '../chatbot-config/chatbot-config.service';
 import { ThemeService } from '../theme/theme.service';
@@ -46,6 +49,9 @@ export class TrpcRouter {
       chatbotConfig: chatbotConfigRouter, // Incluir el router de configuración del chatbot
       theme: createThemeRouter(this.themeService), // Incluir el router de temas
       emailTemplate: createEmailTemplateRouter(this.emailTemplateService), // ALI-121: Router de email templates
+      request: createRequestRouter(), // ALI-119: Router de solicitudes (requests)
+      service: createServiceRouter(), // Service catalog router
+      location: createLocationRouter(), // Work location router
     });
   }
 }

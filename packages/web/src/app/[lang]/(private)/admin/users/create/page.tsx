@@ -141,8 +141,8 @@ const CreateUserPage = () => {
 
     try {
       await registerMutation.mutateAsync({
-        name: formData.name,
-        lastName: formData.lastName,
+        firstname: formData.name,
+        lastname: formData.lastName,
         email: formData.email,
         password: formData.password,
         phone: formData.phone || undefined,

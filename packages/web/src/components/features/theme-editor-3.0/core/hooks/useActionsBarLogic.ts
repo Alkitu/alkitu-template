@@ -50,7 +50,7 @@ export function useActionsBarLogic(): ActionsBarLogic {
   // tRPC mutations for saving themes
   const createThemeMutation = trpc.theme.createTheme.useMutation();
   const updateThemeMutation = trpc.theme.updateTheme.useMutation();
-  const setDefaultThemeMutation = trpc.theme.setDefaultTheme.useMutation();
+  const setGlobalActiveThemeMutation = trpc.theme.setGlobalActiveTheme.useMutation(); // MODIFIED
   const deleteThemeMutation = trpc.theme.delete.useMutation();
 
   // Get current theme or default (evita repetición del fallback)
@@ -98,11 +98,6 @@ export function useActionsBarLogic(): ActionsBarLogic {
         return;
       }
 
-      // Use userId as companyId if companyId is not set
-      // This allows themes to work for users without a company assigned
-      const effectiveCompanyId = companyId || userId;
-      console.log('🏢 [Frontend] Using companyId:', effectiveCompanyId, companyId ? '(from user)' : '(fallback to userId)');
-
       // Validate admin role
       if (!isAdmin) {
         console.error('❌ [Frontend] Not admin:', { isAdmin });
@@ -110,32 +105,32 @@ export function useActionsBarLogic(): ActionsBarLogic {
         return;
       }
 
-      let themeIdToActivate: string;
+      let savedThemeId: string;
 
       // Ensure typography is complete
       const completeTypography = { ...DEFAULT_TYPOGRAPHY, ...(theme.typography || {}) };
 
-      // ✅ SIMPLE: Use isNewTheme parameter directly (no inference!)
+      // MODIFIED: Always create themes as inactive, then activate explicitly
       if (isNewTheme) {
         console.log('📝 [Frontend] Creating new theme...');
         console.log('📝 [Frontend] Calling createThemeMutation with:', {
           name: theme.name,
-          companyId: effectiveCompanyId,
+          companyId: companyId,
           createdById: userId,
         });
 
-        // CREATE new theme
+        // CREATE new theme (NOT active by default)
         const savedTheme = await createThemeMutation.mutateAsync({
           name: theme.name,
           description: theme.description,
           author: theme.author,
-          companyId: effectiveCompanyId,
+          companyId: companyId,
           createdById: userId,
           lightModeConfig: theme.lightColors,
           darkModeConfig: theme.darkColors,
           typography: completeTypography,
           tags: theme.tags,
-          isDefault: false,
+          // NO isActive field - always creates as inactive
         });
         console.log('✅ [Frontend] Created new theme:', savedTheme);
 
@@ -145,7 +140,7 @@ export function useActionsBarLogic(): ActionsBarLogic {
           id: savedTheme.id,
           typography: completeTypography
         });
-        themeIdToActivate = savedTheme.id;
+        savedThemeId = savedTheme.id;
       } else {
         console.log('🔄 [Frontend] Updating existing theme...');
         console.log('🔄 [Frontend] Calling updateThemeMutation with:', {
@@ -154,7 +149,7 @@ export function useActionsBarLogic(): ActionsBarLogic {
           userId,
         });
 
-        // UPDATE existing theme
+        // UPDATE existing theme (NO isActive in input)
         const updatedTheme = await updateThemeMutation.mutateAsync({
           themeId: theme.id,
           userId: userId,
@@ -164,7 +159,7 @@ export function useActionsBarLogic(): ActionsBarLogic {
           darkModeConfig: theme.darkColors,
           typography: completeTypography,
           tags: theme.tags,
-          isActive: true,
+          // NO isActive field - use setGlobalActiveTheme instead
         });
         console.log('✅ [Frontend] Updated existing theme:', updatedTheme);
 
@@ -173,21 +168,20 @@ export function useActionsBarLogic(): ActionsBarLogic {
           ...theme,
           typography: completeTypography
         });
-        themeIdToActivate = theme.id;
+        savedThemeId = theme.id;
       }
 
-      // Set as default theme
-      console.log('⭐ [Frontend] Setting as default theme:', themeIdToActivate);
-      await setDefaultThemeMutation.mutateAsync({
-        themeId: themeIdToActivate,
-        companyId: effectiveCompanyId,
-        userId,
+      // MODIFIED: Activate as GLOBAL theme (platform-wide)
+      console.log('🌍 [Frontend] Activating as global theme:', savedThemeId);
+      await setGlobalActiveThemeMutation.mutateAsync({
+        themeId: savedThemeId,
+        requestingUserId: userId,
       });
-      console.log('✅ [Frontend] Set as default theme successfully');
+      console.log('✅ [Frontend] Activated as global theme successfully');
 
       // Invalidate theme queries to refresh the theme list
       console.log('🔄 [Frontend] Invalidating theme cache...');
-      await utils.theme.getCompanyThemes.invalidate();
+      await utils.theme.listAllThemes.invalidate();
       console.log('✅ [Frontend] Theme cache invalidated');
 
       markSaved();

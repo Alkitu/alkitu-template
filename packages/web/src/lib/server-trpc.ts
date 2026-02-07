@@ -42,11 +42,25 @@ export const serverTrpc = createTRPCProxyClient<AppRouter>({
 });
 
 /**
- * Cached version of getCompanyThemes for better performance
+ * NEW: Get the GLOBAL active theme (platform-wide)
  *
  * Uses React's cache() to deduplicate requests within the same render pass
  */
+export const getGlobalActiveTheme = cache(async () => {
+  try {
+    return await serverTrpc.theme.getGlobalActiveTheme.query();
+  } catch (error) {
+    console.error('Failed to fetch global active theme:', error);
+    return null;
+  }
+});
+
+/**
+ * @deprecated Use getGlobalActiveTheme instead
+ * Cached version of getCompanyThemes for better performance
+ */
 export const getCompanyThemesCached = cache(async (companyId: string) => {
+  console.warn('getCompanyThemesCached is deprecated. Use getGlobalActiveTheme instead.');
   return serverTrpc.theme.getCompanyThemes.query({
     companyId,
     activeOnly: false,
@@ -54,41 +68,19 @@ export const getCompanyThemesCached = cache(async (companyId: string) => {
 });
 
 /**
+ * @deprecated Use getGlobalActiveTheme instead
  * Get the default or favorite theme for a company
- *
- * Priority: isDefault → isFavorite → latest
  */
 export const getDefaultTheme = cache(async (companyId: string) => {
-  const themes = await getCompanyThemesCached(companyId);
-
-  if (!themes || themes.length === 0) {
-    return null;
-  }
-
-  // Priority 1: Find default theme
-  let defaultTheme = themes.find((t: any) => t.isDefault);
-
-  // Priority 2: Find favorite theme
-  if (!defaultTheme) {
-    defaultTheme = themes.find((t: any) => t.isFavorite);
-  }
-
-  // Priority 3: Use most recently updated
-  if (!defaultTheme) {
-    defaultTheme = themes[0]; // Already sorted by updatedAt desc
-  }
-
-  return defaultTheme;
+  console.warn('getDefaultTheme is deprecated. Use getGlobalActiveTheme instead.');
+  return getGlobalActiveTheme();
 });
 
 /**
+ * @deprecated Use getGlobalActiveTheme instead
  * Get the active theme for a specific user
  */
 export const getUserActiveTheme = cache(async (userId: string) => {
-  try {
-    return await serverTrpc.theme.getActive.query({ userId });
-  } catch (error) {
-    console.error('Failed to fetch user active theme:', error);
-    return null;
-  }
+  console.warn('getUserActiveTheme is deprecated. Use getGlobalActiveTheme instead.');
+  return getGlobalActiveTheme();
 });

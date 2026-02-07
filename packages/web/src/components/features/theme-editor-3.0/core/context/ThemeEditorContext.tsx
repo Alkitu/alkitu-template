@@ -450,12 +450,18 @@ export function ThemeEditorProvider({ children, companyId: propCompanyId, initia
     }
   );
 
-  // Load theme with priority: DB themes (isDefault/isFavorite) → Server initialTheme → Hardcoded
+  // MODIFIED: Load theme with priority: Server initialTheme (SSR) → DB themes → Hardcoded
+  // This prevents FOUC by prioritizing the server-side theme
   useEffect(() => {
     let themeToLoad: any = null;
 
-    // Priority 1 (HIGHEST): Database themes - check for isDefault or isFavorite
-    if (dbThemes && dbThemes.length > 0) {
+    // Priority 1 (HIGHEST): Server-side initialTheme (SSR) - prevents FOUC
+    if (initialTheme) {
+      themeToLoad = initialTheme;
+      console.log('🎨 [ThemeContext] Using initialTheme from SSR:', initialTheme.name);
+    }
+    // Priority 2: Database themes - only if no initialTheme from server
+    else if (dbThemes && dbThemes.length > 0) {
       // Find active theme (user selected)
       themeToLoad = dbThemes.find(t => t.isActive);
 
@@ -473,10 +479,8 @@ export function ThemeEditorProvider({ children, companyId: propCompanyId, initia
       if (!themeToLoad) {
         themeToLoad = dbThemes[0]; // Already sorted by updatedAt desc from backend
       }
-    }
-    // Priority 2: Fallback to server-side initialTheme if no DB themes
-    else if (initialTheme) {
-      themeToLoad = initialTheme;
+
+      console.log('🎨 [ThemeContext] Using theme from DB:', themeToLoad?.name);
     }
     // Priority 3 (LOWEST): Use hardcoded default as last resort
     else {
@@ -485,6 +489,7 @@ export function ThemeEditorProvider({ children, companyId: propCompanyId, initia
       applyThemeMode(state.themeMode);
       applyScrollElements(state.baseTheme.scroll);
       applyTypographyElements(DEFAULT_TYPOGRAPHY);
+      console.log('🎨 [ThemeContext] Using hardcoded default theme');
       return;
     }
 
@@ -525,7 +530,8 @@ export function ThemeEditorProvider({ children, companyId: propCompanyId, initia
     applyScrollElements(loadedTheme.scroll || {});
     const typography = { ...DEFAULT_TYPOGRAPHY, ...(loadedTheme.typography || {}) };
     applyTypographyElements(typography);
-  }, [dbThemes, state.themeMode]); // Removed initialTheme from deps - only load it once on mount
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialTheme]); // MODIFIED: Only depend on initialTheme to prevent re-loading from dbThemes
 
   // Hydrate persisted active section after initial render to prevent hydration mismatch
   useEffect(() => {

@@ -7,9 +7,8 @@ import { ChatWidget } from '@/components/features/ChatWidget/ChatWidget';
 // import { SpeedInsights }m from '@vercel/speed-insights/next';
 import esTranslations from '../../locales/es/common.json';
 import enTranslations from '../../locales/en/common.json';
-import { getDefaultTheme, getUserActiveTheme } from '@/lib/server-trpc';
+import { getGlobalActiveTheme } from '@/lib/server-trpc';
 import { generateInlineThemeCSS } from '@/lib/theme/inline-css-generator';
-import { cookies } from 'next/headers';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -24,56 +23,25 @@ export default async function RootLayout({ children, params }: LayoutProps) {
   // console.log('layout.tsx - Server Side Translations:', translations);
   console.log('layout.tsx - Debug: NEXT_PUBLIC_API_URL =', process.env.NEXT_PUBLIC_API_URL);
 
-  // TODO: Get companyId from session/auth context when available
-  // For testing, use a valid 24-character MongoDB ObjectID format
-  const companyId = '6733c2fd80b7b58d4c36d966';
-
-  // Fetch default theme server-side to prevent FOUC
+  // MODIFIED: Simplified to use global platform theme
+  // Fetch global active theme server-side to prevent FOUC
   let defaultTheme = null;
   let themeCSS = '';
 
   try {
-    // Attempt to get user ID from cookies
-    const cookieStore = await cookies();
-    const token = cookieStore.get('auth-token')?.value;
-    let userId: string | null = null;
-
-    if (token) {
-      try {
-        const base64Url = token.split('.')[1];
-        if (base64Url) {
-          const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-          const jsonPayload = decodeURIComponent(
-            atob(base64)
-              .split('')
-              .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-              .join(''),
-          );
-          const payload = JSON.parse(jsonPayload);
-          userId = payload.sub || null;
-        }
-      } catch (e) {
-        console.warn('Failed to decode auth token in layout:', e);
-      }
-    }
-
-    // Priority 1: User's active theme
-    if (userId) {
-      defaultTheme = await getUserActiveTheme(userId);
-      // console.log('layout.tsx - Found user active theme:', defaultTheme?.name);
-    }
-
-    // Priority 2: Company default/favorite theme
-    if (!defaultTheme) {
-      defaultTheme = await getDefaultTheme(companyId);
-      // console.log('layout.tsx - Fallback to company theme:', defaultTheme?.name);
-    }
+    console.log('🎨 [SSR Layout] Fetching global active theme...');
+    // Get the GLOBAL active theme (platform-wide)
+    defaultTheme = await getGlobalActiveTheme();
 
     if (defaultTheme) {
+      console.log('✅ [SSR Layout] Loaded theme:', defaultTheme.name, 'ID:', defaultTheme.id);
       themeCSS = generateInlineThemeCSS(defaultTheme);
+      console.log('✅ [SSR Layout] Generated CSS:', themeCSS.length, 'chars');
+    } else {
+      console.warn('⚠️  [SSR Layout] No theme returned from getGlobalActiveTheme');
     }
   } catch (error) {
-    console.error('layout.tsx - Failed to load theme server-side:', error);
+    console.error('❌ [SSR Layout] Failed to load global theme:', error);
     // Fallback: App will load theme client-side via ThemeEditorContext
   }
 
@@ -121,7 +89,6 @@ export default async function RootLayout({ children, params }: LayoutProps) {
         <Providers
           initialLocale={locale}
           initialTranslations={translations}
-          companyId={companyId}
           initialTheme={defaultTheme}
         >
           <main

@@ -72,14 +72,29 @@ export function createThemeRouter(themeService: ThemeService) {
         return themeService.getTheme(input.id);
       }),
 
-    // Get the active theme
+    // NEW: Get the GLOBAL active theme (platform-wide)
+    getGlobalActiveTheme: t.procedure
+      .input(z.void().optional())
+      .query(async () => {
+        return themeService.getGlobalActiveTheme();
+      }),
+
+    // @deprecated Use getGlobalActiveTheme instead
     getActive: t.procedure
       .input(z.object({ userId: z.string().optional() }))
       .query(async ({ input }) => {
+        console.warn('getActive is deprecated. Use getGlobalActiveTheme instead.');
         return themeService.getActiveTheme(input.userId);
       }),
 
-    // List all themes
+    // NEW: List all themes (platform-wide, no filters)
+    listAllThemes: t.procedure
+      .input(z.void().optional())
+      .query(async () => {
+        return themeService.listAllThemes();
+      }),
+
+    // @deprecated Use listAllThemes instead
     list: t.procedure
       .input(
         z.object({
@@ -88,6 +103,7 @@ export function createThemeRouter(themeService: ThemeService) {
         }),
       )
       .query(async ({ input }) => {
+        console.warn('list is deprecated. Use listAllThemes instead.');
         return themeService.listThemes(input.userId, input.includePublic);
       }),
 
@@ -115,7 +131,28 @@ export function createThemeRouter(themeService: ThemeService) {
         return themeService.toggleFavorite(input.id, input.userId);
       }),
 
-    // Set active theme
+    // NEW: Set global active theme (platform-wide)
+    setGlobalActiveTheme: t.procedure
+      .input(
+        z.object({
+          themeId: z.string(),
+          requestingUserId: z.string(),
+        }),
+      )
+      .mutation(async ({ input }) => {
+        console.log('🌍 [tRPC] setGlobalActiveTheme mutation called with:', {
+          themeId: input.themeId,
+          requestingUserId: input.requestingUserId,
+        });
+        const result = await themeService.setGlobalActiveTheme(
+          input.themeId,
+          input.requestingUserId,
+        );
+        console.log('✅ [tRPC] setGlobalActiveTheme mutation successful');
+        return result;
+      }),
+
+    // @deprecated Use setGlobalActiveTheme instead
     setActive: t.procedure
       .input(
         z.object({
@@ -124,10 +161,11 @@ export function createThemeRouter(themeService: ThemeService) {
         }),
       )
       .mutation(async ({ input }) => {
+        console.warn('setActive is deprecated. Use setGlobalActiveTheme instead.');
         return themeService.setActiveTheme(input.id, input.userId);
       }),
 
-    // Get themes by company ID
+    // @deprecated Use listAllThemes instead
     getCompanyThemes: t.procedure
       .input(
         z.object({
@@ -136,6 +174,7 @@ export function createThemeRouter(themeService: ThemeService) {
         }),
       )
       .query(async ({ input }) => {
+        console.warn('getCompanyThemes is deprecated. Use listAllThemes instead.');
         return themeService.getCompanyThemes(input.companyId, input.activeOnly);
       }),
 
@@ -147,13 +186,14 @@ export function createThemeRouter(themeService: ThemeService) {
       }),
 
     // Create a new theme
+    // MODIFIED: Uses createdById, always creates inactive theme
     createTheme: t.procedure
       .input(
         z.object({
           name: z.string().min(1, 'Theme name is required'),
           description: z.string().optional(),
           author: z.string().optional(),
-          companyId: z.string(),
+          companyId: z.string().optional(),
           createdById: z.string(),
           lightModeConfig: z.any(),
           darkModeConfig: z.any().optional(),
@@ -172,7 +212,7 @@ export function createThemeRouter(themeService: ThemeService) {
           name: input.name,
           description: input.description,
           author: input.author,
-          userId: input.createdById,
+          createdById: input.createdById,
           companyId: input.companyId,
           lightModeConfig: input.lightModeConfig,
           darkModeConfig: input.darkModeConfig,
@@ -185,18 +225,19 @@ export function createThemeRouter(themeService: ThemeService) {
       }),
 
     // Update an existing theme
+    // MODIFIED: Removed isActive from input (use setGlobalActiveTheme)
     updateTheme: t.procedure
       .input(
         z.object({
           themeId: z.string(),
-          userId: z.string(),
+          userId: z.string(), // requestingUserId
           name: z.string().optional(),
           description: z.string().optional(),
           lightModeConfig: z.any().optional(),
           darkModeConfig: z.any().optional(),
           typography: z.any().optional(),
           tags: z.array(z.string()).optional(),
-          isActive: z.boolean().optional(),
+          // isActive removed - use setGlobalActiveTheme instead
         }),
       )
       .mutation(async ({ input }) => {
@@ -214,13 +255,12 @@ export function createThemeRouter(themeService: ThemeService) {
           darkModeConfig: input.darkModeConfig,
           typography: input.typography,
           tags: input.tags,
-          isActive: input.isActive,
         });
         console.log('✅ [tRPC] updateTheme mutation successful, theme ID:', result.id);
         return result;
       }),
 
-    // Set default theme for a company
+    // @deprecated Use setGlobalActiveTheme instead
     setDefaultTheme: t.procedure
       .input(
         z.object({
@@ -230,6 +270,7 @@ export function createThemeRouter(themeService: ThemeService) {
         }),
       )
       .mutation(async ({ input }) => {
+        console.warn('setDefaultTheme is deprecated. Use setGlobalActiveTheme instead.');
         console.log('⭐ [tRPC] setDefaultTheme mutation called with:', {
           themeId: input.themeId,
           companyId: input.companyId,

@@ -8,28 +8,25 @@ import { ThemeErrorBoundaryClass } from './ThemeErrorBoundary';
 import { TooltipProvider } from '@/components/primitives/ui/tooltip';
 import { ServiceWorkerRegistration } from '@/components/features/ServiceWorkerRegistration';
 
+// MODIFIED: Removed companyId and themeId (global theme model)
 interface ProvidersProps {
   children: React.ReactNode;
   initialLocale: 'en' | 'es';
   initialTranslations: Translations;
-  companyId?: string;
-  themeId?: string;
-  initialTheme?: any; // Theme from database (server-side)
+  initialTheme?: any; // Global active theme from database (server-side)
 }
 
 export function Providers({
   children,
   initialLocale,
   initialTranslations,
-  companyId,
-  themeId,
   initialTheme,
 }: ProvidersProps) {
   return (
     <ReactQueryProvider>
       <TrpcProvider>
         <ThemeErrorBoundaryClass>
-          <GlobalThemeProvider companyId={companyId} initialTheme={initialTheme}>
+          <GlobalThemeProvider initialTheme={initialTheme}>
             <TooltipProvider>
               <TranslationsProvider
                 initialLocale={initialLocale}

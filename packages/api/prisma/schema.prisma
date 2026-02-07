@@ -540,14 +540,20 @@ model ChatbotConfig {
 }
 
 // Theme Editor
+// MODIFIED: Migrated to platform-wide single active theme system
 model Theme {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   description String?
   version     String   @default("3.0.0")
   author      String?
-  userId      String?  @db.ObjectId // Optional: User who created/owns the theme
-  companyId   String?  @db.ObjectId // Company this theme belongs to
+
+  // MODIFIED: createdById solo para auditoría (quién creó el tema)
+  // NO representa propiedad ni activación personal
+  createdById String?  @db.ObjectId // User who created the theme (audit only)
+
+  // MAINTAINED: Para futuro multi-tenant (nullable)
+  companyId   String?  @db.ObjectId // Company this theme belongs to (future multi-tenant)
 
   // Theme configuration
   lightModeConfig Json?     // Light mode color configuration
@@ -561,14 +567,18 @@ model Theme {
   tags        String[]
   isPublic    Boolean  @default(false)
   isFavorite  Boolean  @default(false)
-  isActive    Boolean  @default(false) // Whether this theme is currently active
-  isDefault   Boolean  @default(false) // Whether this is the default theme for the company
+
+  // MODIFIED: Solo UN tema puede ser activo en toda la plataforma (platform-wide)
+  isActive    Boolean  @default(false) // Platform-wide active theme (only ONE can be true)
+
+  // DEPRECATED: isDefault ya no se usa en modelo de plataforma única
+  isDefault   Boolean  @default(false) // DEPRECATED: kept for backward compatibility
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   @@map("themes")
-  @@index([userId])
+  @@index([createdById])
   @@index([companyId])
   @@index([isActive])
   @@index([isDefault])

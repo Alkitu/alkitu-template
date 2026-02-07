@@ -30,32 +30,32 @@ export const RequestStatusBadgeMolecule: React.FC<
   // Status configurations
   const statusConfig = {
     [RequestStatus.PENDING]: {
-      label: 'Pending',
+      label: 'Pendiente',
       icon: Clock,
-      bgColor: 'bg-yellow-50',
-      textColor: 'text-yellow-700',
-      borderColor: 'border-yellow-200',
+      bgColor: 'bg-warning/10',
+      textColor: 'text-warning',
+      borderColor: 'border-warning/20',
     },
     [RequestStatus.ONGOING]: {
-      label: 'Ongoing',
+      label: 'En Proceso',
       icon: Play,
-      bgColor: 'bg-blue-50',
-      textColor: 'text-blue-700',
-      borderColor: 'border-blue-200',
+      bgColor: 'bg-primary/10',
+      textColor: 'text-primary',
+      borderColor: 'border-primary/20',
     },
     [RequestStatus.COMPLETED]: {
-      label: 'Completed',
+      label: 'Completada',
       icon: CheckCircle,
-      bgColor: 'bg-green-50',
-      textColor: 'text-green-700',
-      borderColor: 'border-green-200',
+      bgColor: 'bg-success/10',
+      textColor: 'text-success',
+      borderColor: 'border-success/20',
     },
     [RequestStatus.CANCELLED]: {
-      label: 'Cancelled',
+      label: 'Cancelada',
       icon: XCircle,
-      bgColor: 'bg-gray-50',
-      textColor: 'text-gray-700',
-      borderColor: 'border-gray-200',
+      bgColor: 'bg-destructive/10',
+      textColor: 'text-destructive',
+      borderColor: 'border-destructive/20',
     },
   };
 

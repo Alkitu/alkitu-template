@@ -20,18 +20,11 @@ export function useThemeSelector() {
   // Get authenticated user data
   const { userId, companyId, isAdmin } = useThemeAuth();
 
-  // Load themes from database - use companyId from auth or fallback to userId
-  // This ensures we use the same companyId that was used when saving themes
-  const effectiveCompanyId = companyId || userId || '6733c2fd80b7b58d4c36d966';
-  console.log('🔍 [ThemeSelector] Loading themes for companyId:', effectiveCompanyId);
+  // MODIFIED: Load ALL themes (platform-wide, no filters)
+  const { data: dbThemes, refetch: refetchThemes } = trpc.theme.listAllThemes.useQuery();
 
-  const { data: dbThemes, refetch: refetchThemes } = trpc.theme.getCompanyThemes.useQuery({
-    companyId: effectiveCompanyId,
-    activeOnly: false,
-  });
-
-  // Mutations for favorite functionality
-  const toggleFavoriteMutation = trpc.theme.setDefaultTheme.useMutation({
+  // NEW: Mutation to set global active theme
+  const setGlobalActiveThemeMutation = trpc.theme.setGlobalActiveTheme.useMutation({
     onSuccess: () => {
       refetchThemes();
     },
@@ -172,11 +165,29 @@ export function useThemeSelector() {
   };
 
   /**
-   * Handle toggling favorite on a theme
-   * - For saved themes: Toggle favorite status in database
-   * - For built-in themes: Save to database first with isFavorite: true
+   * NEW: Handle activating a theme as the global active theme
+   * Only ADMIN can activate themes
+   */
+  const handleActivateTheme = async (themeId: string): Promise<void> => {
+    if (!isAdmin) {
+      throw new Error('Only administrators can activate themes');
+    }
+    if (!userId) {
+      throw new Error('Authentication required to activate themes');
+    }
+
+    await setGlobalActiveThemeMutation.mutateAsync({
+      themeId,
+      requestingUserId: userId,
+    });
+  };
+
+  /**
+   * @deprecated Use handleActivateTheme instead
+   * Handle toggling favorite on a theme (deprecated in global theme model)
    */
   const handleToggleFavorite = (themeId: string) => {
+    console.warn('handleToggleFavorite is deprecated. Use handleActivateTheme to set global active theme.');
     const theme = allThemes.find(t => t.id === themeId);
 
     if (!theme) {
@@ -186,26 +197,21 @@ export function useThemeSelector() {
 
     // Check if it's a built-in theme
     if (isBuiltInTheme(themeId)) {
-      // Built-in theme: Save to database with isFavorite: true
+      // Built-in theme: Save to database first
       createThemeMutation.mutate({
         name: theme.name,
         description: theme.description || `Built-in ${theme.name} theme`,
         author: theme.author || 'Alkitu',
-        companyId: effectiveCompanyId,
+        companyId: companyId,
         createdById: userId || '',
         lightModeConfig: theme.lightColors,
         darkModeConfig: theme.darkColors,
         typography: theme.typography,
         tags: theme.tags || [],
-        isDefault: true, // Mark as default when favoriting
       });
     } else {
-      // Saved theme: Toggle favorite in database
-      toggleFavoriteMutation.mutate({
-        themeId,
-        companyId: effectiveCompanyId,
-        userId: userId || '',
-      });
+      // For saved themes, just activate as global theme
+      handleActivateTheme(themeId).catch(console.error);
     }
   };
 
@@ -261,7 +267,8 @@ export function useThemeSelector() {
     handlePreviousTheme,
     handleNextTheme,
     handleRandomTheme,
-    handleToggleFavorite,
+    handleActivateTheme, // NEW: Global theme activation
+    handleToggleFavorite, // DEPRECATED
     handleDeleteTheme,
 
     // Helper functions

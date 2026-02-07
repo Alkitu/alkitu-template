@@ -67,7 +67,20 @@
       "Bash(kill:*)",
       "mcp__playwright__browser_resize",
       "Bash(exit 0)",
-      "mcp__playwright__browser_press_key"
+      "mcp__playwright__browser_press_key",
+      "Bash(npx ts-node:*)",
+      "Bash(npx tsx:*)",
+      "Bash(fd:*)",
+      "Bash(npx mongosh:*)",
+      "Bash(npm outdated:*)",
+      "Bash(npm install:*)",
+      "Bash(npm update:*)",
+      "Bash(chmod:*)",
+      "Bash(brew install:*)",
+      "Bash(render:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []

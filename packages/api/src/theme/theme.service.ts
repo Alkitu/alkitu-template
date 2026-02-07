@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@/prisma.service';
 import { Theme } from '@prisma/client';
 
@@ -6,7 +6,8 @@ export interface SaveThemeDto {
   name: string;
   description?: string;
   author?: string;
-  userId?: string;
+  userId?: string; // DEPRECATED: Use createdById
+  createdById?: string; // User who created the theme (audit only)
   companyId?: string;
   lightModeConfig?: any;
   darkModeConfig?: any;
@@ -15,8 +16,8 @@ export interface SaveThemeDto {
   tags?: string[];
   isPublic?: boolean;
   isFavorite?: boolean;
-  isActive?: boolean;
-  isDefault?: boolean;
+  isActive?: boolean; // DEPRECATED: Use setGlobalActiveTheme instead
+  isDefault?: boolean; // DEPRECATED: No longer used
 }
 
 export interface UpdateThemeDto extends Partial<SaveThemeDto> {
@@ -29,43 +30,33 @@ export class ThemeService {
 
   /**
    * Save a new theme
+   * MODIFIED: Changed to use createdById, NEVER activates automatically
    */
   async saveTheme(data: SaveThemeDto): Promise<Theme> {
-    // Verify authorization if userId is provided
-    if (data.userId) {
+    // Support both userId (deprecated) and createdById for backward compatibility
+    const createdById = data.createdById || data.userId;
+
+    // Verify authorization if createdById is provided
+    if (createdById) {
       const user = await this.prisma.user.findUnique({
-        where: { id: data.userId },
+        where: { id: createdById },
         select: { role: true },
       });
 
       // Only admins can create themes
       if (user?.role !== 'ADMIN') {
-        throw new Error('Unauthorized to create themes. Only admins can create themes.');
+        throw new UnauthorizedException('Unauthorized to create themes. Only admins can create themes.');
       }
     }
 
-    // If isActive is true, deactivate all other themes for this user
-    if (data.isActive && data.userId) {
-      await this.prisma.theme.updateMany({
-        where: { userId: data.userId, isActive: true },
-        data: { isActive: false },
-      });
-    }
-
-    // If isDefault is true, remove default from all other themes for this company
-    if (data.isDefault && data.companyId) {
-      await this.prisma.theme.updateMany({
-        where: { companyId: data.companyId, isDefault: true },
-        data: { isDefault: false },
-      });
-    }
-
+    // MODIFIED: Always create theme as inactive (isActive: false)
+    // Use setGlobalActiveTheme to activate after creation
     return this.prisma.theme.create({
       data: {
         name: data.name,
         description: data.description,
         author: data.author,
-        userId: data.userId,
+        createdById: createdById,
         companyId: data.companyId,
         lightModeConfig: data.lightModeConfig,
         darkModeConfig: data.darkModeConfig,
@@ -74,49 +65,51 @@ export class ThemeService {
         tags: data.tags || [],
         isPublic: data.isPublic ?? false,
         isFavorite: data.isFavorite ?? false,
-        isActive: data.isActive ?? false,
-        isDefault: data.isDefault ?? false,
+        isActive: false, // ALWAYS false - use setGlobalActiveTheme to activate
+        isDefault: data.isDefault ?? false, // Kept for backward compatibility
       },
     });
   }
 
   /**
    * Update an existing theme
+   * MODIFIED: Removed ability to change isActive directly (must use setGlobalActiveTheme)
    */
   async updateTheme(data: UpdateThemeDto): Promise<Theme> {
-    const { id, ...updateData } = data;
+    const { id, isActive, ...updateData } = data;
 
-    // Verify authorization if userId is provided
-    if (updateData.userId) {
+    // Support both userId and createdById for backward compatibility
+    const requestingUserId = updateData.userId || updateData.createdById;
+
+    // Verify authorization if requestingUserId is provided
+    if (requestingUserId) {
       const theme = await this.prisma.theme.findUnique({
         where: { id },
       });
 
       if (!theme) {
-        throw new Error('Theme not found');
+        throw new NotFoundException('Theme not found');
       }
 
       // Get user to check role
       const user = await this.prisma.user.findUnique({
-        where: { id: updateData.userId },
+        where: { id: requestingUserId },
         select: { role: true },
       });
 
       // Allow if user is ADMIN or if user is the theme creator
       const isAdmin = user?.role === 'ADMIN';
-      const isCreator = theme.userId === updateData.userId;
+      const isCreator = theme.createdById === requestingUserId;
 
       if (!isAdmin && !isCreator) {
-        throw new Error('Unauthorized to update this theme. Only admins or the theme creator can update themes.');
+        throw new UnauthorizedException('Unauthorized to update this theme. Only admins or the theme creator can update themes.');
       }
     }
 
-    // If isActive is true, deactivate all other themes for this user
-    if (updateData.isActive && updateData.userId) {
-      await this.prisma.theme.updateMany({
-        where: { userId: updateData.userId, isActive: true, id: { not: id } },
-        data: { isActive: false },
-      });
+    // MODIFIED: isActive is explicitly removed from updateData
+    // Use setGlobalActiveTheme to activate a theme
+    if (isActive !== undefined) {
+      console.warn('Cannot set isActive directly. Use setGlobalActiveTheme instead.');
     }
 
     return this.prisma.theme.update({
@@ -135,54 +128,102 @@ export class ThemeService {
   }
 
   /**
-   * Get the active theme for a user
+   * Get the GLOBAL active theme (platform-wide)
+   * No depende de userId ni companyId
    */
-  async getActiveTheme(userId?: string): Promise<Theme | null> {
-    if (!userId) {
-      // Return public active theme if no user
-      return this.prisma.theme.findFirst({
-        where: { isPublic: true, isActive: true },
-        orderBy: { updatedAt: 'desc' },
-      });
-    }
-
+  async getGlobalActiveTheme(): Promise<Theme | null> {
     return this.prisma.theme.findFirst({
-      where: { userId, isActive: true },
+      where: { isActive: true },
+      orderBy: { updatedAt: 'desc' },
     });
   }
 
   /**
-   * List all themes for a user
+   * Set a theme as the GLOBAL active theme
+   * Solo ADMIN puede ejecutar
+   * Automáticamente desactiva cualquier otro tema activo
    */
-  async listThemes(userId?: string, includePublic = true): Promise<Theme[]> {
-    const where: any = {};
-
-    if (userId) {
-      where.OR = [{ userId }, ...(includePublic ? [{ isPublic: true }] : [])];
-    } else if (includePublic) {
-      where.isPublic = true;
+  async setGlobalActiveTheme(
+    themeId: string,
+    requestingUserId: string,
+  ): Promise<Theme> {
+    // 1. Validar ADMIN
+    const user = await this.prisma.user.findUnique({
+      where: { id: requestingUserId },
+      select: { role: true },
+    });
+    if (user?.role !== 'ADMIN') {
+      throw new UnauthorizedException('Only administrators can change platform theme');
     }
 
+    // 2. Verificar que tema existe
+    const theme = await this.prisma.theme.findUnique({ where: { id: themeId } });
+    if (!theme) {
+      throw new NotFoundException('Theme not found');
+    }
+
+    // 3. TRANSACCIÓN: Desactivar todos y activar seleccionado
+    return this.prisma.$transaction(async (tx) => {
+      await tx.theme.updateMany({
+        where: { isActive: true },
+        data: { isActive: false },
+      });
+      return tx.theme.update({
+        where: { id: themeId },
+        data: { isActive: true },
+      });
+    });
+  }
+
+  /**
+   * @deprecated Use getGlobalActiveTheme() instead
+   */
+  async getActiveTheme(userId?: string): Promise<Theme | null> {
+    console.warn('getActiveTheme is deprecated. Use getGlobalActiveTheme instead.');
+    return this.getGlobalActiveTheme();
+  }
+
+  /**
+   * List all themes
+   * MODIFIED: No longer filters by userId - returns all themes
+   */
+  async listThemes(userId?: string, includePublic = true): Promise<Theme[]> {
+    // MODIFIED: Return all themes without filtering by user
     return this.prisma.theme.findMany({
-      where,
+      orderBy: { updatedAt: 'desc' },
+    });
+  }
+
+  /**
+   * List all themes (platform-wide)
+   * New method for explicit global theme listing
+   */
+  async listAllThemes(): Promise<Theme[]> {
+    return this.prisma.theme.findMany({
       orderBy: { updatedAt: 'desc' },
     });
   }
 
   /**
    * Delete a theme
+   * MODIFIED: Prevents deleting active theme, validates ADMIN role
    */
   async deleteTheme(id: string, userId?: string): Promise<Theme> {
+    const theme = await this.prisma.theme.findUnique({
+      where: { id },
+    });
+
+    if (!theme) {
+      throw new NotFoundException('Theme not found');
+    }
+
+    // MODIFIED: Prevent deleting active theme
+    if (theme.isActive) {
+      throw new Error('Cannot delete the active theme. Please activate another theme first.');
+    }
+
     // Verify authorization if userId is provided
     if (userId) {
-      const theme = await this.prisma.theme.findUnique({
-        where: { id },
-      });
-
-      if (!theme) {
-        throw new Error('Theme not found');
-      }
-
       // Get user to check role
       const user = await this.prisma.user.findUnique({
         where: { id: userId },
@@ -191,10 +232,10 @@ export class ThemeService {
 
       // Allow if user is ADMIN or if user is the theme creator
       const isAdmin = user?.role === 'ADMIN';
-      const isCreator = theme.userId === userId;
+      const isCreator = theme.createdById === userId;
 
       if (!isAdmin && !isCreator) {
-        throw new Error('Unauthorized to delete this theme. Only admins or the theme creator can delete themes.');
+        throw new UnauthorizedException('Unauthorized to delete this theme. Only admins or the theme creator can delete themes.');
       }
     }
 
@@ -212,12 +253,13 @@ export class ThemeService {
     });
 
     if (!theme) {
-      throw new Error('Theme not found');
+      throw new NotFoundException('Theme not found');
     }
 
+    // MODIFIED: Use createdById instead of userId
     // Verify ownership if userId is provided
-    if (userId && theme.userId !== userId) {
-      throw new Error('Unauthorized to modify this theme');
+    if (userId && theme.createdById !== userId) {
+      throw new UnauthorizedException('Unauthorized to modify this theme');
     }
 
     return this.prisma.theme.update({
@@ -227,53 +269,26 @@ export class ThemeService {
   }
 
   /**
-   * Set active theme
+   * @deprecated Use setGlobalActiveTheme() instead
    */
   async setActiveTheme(id: string, userId?: string): Promise<Theme> {
-    const theme = await this.prisma.theme.findUnique({
-      where: { id },
-    });
-
-    if (!theme) {
-      throw new Error('Theme not found');
+    console.warn('setActiveTheme is deprecated. Use setGlobalActiveTheme instead.');
+    if (!userId) {
+      throw new Error('userId required for setActiveTheme (deprecated)');
     }
-
-    // Verify ownership if userId is provided
-    if (userId && theme.userId !== userId) {
-      throw new Error('Unauthorized to activate this theme');
-    }
-
-    // Deactivate all other themes for this user
-    if (theme.userId) {
-      await this.prisma.theme.updateMany({
-        where: { userId: theme.userId, isActive: true, id: { not: id } },
-        data: { isActive: false },
-      });
-    }
-
-    return this.prisma.theme.update({
-      where: { id },
-      data: { isActive: true },
-    });
+    return this.setGlobalActiveTheme(id, userId);
   }
 
   /**
-   * Get themes by company ID
+   * @deprecated Use listAllThemes() instead
+   * Get themes by company ID (kept for backward compatibility)
    */
   async getCompanyThemes(
     companyId: string,
     activeOnly = false,
   ): Promise<Theme[]> {
-    const where: any = { companyId };
-
-    if (activeOnly) {
-      where.isActive = true;
-    }
-
-    return this.prisma.theme.findMany({
-      where,
-      orderBy: { updatedAt: 'desc' },
-    });
+    console.warn('getCompanyThemes is deprecated. Use listAllThemes instead.');
+    return this.listAllThemes();
   }
 
   /**
@@ -291,49 +306,18 @@ export class ThemeService {
   }
 
   /**
-   * Set a theme as the default theme for a company
+   * @deprecated Use setGlobalActiveTheme() instead
+   * Set a theme as the default theme for a company (kept for backward compatibility)
    */
   async setDefaultTheme(
     themeId: string,
     companyId: string,
     userId?: string,
   ): Promise<Theme> {
-    // Verify authorization if userId is provided
-    if (userId) {
-      const user = await this.prisma.user.findUnique({
-        where: { id: userId },
-        select: { role: true },
-      });
-
-      // Only admins can set default themes
-      if (user?.role !== 'ADMIN') {
-        throw new Error('Unauthorized to set default theme. Only admins can set default themes.');
-      }
+    console.warn('setDefaultTheme is deprecated. Use setGlobalActiveTheme instead.');
+    if (!userId) {
+      throw new Error('userId required for setDefaultTheme (deprecated)');
     }
-
-    const theme = await this.prisma.theme.findUnique({
-      where: { id: themeId },
-    });
-
-    if (!theme) {
-      throw new Error('Theme not found');
-    }
-
-    // Verify the theme belongs to the company
-    if (theme.companyId !== companyId) {
-      throw new Error('Theme does not belong to this company');
-    }
-
-    // Remove default flag from all other themes in this company
-    await this.prisma.theme.updateMany({
-      where: { companyId, isDefault: true, id: { not: themeId } },
-      data: { isDefault: false },
-    });
-
-    // Set this theme as default
-    return this.prisma.theme.update({
-      where: { id: themeId },
-      data: { isDefault: true, isActive: true },
-    });
+    return this.setGlobalActiveTheme(themeId, userId);
   }
 }

@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/primitives/ui/button';
 import { Loader2, Filter, X, Plus, AlertCircle } from 'lucide-react';
 import { RequestStatus } from '@alkitu/shared';
+import { trpc } from '@/lib/trpc';
 import {
   RequestCardMolecule,
   AssignRequestModal,
@@ -40,16 +41,11 @@ export const RequestListOrganism: React.FC<RequestListOrganismProps> = ({
   onRequestClick,
   initialStatusFilter,
 }) => {
-  const [requests, setRequests] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState<RequestFilters>({
     status: initialStatusFilter,
   });
   const [actionLoading, setActionLoading] = useState<string | null>(null);
-  const [pollingEnabled, setPollingEnabled] = useState(false);
-  const [lastFetchTime, setLastFetchTime] = useState<Date | null>(null);
   const [assignModalOpen, setAssignModalOpen] = useState(false);
   const [selectedRequestForAssign, setSelectedRequestForAssign] = useState<any | null>(null);
   const [completeModalOpen, setCompleteModalOpen] = useState(false);
@@ -57,62 +53,24 @@ export const RequestListOrganism: React.FC<RequestListOrganismProps> = ({
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
   const [selectedRequestForCancel, setSelectedRequestForCancel] = useState<any | null>(null);
 
-  // Fetch requests with retry logic
-  const fetchRequests = async (options?: { silent?: boolean; retryCount?: number }) => {
-    const { silent = false, retryCount = 0 } = options || {};
-    const MAX_RETRIES = 3;
+  // Fetch requests using tRPC
+  const {
+    data: requestsData,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = trpc.request.getFilteredRequests.useQuery({
+    page: 1,
+    limit: 100,
+    status: filters.status,
+    serviceId: filters.serviceId,
+    assignedToId: filters.assignedToId,
+    sortBy: 'createdAt',
+    sortOrder: 'desc',
+  });
 
-    try {
-      if (!silent) setIsLoading(true);
-      setError(null);
-
-      const params = new URLSearchParams();
-      if (filters.status) params.append('status', filters.status);
-      if (filters.serviceId) params.append('serviceId', filters.serviceId);
-      if (filters.assignedToId) params.append('assignedToId', filters.assignedToId);
-      if (silent) params.append('_t', Date.now().toString()); // Cache busting
-
-      const response = await fetch(`/api/requests?${params.toString()}`);
-      if (!response.ok) throw new Error(`Failed to fetch: ${response.status}`);
-
-      const data = await response.json();
-      setRequests(data);
-      setLastFetchTime(new Date());
-    } catch (err: any) {
-      if (retryCount < MAX_RETRIES && !silent) {
-        await new Promise(resolve => setTimeout(resolve, 1000 * (retryCount + 1)));
-        return fetchRequests({ silent, retryCount: retryCount + 1 });
-      }
-      setError(err.message || 'Failed to load requests');
-      console.error(err);
-    } finally {
-      if (!silent) setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    void fetchRequests();
-  }, [filters]);
-
-  // Polling for new requests (auto-disable after 30 seconds)
-  useEffect(() => {
-    if (!pollingEnabled) return;
-
-    let pollCount = 0;
-    const MAX_POLLS = 6; // 30 seconds total (5s intervals)
-
-    const pollTimer = setInterval(async () => {
-      pollCount++;
-      if (pollCount >= MAX_POLLS) {
-        setPollingEnabled(false);
-        clearInterval(pollTimer);
-        return;
-      }
-      await fetchRequests({ silent: true });
-    }, 5000);
-
-    return () => clearInterval(pollTimer);
-  }, [pollingEnabled, filters]);
+  const requests = requestsData?.requests || [];
 
   // Handle assign request
   const handleAssign = async (request: any) => {
@@ -137,7 +95,7 @@ export const RequestListOrganism: React.FC<RequestListOrganismProps> = ({
       }
 
       // Refresh the request list
-      await fetchRequests();
+      await refetch();
 
       // Close modal
       setAssignModalOpen(false);
@@ -174,7 +132,7 @@ export const RequestListOrganism: React.FC<RequestListOrganismProps> = ({
       }
 
       // Refresh the request list
-      await fetchRequests();
+      await refetch();
 
       // Close modal
       setCompleteModalOpen(false);
@@ -211,7 +169,7 @@ export const RequestListOrganism: React.FC<RequestListOrganismProps> = ({
       }
 
       // Refresh the request list
-      await fetchRequests();
+      await refetch();
 
       // Close modal
       setCancelModalOpen(false);

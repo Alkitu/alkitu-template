@@ -69,6 +69,10 @@ export default function AdminRequestDetailPage({
     console.log('Request updated successfully');
   };
 
+  const handleEdit = () => {
+    router.push(`/${lang}/admin/requests/${id}/edit`);
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -105,6 +109,7 @@ export default function AdminRequestDetailPage({
           userRole={userRole}
           onUpdate={handleUpdate}
           onBack={handleBack}
+          onEdit={handleEdit}
         />
       </div>
   );

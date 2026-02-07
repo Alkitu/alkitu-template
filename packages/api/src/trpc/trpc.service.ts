@@ -5,6 +5,7 @@ import { PrismaService } from '../prisma.service';
 import { ChatService } from '../chat/chat.service';
 import { ChannelsService } from '../channels/channels.service';
 import { ChatbotConfigService } from '../chatbot-config/chatbot-config.service';
+import { AccessControlService } from '../access-control/access-control.service';
 
 import { JwtService } from '@nestjs/jwt';
 
@@ -16,6 +17,7 @@ export class TrpcService {
     private chatService: ChatService,
     private channelsService: ChannelsService,
     private chatbotConfigService: ChatbotConfigService,
+    private accessControl: AccessControlService,
     private jwtService: JwtService,
   ) {}
 
@@ -62,6 +64,7 @@ export class TrpcService {
             chatService: this.chatService,
             channelsService: this.channelsService,
             chatbotConfigService: this.chatbotConfigService,
+            accessControl: this.accessControl,
             user,
           };
         },

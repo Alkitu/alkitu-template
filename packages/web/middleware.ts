@@ -1,8 +1,19 @@
 import { withAuthMiddleware } from './src/middleware/withAuthMiddleware';
 import { withI18nMiddleware } from './src/middleware/withI18nMiddleware';
+import { withFeatureFlagMiddleware } from './src/middleware/withFeatureFlagMiddleware';
 import { chain } from './src/middleware/chain';
 
-export default chain([withI18nMiddleware, withAuthMiddleware]);
+/**
+ * Middleware Chain Order:
+ * 1. withI18nMiddleware - Handle internationalization
+ * 2. withAuthMiddleware - Authenticate user and check roles
+ * 3. withFeatureFlagMiddleware - Check feature flag requirements
+ */
+export default chain([
+  withI18nMiddleware,
+  withAuthMiddleware,
+  withFeatureFlagMiddleware,
+]);
 
 export const config = {
   matcher: [

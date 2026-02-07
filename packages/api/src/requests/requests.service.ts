@@ -14,7 +14,8 @@ import {
   RequestCancellationDto,
   CompleteRequestDto,
 } from './dto';
-import { Request, RequestStatus, UserRole } from '@prisma/client';
+import { Request, RequestStatus, UserRole as PrismaUserRole } from '@prisma/client';
+import { UserRole } from '@alkitu/shared/enums/user-role.enum';
 import {
   validateStatusTransition,
   validateStatusTransitionRules,
@@ -25,6 +26,8 @@ import {
   EmailTemplateService,
   RequestWithRelations,
 } from '../email-templates/email-template.service';
+import { AccessControlService } from '../access-control/access-control.service';
+import { AccessLevel } from '@prisma/client';
 
 /**
  * Service for managing service requests lifecycle (ALI-119 + ALI-120 + ALI-121)
@@ -38,6 +41,7 @@ export class RequestsService {
     private readonly prisma: PrismaService,
     private readonly notificationService: NotificationService,
     private readonly emailTemplateService: EmailTemplateService,
+    private readonly accessControl: AccessControlService,
   ) {}
 
   /**
@@ -438,7 +442,16 @@ export class RequestsService {
         throw new NotFoundException(`Request with ID "${id}" not found`);
       }
 
-      // Role-based access control
+      // Centralized access control check (uses AccessControlService)
+      await this.accessControl.checkAccess({
+        userId,
+        userRole: userRole as UserRole,
+        resourceType: 'REQUEST',
+        resourceId: id,
+        requiredLevel: AccessLevel.READ,
+      });
+
+      // Legacy role-based access control (kept for defense in depth)
       if (userRole === UserRole.CLIENT && request.userId !== userId) {
         throw new NotFoundException(`Request with ID "${id}" not found`);
       }
@@ -491,7 +504,16 @@ export class RequestsService {
         throw new NotFoundException(`Request with ID "${id}" not found`);
       }
 
-      // Role-based access control for updates
+      // Centralized access control check (uses AccessControlService)
+      await this.accessControl.checkAccess({
+        userId,
+        userRole: userRole as UserRole,
+        resourceType: 'REQUEST',
+        resourceId: id,
+        requiredLevel: AccessLevel.WRITE,
+      });
+
+      // Legacy role-based access control for updates (kept for defense in depth)
       const isOwner = existingRequest.userId === userId;
       const isAssignee = existingRequest.assignedToId === userId;
       const isAdmin = userRole === UserRole.ADMIN;
@@ -664,7 +686,17 @@ export class RequestsService {
         throw new NotFoundException(`Request with ID "${id}" not found`);
       }
 
-      // Role-based access control for deletion
+      // Centralized access control check (uses AccessControlService)
+      // Note: We use WRITE level here (not ADMIN) because clients can delete their own PENDING requests
+      await this.accessControl.checkAccess({
+        userId,
+        userRole: userRole as UserRole,
+        resourceType: 'REQUEST',
+        resourceId: id,
+        requiredLevel: AccessLevel.WRITE,
+      });
+
+      // Legacy role-based access control for deletion (kept for defense in depth)
       const isOwner = request.userId === userId;
       const isAdmin = userRole === UserRole.ADMIN;
 

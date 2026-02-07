@@ -1,6 +1,7 @@
 import { NextMiddleware, NextResponse, NextRequest } from 'next/server';
 import { PROTECTED_ROUTES } from '@/lib/routes/protected-routes';
 import { UserRole } from '@alkitu/shared/enums/user-role.enum';
+import { hasRole } from '@alkitu/shared/rbac/role-hierarchy';
 
 const DEFAULT_LOCALE = 'es';
 const SUPPORTED_LOCALES = ['es', 'en'];
@@ -11,8 +12,19 @@ export function withAuthMiddleware(next: NextMiddleware): NextMiddleware {
     const { pathname } = request.nextUrl;
 
     // TEMPORAL: Bypass de autenticación para desarrollo
+    // CRITICAL SECURITY: This bypass is ONLY allowed in development
     if (process.env.SKIP_AUTH === 'true') {
-      console.log('[AUTH MIDDLEWARE] BYPASSING AUTH - DEVELOPMENT MODE');
+      if (process.env.NODE_ENV === 'production') {
+        throw new Error(
+          'SECURITY ERROR: SKIP_AUTH cannot be enabled in production environment',
+        );
+      }
+      console.warn(
+        '⚠️  [AUTH MIDDLEWARE] AUTHENTICATION BYPASS ACTIVE - DEVELOPMENT ONLY',
+      );
+      console.warn(
+        '⚠️  [AUTH MIDDLEWARE] This is a security risk. Disable SKIP_AUTH for production.',
+      );
       return next(request, event);
     }
 
@@ -263,14 +275,15 @@ export function withAuthMiddleware(next: NextMiddleware): NextMiddleware {
       return NextResponse.redirect(redirectUrl);
     }
 
-    // Verificar autorización por rol
+    // Verificar autorización por rol (usando jerarquía de roles)
     const userRoleEnum = userRole.toUpperCase() as UserRole;
     console.log('[AUTH MIDDLEWARE] User role (enum):', userRoleEnum);
     console.log('[AUTH MIDDLEWARE] Required roles for path:', requiredRoles);
 
-    if (!requiredRoles.includes(userRoleEnum)) {
+    // Use hierarchy-aware role checking (ADMIN inherits all permissions)
+    if (!hasRole(userRoleEnum, requiredRoles)) {
       console.log(
-        '[AUTH MIDDLEWARE] User role does not match required roles. Redirecting to unauthorized.',
+        '[AUTH MIDDLEWARE] User role does not match required roles (hierarchy checked). Redirecting to unauthorized.',
       );
       const locale = getLocaleFromPath(pathname) ||
                      getLocaleFromCookie(request) ||
@@ -280,7 +293,7 @@ export function withAuthMiddleware(next: NextMiddleware): NextMiddleware {
       return NextResponse.redirect(redirectUrl);
     }
     console.log(
-      '[AUTH MIDDLEWARE] User role matches required roles. Allowing access.',
+      '[AUTH MIDDLEWARE] User role matches required roles (hierarchy checked). Allowing access.',
     );
 
     // Role-based dashboard redirects

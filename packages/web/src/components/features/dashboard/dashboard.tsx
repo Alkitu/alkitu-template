@@ -43,13 +43,21 @@ import { Separator } from '../../primitives/ui/separator';
 import { Progress } from '../../primitives/ui/progress';
 import { useTranslations } from '@/context/TranslationsContext';
 import { getCurrentLocalizedRoute } from '@/lib/locale';
+import { useFeatureFlag } from '@/hooks/useFeatureFlag';
 
 // Navigation structure with improved UX/UI organization
-const getTransformedData = (t: any, pathname: string, userRole: 'admin' | 'user' = 'admin') => {
+const getTransformedData = (
+  t: any,
+  pathname: string,
+  userRole: 'admin' | 'user' = 'admin',
+  featureFlags?: {
+    supportChatEnabled?: boolean;
+    teamChannelsEnabled?: boolean;
+  }
+) => {
   // Admin navigation
   if (userRole === 'admin') {
-    return {
-      navMain: [
+    const navItems = [
         // RESUMEN SECTION
         {
           title: t?.('nav.dashboard') || 'Dashboard',
@@ -106,11 +114,12 @@ const getTransformedData = (t: any, pathname: string, userRole: 'admin' | 'user'
         },
 
         // COMUNICACIÓN SECTION
-        {
+        // Support Chat - conditionally rendered based on feature flag
+        ...(featureFlags?.supportChatEnabled !== false ? [{
           title: t?.('nav.chat') || 'Chat',
           url: '/admin/chat',
           icon: MessageCircle,
-          section: 'communication',
+          section: 'communication' as const,
           items: [
             {
               title: t?.('nav.conversations') || 'Conversaciones',
@@ -121,7 +130,7 @@ const getTransformedData = (t: any, pathname: string, userRole: 'admin' | 'user'
               url: '/admin/chat/analytics',
             },
           ],
-        },
+        }] : []),
         {
           title: t?.('nav.notifications') || 'Notificaciones',
           url: '/admin/notifications',
@@ -142,13 +151,14 @@ const getTransformedData = (t: any, pathname: string, userRole: 'admin' | 'user'
             },
           ],
         },
-        {
+        // Team Channels - conditionally rendered based on feature flag
+        ...(featureFlags?.teamChannelsEnabled !== false ? [{
           title: t?.('nav.teamChat') || 'Team Chat',
           url: '/admin/channels',
           icon: Hash,
-          section: 'communication',
+          section: 'communication' as const,
           items: [],
-        },
+        }] : []),
 
         // CONFIGURACIÓN SECTION
         {
@@ -171,7 +181,10 @@ const getTransformedData = (t: any, pathname: string, userRole: 'admin' | 'user'
             },
           ],
         },
-      ],
+      ];
+
+    return {
+      navMain: navItems,
       user: {
         id: '',
         name: '',
@@ -241,8 +254,15 @@ function Dashboard({ children, showWelcome = false, userRole = 'admin' }: Dashbo
     { email: sessionUser?.email || '' },
     { enabled: !!sessionUser?.email }
   );
-  
-  const transformedData = getTransformedData(t, pathname, userRole);
+
+  // Feature flags for conditional navigation
+  const { isEnabled: supportChatEnabled } = useFeatureFlag('support-chat');
+  const { isEnabled: teamChannelsEnabled } = useFeatureFlag('team-channels');
+
+  const transformedData = getTransformedData(t, pathname, userRole, {
+    supportChatEnabled,
+    teamChannelsEnabled,
+  });
 
   const currentUser = fullUser || sessionUser;
 

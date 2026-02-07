@@ -5,6 +5,7 @@ import { PrismaService } from '../prisma.service';
 import { NotificationModule } from '../notification/notification.module';
 import { AuthModule } from '../auth/auth.module';
 import { EmailModule } from '../email/email.module';
+import { AuditModule } from '../audit/audit.module';
 
 // ✅ SOLID Services Import
 import {
@@ -16,7 +17,7 @@ import {
 } from './services';
 
 @Module({
-  imports: [NotificationModule, forwardRef(() => AuthModule), EmailModule],
+  imports: [NotificationModule, forwardRef(() => AuthModule), EmailModule, AuditModule],
   controllers: [UsersController],
   providers: [
     // ✅ SOLID Architecture Services

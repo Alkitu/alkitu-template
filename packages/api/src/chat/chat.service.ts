@@ -459,4 +459,63 @@ export class ChatService {
       html: transcriptHtml,
     });
   }
+
+  /**
+   * Get or create a conversation for a specific request
+   * Enables internal team communication about a request
+   */
+  async getOrCreateRequestConversation(requestId: string): Promise<any> {
+    // 1. Check if request already has a conversation
+    const existingRequest = await this.prisma.request.findUnique({
+      where: { id: requestId },
+      include: {
+        conversations: {
+          where: { type: 'INTERNAL_REQUEST' },
+          take: 1,
+        },
+        user: true,
+        assignedTo: true,
+      },
+    });
+
+    if (!existingRequest) {
+      throw new NotFoundException('Request not found');
+    }
+
+    // If conversation already exists, return it
+    if (existingRequest.conversations && existingRequest.conversations.length > 0) {
+      return existingRequest.conversations[0];
+    }
+
+    // 2. Create or get contact info for the request user
+    let contactInfo = await this.prisma.contactInfo.findFirst({
+      where: { userId: existingRequest.userId },
+    });
+
+    if (!contactInfo) {
+      contactInfo = await this.prisma.contactInfo.create({
+        data: {
+          userId: existingRequest.userId,
+          email: existingRequest.user.email,
+          name: `${existingRequest.user.firstname} ${existingRequest.user.lastname}`,
+        },
+      });
+    }
+
+    // 3. Create conversation of type INTERNAL_REQUEST
+    const conversation = await this.prisma.conversation.create({
+      data: {
+        contactInfoId: contactInfo.id,
+        clientUserId: existingRequest.userId,
+        assignedToId: existingRequest.assignedToId,
+        type: 'INTERNAL_REQUEST',
+        status: 'OPEN',
+        source: 'request-system',
+        tags: [`request:${requestId}`],
+        requestId: requestId,
+      },
+    });
+
+    return conversation;
+  }
 }

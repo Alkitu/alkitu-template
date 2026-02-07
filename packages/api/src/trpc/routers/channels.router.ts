@@ -1,21 +1,30 @@
 import { z } from 'zod';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 import { channelsSchemas } from '../schemas/channels.schemas';
+import { requireFeature } from '../middlewares/roles.middleware';
+
+/**
+ * Team Channels Router
+ * All endpoints protected by 'team-channels' feature flag
+ */
+
+// Create a base procedure with team-channels feature flag requirement
+const teamChannelsProcedure = protectedProcedure.use(requireFeature('team-channels'));
 
 export const channelsRouter = createTRPCRouter({
-  create: protectedProcedure
+  create: teamChannelsProcedure
     .input(channelsSchemas.createChannel)
     .mutation(async ({ input, ctx }) => {
       // @ts-ignore - Assuming we add channelsService to context
       return await ctx.channelsService.createChannel(input, ctx.user.id);
     }),
 
-  getMyChannels: protectedProcedure.query(async ({ ctx }) => {
+  getMyChannels: teamChannelsProcedure.query(async ({ ctx }) => {
     // @ts-ignore
     return await ctx.channelsService.getUserChannels(ctx.user.id);
   }),
 
-  getChannel: protectedProcedure
+  getChannel: teamChannelsProcedure
     .input(channelsSchemas.getChannel)
     .query(async ({ input, ctx }) => {
       // @ts-ignore
@@ -29,21 +38,21 @@ export const channelsRouter = createTRPCRouter({
       return channel;
     }),
 
-  getMessages: protectedProcedure
+  getMessages: teamChannelsProcedure
     .input(channelsSchemas.getMessages)
     .query(async ({ input, ctx }) => {
       // @ts-ignore
       return await ctx.channelsService.getChannelMessages(input.channelId);
     }),
 
-  getReplies: protectedProcedure
+  getReplies: teamChannelsProcedure
     .input(channelsSchemas.getReplies)
     .query(async ({ input, ctx }) => {
       // @ts-ignore
       return await ctx.channelsService.getThreadMessages(input.parentId);
     }),
 
-  sendMessage: protectedProcedure
+  sendMessage: teamChannelsProcedure
     .input(channelsSchemas.sendMessage)
     .mutation(async ({ input, ctx }) => {
       // @ts-ignore
@@ -51,21 +60,21 @@ export const channelsRouter = createTRPCRouter({
       return await ctx.channelsService.sendMessage(ctx.user.id, input);
     }),
 
-  update: protectedProcedure
+  update: teamChannelsProcedure
     .input(channelsSchemas.updateChannel)
     .mutation(async ({ input, ctx }) => {
       // @ts-ignore
       return await ctx.channelsService.updateChannel(input.channelId, input);
     }),
 
-  delete: protectedProcedure
+  delete: teamChannelsProcedure
     .input(channelsSchemas.deleteChannel)
     .mutation(async ({ input, ctx }) => {
       // @ts-ignore
       return await ctx.channelsService.deleteChannel(input.channelId);
     }),
 
-  createDM: protectedProcedure
+  createDM: teamChannelsProcedure
     .input(channelsSchemas.createDM)
     .mutation(async ({ input, ctx }) => {
       // @ts-ignore
@@ -75,7 +84,7 @@ export const channelsRouter = createTRPCRouter({
       );
     }),
 
-  toggleFavorite: protectedProcedure
+  toggleFavorite: teamChannelsProcedure
     .input(channelsSchemas.toggleFavorite)
     .mutation(async ({ input, ctx }) => {
       // @ts-ignore
@@ -85,7 +94,7 @@ export const channelsRouter = createTRPCRouter({
       );
     }),
 
-  markAsRead: protectedProcedure
+  markAsRead: teamChannelsProcedure
     .input(channelsSchemas.markAsRead)
     .mutation(async ({ input, ctx }) => {
       // @ts-ignore
@@ -95,7 +104,7 @@ export const channelsRouter = createTRPCRouter({
       );
     }),
 
-  addMember: protectedProcedure
+  addMember: teamChannelsProcedure
     .input(channelsSchemas.addMember)
     .mutation(async ({ input, ctx }) => {
       // @ts-ignore
@@ -106,7 +115,7 @@ export const channelsRouter = createTRPCRouter({
       );
     }),
 
-  archiveChannel: protectedProcedure
+  archiveChannel: teamChannelsProcedure
     .input(channelsSchemas.archiveChannel)
     .mutation(async ({ input, ctx }) => {
       return await ctx.channelsService.archiveChannel(
@@ -115,7 +124,7 @@ export const channelsRouter = createTRPCRouter({
       );
     }),
 
-  hideChannel: protectedProcedure
+  hideChannel: teamChannelsProcedure
     .input(channelsSchemas.hideChannel)
     .mutation(async ({ input, ctx }) => {
       return await ctx.channelsService.hideChannel(
@@ -124,7 +133,7 @@ export const channelsRouter = createTRPCRouter({
       );
     }),
 
-  leaveChannel: protectedProcedure
+  leaveChannel: teamChannelsProcedure
     .input(channelsSchemas.leaveChannel)
     .mutation(async ({ input, ctx }) => {
       return await ctx.channelsService.leaveChannel(

@@ -108,11 +108,14 @@ model User {
   
   // Client Chat Relations (ALI-Channels)
   clientConversations     Conversation[]          @relation("ClientConversations")
-  contactInfo             ContactInfo?
+  contactInfo             ContactInfo[]  // Changed to one-to-many to support multiple contact records per user
 
   // Internal Channels Relations
   channelMemberships      ChannelMember[]
   channelMessages         ChannelMessage[]
+
+  // Audit Logs
+  auditLogs               AuditLog[]              @relation("UserAuditLogs")
 }
 
 // Notification Preferences model
@@ -360,6 +363,11 @@ model Conversation {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
+  // NEW: Conversation type and request integration
+  type          ConversationType @default(CLIENT_SUPPORT)
+  requestId     String?  @db.ObjectId
+  request       Request? @relation("RequestConversations", fields: [requestId], references: [id], onDelete: SetNull)
+
   // Relations
   contactInfo ContactInfo @relation(fields: [contactInfoId], references: [id])
   assignedTo  User?       @relation("AssignedConversations", fields: [assignedToId], references: [id])
@@ -367,6 +375,8 @@ model Conversation {
   clientUserId String?    @db.ObjectId
   messages    ChatMessage[]
 
+  @@index([type])
+  @@index([requestId])
   @@map("conversations")
 }
 
@@ -404,8 +414,9 @@ model ContactInfo {
   // Relations
   conversations Conversation[]
   user          User?          @relation(fields: [userId], references: [id])
-  userId        String?        @unique @db.ObjectId
+  userId        String?        @db.ObjectId  // Removed @unique to allow multiple null values in MongoDB
 
+  @@index([userId])
   @@map("contact_info")
 }
 
@@ -485,6 +496,12 @@ model ChannelMessage {
   replies     ChannelMessage[] @relation("ThreadReplies")
 
   @@map("channel_messages")
+}
+
+enum ConversationType {
+  CLIENT_SUPPORT    // Existing public chat
+  INTERNAL_REQUEST  // NEW: Request chat for team collaboration
+  CHANNEL           // Existing team channels
 }
 
 enum ConversationStatus {
@@ -699,6 +716,9 @@ model Request {
   cancellationRequestedAt DateTime?
   completedAt             DateTime?
 
+  // NEW: Chat integration for internal team communication (one-to-many technically, but enforced as one-to-one at app level)
+  conversations   Conversation[] @relation("RequestConversations")
+
   // Soft delete
   deletedAt DateTime?
 
@@ -753,4 +773,84 @@ model EmailTemplate {
   @@index([active])                  // Only fetch active templates
 
   @@map("email_templates")
+}
+
+/// Feature Flags System - Platform-wide feature toggles
+enum FeatureStatus {
+  ENABLED
+  DISABLED
+  BETA
+  DEPRECATED
+}
+
+model FeatureFlag {
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+
+  // Identification
+  key         String        @unique  // "chat", "analytics", etc.
+  name        String                 // "Chat & Messaging"
+  description String?
+  category    String        @default("addon")
+
+  // Status
+  status      FeatureStatus @default(DISABLED)
+
+  // Configuration (JSON for flexibility)
+  config      Json?         // Feature-specific settings
+
+  // UI Metadata
+  icon        String?       // Lucide icon name
+  badge       String?       // "New", "Beta", "Pro"
+  sortOrder   Int           @default(0)
+
+  // Timestamps
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  enabledAt   DateTime?
+  disabledAt  DateTime?
+
+  @@index([status])
+  @@map("feature_flags")
+}
+
+model FeatureFlagHistory {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  featureKey   String
+  action       String   // "ENABLED", "DISABLED", "UPDATED"
+  previousValue Json?
+  newValue     Json?
+  userId       String   @db.ObjectId
+  createdAt    DateTime @default(now())
+
+  @@index([featureKey])
+  @@index([createdAt])
+  @@map("feature_flag_history")
+}
+
+/// Audit Log System - Track all sensitive operations for security and compliance
+model AuditLog {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+
+  // Action performed
+  action       String   // CREATE_USER, UPDATE_ROLE, TOGGLE_FEATURE, DELETE_REQUEST, etc.
+
+  // Resource affected
+  resourceType String   // USER, REQUEST, FEATURE_FLAG, COMPANY, etc.
+  resourceId   String   @db.ObjectId
+
+  // Who performed the action
+  user         User     @relation("UserAuditLogs", fields: [userId], references: [id])
+  userId       String   @db.ObjectId
+
+  // Additional context
+  metadata     Json?    // Previous/new values, IP address, user agent, etc.
+
+  // Timestamp
+  timestamp    DateTime @default(now())
+
+  @@index([userId])
+  @@index([resourceType, resourceId])
+  @@index([action])
+  @@index([timestamp])
+  @@map("audit_logs")
 }

@@ -20,6 +20,9 @@ import { RequestsModule } from './requests/requests.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { ChannelsModule } from './channels/channels.module';
+import { FeatureFlagsModule } from './feature-flags/feature-flags.module';
+import { AuditModule } from './audit/audit.module';
+import { AccessControlModule } from './access-control/access-control.module';
 
 @Module({
   imports: [
@@ -32,6 +35,8 @@ import { ChannelsModule } from './channels/channels.module';
       },
     ]),
     PrismaModule,
+    AuditModule,
+    AccessControlModule,
     UsersModule,
     AuthModule,
     TrpcModule,
@@ -47,6 +52,7 @@ import { ChannelsModule } from './channels/channels.module';
     ServicesModule,
     RequestsModule,
     ChannelsModule,
+    FeatureFlagsModule,
   ],
   controllers: [AppController],
   providers: [

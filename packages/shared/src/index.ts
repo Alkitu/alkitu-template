@@ -26,3 +26,6 @@ export { z } from "zod";
 
 // Config
 export * from "./config/freemium-flags";
+
+// RBAC
+export * from "./rbac/role-hierarchy";

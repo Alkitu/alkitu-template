@@ -7,7 +7,9 @@ import {
 import { PrismaService } from '../prisma.service';
 import { CreateLocationDto } from './dto/create-location.dto';
 import { UpdateLocationDto } from './dto/update-location.dto';
-import { WorkLocation } from '@prisma/client';
+import { WorkLocation, UserRole as PrismaUserRole, AccessLevel } from '@prisma/client';
+import { UserRole } from '@alkitu/shared/enums/user-role.enum';
+import { AccessControlService } from '../access-control/access-control.service';
 
 /**
  * Locations Service (ALI-117)
@@ -15,7 +17,10 @@ import { WorkLocation } from '@prisma/client';
  */
 @Injectable()
 export class LocationsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private readonly accessControl: AccessControlService,
+  ) {}
 
   /**
    * Create a new work location for a user
@@ -80,11 +85,16 @@ export class LocationsService {
    * Get a specific location by ID
    * @param id - The location ID
    * @param userId - The ID of the user (for authorization)
+   * @param userRole - The role of the user (optional, will be fetched if not provided)
    * @returns The location
    * @throws NotFoundException if location doesn't exist
    * @throws ForbiddenException if user doesn't own the location
    */
-  async findOne(id: string, userId: string): Promise<WorkLocation> {
+  async findOne(
+    id: string,
+    userId: string,
+    userRole?: UserRole,
+  ): Promise<WorkLocation> {
     try {
       const location = await this.prisma.workLocation.findUnique({
         where: { id },
@@ -94,7 +104,29 @@ export class LocationsService {
         throw new NotFoundException(`Location with ID ${id} not found`);
       }
 
-      // Verify ownership
+      // Fetch user role if not provided (for backward compatibility)
+      let role = userRole;
+      if (!role) {
+        const user = await this.prisma.user.findUnique({
+          where: { id: userId },
+          select: { role: true },
+        });
+        if (!user) {
+          throw new NotFoundException(`User with ID ${userId} not found`);
+        }
+        role = user.role as UserRole;
+      }
+
+      // Centralized access control check (uses AccessControlService)
+      await this.accessControl.checkAccess({
+        userId,
+        userRole: role as UserRole,
+        resourceType: 'WORK_LOCATION',
+        resourceId: id,
+        requiredLevel: AccessLevel.READ,
+      });
+
+      // Legacy ownership verification (kept for defense in depth)
       if (location.userId !== userId) {
         throw new ForbiddenException(
           'You do not have permission to access this location',
@@ -120,6 +152,7 @@ export class LocationsService {
    * @param id - The location ID
    * @param userId - The ID of the user (for authorization)
    * @param updateLocationDto - The updated location data
+   * @param userRole - The role of the user (optional, will be fetched if not provided)
    * @returns The updated location
    * @throws NotFoundException if location doesn't exist
    * @throws ForbiddenException if user doesn't own the location
@@ -128,10 +161,11 @@ export class LocationsService {
     id: string,
     userId: string,
     updateLocationDto: UpdateLocationDto,
+    userRole?: UserRole,
   ): Promise<WorkLocation> {
     try {
-      // Verify location exists and user owns it
-      const existingLocation = await this.findOne(id, userId);
+      // Verify location exists and user owns it (includes access control check)
+      const existingLocation = await this.findOne(id, userId, userRole);
 
       // Update the location
       const updatedLocation = await this.prisma.workLocation.update({
@@ -157,14 +191,15 @@ export class LocationsService {
    * Delete a location
    * @param id - The location ID
    * @param userId - The ID of the user (for authorization)
+   * @param userRole - The role of the user (optional, will be fetched if not provided)
    * @returns The deleted location
    * @throws NotFoundException if location doesn't exist
    * @throws ForbiddenException if user doesn't own the location
    */
-  async remove(id: string, userId: string): Promise<WorkLocation> {
+  async remove(id: string, userId: string, userRole?: UserRole): Promise<WorkLocation> {
     try {
-      // Verify location exists and user owns it
-      const existingLocation = await this.findOne(id, userId);
+      // Verify location exists and user owns it (includes access control check)
+      const existingLocation = await this.findOne(id, userId, userRole);
 
       // Delete the location
       const deletedLocation = await this.prisma.workLocation.delete({

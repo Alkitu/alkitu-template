@@ -15,10 +15,12 @@ import { createEmailTemplateRouter } from './routers/email-template.router';
 import { createRequestRouter } from './routers/request.router';
 import { createServiceRouter } from './routers/service.router';
 import { createLocationRouter } from './routers/location.router';
+import { createFeatureFlagsRouter } from './routers/feature-flags.router';
 import { t } from './trpc';
 import { ChatbotConfigService } from '../chatbot-config/chatbot-config.service';
 import { ThemeService } from '../theme/theme.service';
 import { EmailTemplateService } from '../email-templates/email-template.service';
+import { FeatureFlagsService } from '../feature-flags/feature-flags.service';
 
 @Injectable()
 export class TrpcRouter {
@@ -30,6 +32,7 @@ export class TrpcRouter {
     private chatbotConfigService: ChatbotConfigService,
     private themeService: ThemeService,
     private emailTemplateService: EmailTemplateService,
+    private featureFlagsService: FeatureFlagsService,
   ) {}
 
   appRouter() {
@@ -52,6 +55,7 @@ export class TrpcRouter {
       request: createRequestRouter(), // ALI-119: Router de solicitudes (requests)
       service: createServiceRouter(), // Service catalog router
       location: createLocationRouter(), // Work location router
+      featureFlags: createFeatureFlagsRouter(this.featureFlagsService), // Feature flags router
     });
   }
 }

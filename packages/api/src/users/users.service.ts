@@ -25,6 +25,7 @@ import { UserRole, UserStatus } from '@prisma/client';
 import { UpdateUserTagsDto } from './dto/update-user-tags.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { EmailService } from '../email/email.service';
+import { AuditService } from '../audit/audit.service';
 
 @Injectable()
 export class UsersService {
@@ -34,6 +35,7 @@ export class UsersService {
     private prisma: PrismaService,
     private notificationService: NotificationService,
     private emailService: EmailService,
+    private auditService: AuditService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -265,14 +267,18 @@ export class UsersService {
   /**
    * Update user (ALI-115: updated field names)
    */
-  async update(id: string, updateUserDto: UpdateUserDto) {
+  async update(id: string, updateUserDto: UpdateUserDto, changedBy?: string) {
     const user = await this.prisma.user.findUnique({ where: { id } });
 
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
 
-    return this.prisma.user.update({
+    // Track if role is changing for audit log
+    const roleChanged = updateUserDto.role && updateUserDto.role !== user.role;
+    const oldRole = user.role;
+
+    const updatedUser = await this.prisma.user.update({
       where: { id },
       data: updateUserDto,
       select: {
@@ -291,6 +297,24 @@ export class UsersService {
         emailVerified: true,
       },
     });
+
+    // Log role change to audit trail
+    if (roleChanged && changedBy) {
+      await this.auditService.log({
+        action: 'UPDATE_ROLE',
+        resourceType: 'USER',
+        resourceId: id,
+        userId: changedBy,
+        metadata: {
+          oldRole,
+          newRole: updateUserDto.role,
+          targetUserEmail: user.email,
+          targetUserName: `${user.firstname || ''} ${user.lastname || ''}`.trim(),
+        },
+      });
+    }
+
+    return updatedUser;
   }
 
   /**
@@ -516,13 +540,13 @@ export class UsersService {
     };
   }
 
-  async bulkUpdateRole(bulkUpdateRoleDto: BulkUpdateRoleDto) {
+  async bulkUpdateRole(bulkUpdateRoleDto: BulkUpdateRoleDto, changedBy?: string) {
     const { userIds, role } = bulkUpdateRoleDto;
 
-    // Validate that users exist
+    // Validate that users exist and get their current data
     const existingUsers = await this.prisma.user.findMany({
       where: { id: { in: userIds } },
-      select: { id: true },
+      select: { id: true, email: true, firstname: true, lastname: true, role: true },
     });
 
     if (existingUsers.length !== userIds.length) {
@@ -534,6 +558,29 @@ export class UsersService {
       where: { id: { in: userIds } },
       data: { role },
     });
+
+    // Log each role change to audit trail
+    if (changedBy) {
+      for (const user of existingUsers) {
+        // Only log if role actually changed
+        if (user.role !== role) {
+          await this.auditService.log({
+            action: 'BULK_UPDATE_ROLE',
+            resourceType: 'USER',
+            resourceId: user.id,
+            userId: changedBy,
+            metadata: {
+              oldRole: user.role,
+              newRole: role,
+              targetUserEmail: user.email,
+              targetUserName: `${user.firstname || ''} ${user.lastname || ''}`.trim(),
+              bulkOperation: true,
+              totalUsersInBulk: userIds.length,
+            },
+          });
+        }
+      }
+    }
 
     return {
       message: `Successfully updated role to ${role} for ${result.count} users`,

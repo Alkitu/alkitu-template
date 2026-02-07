@@ -19,8 +19,8 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import { RequestStatus } from '@alkitu/shared';
-import { 
-  RequestTimelineMolecule, 
+import {
+  RequestTimelineMolecule,
   RequestClientCardMolecule,
   TimelineEvent,
   QuickAssignModal,
@@ -29,6 +29,8 @@ import {
 import type { RequestDetailOrganismProps } from './RequestDetailOrganism.types';
 import { trpc } from '@/lib/trpc';
 import { useToast } from '@/components/primitives/ui/use-toast';
+import { RequestChatPanel } from './RequestChatPanel';
+import { useFeatureFlag } from '@/hooks/useFeatureFlag';
 
 /**
  * RequestDetailOrganism - Organism Component (ALI-119)
@@ -66,6 +68,9 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
   // tRPC mutations
   const assignMutation = trpc.request.assignRequest.useMutation();
   const updateStatusMutation = trpc.request.updateRequestStatus.useMutation();
+
+  // Feature flags
+  const { isEnabled: chatEnabled } = useFeatureFlag('request-collaboration');
 
   const handleAssign = async (reqId: string, employeeId: string) => {
     setActionLoading('assign');
@@ -398,6 +403,9 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Internal Team Chat Panel - Feature Flag Controlled */}
+      {chatEnabled && <RequestChatPanel requestId={requestId} />}
 
       {/* Quick Action Modals */}
       <QuickAssignModal

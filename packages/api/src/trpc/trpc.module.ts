@@ -12,6 +12,8 @@ import { ChatbotConfigModule } from '../chatbot-config/chatbot-config.module';
 import { ThemeModule } from '../theme/theme.module';
 import { EmailTemplateModule } from '../email-templates/email-template.module';
 import { ChannelsModule } from '../channels/channels.module';
+import { FeatureFlagsModule } from '../feature-flags/feature-flags.module';
+import { AccessControlModule } from '../access-control/access-control.module';
 
 @Module({
   imports: [
@@ -22,9 +24,10 @@ import { ChannelsModule } from '../channels/channels.module';
     ChatModule,
     ChatbotConfigModule,
     ThemeModule,
-    ThemeModule,
     EmailTemplateModule, // ALI-121: Email Templates Module
     ChannelsModule,
+    FeatureFlagsModule, // Feature Flags Module
+    AccessControlModule, // Access Control Module
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'fallback-secret-key',
       signOptions: { expiresIn: '1d' },

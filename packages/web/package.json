@@ -7,10 +7,11 @@
   "license": "MIT",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npm run validate:routes && next build",
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
+    "validate:routes": "tsx scripts/validate-routes.ts",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
     "test": "vitest run",
     "test:watch": "vitest",

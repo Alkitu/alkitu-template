@@ -11,12 +11,18 @@ import { AdminPageHeader } from '@/components/molecules/admin-page-header';
 
 const settingsOptions = [
   {
+    title: 'Addons & Features',
+    description: 'Enable or disable platform features and addons',
+    href: '/admin/settings/addons',
+    icon: 'Blocks' as const,
+    badge: 'New',
+  },
+  {
     title: 'Theme Editor 3.0',
     description:
       'Advanced theme customization with OKLCH colors, typography, spacing, and more',
     href: '/dashboard/settings/themes',
     icon: 'palette' as const,
-    badge: 'New',
   },
   {
     title: 'Chatbot Settings',

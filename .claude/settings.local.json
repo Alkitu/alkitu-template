@@ -80,7 +80,19 @@
       "Bash(render:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(node drop-unique-indexes.js:*)",
+      "Bash(./scripts/configure-render-env.sh:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx next build:*)",
+      "Bash(SKIP_ENV_VALIDATION=true npx next build:*)",
+      "Bash(./verify-feature-flags.sh:*)",
+      "Bash(git ls-tree -r HEAD --name-only)",
+      "Bash(./scripts/verify-security-implementation.sh:*)",
+      "Bash(bash:*)",
+      "Bash(ln:*)",
+      "Bash(git ls-tree:*)",
+      "Bash(git fetch:*)"
     ],
     "deny": [],
     "ask": []

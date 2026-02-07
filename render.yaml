@@ -9,7 +9,7 @@ services:
     region: oregon # Opciones: oregon, frankfurt, singapore
     plan: free
     branch: main
-    buildCommand: cd ../.. && npm ci && cd packages/api && npx prisma generate && npm run build
+    buildCommand: npm ci && cd packages/api && npx prisma generate && npm run build
     startCommand: cd packages/api && npm run start:prod
     healthCheckPath: /health
     autoDeploy: true
@@ -51,7 +51,7 @@ services:
     region: oregon
     plan: free
     branch: main
-    buildCommand: cd ../.. && npm ci && cd packages/web && npm run build
+    buildCommand: npm ci && cd packages/web && npm run build
     startCommand: cd packages/web && npm start
     healthCheckPath: /
     autoDeploy: true
@@ -78,4 +78,3 @@ services:
         sync: false # Secret - configurar en dashboard
       - key: VAPID_SUBJECT
         value: mailto:admin@alkitu.com
-# Deployment timestamp: Sat Feb  7 23:32:59 CET 2026

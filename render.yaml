@@ -1,0 +1,82 @@
+# Render Infrastructure as Code
+# Documentation: https://render.com/docs/infrastructure-as-code
+
+services:
+  # Backend API Service (NestJS)
+  - type: web
+    name: alkitu-api
+    env: node
+    region: oregon # Opciones: oregon, frankfurt, singapore
+    plan: free
+    branch: main
+    rootDir: packages/api
+    buildCommand: npm ci && npx prisma generate && npm run build
+    startCommand: npm run start:prod
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        sync: false # Secret - configurar en dashboard
+      - key: JWT_SECRET
+        sync: false # Secret - configurar en dashboard
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: RESEND_API_KEY
+        sync: false # Secret - configurar en dashboard
+      - key: EMAIL_FROM
+        value: noreply@alkitu.com
+      - key: CORS_ORIGINS
+        fromService:
+          type: web
+          name: alkitu-web
+          envVarKey: RENDER_EXTERNAL_URL
+      - key: API_URL
+        fromService:
+          type: web
+          name: alkitu-api
+          envVarKey: RENDER_EXTERNAL_URL
+      - key: APP_URL
+        fromService:
+          type: web
+          name: alkitu-web
+          envVarKey: RENDER_EXTERNAL_URL
+
+  # Frontend Web Service (Next.js)
+  - type: web
+    name: alkitu-web
+    env: node
+    region: oregon
+    plan: free
+    branch: main
+    rootDir: packages/web
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          type: web
+          name: alkitu-api
+          envVarKey: RENDER_EXTERNAL_URL
+      - key: NEXT_PUBLIC_APP_URL
+        fromService:
+          type: web
+          name: alkitu-web
+          envVarKey: RENDER_EXTERNAL_URL
+      - key: NEXT_TELEMETRY_DISABLED
+        value: 1
+      - key: NEXT_PUBLIC_VAPID_PUBLIC_KEY
+        sync: false # Secret - configurar en dashboard
+      - key: VAPID_PRIVATE_KEY
+        sync: false # Secret - configurar en dashboard
+      - key: VAPID_SUBJECT
+        value: mailto:admin@alkitu.com

@@ -9,9 +9,8 @@ services:
     region: oregon # Opciones: oregon, frankfurt, singapore
     plan: free
     branch: main
-    rootDir: packages/api
-    buildCommand: npm ci && npx prisma generate && npm run build
-    startCommand: npm run start:prod
+    buildCommand: cd ../.. && npm ci && cd packages/api && npx prisma generate && npm run build
+    startCommand: cd packages/api && npm run start:prod
     healthCheckPath: /health
     autoDeploy: true
     envVars:
@@ -52,9 +51,8 @@ services:
     region: oregon
     plan: free
     branch: main
-    rootDir: packages/web
-    buildCommand: npm ci && npm run build
-    startCommand: npm start
+    buildCommand: cd ../.. && npm ci && cd packages/web && npm run build
+    startCommand: cd packages/web && npm start
     healthCheckPath: /
     autoDeploy: true
     envVars:

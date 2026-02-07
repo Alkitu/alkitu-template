@@ -108,7 +108,8 @@ cookies*.txt
 .turbo/
 
 # Package manager
-package-lock.json
+# IMPORTANTE: package-lock.json NO debe estar en .gitignore
+# Se necesita para builds reproducibles en producción
 yarn.lock
 pnpm-lock.yaml
 

@@ -10,7 +10,7 @@ services:
     plan: free
     branch: main
     buildCommand: npm ci && npx prisma generate --schema=packages/api/prisma/schema.prisma && npm run build:shared && npm run build:api
-    startCommand: node packages/api/dist/api/src/main.js
+    startCommand: bash scripts/start-api-production.sh
     healthCheckPath: /health
     autoDeploy: true
     envVars:

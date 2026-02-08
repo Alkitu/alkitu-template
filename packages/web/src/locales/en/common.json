@@ -265,6 +265,37 @@
       "contactPersonRequired": "Please complete all contact person fields",
       "success": "Profile completed successfully!",
       "error": "Error completing profile"
+    },
+    "clientOnboarding": {
+      "title": "Welcome to Alkitu",
+      "subtitle": "Complete these steps to get started with the platform",
+      "progress": {
+        "title": "Setup Progress",
+        "completed": "{completed} of {total} completed"
+      },
+      "steps": {
+        "profile": {
+          "title": "Complete your profile",
+          "description": "Add your personal and contact information"
+        },
+        "location": {
+          "title": "Add a work location",
+          "description": "Register at least one location where services will be performed"
+        },
+        "request": {
+          "title": "Create your first request",
+          "description": "Try the system by creating a service request"
+        }
+      },
+      "actions": {
+        "start": "Start",
+        "completed": "Completed"
+      },
+      "completion": {
+        "title": "Setup Complete!",
+        "description": "You're ready to use the platform to its fullest",
+        "button": "Go to Dashboard"
+      }
     }
   },
   "dashboard": {
@@ -318,6 +349,21 @@
     },
     "teams": {
       "development": "Development Team"
+    },
+    "overview": {
+      "title": "Dashboard",
+      "welcome": "Welcome",
+      "subtitle": "Your account overview panel",
+      "stats": {
+        "pending": "Projects",
+        "active": "Tasks",
+        "completed": "Notifications"
+      },
+      "construction": {
+        "title": "Dashboard Under Construction",
+        "message": "We are working on your personalized panel. You will soon have access to all your tools and statistics.",
+        "status": "System in active development"
+      }
     }
   },
   "admin": {
@@ -1094,6 +1140,21 @@
     }
   },
   "requests": {
+    "title": "Service Requests",
+    "subtitle": "Manage your service requests",
+    "newRequest": "New Request",
+    "filters": {
+      "all": "All Requests",
+      "pending": "Pending",
+      "active": "Active",
+      "completed": "Completed"
+    },
+    "empty": {
+      "message": "You haven't created any requests yet",
+      "action": "Create Request"
+    },
+    "loading": "Loading requests...",
+    "error": "Failed to load requests",
     "actions": {
       "viewDetails": "View Details",
       "assign": "Assign",

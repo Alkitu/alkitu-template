@@ -10,5 +10,15 @@ export type {
   OnboardingFormData,
   ContactPersonData,
 } from './OnboardingFormOrganism.types';
+
+export { OnboardingStepsCard } from './OnboardingStepsCard';
+export type {
+  OnboardingStepsCardProps,
+  OnboardingStep,
+  StepStatus,
+  ProgressConfig,
+  CompletionConfig,
+} from './OnboardingStepsCard.types';
+
 export { default } from './OnboardingFormOrganism';
 

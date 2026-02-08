@@ -265,6 +265,37 @@
       "contactPersonRequired": "Por favor complete todos los campos de la persona de contacto",
       "success": "¡Perfil completado exitosamente!",
       "error": "Error al completar perfil"
+    },
+    "clientOnboarding": {
+      "title": "Bienvenido a Alkitu",
+      "subtitle": "Completa estos pasos para comenzar a usar la plataforma",
+      "progress": {
+        "title": "Progreso de configuración",
+        "completed": "{completed} de {total} completados"
+      },
+      "steps": {
+        "profile": {
+          "title": "Completa tu perfil",
+          "description": "Agrega tu información personal y de contacto"
+        },
+        "location": {
+          "title": "Agrega una ubicación de trabajo",
+          "description": "Registra al menos una ubicación donde se realizarán los servicios"
+        },
+        "request": {
+          "title": "Crea tu primera solicitud",
+          "description": "Prueba el sistema creando una solicitud de servicio"
+        }
+      },
+      "actions": {
+        "start": "Comenzar",
+        "completed": "Completado"
+      },
+      "completion": {
+        "title": "¡Configuración Completada!",
+        "description": "Ya estás listo para usar la plataforma al máximo",
+        "button": "Ir al Dashboard"
+      }
     }
   },
   "admin": {
@@ -412,6 +443,21 @@
     },
     "teams": {
       "development": "Equipo de Desarrollo"
+    },
+    "overview": {
+      "title": "Dashboard",
+      "welcome": "Bienvenido",
+      "subtitle": "Panel principal de tu cuenta",
+      "stats": {
+        "pending": "Proyectos",
+        "active": "Tareas",
+        "completed": "Notificaciones"
+      },
+      "construction": {
+        "title": "Dashboard en Construcción",
+        "message": "Estamos trabajando en tu panel personalizado. Pronto tendrás acceso a todas tus herramientas y estadísticas.",
+        "status": "Sistema en desarrollo activo"
+      }
     }
   },
   "navigation": {
@@ -1094,6 +1140,21 @@
     }
   },
   "requests": {
+    "title": "Solicitudes de Servicio",
+    "subtitle": "Administre sus solicitudes de servicio",
+    "newRequest": "Nueva Solicitud",
+    "filters": {
+      "all": "Todas las Solicitudes",
+      "pending": "Pendientes",
+      "active": "Activas",
+      "completed": "Completadas"
+    },
+    "empty": {
+      "message": "Aún no has creado ninguna solicitud",
+      "action": "Crear Solicitud"
+    },
+    "loading": "Cargando solicitudes...",
+    "error": "Error al cargar solicitudes",
     "actions": {
       "viewDetails": "Ver Detalles",
       "assign": "Asignar",

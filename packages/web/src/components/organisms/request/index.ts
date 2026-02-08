@@ -5,3 +5,5 @@ export * from './RequestListOrganism.types';
 export * from './RequestDetailOrganism';
 export * from './RequestDetailOrganism.types';
 export * from './RequestChatPanel';
+export * from './ClientRequestsView';
+export * from './ClientRequestsView.types';

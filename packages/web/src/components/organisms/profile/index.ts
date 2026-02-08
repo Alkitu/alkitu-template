@@ -6,5 +6,7 @@ export * from './ProfileFormClientOrganism';
 export * from './ProfileFormClientOrganism.types';
 export * from './ProfileFormEmployeeOrganism';
 export * from './ProfileFormEmployeeOrganism.types';
+export * from './ProfileManagement';
+export * from './ProfileManagement.types';
 
 

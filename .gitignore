@@ -119,3 +119,4 @@ api.log
 *storybook.log
 storybook-static
 .env.secrets
+.claude/settings.local.json

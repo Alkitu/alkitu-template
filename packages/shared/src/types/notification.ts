@@ -3,9 +3,25 @@
  * Shared types for notification system with structured payload support
  */
 
-// Re-export NotificationType from Prisma (will be available after prisma generate)
-// This ensures type consistency across the application
-export {  NotificationType } from '@prisma/client';
+// NotificationType enum (must match Prisma schema)
+export enum NotificationType {
+  // Generic system notifications
+  INFO = 'INFO',
+  WARNING = 'WARNING',
+  ERROR = 'ERROR',
+  SUCCESS = 'SUCCESS',
+
+  // Request lifecycle notifications (ALI-120)
+  REQUEST_CREATED = 'REQUEST_CREATED',
+  REQUEST_UPDATED = 'REQUEST_UPDATED',
+  REQUEST_ASSIGNED = 'REQUEST_ASSIGNED',
+  REQUEST_COMPLETED = 'REQUEST_COMPLETED',
+  REQUEST_CANCELLED = 'REQUEST_CANCELLED',
+
+  // Chat notifications
+  CHAT_MESSAGE = 'CHAT_MESSAGE',
+  CHAT_CONVERSATION_CREATED = 'CHAT_CONVERSATION_CREATED',
+}
 
 // Base notification interface
 export interface Notification {

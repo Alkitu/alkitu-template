@@ -1,7 +1,6 @@
 'use client';
 
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Button } from '@nextui-org/react';
 import { AlertCircle, ArrowLeft, Settings } from 'lucide-react';
 
 /**
@@ -79,36 +78,28 @@ export default function FeatureDisabledPage() {
 
         {/* Actions */}
         <div className="flex flex-col gap-3">
-          <Button
-            color="primary"
-            size="lg"
-            className="w-full"
-            startContent={<ArrowLeft className="h-4 w-4" />}
+          <button
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-lg font-medium text-white transition-colors hover:bg-blue-700"
             onClick={handleGoBack}
           >
+            <ArrowLeft className="h-4 w-4" />
             Volver Atrás
-          </Button>
+          </button>
 
-          <Button
-            color="default"
-            variant="flat"
-            size="lg"
-            className="w-full"
+          <button
+            className="w-full rounded-lg bg-gray-100 px-6 py-3 text-lg font-medium text-gray-900 transition-colors hover:bg-gray-200"
             onClick={handleGoToDashboard}
           >
             Ir al Dashboard
-          </Button>
+          </button>
 
-          <Button
-            color="default"
-            variant="light"
-            size="lg"
-            className="w-full"
-            startContent={<Settings className="h-4 w-4" />}
+          <button
+            className="flex w-full items-center justify-center gap-2 rounded-lg px-6 py-3 text-lg font-medium text-gray-600 transition-colors hover:bg-gray-50"
             onClick={handleGoToSettings}
           >
+            <Settings className="h-4 w-4" />
             Ver Configuración de Funciones
-          </Button>
+          </button>
         </div>
 
         {/* Additional Info */}

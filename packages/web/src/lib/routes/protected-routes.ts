@@ -17,15 +17,15 @@ export const PROTECTED_ROUTES: ProtectedRoute[] = [
   },
   {
     path: '/requests',
-    roles: [UserRole.ADMIN, UserRole.EMPLOYEE, UserRole.CLIENT],
+    roles: [UserRole.ADMIN, UserRole.EMPLOYEE, UserRole.CLIENT, UserRole.LEAD],
   },
   {
     path: '/requests/new',
-    roles: [UserRole.CLIENT], // Only clients can create requests
+    roles: [UserRole.ADMIN, UserRole.EMPLOYEE, UserRole.CLIENT, UserRole.LEAD], // All authenticated users can access this route
   },
   {
     path: '/requests/[id]',
-    roles: [UserRole.ADMIN, UserRole.EMPLOYEE, UserRole.CLIENT],
+    roles: [UserRole.ADMIN, UserRole.EMPLOYEE, UserRole.CLIENT, UserRole.LEAD],
   },
   // Client routes
   {

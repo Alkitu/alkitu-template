@@ -9,6 +9,7 @@ import { Checkbox } from '@/components/primitives/ui/checkbox';
 import { useTranslations } from '@/context/TranslationsContext';
 import { FormError } from '@/components/primitives/ui/form-error';
 import { FormSuccess } from '@/components/primitives/ui/form-success';
+import { useAuthRedirect } from '@/hooks/useAuthRedirect';
 import type {
   OnboardingFormOrganismProps,
   OnboardingFormData,
@@ -53,6 +54,7 @@ export const OnboardingFormOrganism = React.forwardRef<
 >(({ className, onComplete, onSkip }, ref) => {
   const t = useTranslations();
   const router = useRouter();
+  const { redirectAfterLogin } = useAuthRedirect();
   const [formData, setFormData] = useState<OnboardingFormData>({
     phone: '',
     company: '',
@@ -129,9 +131,12 @@ export const OnboardingFormOrganism = React.forwardRef<
         onComplete();
       }
 
-      // Redirect to dashboard after a short delay
+      // Redirect to role-specific dashboard after a short delay
       setTimeout(() => {
-        router.push('/admin/dashboard');
+        redirectAfterLogin({
+          profileComplete: true,
+          role: data.user?.role,
+        });
       }, 1500);
     } catch (err: any) {
       setError(err.message || t('auth.onboarding.error'));
@@ -167,9 +172,12 @@ export const OnboardingFormOrganism = React.forwardRef<
         onSkip();
       }
 
-      // Redirect to dashboard after a short delay
+      // Redirect to role-specific dashboard after a short delay
       setTimeout(() => {
-        router.push('/admin/dashboard');
+        redirectAfterLogin({
+          profileComplete: true,
+          role: data.user?.role,
+        });
       }, 1500);
     } catch (err: any) {
       setError(err.message || t('auth.onboarding.error'));

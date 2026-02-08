@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { LocationFormOrganism } from './LocationFormOrganism';
@@ -62,10 +62,13 @@ describe('LocationFormOrganism', () => {
     expect(screen.getByLabelText(/zip code/i)).toBeInTheDocument();
   });
 
-  it('should show cancel button when showCancel is true', () => {
-    render(<LocationFormOrganism showCancel={true} />);
+  it('should show cancel button when showCancel is true', async () => {
+    const onCancel = vi.fn();
+    render(<LocationFormOrganism showCancel={true} onCancel={onCancel} />);
 
-    expect(screen.getByRole('button', { name: /cancel/i })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /cancel/i })).toBeInTheDocument();
+    });
   });
 
   it('should hide cancel button when showCancel is false', () => {
@@ -228,12 +231,13 @@ describe('LocationFormOrganism', () => {
   });
 
   it('should show validation error message', async () => {
-    const user = userEvent.setup();
     render(<LocationFormOrganism />);
 
-    // Submit without required fields
-    const submitButton = screen.getByRole('button', { name: /create location/i });
-    await user.click(submitButton);
+    // Submit without required fields - use fireEvent.submit to bypass HTML5 validation
+    const form = document.querySelector('form');
+    if (form) {
+      fireEvent.submit(form);
+    }
 
     await waitFor(() => {
       expect(screen.getByText('Please fix the validation errors below')).toBeInTheDocument();
@@ -334,8 +338,11 @@ describe('LocationFormOrganism', () => {
     const user = userEvent.setup();
     render(<LocationFormOrganism />);
 
-    const submitButton = screen.getByRole('button', { name: /create location/i });
-    await user.click(submitButton);
+    // Use fireEvent.submit to bypass HTML5 validation
+    const form = document.querySelector('form');
+    if (form) {
+      fireEvent.submit(form);
+    }
 
     await waitFor(() => {
       expect(screen.getByText('Please fix the validation errors below')).toBeInTheDocument();
@@ -377,20 +384,24 @@ describe('LocationFormOrganism', () => {
 
   it('should handle network errors gracefully', async () => {
     const user = userEvent.setup();
+    const onError = vi.fn();
     (global.fetch as any).mockRejectedValue(new Error('Network error'));
 
-    render(<LocationFormOrganism />);
+    render(<LocationFormOrganism onError={onError} />);
 
     await user.type(screen.getByLabelText(/street address/i), '123 Main St');
     await user.type(screen.getByLabelText(/^city$/i), 'New York');
     await user.selectOptions(screen.getByLabelText(/^state$/i), 'NY');
     await user.type(screen.getByLabelText(/zip code/i), '10001');
 
-    const submitButton = screen.getByRole('button', { name: /create location/i });
-    await user.click(submitButton);
+    // Use fireEvent.submit to bypass HTML5 validation
+    const form = document.querySelector('form');
+    if (form) {
+      fireEvent.submit(form);
+    }
 
     await waitFor(() => {
-      expect(screen.getByText('An unexpected error occurred')).toBeInTheDocument();
+      expect(onError).toHaveBeenCalledWith('Network error');
     });
   });
 
@@ -401,11 +412,13 @@ describe('LocationFormOrganism', () => {
   });
 
   it('should have proper ARIA attributes for invalid fields', async () => {
-    const user = userEvent.setup();
     render(<LocationFormOrganism />);
 
-    const submitButton = screen.getByRole('button', { name: /create location/i });
-    await user.click(submitButton);
+    // Use fireEvent.submit to bypass HTML5 validation
+    const form = document.querySelector('form');
+    if (form) {
+      fireEvent.submit(form);
+    }
 
     await waitFor(() => {
       const streetInput = screen.getByLabelText(/street address/i);

@@ -19,6 +19,7 @@ const translations = {
       newPassword: 'New Password',
       confirmPassword: 'Confirm Password',
       passwordPlaceholder: 'Minimum 6 characters',
+      confirmPasswordPlaceholder: 'Repeat your new password',
       submit: 'Update Password',
       passwordMismatch: 'Passwords do not match',
       passwordTooShort: 'Password must be at least 6 characters',
@@ -36,11 +37,13 @@ const translations = {
 describe('ResetPasswordFormOrganism - Organism', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.useRealTimers();
     (global.fetch as any).mockClear();
   });
 
   afterEach(() => {
     vi.clearAllMocks();
+    vi.useRealTimers();
   });
 
   describe('Rendering', () => {
@@ -75,11 +78,12 @@ describe('ResetPasswordFormOrganism - Organism', () => {
 
   describe('Form Validation', () => {
     it('should validate password match', async () => {
+      const user = userEvent.setup({ delay: null });
       renderWithProviders(<ResetPasswordFormOrganism token="test-token" />, { translations });
 
-      fireEvent.change(screen.getByLabelText('New Password'), { target: { value: 'password1' } });
-      fireEvent.change(screen.getByLabelText('Confirm Password'), { target: { value: 'password2' } });
-      fireEvent.click(screen.getByRole('button'));
+      await user.type(screen.getByLabelText('New Password'), 'password123');
+      await user.type(screen.getByLabelText('Confirm Password'), 'password456');
+      await user.click(screen.getByRole('button', { name: 'Update Password' }));
 
       await waitFor(() => {
         expect(screen.getByText('Passwords do not match')).toBeInTheDocument();
@@ -91,9 +95,18 @@ describe('ResetPasswordFormOrganism - Organism', () => {
     it('should validate minimum password length', async () => {
       renderWithProviders(<ResetPasswordFormOrganism token="test-token" />, { translations });
 
-      fireEvent.change(screen.getByLabelText('New Password'), { target: { value: '12345' } });
-      fireEvent.change(screen.getByLabelText('Confirm Password'), { target: { value: '12345' } });
-      fireEvent.click(screen.getByRole('button'));
+      const passwordInput = screen.getByLabelText('New Password');
+      const confirmInput = screen.getByLabelText('Confirm Password');
+
+      // Bypass HTML5 validation by setting value directly and submitting form
+      fireEvent.change(passwordInput, { target: { value: '12345' } });
+      fireEvent.change(confirmInput, { target: { value: '12345' } });
+
+      // Submit form directly to bypass HTML5 minLength validation
+      const form = passwordInput.closest('form');
+      if (form) {
+        fireEvent.submit(form);
+      }
 
       await waitFor(() => {
         expect(screen.getByText('Password must be at least 6 characters')).toBeInTheDocument();
@@ -103,6 +116,7 @@ describe('ResetPasswordFormOrganism - Organism', () => {
     });
 
     it('should accept valid passwords', async () => {
+      const user = userEvent.setup({ delay: null });
       const mockResponse = {
         ok: true,
         json: () => Promise.resolve({ message: 'Success' }),
@@ -111,9 +125,9 @@ describe('ResetPasswordFormOrganism - Organism', () => {
 
       renderWithProviders(<ResetPasswordFormOrganism token="test-token" />, { translations });
 
-      fireEvent.change(screen.getByLabelText('New Password'), { target: { value: 'password123' } });
-      fireEvent.change(screen.getByLabelText('Confirm Password'), { target: { value: 'password123' } });
-      fireEvent.click(screen.getByRole('button'));
+      await user.type(screen.getByLabelText('New Password'), 'password123');
+      await user.type(screen.getByLabelText('Confirm Password'), 'password123');
+      await user.click(screen.getByRole('button', { name: 'Update Password' }));
 
       await waitFor(() => {
         expect(global.fetch).toHaveBeenCalled();
@@ -123,6 +137,7 @@ describe('ResetPasswordFormOrganism - Organism', () => {
 
   describe('Form Submission', () => {
     it('should call API with correct data', async () => {
+      const user = userEvent.setup({ delay: null });
       const mockResponse = {
         ok: true,
         json: () => Promise.resolve({ message: 'Success' }),
@@ -131,9 +146,9 @@ describe('ResetPasswordFormOrganism - Organism', () => {
 
       renderWithProviders(<ResetPasswordFormOrganism token="reset-token-123" />, { translations });
 
-      fireEvent.change(screen.getByLabelText('New Password'), { target: { value: 'newpassword' } });
-      fireEvent.change(screen.getByLabelText('Confirm Password'), { target: { value: 'newpassword' } });
-      fireEvent.click(screen.getByRole('button'));
+      await user.type(screen.getByLabelText('New Password'), 'newpassword');
+      await user.type(screen.getByLabelText('Confirm Password'), 'newpassword');
+      await user.click(screen.getByRole('button', { name: 'Update Password' }));
 
       await waitFor(() => {
         expect(global.fetch).toHaveBeenCalledWith('/api/auth/reset-password', {
@@ -150,6 +165,7 @@ describe('ResetPasswordFormOrganism - Organism', () => {
     });
 
     it('should show success message on successful reset', async () => {
+      const user = userEvent.setup({ delay: null });
       const mockResponse = {
         ok: true,
         json: () => Promise.resolve({ message: 'Password updated successfully' }),
@@ -158,9 +174,9 @@ describe('ResetPasswordFormOrganism - Organism', () => {
 
       renderWithProviders(<ResetPasswordFormOrganism token="test-token" />, { translations });
 
-      fireEvent.change(screen.getByLabelText('New Password'), { target: { value: 'newpassword' } });
-      fireEvent.change(screen.getByLabelText('Confirm Password'), { target: { value: 'newpassword' } });
-      fireEvent.click(screen.getByRole('button'));
+      await user.type(screen.getByLabelText('New Password'), 'newpassword');
+      await user.type(screen.getByLabelText('Confirm Password'), 'newpassword');
+      await user.click(screen.getByRole('button', { name: 'Update Password' }));
 
       await waitFor(() => {
         expect(screen.getByText('Password updated successfully')).toBeInTheDocument();
@@ -168,34 +184,34 @@ describe('ResetPasswordFormOrganism - Organism', () => {
     });
 
     it('should redirect to login after successful reset', async () => {
-      vi.useFakeTimers();
+      const user = userEvent.setup({ delay: null });
 
       const mockResponse = {
         ok: true,
-        json: () => Promise.resolve({ message: 'Success' }),
+        json: () => Promise.resolve({ message: 'Contraseña actualizada exitosamente. Redirigiendo al login...' }),
       };
       (global.fetch as any).mockResolvedValue(mockResponse);
 
       renderWithProviders(<ResetPasswordFormOrganism token="test-token" />, { translations });
 
-      fireEvent.change(screen.getByLabelText('New Password'), { target: { value: 'newpassword' } });
-      fireEvent.change(screen.getByLabelText('Confirm Password'), { target: { value: 'newpassword' } });
-      fireEvent.click(screen.getByRole('button'));
+      await user.type(screen.getByLabelText('New Password'), 'newpassword');
+      await user.type(screen.getByLabelText('Confirm Password'), 'newpassword');
+      await user.click(screen.getByRole('button', { name: 'Update Password' }));
 
       await waitFor(() => {
         expect(screen.getByText(/Contraseña actualizada exitosamente/i)).toBeInTheDocument();
       });
 
-      vi.advanceTimersByTime(3000);
-
-      expect(mockPush).toHaveBeenCalledWith('/auth/login');
-
-      vi.useRealTimers();
+      // Wait for the redirect (3000ms + buffer)
+      await waitFor(() => {
+        expect(mockPush).toHaveBeenCalledWith('/auth/login');
+      }, { timeout: 4000 });
     });
   });
 
   describe('Error Handling', () => {
     it('should display error message on failed reset', async () => {
+      const user = userEvent.setup({ delay: null });
       const mockResponse = {
         ok: false,
         json: () => Promise.resolve({ message: 'Invalid token' }),
@@ -204,9 +220,9 @@ describe('ResetPasswordFormOrganism - Organism', () => {
 
       renderWithProviders(<ResetPasswordFormOrganism token="test-token" />, { translations });
 
-      fireEvent.change(screen.getByLabelText('New Password'), { target: { value: 'newpassword' } });
-      fireEvent.change(screen.getByLabelText('Confirm Password'), { target: { value: 'newpassword' } });
-      fireEvent.click(screen.getByRole('button'));
+      await user.type(screen.getByLabelText('New Password'), 'newpassword');
+      await user.type(screen.getByLabelText('Confirm Password'), 'newpassword');
+      await user.click(screen.getByRole('button', { name: 'Update Password' }));
 
       await waitFor(() => {
         expect(screen.getByText('Invalid token')).toBeInTheDocument();
@@ -214,13 +230,14 @@ describe('ResetPasswordFormOrganism - Organism', () => {
     });
 
     it('should handle network errors', async () => {
+      const user = userEvent.setup({ delay: null });
       (global.fetch as any).mockRejectedValue(new Error('Network error'));
 
       renderWithProviders(<ResetPasswordFormOrganism token="test-token" />, { translations });
 
-      fireEvent.change(screen.getByLabelText('New Password'), { target: { value: 'newpassword' } });
-      fireEvent.change(screen.getByLabelText('Confirm Password'), { target: { value: 'newpassword' } });
-      fireEvent.click(screen.getByRole('button'));
+      await user.type(screen.getByLabelText('New Password'), 'newpassword');
+      await user.type(screen.getByLabelText('Confirm Password'), 'newpassword');
+      await user.click(screen.getByRole('button', { name: 'Update Password' }));
 
       await waitFor(() => {
         expect(screen.getByText('Network error')).toBeInTheDocument();
@@ -228,6 +245,7 @@ describe('ResetPasswordFormOrganism - Organism', () => {
     });
 
     it('should use fallback error message', async () => {
+      const user = userEvent.setup({ delay: null });
       const mockResponse = {
         ok: false,
         json: () => Promise.resolve({}),
@@ -236,9 +254,9 @@ describe('ResetPasswordFormOrganism - Organism', () => {
 
       renderWithProviders(<ResetPasswordFormOrganism token="test-token" />, { translations });
 
-      fireEvent.change(screen.getByLabelText('New Password'), { target: { value: 'newpassword' } });
-      fireEvent.change(screen.getByLabelText('Confirm Password'), { target: { value: 'newpassword' } });
-      fireEvent.click(screen.getByRole('button'));
+      await user.type(screen.getByLabelText('New Password'), 'newpassword');
+      await user.type(screen.getByLabelText('Confirm Password'), 'newpassword');
+      await user.click(screen.getByRole('button', { name: 'Update Password' }));
 
       await waitFor(() => {
         expect(screen.getByText('Error resetting password')).toBeInTheDocument();
@@ -248,6 +266,7 @@ describe('ResetPasswordFormOrganism - Organism', () => {
 
   describe('Loading State', () => {
     it('should show loading state during submission', async () => {
+      const user = userEvent.setup({ delay: null });
       const mockResponse = {
         ok: true,
         json: () => new Promise((resolve) => setTimeout(() => resolve({ message: 'Success' }), 100)),
@@ -256,9 +275,9 @@ describe('ResetPasswordFormOrganism - Organism', () => {
 
       renderWithProviders(<ResetPasswordFormOrganism token="test-token" />, { translations });
 
-      fireEvent.change(screen.getByLabelText('New Password'), { target: { value: 'newpassword' } });
-      fireEvent.change(screen.getByLabelText('Confirm Password'), { target: { value: 'newpassword' } });
-      fireEvent.click(screen.getByRole('button'));
+      await user.type(screen.getByLabelText('New Password'), 'newpassword');
+      await user.type(screen.getByLabelText('Confirm Password'), 'newpassword');
+      await user.click(screen.getByRole('button', { name: 'Update Password' }));
 
       await waitFor(() => {
         expect(screen.getByText('Updating...')).toBeInTheDocument();
@@ -266,6 +285,7 @@ describe('ResetPasswordFormOrganism - Organism', () => {
     });
 
     it('should disable form elements while loading', async () => {
+      const user = userEvent.setup({ delay: null });
       const mockResponse = {
         ok: true,
         json: () => new Promise((resolve) => setTimeout(() => resolve({ message: 'Success' }), 100)),
@@ -276,11 +296,11 @@ describe('ResetPasswordFormOrganism - Organism', () => {
 
       const passwordInput = screen.getByLabelText('New Password');
       const confirmInput = screen.getByLabelText('Confirm Password');
-      const submitButton = screen.getByRole('button');
+      const submitButton = screen.getByRole('button', { name: 'Update Password' });
 
-      fireEvent.change(passwordInput, { target: { value: 'newpassword' } });
-      fireEvent.change(confirmInput, { target: { value: 'newpassword' } });
-      fireEvent.click(submitButton);
+      await user.type(passwordInput, 'newpassword');
+      await user.type(confirmInput, 'newpassword');
+      await user.click(submitButton);
 
       await waitFor(() => {
         expect(passwordInput).toBeDisabled();
@@ -292,25 +312,27 @@ describe('ResetPasswordFormOrganism - Organism', () => {
 
   describe('User Interactions', () => {
     it('should update password values when typing', async () => {
+      const user = userEvent.setup({ delay: null });
       renderWithProviders(<ResetPasswordFormOrganism token="test-token" />, { translations });
 
       const passwordInput = screen.getByLabelText('New Password') as HTMLInputElement;
       const confirmInput = screen.getByLabelText('Confirm Password') as HTMLInputElement;
 
-      fireEvent.change(passwordInput, { target: { value: 'password123' } });
-      fireEvent.change(confirmInput, { target: { value: 'password123' } });
+      await user.type(passwordInput, 'password123');
+      await user.type(confirmInput, 'password123');
 
       expect(passwordInput.value).toBe('password123');
       expect(confirmInput.value).toBe('password123');
     });
 
     it('should clear previous errors on new submission', async () => {
+      const user = userEvent.setup({ delay: null });
       renderWithProviders(<ResetPasswordFormOrganism token="test-token" />, { translations });
 
       // First submission with mismatch
-      fireEvent.change(screen.getByLabelText('New Password'), { target: { value: 'pass1' } });
-      fireEvent.change(screen.getByLabelText('Confirm Password'), { target: { value: 'pass2' } });
-      fireEvent.click(screen.getByRole('button'));
+      await user.type(screen.getByLabelText('New Password'), 'pass1234');
+      await user.type(screen.getByLabelText('Confirm Password'), 'pass5678');
+      await user.click(screen.getByRole('button', { name: 'Update Password' }));
 
       await waitFor(() => {
         expect(screen.getByText('Passwords do not match')).toBeInTheDocument();
@@ -323,9 +345,11 @@ describe('ResetPasswordFormOrganism - Organism', () => {
       };
       (global.fetch as any).mockResolvedValue(mockResponse);
 
-      fireEvent.change(screen.getByLabelText('New Password'), { target: { value: 'password123' } });
-      fireEvent.change(screen.getByLabelText('Confirm Password'), { target: { value: 'password123' } });
-      fireEvent.click(screen.getByRole('button'));
+      await user.clear(screen.getByLabelText('New Password'));
+      await user.clear(screen.getByLabelText('Confirm Password'));
+      await user.type(screen.getByLabelText('New Password'), 'password123');
+      await user.type(screen.getByLabelText('Confirm Password'), 'password123');
+      await user.click(screen.getByRole('button', { name: 'Update Password' }));
 
       await waitFor(() => {
         expect(screen.queryByText('Passwords do not match')).not.toBeInTheDocument();
@@ -352,6 +376,7 @@ describe('ResetPasswordFormOrganism - Organism', () => {
 
   describe('Token Prop', () => {
     it('should accept token as prop', async () => {
+      const user = userEvent.setup({ delay: null });
       const mockResponse = {
         ok: true,
         json: () => Promise.resolve({ message: 'Success' }),
@@ -360,9 +385,9 @@ describe('ResetPasswordFormOrganism - Organism', () => {
 
       renderWithProviders(<ResetPasswordFormOrganism token="my-custom-token" />, { translations });
 
-      fireEvent.change(screen.getByLabelText('New Password'), { target: { value: 'newpassword' } });
-      fireEvent.change(screen.getByLabelText('Confirm Password'), { target: { value: 'newpassword' } });
-      fireEvent.click(screen.getByRole('button'));
+      await user.type(screen.getByLabelText('New Password'), 'newpassword');
+      await user.type(screen.getByLabelText('Confirm Password'), 'newpassword');
+      await user.click(screen.getByRole('button', { name: 'Update Password' }));
 
       await waitFor(() => {
         expect(global.fetch).toHaveBeenCalledWith(

@@ -8,7 +8,7 @@ import type { LocationListOrganismProps } from './LocationListOrganism.types';
 global.fetch = vi.fn();
 
 // Mock window.confirm
-global.confirm = vi.fn();
+window.confirm = vi.fn() as any;
 
 const mockLocations = [
   {
@@ -46,8 +46,8 @@ const mockLocations = [
 describe('LocationListOrganism', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (global.fetch as any).mockClear();
-    (global.confirm as any).mockClear();
+    (global.fetch as any).mockReset();
+    (window.confirm as any).mockReset();
   });
 
   it('should show loading state initially', () => {
@@ -178,6 +178,7 @@ describe('LocationListOrganism', () => {
   });
 
   it('should not delete location when confirmation cancelled', async () => {
+    const user = userEvent.setup();
     (global.confirm as any).mockReturnValue(false);
     (global.fetch as any).mockResolvedValue({
       ok: true,
@@ -190,6 +191,13 @@ describe('LocationListOrganism', () => {
       expect(screen.getByText('123 Main St')).toBeInTheDocument();
     });
 
+    // Click delete button
+    const deleteButtons = screen.getAllByRole('button', { name: /delete/i });
+    await user.click(deleteButtons[0]);
+
+    // Verify confirm was called
+    expect(global.confirm).toHaveBeenCalled();
+
     // All locations should still be there
     expect(screen.getByText('123 Main St')).toBeInTheDocument();
     expect(screen.getByText('456 Oak Ave')).toBeInTheDocument();
@@ -197,11 +205,23 @@ describe('LocationListOrganism', () => {
   });
 
   it('should call onLocationChange after successful operation', async () => {
+    const user = userEvent.setup();
     const onLocationChange = vi.fn();
-    (global.fetch as any).mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve(mockLocations),
-    });
+    (global.confirm as any).mockReturnValue(true);
+
+    (global.fetch as any)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockLocations),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve({ success: true }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve([mockLocations[1], mockLocations[2]]),
+      });
 
     render(<LocationListOrganism onLocationChange={onLocationChange} />);
 
@@ -209,7 +229,14 @@ describe('LocationListOrganism', () => {
       expect(screen.getByText('123 Main St')).toBeInTheDocument();
     });
 
-    // onLocationChange would be called after create/update/delete operations
+    // Click delete button to trigger a successful operation
+    const deleteButtons = screen.getAllByRole('button', { name: /delete/i });
+    await user.click(deleteButtons[0]);
+
+    // Wait for onLocationChange to be called after successful deletion
+    await waitFor(() => {
+      expect(onLocationChange).toHaveBeenCalled();
+    });
   });
 
   it('should render locations in a grid layout', async () => {
@@ -377,15 +404,16 @@ describe('LocationListOrganism', () => {
 
     render(<LocationListOrganism />);
 
+    // Wait for locations to load
     await waitFor(() => {
-      // Check first location with building and floor
       expect(screen.getByText('123 Main St')).toBeInTheDocument();
-
-      // Check second location without building and floor
-      expect(screen.getByText('456 Oak Ave')).toBeInTheDocument();
-
-      // Check third location
-      expect(screen.getByText('789 Pine Rd')).toBeInTheDocument();
     });
+
+    // Check all locations are rendered with their street addresses and cities
+    expect(screen.getByText(/New York/)).toBeInTheDocument();
+    expect(screen.getByText('456 Oak Ave')).toBeInTheDocument();
+    expect(screen.getByText(/Los Angeles/)).toBeInTheDocument();
+    expect(screen.getByText('789 Pine Rd')).toBeInTheDocument();
+    expect(screen.getByText(/Chicago/)).toBeInTheDocument();
   });
 });

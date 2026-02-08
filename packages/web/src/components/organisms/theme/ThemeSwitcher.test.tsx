@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { renderWithProviders, screen, fireEvent, waitFor } from '@/test/test-utils';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { ThemeSwitcher } from './ThemeSwitcher';
@@ -77,52 +77,65 @@ vi.mock('lucide-react', () => ({
 describe('ThemeSwitcher - Organism', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+
+    // Reset mock state to default
+    mockUseGlobalTheme.currentTheme = { id: 'theme-1', name: 'Default Theme', isDefault: true };
+    mockUseGlobalTheme.savedThemes = [
+      { id: 'theme-1', name: 'Default Theme', isDefault: true },
+      { id: 'theme-2', name: 'Dark Theme', isDefault: false },
+      { id: 'theme-3', name: 'Light Theme', isDefault: false },
+    ];
+    mockUseGlobalTheme.isLoading = false;
   });
 
   describe('Dropdown Mode (Default)', () => {
     it('should render dropdown trigger button', () => {
-      render(<ThemeSwitcher />);
+      renderWithProviders(<ThemeSwitcher />);
 
-      expect(screen.getByText('Default Theme')).toBeInTheDocument();
+      // Button contains theme name and icon - check for role and text content
+      const button = screen.getByRole('button');
+      expect(button).toHaveTextContent('Default Theme');
       expect(screen.getByTestId('palette-icon')).toBeInTheDocument();
     });
 
     it('should show current theme name on trigger', () => {
-      render(<ThemeSwitcher />);
+      renderWithProviders(<ThemeSwitcher />);
 
-      expect(screen.getByText('Default Theme')).toBeInTheDocument();
+      const button = screen.getByRole('button');
+      expect(button).toHaveTextContent('Default Theme');
     });
 
     it('should render all saved themes in dropdown', () => {
-      render(<ThemeSwitcher />);
+      renderWithProviders(<ThemeSwitcher />);
 
-      expect(screen.getByText('Default Theme')).toBeInTheDocument();
+      // All themes are rendered in dropdown content (always rendered, not conditional)
+      expect(screen.getAllByText('Default Theme').length).toBeGreaterThan(0);
       expect(screen.getByText('Dark Theme')).toBeInTheDocument();
       expect(screen.getByText('Light Theme')).toBeInTheDocument();
     });
 
     it('should show default badge for default theme', () => {
-      render(<ThemeSwitcher />);
+      renderWithProviders(<ThemeSwitcher />);
 
       const badges = screen.getAllByTestId('badge');
       expect(badges.some(badge => badge.textContent === 'Default')).toBe(true);
     });
 
     it('should show check icon for current theme', () => {
-      render(<ThemeSwitcher />);
+      renderWithProviders(<ThemeSwitcher />);
 
       const checkIcons = screen.getAllByTestId('check-icon');
       expect(checkIcons.length).toBeGreaterThan(0);
     });
 
     it('should render manage themes link', () => {
-      render(<ThemeSwitcher />);
+      renderWithProviders(<ThemeSwitcher />);
 
       expect(screen.getByText('Manage Themes')).toBeInTheDocument();
     });
 
     it('should call loadTheme when theme is selected', () => {
-      render(<ThemeSwitcher />);
+      renderWithProviders(<ThemeSwitcher />);
 
       const darkThemeItem = screen.getByText('Dark Theme').closest('[data-testid="dropdown-item"]');
       if (darkThemeItem) {
@@ -133,7 +146,7 @@ describe('ThemeSwitcher - Organism', () => {
 
     it('should call onThemeChange callback', () => {
       const onThemeChange = vi.fn();
-      render(<ThemeSwitcher onThemeChange={onThemeChange} />);
+      renderWithProviders(<ThemeSwitcher onThemeChange={onThemeChange} />);
 
       const darkThemeItem = screen.getByText('Dark Theme').closest('[data-testid="dropdown-item"]');
       if (darkThemeItem) {
@@ -144,21 +157,21 @@ describe('ThemeSwitcher - Organism', () => {
 
     it('should show "No themes available" when savedThemes is empty', () => {
       mockUseGlobalTheme.savedThemes = [];
-      render(<ThemeSwitcher />);
+      renderWithProviders(<ThemeSwitcher />);
 
       expect(screen.getByText('No themes available')).toBeInTheDocument();
     });
 
     it('should disable trigger button when loading', () => {
       mockUseGlobalTheme.isLoading = true;
-      render(<ThemeSwitcher />);
+      renderWithProviders(<ThemeSwitcher />);
 
       const button = screen.getByRole('button');
       expect(button).toBeDisabled();
     });
 
     it('should apply custom className to trigger button', () => {
-      render(<ThemeSwitcher className="custom-class" />);
+      renderWithProviders(<ThemeSwitcher className="custom-class" />);
 
       const button = screen.getByRole('button');
       expect(button).toHaveClass('custom-class');
@@ -176,27 +189,27 @@ describe('ThemeSwitcher - Organism', () => {
     });
 
     it('should render inline mode when mode="inline"', () => {
-      const { container } = render(<ThemeSwitcher mode="inline" />);
+      const { container } = renderWithProviders(<ThemeSwitcher mode="inline" />);
 
       expect(container.querySelector('.flex.flex-wrap')).toBeInTheDocument();
     });
 
     it('should render all themes as buttons', () => {
-      render(<ThemeSwitcher mode="inline" />);
+      renderWithProviders(<ThemeSwitcher mode="inline" />);
 
       const buttons = screen.getAllByRole('button');
       expect(buttons.length).toBeGreaterThanOrEqual(3);
     });
 
     it('should highlight current theme button', () => {
-      render(<ThemeSwitcher mode="inline" />);
+      renderWithProviders(<ThemeSwitcher mode="inline" />);
 
       const defaultThemeButton = screen.getByRole('button', { name: /Default Theme/i });
       expect(defaultThemeButton).toHaveAttribute('data-variant', 'default');
     });
 
     it('should call loadTheme when inline button is clicked', () => {
-      render(<ThemeSwitcher mode="inline" />);
+      renderWithProviders(<ThemeSwitcher mode="inline" />);
 
       const darkThemeButton = screen.getByRole('button', { name: /Dark Theme/i });
       fireEvent.click(darkThemeButton);
@@ -205,14 +218,14 @@ describe('ThemeSwitcher - Organism', () => {
     });
 
     it('should show default badge in inline mode', () => {
-      render(<ThemeSwitcher mode="inline" />);
+      renderWithProviders(<ThemeSwitcher mode="inline" />);
 
       const badges = screen.getAllByTestId('badge');
       expect(badges.some(badge => badge.textContent === 'Default')).toBe(true);
     });
 
     it('should show check icon for current theme in inline mode', () => {
-      render(<ThemeSwitcher mode="inline" />);
+      renderWithProviders(<ThemeSwitcher mode="inline" />);
 
       const checkIcons = screen.getAllByTestId('check-icon');
       expect(checkIcons.length).toBeGreaterThan(0);
@@ -220,7 +233,7 @@ describe('ThemeSwitcher - Organism', () => {
 
     it('should disable all buttons when loading in inline mode', () => {
       mockUseGlobalTheme.isLoading = true;
-      render(<ThemeSwitcher mode="inline" />);
+      renderWithProviders(<ThemeSwitcher mode="inline" />);
 
       const buttons = screen.getAllByRole('button');
       buttons.forEach(button => {
@@ -230,13 +243,13 @@ describe('ThemeSwitcher - Organism', () => {
 
     it('should show "No themes available" in inline mode', () => {
       mockUseGlobalTheme.savedThemes = [];
-      render(<ThemeSwitcher mode="inline" />);
+      renderWithProviders(<ThemeSwitcher mode="inline" />);
 
       expect(screen.getByText('No themes available')).toBeInTheDocument();
     });
 
     it('should apply custom className in inline mode', () => {
-      const { container } = render(<ThemeSwitcher mode="inline" className="custom-inline" />);
+      const { container } = renderWithProviders(<ThemeSwitcher mode="inline" className="custom-inline" />);
 
       const wrapper = container.querySelector('.custom-inline');
       expect(wrapper).toBeInTheDocument();
@@ -253,7 +266,7 @@ describe('ThemeSwitcher - Organism', () => {
     });
 
     it('should load theme when selected', () => {
-      render(<ThemeSwitcher />);
+      renderWithProviders(<ThemeSwitcher />);
 
       const darkThemeItem = screen.getByText('Dark Theme').closest('[data-testid="dropdown-item"]');
       if (darkThemeItem) {
@@ -264,7 +277,7 @@ describe('ThemeSwitcher - Organism', () => {
 
     it('should trigger callback after theme change', () => {
       const onThemeChange = vi.fn();
-      render(<ThemeSwitcher onThemeChange={onThemeChange} />);
+      renderWithProviders(<ThemeSwitcher onThemeChange={onThemeChange} />);
 
       const darkThemeItem = screen.getByText('Dark Theme').closest('[data-testid="dropdown-item"]');
       if (darkThemeItem) {
@@ -278,22 +291,24 @@ describe('ThemeSwitcher - Organism', () => {
   describe('Current Theme Display', () => {
     it('should show "Select Theme" when no current theme', () => {
       mockUseGlobalTheme.currentTheme = null;
-      render(<ThemeSwitcher />);
+      renderWithProviders(<ThemeSwitcher />);
 
       expect(screen.getByText('Select Theme')).toBeInTheDocument();
     });
 
     it('should show current theme name', () => {
-      render(<ThemeSwitcher />);
+      renderWithProviders(<ThemeSwitcher />);
 
-      expect(screen.getByText('Default Theme')).toBeInTheDocument();
+      // Theme name may appear multiple times (in trigger and dropdown)
+      const themeNameElements = screen.getAllByText('Default Theme');
+      expect(themeNameElements.length).toBeGreaterThan(0);
     });
   });
 
   describe('Loading State', () => {
     it('should disable dropdown trigger when loading', () => {
       mockUseGlobalTheme.isLoading = true;
-      render(<ThemeSwitcher />);
+      renderWithProviders(<ThemeSwitcher />);
 
       const button = screen.getByRole('button');
       expect(button).toBeDisabled();
@@ -301,7 +316,7 @@ describe('ThemeSwitcher - Organism', () => {
 
     it('should disable inline buttons when loading', () => {
       mockUseGlobalTheme.isLoading = true;
-      render(<ThemeSwitcher mode="inline" />);
+      renderWithProviders(<ThemeSwitcher mode="inline" />);
 
       const buttons = screen.getAllByRole('button');
       buttons.forEach(button => {
@@ -316,19 +331,19 @@ describe('ThemeSwitcher - Organism', () => {
     });
 
     it('should show empty state in dropdown', () => {
-      render(<ThemeSwitcher />);
+      renderWithProviders(<ThemeSwitcher />);
 
       expect(screen.getByText('No themes available')).toBeInTheDocument();
     });
 
     it('should show empty state in inline mode', () => {
-      render(<ThemeSwitcher mode="inline" />);
+      renderWithProviders(<ThemeSwitcher mode="inline" />);
 
       expect(screen.getByText('No themes available')).toBeInTheDocument();
     });
 
     it('should disable empty state menu item', () => {
-      render(<ThemeSwitcher />);
+      renderWithProviders(<ThemeSwitcher />);
 
       const emptyItem = screen.getByText('No themes available').closest('[data-testid="dropdown-item"]');
       expect(emptyItem).toHaveAttribute('data-disabled', 'true');
@@ -337,13 +352,13 @@ describe('ThemeSwitcher - Organism', () => {
 
   describe('Manage Themes Link', () => {
     it('should render link to theme management', () => {
-      render(<ThemeSwitcher />);
+      renderWithProviders(<ThemeSwitcher />);
 
       expect(screen.getByText('Manage Themes')).toBeInTheDocument();
     });
 
     it('should have correct href for manage themes', () => {
-      const { container } = render(<ThemeSwitcher />);
+      const { container } = renderWithProviders(<ThemeSwitcher />);
 
       const link = container.querySelector('a[href="/admin/settings/themes"]');
       expect(link).toBeInTheDocument();
@@ -352,16 +367,18 @@ describe('ThemeSwitcher - Organism', () => {
 
   describe('Accessibility', () => {
     it('should render buttons with correct roles', () => {
-      render(<ThemeSwitcher />);
+      renderWithProviders(<ThemeSwitcher />);
 
       const buttons = screen.getAllByRole('button');
       expect(buttons.length).toBeGreaterThan(0);
     });
 
     it('should have accessible button text', () => {
-      render(<ThemeSwitcher />);
+      renderWithProviders(<ThemeSwitcher />);
 
-      expect(screen.getByRole('button', { name: /Default Theme/i })).toBeInTheDocument();
+      // Button text includes the current theme name
+      const button = screen.getByRole('button');
+      expect(button).toHaveTextContent('Default Theme');
     });
   });
 
@@ -373,7 +390,7 @@ describe('ThemeSwitcher - Organism', () => {
         isDefault: i === 0,
       }));
 
-      render(<ThemeSwitcher mode="inline" />);
+      renderWithProviders(<ThemeSwitcher mode="inline" />);
 
       const buttons = screen.getAllByRole('button');
       expect(buttons.length).toBe(10);

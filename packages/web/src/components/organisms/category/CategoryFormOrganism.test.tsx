@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { renderWithProviders, screen, waitFor } from '@/test/test-utils';
 import userEvent from '@testing-library/user-event';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { CategoryFormOrganism } from './CategoryFormOrganism';
@@ -14,7 +14,7 @@ describe('CategoryFormOrganism', () => {
   });
 
   it('should render create mode correctly', () => {
-    render(<CategoryFormOrganism />);
+    renderWithProviders(<CategoryFormOrganism />);
 
     expect(screen.getByLabelText(/category name/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /create category/i })).toBeInTheDocument();
@@ -27,27 +27,30 @@ describe('CategoryFormOrganism', () => {
       name: 'Plumbing',
     };
 
-    render(<CategoryFormOrganism initialData={initialData} />);
+    renderWithProviders(<CategoryFormOrganism initialData={initialData} />);
 
     expect(screen.getByDisplayValue('Plumbing')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /update category/i })).toBeInTheDocument();
   });
 
   it('should show cancel button when showCancel is true', () => {
-    render(<CategoryFormOrganism showCancel={true} />);
+    const onCancel = vi.fn();
+    renderWithProviders(<CategoryFormOrganism showCancel={true} onCancel={onCancel} />);
 
     expect(screen.getByRole('button', { name: /cancel/i })).toBeInTheDocument();
   });
 
-  it('should hide cancel button when showCancel is false', () => {
-    render(<CategoryFormOrganism showCancel={false} />);
+  it('should hide cancel button when showCancel is false', async () => {
+    renderWithProviders(<CategoryFormOrganism showCancel={false} />);
 
-    expect(screen.queryByRole('button', { name: /cancel/i })).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByRole('button', { name: /cancel/i })).not.toBeInTheDocument();
+    });
   });
 
   it('should update input value when user types', async () => {
     const user = userEvent.setup();
-    render(<CategoryFormOrganism />);
+    renderWithProviders(<CategoryFormOrganism />);
 
     const nameInput = screen.getByLabelText(/category name/i) as HTMLInputElement;
     await user.type(nameInput, 'Electrical');
@@ -65,7 +68,7 @@ describe('CategoryFormOrganism', () => {
 
     (global.fetch as any).mockResolvedValue(mockResponse);
 
-    render(<CategoryFormOrganism onSuccess={onSuccess} />);
+    renderWithProviders(<CategoryFormOrganism onSuccess={onSuccess} />);
 
     const nameInput = screen.getByLabelText(/category name/i);
     await user.type(nameInput, 'Plumbing');
@@ -102,7 +105,7 @@ describe('CategoryFormOrganism', () => {
 
     (global.fetch as any).mockResolvedValue(mockResponse);
 
-    render(<CategoryFormOrganism initialData={initialData} onSuccess={onSuccess} />);
+    renderWithProviders(<CategoryFormOrganism initialData={initialData} onSuccess={onSuccess} />);
 
     const nameInput = screen.getByLabelText(/category name/i);
     await user.clear(nameInput);
@@ -136,7 +139,7 @@ describe('CategoryFormOrganism', () => {
 
     (global.fetch as any).mockResolvedValue(mockResponse);
 
-    render(<CategoryFormOrganism onError={onError} />);
+    renderWithProviders(<CategoryFormOrganism onError={onError} />);
 
     const nameInput = screen.getByLabelText(/category name/i);
     await user.type(nameInput, 'Plumbing');
@@ -153,7 +156,7 @@ describe('CategoryFormOrganism', () => {
     const user = userEvent.setup();
     const onCancel = vi.fn();
 
-    render(<CategoryFormOrganism onCancel={onCancel} showCancel={true} />);
+    renderWithProviders(<CategoryFormOrganism onCancel={onCancel} showCancel={true} />);
 
     const cancelButton = screen.getByRole('button', { name: /cancel/i });
     await user.click(cancelButton);
@@ -173,7 +176,7 @@ describe('CategoryFormOrganism', () => {
 
     (global.fetch as any).mockResolvedValue(mockResponse);
 
-    render(<CategoryFormOrganism />);
+    renderWithProviders(<CategoryFormOrganism />);
 
     const nameInput = screen.getByLabelText(/category name/i);
     await user.type(nameInput, 'Plumbing');
@@ -199,7 +202,7 @@ describe('CategoryFormOrganism', () => {
 
     (global.fetch as any).mockResolvedValue(mockResponse);
 
-    render(<CategoryFormOrganism />);
+    renderWithProviders(<CategoryFormOrganism />);
 
     const nameInput = screen.getByLabelText(/category name/i);
     await user.type(nameInput, 'Plumbing');
@@ -221,7 +224,7 @@ describe('CategoryFormOrganism', () => {
 
     (global.fetch as any).mockResolvedValue(mockResponse);
 
-    render(<CategoryFormOrganism />);
+    renderWithProviders(<CategoryFormOrganism />);
 
     const nameInput = screen.getByLabelText(/category name/i) as HTMLInputElement;
     await user.type(nameInput, 'Plumbing');
@@ -247,7 +250,7 @@ describe('CategoryFormOrganism', () => {
 
     (global.fetch as any).mockResolvedValue(mockResponse);
 
-    render(<CategoryFormOrganism initialData={initialData} />);
+    renderWithProviders(<CategoryFormOrganism initialData={initialData} />);
 
     const nameInput = screen.getByLabelText(/category name/i) as HTMLInputElement;
     await user.clear(nameInput);
@@ -263,7 +266,7 @@ describe('CategoryFormOrganism', () => {
 
   it('should validate required field', async () => {
     const user = userEvent.setup();
-    render(<CategoryFormOrganism />);
+    renderWithProviders(<CategoryFormOrganism />);
 
     const nameInput = screen.getByLabelText(/category name/i);
     expect(nameInput).toHaveAttribute('aria-invalid', 'false');
@@ -277,7 +280,7 @@ describe('CategoryFormOrganism', () => {
 
   it('should display validation error for empty name', async () => {
     const user = userEvent.setup();
-    render(<CategoryFormOrganism />);
+    renderWithProviders(<CategoryFormOrganism />);
 
     const submitButton = screen.getByRole('button', { name: /create category/i });
     await user.click(submitButton);
@@ -289,20 +292,20 @@ describe('CategoryFormOrganism', () => {
   });
 
   it('should apply custom className', () => {
-    const { container } = render(<CategoryFormOrganism className="custom-class" />);
+    const { container } = renderWithProviders(<CategoryFormOrganism className="custom-class" />);
 
     const form = container.querySelector('form');
     expect(form).toHaveClass('custom-class');
   });
 
   it('should have correct data-testid attribute', () => {
-    render(<CategoryFormOrganism />);
+    renderWithProviders(<CategoryFormOrganism />);
 
     expect(screen.getByTestId('category-form')).toBeInTheDocument();
   });
 
   it('should have proper ARIA attributes', () => {
-    render(<CategoryFormOrganism />);
+    renderWithProviders(<CategoryFormOrganism />);
 
     const nameInput = screen.getByLabelText(/category name/i);
     expect(nameInput).toHaveAttribute('id', 'name');
@@ -314,7 +317,7 @@ describe('CategoryFormOrganism', () => {
     const onError = vi.fn();
     (global.fetch as any).mockRejectedValue(new Error('Network error'));
 
-    render(<CategoryFormOrganism onError={onError} />);
+    renderWithProviders(<CategoryFormOrganism onError={onError} />);
 
     const nameInput = screen.getByLabelText(/category name/i);
     await user.type(nameInput, 'Plumbing');
@@ -329,6 +332,7 @@ describe('CategoryFormOrganism', () => {
 
   it('should disable cancel button when loading', async () => {
     const user = userEvent.setup({ delay: null });
+    const onCancel = vi.fn();
     const mockResponse = {
       ok: true,
       json: () =>
@@ -339,7 +343,7 @@ describe('CategoryFormOrganism', () => {
 
     (global.fetch as any).mockResolvedValue(mockResponse);
 
-    render(<CategoryFormOrganism showCancel={true} />);
+    renderWithProviders(<CategoryFormOrganism showCancel={true} onCancel={onCancel} />);
 
     const nameInput = screen.getByLabelText(/category name/i);
     await user.type(nameInput, 'Plumbing');

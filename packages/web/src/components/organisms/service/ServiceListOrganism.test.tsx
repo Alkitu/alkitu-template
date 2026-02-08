@@ -262,12 +262,21 @@ describe('ServiceListOrganism', () => {
       expect(screen.getByText('Emergency Plumbing')).toBeInTheDocument();
     });
 
-    // Simulate delete action (this would normally come from ServiceCardMolecule)
-    // Since we're testing the organism, we verify the behavior indirectly
-    expect(screen.getByText('Emergency Plumbing')).toBeInTheDocument();
+    // Find and click delete button
+    const deleteButtons = screen.getAllByRole('button', { name: /delete service/i });
+    await user.click(deleteButtons[0]);
+
+    // Confirm should be called
+    expect(global.confirm).toHaveBeenCalled();
+
+    // Service should be removed after successful deletion
+    await waitFor(() => {
+      expect(screen.queryByText('Emergency Plumbing')).not.toBeInTheDocument();
+    });
   });
 
   it('should not delete service when confirmation cancelled', async () => {
+    const user = userEvent.setup();
     (global.confirm as any).mockReturnValue(false);
     (global.fetch as any).mockResolvedValue({
       ok: true,
@@ -280,8 +289,17 @@ describe('ServiceListOrganism', () => {
       expect(screen.getByText('Emergency Plumbing')).toBeInTheDocument();
     });
 
-    // Service should still be there
-    expect(screen.getByText('Emergency Plumbing')).toBeInTheDocument();
+    // Find and click delete button
+    const deleteButtons = screen.getAllByRole('button', { name: /delete service/i });
+    await user.click(deleteButtons[0]);
+
+    // Confirm should be called
+    expect(global.confirm).toHaveBeenCalled();
+
+    // Service should still be there because deletion was cancelled
+    await waitFor(() => {
+      expect(screen.getByText('Emergency Plumbing')).toBeInTheDocument();
+    });
   });
 
   it('should call onServiceChange after successful operation', async () => {

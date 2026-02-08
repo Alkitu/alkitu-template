@@ -8,8 +8,8 @@ import type { CategoryListOrganismProps } from './CategoryListOrganism.types';
 global.fetch = vi.fn();
 
 // Mock window.confirm and alert
-global.confirm = vi.fn();
-global.alert = vi.fn();
+window.confirm = vi.fn() as any;
+window.alert = vi.fn() as any;
 
 const mockCategories = [
   {
@@ -33,9 +33,9 @@ describe('CategoryListOrganism', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.useRealTimers();
-    (global.fetch as any).mockClear();
-    (global.confirm as any).mockClear();
-    (global.alert as any).mockClear();
+    (global.fetch as any).mockReset();
+    (window.confirm as any).mockReset();
+    (window.alert as any).mockReset();
   });
 
   afterEach(() => {
@@ -186,7 +186,7 @@ describe('CategoryListOrganism', () => {
 
   it('should allow deletion of empty category with confirmation', async () => {
     const user = userEvent.setup();
-    (global.confirm as any).mockReturnValue(true);
+    (window.confirm as any).mockReturnValue(true);
 
     (global.fetch as any)
       .mockResolvedValueOnce({
@@ -208,12 +208,22 @@ describe('CategoryListOrganism', () => {
       expect(screen.getByText('HVAC')).toBeInTheDocument();
     });
 
-    // Category should be present
-    expect(screen.getByText('HVAC')).toBeInTheDocument();
+    // Find and click delete button for HVAC (the only category with 0 services)
+    const deleteButton = screen.getByLabelText('Delete category');
+    await user.click(deleteButton);
+
+    // Confirm should be called
+    expect(window.confirm).toHaveBeenCalled();
+
+    // Category should be removed after successful deletion
+    await waitFor(() => {
+      expect(screen.queryByText('HVAC')).not.toBeInTheDocument();
+    });
   });
 
   it('should not delete category when confirmation cancelled', async () => {
-    (global.confirm as any).mockReturnValue(false);
+    const user = userEvent.setup();
+    (window.confirm as any).mockReturnValue(false);
     (global.fetch as any).mockResolvedValue({
       ok: true,
       json: () => Promise.resolve(mockCategories),
@@ -222,13 +232,22 @@ describe('CategoryListOrganism', () => {
     render(<CategoryListOrganism />);
 
     await waitFor(() => {
-      expect(screen.getByText('Plumbing')).toBeInTheDocument();
+      expect(screen.getByText('HVAC')).toBeInTheDocument();
     });
 
-    // All categories should still be there
-    expect(screen.getByText('Plumbing')).toBeInTheDocument();
-    expect(screen.getByText('Electrical')).toBeInTheDocument();
-    expect(screen.getByText('HVAC')).toBeInTheDocument();
+    // Find and click delete button for HVAC (the only category with 0 services)
+    const deleteButton = screen.getByLabelText('Delete category');
+    await user.click(deleteButton);
+
+    // Confirm should be called
+    expect(window.confirm).toHaveBeenCalled();
+
+    // All categories should still be there because deletion was cancelled
+    await waitFor(() => {
+      expect(screen.getByText('Plumbing')).toBeInTheDocument();
+      expect(screen.getByText('Electrical')).toBeInTheDocument();
+      expect(screen.getByText('HVAC')).toBeInTheDocument();
+    });
   });
 
   it('should call onCategoryChange after successful operation', async () => {
@@ -306,7 +325,7 @@ describe('CategoryListOrganism', () => {
   });
 
   it('should handle delete API errors', async () => {
-    (global.confirm as any).mockReturnValue(true);
+    (window.confirm as any).mockReturnValue(true);
 
     (global.fetch as any)
       .mockResolvedValueOnce({

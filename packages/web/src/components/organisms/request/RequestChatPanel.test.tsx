@@ -29,7 +29,7 @@ vi.mock('@/lib/trpc', () => {
           useQuery: vi.fn(() => createMockQuery([])),
         },
         replyToMessage: {
-          useMutation: vi.fn(() => createMockMutation()),
+          useMutation: vi.fn((options) => createMockMutation(options?.onSuccess, options?.onError)),
         },
       },
     },
@@ -273,14 +273,6 @@ describe('RequestChatPanel - Organism', () => {
     });
 
     it('should clear message input after sending', async () => {
-      const { trpc } = await import('@/lib/trpc');
-      (trpc.chat.replyToMessage.useMutation as any).mockReturnValue({
-        mutate: vi.fn((data, options: any) => {
-          if (options?.onSuccess) options.onSuccess();
-        }),
-        isPending: false,
-      });
-
       const user = userEvent.setup();
       render(<RequestChatPanel requestId="req-123" />);
 
@@ -349,12 +341,13 @@ describe('RequestChatPanel - Organism', () => {
       const { trpc } = await import('@/lib/trpc');
       const { toast } = await import('sonner');
 
-      (trpc.chat.getOrCreateRequestConversation.useMutation as any).mockReturnValue({
-        mutate: vi.fn((data, options: any) => {
+      // Mock to trigger error
+      (trpc.chat.getOrCreateRequestConversation.useMutation as any).mockImplementation((options: any) => ({
+        mutate: vi.fn(() => {
           if (options?.onError) options.onError({ message: 'Failed to create conversation' });
         }),
         isPending: false,
-      });
+      }));
 
       const user = userEvent.setup();
       render(<RequestChatPanel requestId="req-123" />);
@@ -370,12 +363,13 @@ describe('RequestChatPanel - Organism', () => {
       const { trpc } = await import('@/lib/trpc');
       const { toast } = await import('sonner');
 
-      (trpc.chat.replyToMessage.useMutation as any).mockReturnValue({
-        mutate: vi.fn((data, options: any) => {
+      // Mock to trigger error
+      (trpc.chat.replyToMessage.useMutation as any).mockImplementation((options: any) => ({
+        mutate: vi.fn(() => {
           if (options?.onError) options.onError({ message: 'Failed to send message' });
         }),
         isPending: false,
-      });
+      }));
 
       const user = userEvent.setup();
       render(<RequestChatPanel requestId="req-123" />);
@@ -398,7 +392,7 @@ describe('RequestChatPanel - Organism', () => {
   });
 
   describe('Loading States', () => {
-    it('should show loading spinner on toggle button when creating conversation', () => {
+    it('should show loading spinner on toggle button when creating conversation', async () => {
       const { trpc } = await import('@/lib/trpc');
 
       (trpc.chat.getOrCreateRequestConversation.useMutation as any).mockReturnValue({

@@ -48,6 +48,7 @@ const translations = {
 describe('NewPasswordFormOrganism - Organism', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.useRealTimers();
     (global.fetch as any).mockClear();
     mockSearchParams.set('token', 'valid-token-123');
     delete (window as any).location;
@@ -56,6 +57,7 @@ describe('NewPasswordFormOrganism - Organism', () => {
 
   afterEach(() => {
     vi.clearAllMocks();
+    vi.useRealTimers();
   });
 
   describe('Rendering', () => {
@@ -204,8 +206,6 @@ describe('NewPasswordFormOrganism - Organism', () => {
     });
 
     it('should redirect to login after success', async () => {
-      vi.useFakeTimers();
-
       const mockResponse = {
         ok: true,
         json: () => Promise.resolve({ message: 'Success' }),
@@ -222,11 +222,10 @@ describe('NewPasswordFormOrganism - Organism', () => {
         expect(screen.getByText('Password reset successfully')).toBeInTheDocument();
       });
 
-      vi.advanceTimersByTime(2000);
-
-      expect(window.location.href).toBe('/en/auth/login');
-
-      vi.useRealTimers();
+      // Wait for the redirect (2000ms + buffer)
+      await waitFor(() => {
+        expect(window.location.href).toBe('/en/auth/login');
+      }, { timeout: 3000 });
     });
   });
 

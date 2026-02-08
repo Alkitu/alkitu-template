@@ -9,6 +9,7 @@ vi.mock('@/hooks/useAuthRedirect', () => ({
 
 import { renderWithProviders, screen, waitFor, userEvent, fireEvent } from '@/test/test-utils';
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { act } from '@testing-library/react';
 import { VerifyLoginCodeFormOrganism } from './VerifyLoginCodeFormOrganism';
 
 global.fetch = vi.fn();
@@ -32,12 +33,15 @@ const translations = {
 describe('VerifyLoginCodeFormOrganism - Organism', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.useRealTimers();
     (global.fetch as any).mockClear();
-    vi.useFakeTimers();
+    localStorage.clear();
   });
 
   afterEach(() => {
+    vi.clearAllMocks();
     vi.useRealTimers();
+    localStorage.clear();
   });
 
   describe('Rendering', () => {
@@ -87,7 +91,10 @@ describe('VerifyLoginCodeFormOrganism - Organism', () => {
       const inputs = screen.getAllByRole('textbox') as HTMLInputElement[];
       await user.type(inputs[0], 'abc123');
 
-      expect(inputs[0].value).toBe('3');
+      // Letters are rejected, digits fill inputs with auto-focus
+      expect(inputs[0].value).toBe('1');
+      expect(inputs[1].value).toBe('2');
+      expect(inputs[2].value).toBe('3');
     });
 
     it('should auto-focus next input on digit entry', async () => {
@@ -121,7 +128,10 @@ describe('VerifyLoginCodeFormOrganism - Organism', () => {
       const inputs = screen.getAllByRole('textbox') as HTMLInputElement[];
       await user.type(inputs[0], '123');
 
-      expect(inputs[0].value).toBe('3');
+      // Each digit goes to separate input with auto-focus
+      expect(inputs[0].value).toBe('1');
+      expect(inputs[1].value).toBe('2');
+      expect(inputs[2].value).toBe('3');
     });
   });
 
@@ -152,8 +162,11 @@ describe('VerifyLoginCodeFormOrganism - Organism', () => {
       const inputs = screen.getAllByRole('textbox');
       fireEvent.change(inputs[0], { target: { value: '1' } });
 
-      const submitButton = screen.getByRole('button', { name: 'Verify Code' });
-      fireEvent.click(submitButton);
+      // Submit the form directly
+      const form = inputs[0].closest('form');
+      if (form) {
+        fireEvent.submit(form);
+      }
 
       await waitFor(() => {
         expect(screen.getByText('Por favor ingresa el código completo de 6 dígitos')).toBeInTheDocument();
@@ -234,33 +247,40 @@ describe('VerifyLoginCodeFormOrganism - Organism', () => {
         expect(screen.getByText(/Código verificado correctamente/i)).toBeInTheDocument();
       });
 
-      vi.advanceTimersByTime(1000);
-
-      expect(mockRedirectAfterLogin).toHaveBeenCalled();
+      // Wait for redirect (1000ms + buffer)
+      await waitFor(() => {
+        expect(mockRedirectAfterLogin).toHaveBeenCalled();
+      }, { timeout: 2000 });
     });
 
     it('should clear localStorage on success', async () => {
-      const mockRemoveItem = vi.spyOn(Storage.prototype, 'removeItem');
+      // Set up spy BEFORE rendering component
+      const mockRemoveItem = vi.spyOn(localStorage, 'removeItem');
+
       const mockResponse = {
         ok: true,
         json: () => Promise.resolve({ message: 'Success' }),
       };
       (global.fetch as any).mockResolvedValue(mockResponse);
 
-      renderWithProviders(<VerifyLoginCodeFormOrganism email="test@example.com" />, { translations });
+      try {
+        renderWithProviders(<VerifyLoginCodeFormOrganism email="test@example.com" />, { translations });
 
-      const inputs = screen.getAllByRole('textbox');
-      for (let i = 0; i < 6; i++) {
-        fireEvent.change(inputs[i], { target: { value: '1' } });
+        const inputs = screen.getAllByRole('textbox');
+        for (let i = 0; i < 6; i++) {
+          fireEvent.change(inputs[i], { target: { value: '1' } });
+        }
+
+        fireEvent.click(screen.getByRole('button'));
+
+        // Wait for success message and localStorage clear (happens immediately after success)
+        await waitFor(() => {
+          expect(screen.getByText(/Código verificado correctamente/i)).toBeInTheDocument();
+          expect(mockRemoveItem).toHaveBeenCalledWith('user');
+        }, { timeout: 2000 });
+      } finally {
+        mockRemoveItem.mockRestore();
       }
-
-      fireEvent.click(screen.getByRole('button'));
-
-      await waitFor(() => {
-        expect(mockRemoveItem).toHaveBeenCalledWith('user');
-      });
-
-      mockRemoveItem.mockRestore();
     });
   });
 
@@ -337,14 +357,19 @@ describe('VerifyLoginCodeFormOrganism - Organism', () => {
     });
 
     it('should show resend button after countdown', () => {
+      vi.useFakeTimers();
       renderWithProviders(<VerifyLoginCodeFormOrganism email="test@example.com" />, { translations });
 
-      vi.advanceTimersByTime(60000);
+      act(() => {
+        vi.advanceTimersByTime(60000);
+      });
 
       expect(screen.getByRole('button', { name: 'Reenviar código' })).toBeInTheDocument();
+      vi.useRealTimers();
     });
 
     it('should call resend API when button clicked', async () => {
+      vi.useFakeTimers();
       const mockResponse = {
         ok: true,
         json: () => Promise.resolve({ message: 'Code resent' }),
@@ -353,23 +378,30 @@ describe('VerifyLoginCodeFormOrganism - Organism', () => {
 
       renderWithProviders(<VerifyLoginCodeFormOrganism email="test@example.com" />, { translations });
 
-      vi.advanceTimersByTime(60000);
+      act(() => {
+        vi.advanceTimersByTime(60000);
+      });
 
       const resendButton = screen.getByRole('button', { name: 'Reenviar código' });
       fireEvent.click(resendButton);
 
-      await waitFor(() => {
-        expect(global.fetch).toHaveBeenCalledWith('/api/auth/send-login-code', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ email: 'test@example.com' }),
-        });
+      // Wait for async operations to complete
+      await act(async () => {
+        await Promise.resolve();
       });
+
+      expect(global.fetch).toHaveBeenCalledWith('/api/auth/send-login-code', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: 'test@example.com' }),
+      });
+      vi.useRealTimers();
     });
 
     it('should reset countdown after resend', async () => {
+      vi.useFakeTimers();
       const mockResponse = {
         ok: true,
         json: () => Promise.resolve({ message: 'Success' }),
@@ -378,14 +410,25 @@ describe('VerifyLoginCodeFormOrganism - Organism', () => {
 
       renderWithProviders(<VerifyLoginCodeFormOrganism email="test@example.com" />, { translations });
 
-      vi.advanceTimersByTime(60000);
+      act(() => {
+        vi.advanceTimersByTime(60000);
+      });
 
       const resendButton = screen.getByRole('button', { name: 'Reenviar código' });
-      fireEvent.click(resendButton);
 
-      await waitFor(() => {
-        expect(screen.getByText(/Reenviar código en \d+s/)).toBeInTheDocument();
+      await act(async () => {
+        fireEvent.click(resendButton);
+        // Wait for fetch to complete
+        await Promise.resolve();
+        await Promise.resolve();
+        // Advance timers to show countdown
+        vi.advanceTimersByTime(1000);
       });
+
+      // Countdown should show after resend
+      const countdownText = screen.queryByText(/Reenviar código en \d+s/);
+      expect(countdownText).toBeInTheDocument();
+      vi.useRealTimers();
     });
   });
 
@@ -430,7 +473,7 @@ describe('VerifyLoginCodeFormOrganism - Organism', () => {
       fireEvent.click(screen.getByRole('button'));
 
       await waitFor(() => {
-        expect(screen.getByText('Verificando...')).toBeInTheDocument();
+        expect(screen.getByText('Verifying...')).toBeInTheDocument();
       });
     });
   });

@@ -523,13 +523,17 @@ async function registerUser(
 ) {
   await page.goto('http://localhost:3000/es/auth/register');
   await page.waitForLoadState('networkidle');
+  await page.waitForTimeout(2000); // Wait for page to fully render
 
-  await page.getByLabel(/nombre/i).first().fill(user.firstname);
-  await page.getByLabel(/apellido/i).fill(user.lastname);
-  await page.getByLabel(/correo/i).fill(user.email);
-  await page.getByLabel(/contraseña/i).first().fill(user.password);
-  await page.getByLabel(/confirmar/i).fill(user.password);
-  await page.getByRole('checkbox').click();
+  // Use placeholder selectors instead of label selectors
+  await page.getByPlaceholder(/nombre/i).first().fill(user.firstname);
+  await page.getByPlaceholder(/apellido/i).fill(user.lastname);
+  await page.getByPlaceholder(/correo electrónico/i).fill(user.email);
+  await page.locator('input[type="password"]').first().fill(user.password);
+  await page.locator('input[type="password"]').last().fill(user.password);
+
+  // Click checkbox using text label
+  await page.getByText(/acepto los términos/i).click();
   await page.getByRole('button', { name: /registrar/i }).click();
 
   await page.waitForURL('**/auth/login', { timeout: 10000 });
@@ -550,9 +554,12 @@ async function loginUser(
     await page.waitForLoadState('networkidle');
   }
 
-  await page.getByLabel(/correo|email/i).fill(credentials.email);
-  await page.getByRole('textbox', { name: /contraseña/i }).fill(credentials.password);
-  await page.getByRole('button', { name: /iniciar|login/i }).click();
+  await page.waitForTimeout(2000); // Wait for page to fully render
+
+  // Use placeholder selectors
+  await page.getByPlaceholder(/correo electrónico/i).fill(credentials.email);
+  await page.getByPlaceholder(/contraseña/i).fill(credentials.password);
+  await page.getByRole('button', { name: /iniciar sesión con correo/i }).click();
 
   await page.waitForURL(/\/(onboarding|dashboard)/, { timeout: 10000 });
 

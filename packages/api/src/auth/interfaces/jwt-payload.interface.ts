@@ -1,4 +1,4 @@
-import { UserRole } from '@prisma/client';
+import { UserRole, UserStatus } from '@prisma/client';
 
 /**
  * JWT Payload Interface (ALI-115)
@@ -27,4 +27,10 @@ export interface JwtPayload {
 
   /** Email verification status */
   emailVerified: boolean;
+
+  /** Account status (PENDING, VERIFIED, SUSPENDED, ANONYMIZED) */
+  status: UserStatus;
+
+  /** Session active state - true if currently logged in */
+  isActive: boolean;
 }

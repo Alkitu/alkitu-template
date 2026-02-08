@@ -59,6 +59,8 @@ describe('JwtStrategy', () => {
         lastname: mockUser.lastname,
         profileComplete: mockUser.profileComplete,
         emailVerified: !!mockUser.emailVerified,
+        status: mockUser.status,
+        isActive: mockUser.isActive,
       };
 
       usersService.findOne.mockResolvedValue(mockUser as any);
@@ -86,6 +88,8 @@ describe('JwtStrategy', () => {
         lastname: 'User',
         profileComplete: false,
         emailVerified: false,
+        status: mockUser.status,
+        isActive: mockUser.isActive,
       };
 
       usersService.findOne.mockResolvedValue(null as any);
@@ -107,6 +111,8 @@ describe('JwtStrategy', () => {
         lastname: mockUser.lastname,
         profileComplete: mockUser.profileComplete,
         emailVerified: !!mockUser.emailVerified,
+        status: mockUser.status,
+        isActive: mockUser.isActive,
       };
 
       usersService.findOne.mockResolvedValue(mockUser as any);
@@ -138,6 +144,8 @@ describe('JwtStrategy', () => {
         lastname: mockUser.lastname,
         profileComplete: mockUser.profileComplete,
         emailVerified: !!mockUser.emailVerified,
+        status: mockUser.status,
+        isActive: mockUser.isActive,
       };
 
       usersService.findOne.mockResolvedValue(mockUser as any);
@@ -170,6 +178,8 @@ describe('JwtStrategy', () => {
         lastname: mockUser.lastname,
         profileComplete: mockUser.profileComplete,
         emailVerified: !!mockUser.emailVerified,
+        status: mockUser.status,
+        isActive: mockUser.isActive,
       };
 
       usersService.findOne.mockResolvedValue(mockUser as any);

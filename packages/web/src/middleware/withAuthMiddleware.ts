@@ -35,11 +35,63 @@ export function withAuthMiddleware(next: NextMiddleware): NextMiddleware {
       request.headers.get('cookie'),
     );
 
-    // Si es una ruta de API, archivos estáticos o login, continuar
+    // Check if user is already authenticated and trying to access auth pages
+    if (isAuthRoute(pathname)) {
+      const authCookie = request.cookies.get('auth-token');
+
+      if (authCookie) {
+        // User is authenticated - redirect to their dashboard
+        try {
+          // Decode JWT to get role
+          const base64Url = authCookie.value.split('.')[1];
+          const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+          const jsonPayload = decodeURIComponent(
+            atob(base64)
+              .split('')
+              .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+              .join('')
+          );
+          const tokenPayload = JSON.parse(jsonPayload);
+          const userRole = (tokenPayload.role || tokenPayload.user?.role)?.toUpperCase();
+
+          // Determine dashboard URL based on role
+          const locale = getLocaleFromPath(pathname) || getLocaleFromCookie(request) || DEFAULT_LOCALE;
+          let dashboardUrl: string;
+
+          switch (userRole) {
+            case 'CLIENT':
+            case 'LEAD':
+            case 'USER':
+              dashboardUrl = `/${locale}/client/dashboard`;
+              break;
+            case 'EMPLOYEE':
+              dashboardUrl = `/${locale}/employee/dashboard`;
+              break;
+            case 'ADMIN':
+            case 'MODERATOR':
+              dashboardUrl = `/${locale}/admin/dashboard`;
+              break;
+            default:
+              dashboardUrl = `/${locale}/client/dashboard`;
+          }
+
+          console.log('[AUTH MIDDLEWARE] Authenticated user accessing auth page, redirecting to:', dashboardUrl);
+          return NextResponse.redirect(new URL(dashboardUrl, request.url));
+        } catch (error) {
+          console.error('[AUTH MIDDLEWARE] Error decoding token for auth route protection:', error);
+          // If token is invalid, continue to auth page normally
+        }
+      }
+
+      // User is not authenticated or token is invalid - allow access to auth pages
+      console.log('[AUTH MIDDLEWARE] Skipping auth check for:', pathname);
+      return next(request, event);
+    }
+
+    // Si es una ruta de API, archivos estáticos, continuar
     if (
       pathname.match(/^\/(?:api|_next|.*\..*)/) ||
-      pathname === '/not-found' ||
-      isAuthRoute(pathname)
+      pathname === '/not-found'
     ) {
       console.log('[AUTH MIDDLEWARE] Skipping auth check for:', pathname);
       return next(request, event);

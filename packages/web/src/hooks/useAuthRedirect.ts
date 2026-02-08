@@ -69,7 +69,7 @@ export function useAuthRedirect() {
           case 'LEAD':
           case 'USER':
             // Client dashboard
-            dashboardUrl = `/${currentLocale}/dashboard`;
+            dashboardUrl = `/${currentLocale}/client/dashboard`;
             break;
           case 'EMPLOYEE':
             // Employee dashboard

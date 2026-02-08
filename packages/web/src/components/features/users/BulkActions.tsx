@@ -47,16 +47,16 @@ export function BulkActions({
           Set as Client
         </DropdownMenuItem>
         <DropdownMenuItem
-          onClick={() => onBulkUpdateStatus(selectedUserIds, UserStatus.ACTIVE)}
+          onClick={() => onBulkUpdateStatus(selectedUserIds, UserStatus.VERIFIED)}
         >
-          Activate Selected
+          Mark as Verified
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() =>
             onBulkUpdateStatus(selectedUserIds, UserStatus.SUSPENDED)
           }
         >
-          Deactivate Selected
+          Suspend Selected
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

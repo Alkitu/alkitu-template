@@ -11,6 +11,7 @@ import { Checkbox } from '@/components/primitives/ui/checkbox';
 import { Button } from '@/components/primitives/ui/button';
 import { User } from '@alkitu/shared';
 import { BulkActions } from './BulkActions';
+import { StatusBadge } from '@/components/atoms/StatusBadge';
 
 interface UserTableProps {
   users: User[];
@@ -73,10 +74,14 @@ export function UserTable({
                   }
                 />
               </TableCell>
-              <TableCell>{user.name}</TableCell>
+              <TableCell>
+                {user.firstname} {user.lastname}
+              </TableCell>
               <TableCell>{user.email}</TableCell>
               <TableCell>{user.role}</TableCell>
-              <TableCell>{user.status}</TableCell>
+              <TableCell>
+                <StatusBadge status={user.status} isActive={user.isActive} />
+              </TableCell>
               <TableCell>
                 <Button onClick={() => onResetPassword(user.id)}>
                   Reset Password

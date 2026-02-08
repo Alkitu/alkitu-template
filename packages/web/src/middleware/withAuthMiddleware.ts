@@ -296,6 +296,30 @@ export function withAuthMiddleware(next: NextMiddleware): NextMiddleware {
       '[AUTH MIDDLEWARE] User role matches required roles (hierarchy checked). Allowing access.',
     );
 
+    // Check for PENDING status - redirect to complete verification/onboarding
+    const userStatus = tokenPayload.status;
+    if (userStatus === 'PENDING') {
+      const emailVerified = tokenPayload.emailVerified;
+      const profileComplete = tokenPayload.profileComplete;
+      const locale = getLocaleFromPath(pathname) ||
+                     getLocaleFromCookie(request) ||
+                     DEFAULT_LOCALE;
+
+      // Redirect to email verification if not verified
+      if (!emailVerified) {
+        const verifyUrl = new URL(`/${locale}/auth/verify-email`, request.url);
+        console.log('[AUTH MIDDLEWARE] PENDING user - redirecting to email verification');
+        return NextResponse.redirect(verifyUrl);
+      }
+
+      // Redirect to onboarding if email verified but profile incomplete
+      if (!profileComplete) {
+        const onboardingUrl = new URL(`/${locale}/onboarding`, request.url);
+        console.log('[AUTH MIDDLEWARE] PENDING user - redirecting to onboarding');
+        return NextResponse.redirect(onboardingUrl);
+      }
+    }
+
     // Role-based dashboard redirects
     // If user is accessing the generic /dashboard route, redirect to role-specific dashboard
     if (cleanPath === '/dashboard' || cleanPath === '/dashboard/') {

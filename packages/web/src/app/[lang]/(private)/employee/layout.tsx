@@ -7,6 +7,13 @@ import Dashboard from '@/components/features/dashboard/dashboard';
  * Wraps all EMPLOYEE role routes with the dashboard layout.
  * Role protection is handled by middleware.
  *
+ * Provides employee-specific navigation:
+ * - Panel Principal (Dashboard)
+ * - Solicitudes Asignadas (Assigned Requests)
+ * - Ubicaciones (Locations)
+ * - Notificaciones (Notifications)
+ * - Mi Perfil (Profile)
+ *
  * @param children - Child routes to render within the dashboard
  */
 export default function EmployeeLayout({
@@ -14,5 +21,5 @@ export default function EmployeeLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <Dashboard>{children}</Dashboard>;
+  return <Dashboard userRole="employee">{children}</Dashboard>;
 }

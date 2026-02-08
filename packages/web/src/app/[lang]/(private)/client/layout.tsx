@@ -7,6 +7,14 @@ import Dashboard from '@/components/features/dashboard/dashboard';
  * Wraps all CLIENT role routes with the dashboard layout.
  * Role protection is handled by middleware.
  *
+ * Provides client-specific navigation:
+ * - Panel Principal (Dashboard)
+ * - Nueva Solicitud (New Request)
+ * - Mis Solicitudes (My Requests)
+ * - Ubicaciones (Locations)
+ * - Notificaciones (Notifications)
+ * - Mi Perfil (Profile)
+ *
  * @param children - Child routes to render within the dashboard
  */
 export default function ClientLayout({
@@ -14,5 +22,5 @@ export default function ClientLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <Dashboard>{children}</Dashboard>;
+  return <Dashboard userRole="client">{children}</Dashboard>;
 }

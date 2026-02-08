@@ -26,6 +26,9 @@ import {
   Folder,
   Wrench,
   Hash,
+  Plus,
+  ClipboardList,
+  MapPin,
 } from 'lucide-react';
 import { AppSidebar } from '../../primitives/app-sidebar';
 import Header from '../../primitives/ui/header';
@@ -49,12 +52,165 @@ import { useFeatureFlag } from '@/hooks/useFeatureFlag';
 const getTransformedData = (
   t: any,
   pathname: string,
-  userRole: 'admin' | 'user' = 'admin',
+  userRole: 'admin' | 'client' | 'employee' | 'user' = 'admin',
   featureFlags?: {
     supportChatEnabled?: boolean;
     teamChannelsEnabled?: boolean;
   }
 ) => {
+  // Client navigation
+  if (userRole === 'client') {
+    const navItems = [
+      {
+        title: t?.('nav.dashboard') || 'Panel Principal',
+        url: '/client/dashboard',
+        icon: Home,
+        items: [],
+        section: 'overview',
+      },
+      {
+        title: t?.('nav.newRequest') || 'Nueva Solicitud',
+        url: '/client/requests/new',
+        icon: Plus,
+        section: 'management',
+        items: [],
+      },
+      {
+        title: t?.('nav.myRequests') || 'Mis Solicitudes',
+        url: '/client/requests',
+        icon: ClipboardList,
+        section: 'management',
+        items: [
+          {
+            title: t?.('nav.allRequests') || 'Todas las Solicitudes',
+            url: '/client/requests',
+          },
+          {
+            title: t?.('nav.activeRequests') || 'Solicitudes Activas',
+            url: '/client/requests?status=active',
+          },
+          {
+            title: t?.('nav.completedRequests') || 'Solicitudes Completadas',
+            url: '/client/requests?status=completed',
+          },
+        ],
+      },
+      {
+        title: t?.('nav.locations') || 'Ubicaciones',
+        url: '/locations',
+        icon: MapPin,
+        section: 'management',
+        items: [],
+      },
+      {
+        title: t?.('nav.notifications') || 'Notificaciones',
+        url: '/client/notifications',
+        icon: Bell,
+        section: 'communication',
+        items: [],
+      },
+      {
+        title: t?.('nav.profile') || 'Mi Perfil',
+        url: '/profile',
+        icon: User,
+        section: 'settings',
+        items: [
+          {
+            title: t?.('nav.account') || 'Cuenta',
+            url: '/profile',
+          },
+          {
+            title: t?.('nav.settings') || 'Configuración',
+            url: '/settings',
+          },
+        ],
+      },
+    ];
+
+    return {
+      navMain: navItems,
+      user: {
+        id: '',
+        name: '',
+        email: '',
+        avatar: '/avatars/default.jpg',
+      },
+    };
+  }
+
+  // Employee navigation
+  if (userRole === 'employee') {
+    const navItems = [
+      {
+        title: t?.('nav.dashboard') || 'Panel Principal',
+        url: '/employee/dashboard',
+        icon: Home,
+        items: [],
+        section: 'overview',
+      },
+      {
+        title: t?.('nav.assignedRequests') || 'Solicitudes Asignadas',
+        url: '/employee/requests',
+        icon: ClipboardList,
+        section: 'management',
+        items: [
+          {
+            title: t?.('nav.allRequests') || 'Todas las Solicitudes',
+            url: '/employee/requests',
+          },
+          {
+            title: t?.('nav.inProgress') || 'En Proceso',
+            url: '/employee/requests?status=ongoing',
+          },
+          {
+            title: t?.('nav.pending') || 'Pendientes',
+            url: '/employee/requests?status=pending',
+          },
+        ],
+      },
+      {
+        title: t?.('nav.locations') || 'Ubicaciones',
+        url: '/locations',
+        icon: MapPin,
+        section: 'management',
+        items: [],
+      },
+      {
+        title: t?.('nav.notifications') || 'Notificaciones',
+        url: '/employee/notifications',
+        icon: Bell,
+        section: 'communication',
+        items: [],
+      },
+      {
+        title: t?.('nav.profile') || 'Mi Perfil',
+        url: '/profile',
+        icon: User,
+        section: 'settings',
+        items: [
+          {
+            title: t?.('nav.account') || 'Cuenta',
+            url: '/profile',
+          },
+          {
+            title: t?.('nav.settings') || 'Configuración',
+            url: '/settings',
+          },
+        ],
+      },
+    ];
+
+    return {
+      navMain: navItems,
+      user: {
+        id: '',
+        name: '',
+        email: '',
+        avatar: '/avatars/default.jpg',
+      },
+    };
+  }
+
   // Admin navigation
   if (userRole === 'admin') {
     const navItems = [
@@ -243,7 +399,7 @@ const getTransformedData = (
 interface DashboardProps {
   children?: React.ReactNode;
   showWelcome?: boolean;
-  userRole?: 'admin' | 'user';
+  userRole?: 'admin' | 'client' | 'employee' | 'user';
 }
 
 function Dashboard({ children, showWelcome = false, userRole = 'admin' }: DashboardProps) {
@@ -275,9 +431,14 @@ function Dashboard({ children, showWelcome = false, userRole = 'admin' }: Dashbo
 
   // Determine header type and home label based on role
   const headerType = userRole === 'admin' ? 'admin' : 'user';
-  const homeLabel = userRole === 'admin'
-    ? (t?.('nav.dashboard') || 'Dashboard')
-    : (t?.('nav.home') || 'Inicio');
+  const homeLabel =
+    userRole === 'admin'
+      ? (t?.('nav.dashboard') || 'Dashboard')
+      : userRole === 'client'
+        ? (t?.('nav.clientDashboard') || 'Panel de Cliente')
+        : userRole === 'employee'
+          ? (t?.('nav.employeeDashboard') || 'Panel de Empleado')
+          : (t?.('nav.home') || 'Inicio');
 
   return (
     <SidebarProvider defaultOpen={false}>

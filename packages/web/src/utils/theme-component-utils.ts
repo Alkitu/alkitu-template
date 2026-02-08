@@ -16,12 +16,12 @@ export const applyThemeOverride = (
   }
 
   // Generate scoped CSS variables for this component instance
-  const scopedVars: React.CSSProperties = {};
+  const scopedVars: Record<string, string> = {};
   const scopePrefix = componentName ? `${componentName}-` : '';
-  
+
   Object.entries(themeOverride).forEach(([key, value]) => {
     const cssVar = key.startsWith('--') ? key : `--${scopePrefix}${key}`;
-    scopedVars[cssVar as any] = value;
+    scopedVars[cssVar] = value;
   });
 
   return {

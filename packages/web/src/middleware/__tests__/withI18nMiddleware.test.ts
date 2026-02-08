@@ -56,8 +56,8 @@ describe('i18n Middleware Integration Tests', () => {
       const middleware = withI18nMiddleware(mockNext);
       const response = await middleware(request, event);
 
-      expect(response.status).toBe(302);
-      expect(response.headers.get('Location')).toBe('http://localhost:3000/es');
+      expect(response?.status).toBe(302);
+      expect(response?.headers.get('Location')).toBe('http://localhost:3000/es');
 
       // Verify cookie is set
       const setCookieHeader = response.headers.get('Set-Cookie');
@@ -74,8 +74,8 @@ describe('i18n Middleware Integration Tests', () => {
       const middleware = withI18nMiddleware(mockNext);
       const response = await middleware(request, event);
 
-      expect(response.status).toBe(302);
-      expect(response.headers.get('Location')).toBe('http://localhost:3000/en');
+      expect(response?.status).toBe(302);
+      expect(response?.headers.get('Location')).toBe('http://localhost:3000/en');
     });
 
     it('should use default locale when cookie has invalid locale', async () => {
@@ -87,8 +87,8 @@ describe('i18n Middleware Integration Tests', () => {
       const middleware = withI18nMiddleware(mockNext);
       const response = await middleware(request, event);
 
-      expect(response.status).toBe(302);
-      expect(response.headers.get('Location')).toBe('http://localhost:3000/es');
+      expect(response?.status).toBe(302);
+      expect(response?.headers.get('Location')).toBe('http://localhost:3000/es');
     });
   });
 
@@ -100,8 +100,8 @@ describe('i18n Middleware Integration Tests', () => {
       const middleware = withI18nMiddleware(mockNext);
       const response = await middleware(request, event);
 
-      expect(response.status).toBe(302);
-      expect(response.headers.get('Location')).toBe(
+      expect(response?.status).toBe(302);
+      expect(response?.headers.get('Location')).toBe(
         'http://localhost:3000/es/dashboard',
       );
     });
@@ -115,8 +115,8 @@ describe('i18n Middleware Integration Tests', () => {
       const middleware = withI18nMiddleware(mockNext);
       const response = await middleware(request, event);
 
-      expect(response.status).toBe(302);
-      expect(response.headers.get('Location')).toBe(
+      expect(response?.status).toBe(302);
+      expect(response?.headers.get('Location')).toBe(
         'http://localhost:3000/en/profile',
       );
     });
@@ -130,8 +130,8 @@ describe('i18n Middleware Integration Tests', () => {
       const middleware = withI18nMiddleware(mockNext);
       const response = await middleware(request, event);
 
-      expect(response.status).toBe(302);
-      expect(response.headers.get('Location')).toBe(
+      expect(response?.status).toBe(302);
+      expect(response?.headers.get('Location')).toBe(
         'http://localhost:3000/es/dashboard?tab=settings',
       );
     });
@@ -194,7 +194,7 @@ describe('i18n Middleware Integration Tests', () => {
       const middleware = withI18nMiddleware(mockNext);
       const response = await middleware(request, event);
 
-      expect(response.headers.get('Location')).toBe(
+      expect(response?.headers.get('Location')).toBe(
         'http://localhost:3000/en/dashboard',
       );
     });
@@ -208,7 +208,7 @@ describe('i18n Middleware Integration Tests', () => {
       const middleware = withI18nMiddleware(mockNext);
       const response = await middleware(request, event);
 
-      expect(response.headers.get('Location')).toBe(
+      expect(response?.headers.get('Location')).toBe(
         'http://localhost:3000/es/dashboard',
       );
     });
@@ -293,7 +293,7 @@ describe('i18n Middleware Integration Tests', () => {
       const middleware = withI18nMiddleware(mockNext);
       const response = await middleware(request, event);
 
-      expect(response.status).toBe(302);
+      expect(response?.status).toBe(302);
     });
 
     it('should use 302 for path without locale redirects', async () => {
@@ -303,7 +303,7 @@ describe('i18n Middleware Integration Tests', () => {
       const middleware = withI18nMiddleware(mockNext);
       const response = await middleware(request, event);
 
-      expect(response.status).toBe(302);
+      expect(response?.status).toBe(302);
     });
   });
 
@@ -343,7 +343,7 @@ describe('i18n Middleware Integration Tests', () => {
       const response = await middleware(request, event);
 
       // Should use default locale when cookie is empty
-      expect(response.headers.get('Location')).toBe(
+      expect(response?.headers.get('Location')).toBe(
         'http://localhost:3000/es',
       );
     });
@@ -358,7 +358,7 @@ describe('i18n Middleware Integration Tests', () => {
       const response = await middleware(request, event);
 
       // Should use default locale
-      expect(response.headers.get('Location')).toBe(
+      expect(response?.headers.get('Location')).toBe(
         'http://localhost:3000/es',
       );
     });
@@ -370,8 +370,8 @@ describe('i18n Middleware Integration Tests', () => {
       const middleware = withI18nMiddleware(mockNext);
       const response = await middleware(request, event);
 
-      expect(response.status).toBe(302);
-      expect(response.headers.get('Location')).toBe(
+      expect(response?.status).toBe(302);
+      expect(response?.headers.get('Location')).toBe(
         'http://localhost:3000/es/dashboard/',
       );
     });
@@ -385,8 +385,9 @@ describe('i18n Middleware Integration Tests', () => {
       const middleware = withI18nMiddleware(mockNext);
       const response = await middleware(request, event);
 
-      expect(response.status).toBe(302);
-      expect(response.headers.get('Location')).toBe(
+      expect(response).toBeDefined();
+      expect(response?.status).toBe(302);
+      expect(response?.headers.get('Location')).toBe(
         'http://localhost:3000/es/admin/users/settings/profile',
       );
     });

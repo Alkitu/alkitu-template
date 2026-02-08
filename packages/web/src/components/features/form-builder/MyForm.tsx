@@ -132,8 +132,6 @@ export default function MyForm() {
     expiryYear: '',
     cvv: '',
     cvvLabel: 'CVC'
-    as
-    const
   })
   const form = useForm < z.infer < typeof formSchema >> ({
     resolver: zodResolver(formSchema),

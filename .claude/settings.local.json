@@ -106,7 +106,8 @@
       "Bash(then echo \"✅ API built successfully\")",
       "Bash(else echo \"❌ Build failed or still running\")",
       "Bash(npx playwright install:*)",
-      "Bash(docker exec:*)"
+      "Bash(docker exec:*)",
+      "Bash(git rm:*)"
     ],
     "deny": [],
     "ask": []

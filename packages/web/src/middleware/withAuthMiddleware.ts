@@ -211,6 +211,7 @@ export function withAuthMiddleware(next: NextMiddleware): NextMiddleware {
 
     // Get user role from JWT token instead of making API calls
     let userRole: string | undefined;
+    let tokenPayload: any = null;
     let currentAccessToken = authCookie?.value;
 
     if (currentAccessToken) {
@@ -225,7 +226,7 @@ export function withAuthMiddleware(next: NextMiddleware): NextMiddleware {
           return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
         }).join(''));
         console.log('[AUTH MIDDLEWARE] JSON Payload (decoded):', jsonPayload);
-        const tokenPayload = JSON.parse(jsonPayload);
+        tokenPayload = JSON.parse(jsonPayload);
         userRole = tokenPayload.role || tokenPayload.user?.role;
         
         console.log('[AUTH MIDDLEWARE] User role from token:', userRole);
@@ -245,10 +246,10 @@ export function withAuthMiddleware(next: NextMiddleware): NextMiddleware {
             const newJsonPayload = decodeURIComponent(atob(newBase64).split('').map(function(c) {
               return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
             }).join(''));
-            const newTokenPayload = JSON.parse(newJsonPayload);
-            userRole = newTokenPayload.role || newTokenPayload.user?.role;
+            tokenPayload = JSON.parse(newJsonPayload);
+            userRole = tokenPayload.role || tokenPayload.user?.role;
             console.log('[AUTH MIDDLEWARE] User role from refreshed token:', userRole);
-            console.log('[AUTH MIDDLEWARE] Refreshed token expiration (exp):', newTokenPayload.exp);
+            console.log('[AUTH MIDDLEWARE] Refreshed token expiration (exp):', tokenPayload.exp);
           } else {
             console.log('[AUTH MIDDLEWARE] Refresh failed. Redirecting to login.');
             return redirectToLogin(request);
@@ -297,8 +298,7 @@ export function withAuthMiddleware(next: NextMiddleware): NextMiddleware {
     );
 
     // Check for PENDING status - redirect to complete verification/onboarding
-    const userStatus = tokenPayload.status;
-    if (userStatus === 'PENDING') {
+    if (tokenPayload && tokenPayload.status === 'PENDING') {
       const emailVerified = tokenPayload.emailVerified;
       const profileComplete = tokenPayload.profileComplete;
       const locale = getLocaleFromPath(pathname) ||

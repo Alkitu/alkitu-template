@@ -36,6 +36,7 @@
     "dist",
     "**/*.spec.ts",
     "**/*.test.ts",
+    "**/__tests__/**",
     "src/common/di/modules/infrastructure.module old.ts"
   ]
 }

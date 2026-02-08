@@ -1,21 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import userEvent from '@testing-library/user-event';
-import { VerifyLoginCodeFormOrganism } from './VerifyLoginCodeFormOrganism';
-
-// Mock dependencies
-vi.mock('@/context/TranslationsContext', () => ({
-  useTranslations: () => (key: string) => {
-    const translations: Record<string, string> = {
-      'auth.verifyCode.description': 'We sent a 6-digit code to:',
-      'auth.verifyCode.codeLabel': 'Verification Code',
-      'auth.verifyCode.submit': 'Verify Code',
-      'auth.verifyCode.error': 'Error verifying code',
-      'Common.general.loading': 'Verifying...',
-    };
-    return translations[key] || key;
-  },
-}));
+import { vi } from 'vitest';
 
 const mockRedirectAfterLogin = vi.fn();
 vi.mock('@/hooks/useAuthRedirect', () => ({
@@ -24,7 +7,27 @@ vi.mock('@/hooks/useAuthRedirect', () => ({
   }),
 }));
 
+import { renderWithProviders, screen, waitFor, userEvent, fireEvent } from '@/test/test-utils';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { VerifyLoginCodeFormOrganism } from './VerifyLoginCodeFormOrganism';
+
 global.fetch = vi.fn();
+
+const translations = {
+  auth: {
+    verifyCode: {
+      description: 'We sent a 6-digit code to:',
+      codeLabel: 'Verification Code',
+      submit: 'Verify Code',
+      error: 'Error verifying code',
+    },
+  },
+  Common: {
+    general: {
+      loading: 'Verifying...',
+    },
+  },
+};
 
 describe('VerifyLoginCodeFormOrganism - Organism', () => {
   beforeEach(() => {
@@ -39,7 +42,7 @@ describe('VerifyLoginCodeFormOrganism - Organism', () => {
 
   describe('Rendering', () => {
     it('should render all 6 code input fields', () => {
-      render(<VerifyLoginCodeFormOrganism email="test@example.com" />);
+      renderWithProviders(<VerifyLoginCodeFormOrganism email="test@example.com" />, { translations });
 
       const inputs = screen.getAllByRole('textbox');
       expect(inputs).toHaveLength(6);
@@ -51,25 +54,25 @@ describe('VerifyLoginCodeFormOrganism - Organism', () => {
     });
 
     it('should display email address', () => {
-      render(<VerifyLoginCodeFormOrganism email="test@example.com" />);
+      renderWithProviders(<VerifyLoginCodeFormOrganism email="test@example.com" />, { translations });
 
       expect(screen.getByText('test@example.com')).toBeInTheDocument();
     });
 
     it('should render submit button', () => {
-      render(<VerifyLoginCodeFormOrganism email="test@example.com" />);
+      renderWithProviders(<VerifyLoginCodeFormOrganism email="test@example.com" />, { translations });
 
       expect(screen.getByRole('button', { name: 'Verify Code' })).toBeInTheDocument();
     });
 
     it('should show resend countdown', () => {
-      render(<VerifyLoginCodeFormOrganism email="test@example.com" />);
+      renderWithProviders(<VerifyLoginCodeFormOrganism email="test@example.com" />, { translations });
 
       expect(screen.getByText(/Reenviar código en \d+s/)).toBeInTheDocument();
     });
 
     it('should render email change link', () => {
-      render(<VerifyLoginCodeFormOrganism email="test@example.com" />);
+      renderWithProviders(<VerifyLoginCodeFormOrganism email="test@example.com" />, { translations });
 
       const link = screen.getByRole('link', { name: 'Usar otro email' });
       expect(link).toHaveAttribute('href', '/auth/email-login');
@@ -79,7 +82,7 @@ describe('VerifyLoginCodeFormOrganism - Organism', () => {
   describe('Code Input Behavior', () => {
     it('should only accept numeric values', async () => {
       const user = userEvent.setup({ delay: null });
-      render(<VerifyLoginCodeFormOrganism email="test@example.com" />);
+      renderWithProviders(<VerifyLoginCodeFormOrganism email="test@example.com" />, { translations });
 
       const inputs = screen.getAllByRole('textbox') as HTMLInputElement[];
       await user.type(inputs[0], 'abc123');
@@ -89,7 +92,7 @@ describe('VerifyLoginCodeFormOrganism - Organism', () => {
 
     it('should auto-focus next input on digit entry', async () => {
       const user = userEvent.setup({ delay: null });
-      render(<VerifyLoginCodeFormOrganism email="test@example.com" />);
+      renderWithProviders(<VerifyLoginCodeFormOrganism email="test@example.com" />, { translations });
 
       const inputs = screen.getAllByRole('textbox') as HTMLInputElement[];
 
@@ -101,7 +104,7 @@ describe('VerifyLoginCodeFormOrganism - Organism', () => {
     });
 
     it('should handle backspace navigation', async () => {
-      render(<VerifyLoginCodeFormOrganism email="test@example.com" />);
+      renderWithProviders(<VerifyLoginCodeFormOrganism email="test@example.com" />, { translations });
 
       const inputs = screen.getAllByRole('textbox') as HTMLInputElement[];
 
@@ -113,7 +116,7 @@ describe('VerifyLoginCodeFormOrganism - Organism', () => {
 
     it('should limit to one character per input', async () => {
       const user = userEvent.setup({ delay: null });
-      render(<VerifyLoginCodeFormOrganism email="test@example.com" />);
+      renderWithProviders(<VerifyLoginCodeFormOrganism email="test@example.com" />, { translations });
 
       const inputs = screen.getAllByRole('textbox') as HTMLInputElement[];
       await user.type(inputs[0], '123');
@@ -124,7 +127,7 @@ describe('VerifyLoginCodeFormOrganism - Organism', () => {
 
   describe('Form Validation', () => {
     it('should disable submit button when code is incomplete', () => {
-      render(<VerifyLoginCodeFormOrganism email="test@example.com" />);
+      renderWithProviders(<VerifyLoginCodeFormOrganism email="test@example.com" />, { translations });
 
       const submitButton = screen.getByRole('button', { name: 'Verify Code' });
       expect(submitButton).toBeDisabled();
@@ -132,7 +135,7 @@ describe('VerifyLoginCodeFormOrganism - Organism', () => {
 
     it('should enable submit button when code is complete', async () => {
       const user = userEvent.setup({ delay: null });
-      render(<VerifyLoginCodeFormOrganism email="test@example.com" />);
+      renderWithProviders(<VerifyLoginCodeFormOrganism email="test@example.com" />, { translations });
 
       const inputs = screen.getAllByRole('textbox');
       for (let i = 0; i < 6; i++) {
@@ -144,7 +147,7 @@ describe('VerifyLoginCodeFormOrganism - Organism', () => {
     });
 
     it('should show error for incomplete code on submit', async () => {
-      render(<VerifyLoginCodeFormOrganism email="test@example.com" />);
+      renderWithProviders(<VerifyLoginCodeFormOrganism email="test@example.com" />, { translations });
 
       const inputs = screen.getAllByRole('textbox');
       fireEvent.change(inputs[0], { target: { value: '1' } });
@@ -166,7 +169,7 @@ describe('VerifyLoginCodeFormOrganism - Organism', () => {
       };
       (global.fetch as any).mockResolvedValue(mockResponse);
 
-      render(<VerifyLoginCodeFormOrganism email="test@example.com" />);
+      renderWithProviders(<VerifyLoginCodeFormOrganism email="test@example.com" />, { translations });
 
       const inputs = screen.getAllByRole('textbox');
       for (let i = 0; i < 6; i++) {
@@ -197,7 +200,7 @@ describe('VerifyLoginCodeFormOrganism - Organism', () => {
       };
       (global.fetch as any).mockResolvedValue(mockResponse);
 
-      render(<VerifyLoginCodeFormOrganism email="test@example.com" />);
+      renderWithProviders(<VerifyLoginCodeFormOrganism email="test@example.com" />, { translations });
 
       const inputs = screen.getAllByRole('textbox');
       for (let i = 0; i < 6; i++) {
@@ -218,7 +221,7 @@ describe('VerifyLoginCodeFormOrganism - Organism', () => {
       };
       (global.fetch as any).mockResolvedValue(mockResponse);
 
-      render(<VerifyLoginCodeFormOrganism email="test@example.com" />);
+      renderWithProviders(<VerifyLoginCodeFormOrganism email="test@example.com" />, { translations });
 
       const inputs = screen.getAllByRole('textbox');
       for (let i = 0; i < 6; i++) {
@@ -244,7 +247,7 @@ describe('VerifyLoginCodeFormOrganism - Organism', () => {
       };
       (global.fetch as any).mockResolvedValue(mockResponse);
 
-      render(<VerifyLoginCodeFormOrganism email="test@example.com" />);
+      renderWithProviders(<VerifyLoginCodeFormOrganism email="test@example.com" />, { translations });
 
       const inputs = screen.getAllByRole('textbox');
       for (let i = 0; i < 6; i++) {
@@ -269,7 +272,7 @@ describe('VerifyLoginCodeFormOrganism - Organism', () => {
       };
       (global.fetch as any).mockResolvedValue(mockResponse);
 
-      render(<VerifyLoginCodeFormOrganism email="test@example.com" />);
+      renderWithProviders(<VerifyLoginCodeFormOrganism email="test@example.com" />, { translations });
 
       const inputs = screen.getAllByRole('textbox');
       for (let i = 0; i < 6; i++) {
@@ -290,7 +293,7 @@ describe('VerifyLoginCodeFormOrganism - Organism', () => {
       };
       (global.fetch as any).mockResolvedValue(mockResponse);
 
-      render(<VerifyLoginCodeFormOrganism email="test@example.com" />);
+      renderWithProviders(<VerifyLoginCodeFormOrganism email="test@example.com" />, { translations });
 
       const inputs = screen.getAllByRole('textbox') as HTMLInputElement[];
       for (let i = 0; i < 6; i++) {
@@ -311,7 +314,7 @@ describe('VerifyLoginCodeFormOrganism - Organism', () => {
     it('should handle network errors', async () => {
       (global.fetch as any).mockRejectedValue(new Error('Network error'));
 
-      render(<VerifyLoginCodeFormOrganism email="test@example.com" />);
+      renderWithProviders(<VerifyLoginCodeFormOrganism email="test@example.com" />, { translations });
 
       const inputs = screen.getAllByRole('textbox');
       for (let i = 0; i < 6; i++) {
@@ -328,13 +331,13 @@ describe('VerifyLoginCodeFormOrganism - Organism', () => {
 
   describe('Resend Functionality', () => {
     it('should show countdown timer initially', () => {
-      render(<VerifyLoginCodeFormOrganism email="test@example.com" />);
+      renderWithProviders(<VerifyLoginCodeFormOrganism email="test@example.com" />, { translations });
 
       expect(screen.getByText(/Reenviar código en \d+s/)).toBeInTheDocument();
     });
 
     it('should show resend button after countdown', () => {
-      render(<VerifyLoginCodeFormOrganism email="test@example.com" />);
+      renderWithProviders(<VerifyLoginCodeFormOrganism email="test@example.com" />, { translations });
 
       vi.advanceTimersByTime(60000);
 
@@ -348,7 +351,7 @@ describe('VerifyLoginCodeFormOrganism - Organism', () => {
       };
       (global.fetch as any).mockResolvedValue(mockResponse);
 
-      render(<VerifyLoginCodeFormOrganism email="test@example.com" />);
+      renderWithProviders(<VerifyLoginCodeFormOrganism email="test@example.com" />, { translations });
 
       vi.advanceTimersByTime(60000);
 
@@ -373,7 +376,7 @@ describe('VerifyLoginCodeFormOrganism - Organism', () => {
       };
       (global.fetch as any).mockResolvedValue(mockResponse);
 
-      render(<VerifyLoginCodeFormOrganism email="test@example.com" />);
+      renderWithProviders(<VerifyLoginCodeFormOrganism email="test@example.com" />, { translations });
 
       vi.advanceTimersByTime(60000);
 
@@ -394,7 +397,7 @@ describe('VerifyLoginCodeFormOrganism - Organism', () => {
       };
       (global.fetch as any).mockResolvedValue(mockResponse);
 
-      render(<VerifyLoginCodeFormOrganism email="test@example.com" />);
+      renderWithProviders(<VerifyLoginCodeFormOrganism email="test@example.com" />, { translations });
 
       const inputs = screen.getAllByRole('textbox');
       for (let i = 0; i < 6; i++) {
@@ -417,7 +420,7 @@ describe('VerifyLoginCodeFormOrganism - Organism', () => {
       };
       (global.fetch as any).mockResolvedValue(mockResponse);
 
-      render(<VerifyLoginCodeFormOrganism email="test@example.com" />);
+      renderWithProviders(<VerifyLoginCodeFormOrganism email="test@example.com" />, { translations });
 
       const inputs = screen.getAllByRole('textbox');
       for (let i = 0; i < 6; i++) {
@@ -435,7 +438,7 @@ describe('VerifyLoginCodeFormOrganism - Organism', () => {
   describe('Ref Forwarding', () => {
     it('should forward ref to wrapper div', () => {
       const ref = vi.fn();
-      render(<VerifyLoginCodeFormOrganism ref={ref} email="test@example.com" />);
+      renderWithProviders(<VerifyLoginCodeFormOrganism ref={ref} email="test@example.com" />, { translations });
 
       expect(ref).toHaveBeenCalled();
     });
@@ -443,8 +446,9 @@ describe('VerifyLoginCodeFormOrganism - Organism', () => {
 
   describe('Custom Styling', () => {
     it('should render with custom className', () => {
-      const { container } = render(
-        <VerifyLoginCodeFormOrganism email="test@example.com" className="custom-class" />
+      const { container } = renderWithProviders(
+        <VerifyLoginCodeFormOrganism email="test@example.com" className="custom-class" />,
+        { translations }
       );
 
       expect(container.querySelector('.custom-class')).toBeInTheDocument();

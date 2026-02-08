@@ -1,31 +1,17 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import userEvent from '@testing-library/user-event';
-import { NewPasswordFormOrganism } from './NewPasswordFormOrganism';
+import { vi } from 'vitest';
 
-// Mock dependencies
-vi.mock('@/context/TranslationsContext', () => ({
-  useTranslations: () => (key: string) => {
-    const translations: Record<string, string> = {
-      'auth.login.newPassword': 'New Password',
-      'auth.register.confirmPassword': 'Confirm Password',
-      'auth.newPassword.submit': 'Reset Password',
-      'auth.newPassword.success': 'Password reset successfully',
-      'auth.newPassword.error': 'Failed to reset password',
-      'auth.newPassword.passwordMismatch': 'Passwords do not match',
-      'auth.newPassword.invalidToken': 'Invalid or missing token',
-      'Common.general.loading': 'Resetting...',
-    };
-    return translations[key] || key;
-  },
-}));
-
+// Mock next/navigation BEFORE component imports
 const mockSearchParams = new URLSearchParams();
 vi.mock('next/navigation', () => ({
   useSearchParams: () => mockSearchParams,
   usePathname: () => '/en/auth/new-password',
 }));
 
+import { renderWithProviders, screen, waitFor, userEvent, fireEvent } from '@/test/test-utils';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { NewPasswordFormOrganism } from './NewPasswordFormOrganism';
+
+// Mock dependencies
 vi.mock('@/lib/locale', () => ({
   getCurrentLocalizedRoute: (route: string) => `/en${route}`,
 }));
@@ -36,6 +22,29 @@ vi.mock('@/components/atoms/icons/Icon', () => ({
 
 global.fetch = vi.fn();
 
+const translations = {
+  auth: {
+    login: {
+      newPassword: 'New Password',
+    },
+    register: {
+      confirmPassword: 'Confirm Password',
+    },
+    newPassword: {
+      submit: 'Reset Password',
+      success: 'Password reset successfully',
+      error: 'Failed to reset password',
+      passwordMismatch: 'Passwords do not match',
+      invalidToken: 'Invalid or missing token',
+    },
+  },
+  Common: {
+    general: {
+      loading: 'Resetting...',
+    },
+  },
+};
+
 describe('NewPasswordFormOrganism - Organism', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -45,26 +54,30 @@ describe('NewPasswordFormOrganism - Organism', () => {
     (window as any).location = { href: '' };
   });
 
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
   describe('Rendering', () => {
     it('should render all form elements correctly', () => {
-      render(<NewPasswordFormOrganism />);
+      renderWithProviders(<NewPasswordFormOrganism />, { translations });
 
-      expect(screen.getByLabelText('New Password')).toBeInTheDocument();
-      expect(screen.getByLabelText('Confirm Password')).toBeInTheDocument();
+      expect(screen.getByPlaceholderText('New Password')).toBeInTheDocument();
+      expect(screen.getByPlaceholderText('Confirm Password')).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'Reset Password' })).toBeInTheDocument();
     });
 
     it('should render both password icons', () => {
-      render(<NewPasswordFormOrganism />);
+      renderWithProviders(<NewPasswordFormOrganism />, { translations });
 
       const icons = screen.getAllByTestId('icon-lock');
       expect(icons).toHaveLength(2);
     });
 
     it('should have password inputs with correct type', () => {
-      render(<NewPasswordFormOrganism />);
+      renderWithProviders(<NewPasswordFormOrganism />, { translations });
 
-      const passwordInputs = screen.getAllByLabelText(/password/i);
+      const passwordInputs = screen.getAllByPlaceholderText(/password/i);
       passwordInputs.forEach(input => {
         expect(input).toHaveAttribute('type', 'password');
         expect(input).toHaveAttribute('required');
@@ -74,7 +87,7 @@ describe('NewPasswordFormOrganism - Organism', () => {
 
   describe('Token Validation', () => {
     it('should extract token from URL params', () => {
-      render(<NewPasswordFormOrganism />);
+      renderWithProviders(<NewPasswordFormOrganism />, { translations });
 
       const submitButton = screen.getByRole('button');
       expect(submitButton).not.toBeDisabled();
@@ -82,14 +95,14 @@ describe('NewPasswordFormOrganism - Organism', () => {
 
     it('should show error when token is missing', () => {
       mockSearchParams.delete('token');
-      render(<NewPasswordFormOrganism />);
+      renderWithProviders(<NewPasswordFormOrganism />, { translations });
 
       expect(screen.getByText('Invalid or missing token')).toBeInTheDocument();
     });
 
     it('should disable submit button when token is missing', () => {
       mockSearchParams.delete('token');
-      render(<NewPasswordFormOrganism />);
+      renderWithProviders(<NewPasswordFormOrganism />, { translations });
 
       const submitButton = screen.getByRole('button');
       expect(submitButton).toBeDisabled();
@@ -98,20 +111,20 @@ describe('NewPasswordFormOrganism - Organism', () => {
 
   describe('Form Validation', () => {
     it('should require both password fields', () => {
-      render(<NewPasswordFormOrganism />);
+      renderWithProviders(<NewPasswordFormOrganism />, { translations });
 
-      const passwordInput = screen.getByLabelText('New Password');
-      const confirmInput = screen.getByLabelText('Confirm Password');
+      const passwordInput = screen.getByPlaceholderText('New Password');
+      const confirmInput = screen.getByPlaceholderText('Confirm Password');
 
       expect(passwordInput).toHaveAttribute('required');
       expect(confirmInput).toHaveAttribute('required');
     });
 
     it('should validate password match before submission', async () => {
-      render(<NewPasswordFormOrganism />);
+      renderWithProviders(<NewPasswordFormOrganism />, { translations });
 
-      const passwordInput = screen.getByLabelText('New Password');
-      const confirmInput = screen.getByLabelText('Confirm Password');
+      const passwordInput = screen.getByPlaceholderText('New Password');
+      const confirmInput = screen.getByPlaceholderText('Confirm Password');
       const submitButton = screen.getByRole('button');
 
       fireEvent.change(passwordInput, { target: { value: 'password123' } });
@@ -132,10 +145,10 @@ describe('NewPasswordFormOrganism - Organism', () => {
       };
       (global.fetch as any).mockResolvedValue(mockResponse);
 
-      render(<NewPasswordFormOrganism />);
+      renderWithProviders(<NewPasswordFormOrganism />, { translations });
 
-      const passwordInput = screen.getByLabelText('New Password');
-      const confirmInput = screen.getByLabelText('Confirm Password');
+      const passwordInput = screen.getByPlaceholderText('New Password');
+      const confirmInput = screen.getByPlaceholderText('Confirm Password');
 
       fireEvent.change(passwordInput, { target: { value: 'password123' } });
       fireEvent.change(confirmInput, { target: { value: 'password123' } });
@@ -155,10 +168,10 @@ describe('NewPasswordFormOrganism - Organism', () => {
       };
       (global.fetch as any).mockResolvedValue(mockResponse);
 
-      render(<NewPasswordFormOrganism />);
+      renderWithProviders(<NewPasswordFormOrganism />, { translations });
 
-      fireEvent.change(screen.getByLabelText('New Password'), { target: { value: 'newpass123' } });
-      fireEvent.change(screen.getByLabelText('Confirm Password'), { target: { value: 'newpass123' } });
+      fireEvent.change(screen.getByPlaceholderText('New Password'), { target: { value: 'newpass123' } });
+      fireEvent.change(screen.getByPlaceholderText('Confirm Password'), { target: { value: 'newpass123' } });
       fireEvent.click(screen.getByRole('button'));
 
       await waitFor(() => {
@@ -179,10 +192,10 @@ describe('NewPasswordFormOrganism - Organism', () => {
       };
       (global.fetch as any).mockResolvedValue(mockResponse);
 
-      render(<NewPasswordFormOrganism />);
+      renderWithProviders(<NewPasswordFormOrganism />, { translations });
 
-      fireEvent.change(screen.getByLabelText('New Password'), { target: { value: 'newpass123' } });
-      fireEvent.change(screen.getByLabelText('Confirm Password'), { target: { value: 'newpass123' } });
+      fireEvent.change(screen.getByPlaceholderText('New Password'), { target: { value: 'newpass123' } });
+      fireEvent.change(screen.getByPlaceholderText('Confirm Password'), { target: { value: 'newpass123' } });
       fireEvent.click(screen.getByRole('button'));
 
       await waitFor(() => {
@@ -199,10 +212,10 @@ describe('NewPasswordFormOrganism - Organism', () => {
       };
       (global.fetch as any).mockResolvedValue(mockResponse);
 
-      render(<NewPasswordFormOrganism />);
+      renderWithProviders(<NewPasswordFormOrganism />, { translations });
 
-      fireEvent.change(screen.getByLabelText('New Password'), { target: { value: 'newpass123' } });
-      fireEvent.change(screen.getByLabelText('Confirm Password'), { target: { value: 'newpass123' } });
+      fireEvent.change(screen.getByPlaceholderText('New Password'), { target: { value: 'newpass123' } });
+      fireEvent.change(screen.getByPlaceholderText('Confirm Password'), { target: { value: 'newpass123' } });
       fireEvent.click(screen.getByRole('button'));
 
       await waitFor(() => {
@@ -225,10 +238,10 @@ describe('NewPasswordFormOrganism - Organism', () => {
       };
       (global.fetch as any).mockResolvedValue(mockResponse);
 
-      render(<NewPasswordFormOrganism />);
+      renderWithProviders(<NewPasswordFormOrganism />, { translations });
 
-      fireEvent.change(screen.getByLabelText('New Password'), { target: { value: 'newpass123' } });
-      fireEvent.change(screen.getByLabelText('Confirm Password'), { target: { value: 'newpass123' } });
+      fireEvent.change(screen.getByPlaceholderText('New Password'), { target: { value: 'newpass123' } });
+      fireEvent.change(screen.getByPlaceholderText('Confirm Password'), { target: { value: 'newpass123' } });
       fireEvent.click(screen.getByRole('button'));
 
       await waitFor(() => {
@@ -239,10 +252,10 @@ describe('NewPasswordFormOrganism - Organism', () => {
     it('should handle network errors', async () => {
       (global.fetch as any).mockRejectedValue(new Error('Network error'));
 
-      render(<NewPasswordFormOrganism />);
+      renderWithProviders(<NewPasswordFormOrganism />, { translations });
 
-      fireEvent.change(screen.getByLabelText('New Password'), { target: { value: 'newpass123' } });
-      fireEvent.change(screen.getByLabelText('Confirm Password'), { target: { value: 'newpass123' } });
+      fireEvent.change(screen.getByPlaceholderText('New Password'), { target: { value: 'newpass123' } });
+      fireEvent.change(screen.getByPlaceholderText('Confirm Password'), { target: { value: 'newpass123' } });
       fireEvent.click(screen.getByRole('button'));
 
       await waitFor(() => {
@@ -257,10 +270,10 @@ describe('NewPasswordFormOrganism - Organism', () => {
       };
       (global.fetch as any).mockResolvedValue(mockResponse);
 
-      render(<NewPasswordFormOrganism />);
+      renderWithProviders(<NewPasswordFormOrganism />, { translations });
 
-      fireEvent.change(screen.getByLabelText('New Password'), { target: { value: 'newpass123' } });
-      fireEvent.change(screen.getByLabelText('Confirm Password'), { target: { value: 'newpass123' } });
+      fireEvent.change(screen.getByPlaceholderText('New Password'), { target: { value: 'newpass123' } });
+      fireEvent.change(screen.getByPlaceholderText('Confirm Password'), { target: { value: 'newpass123' } });
       fireEvent.click(screen.getByRole('button'));
 
       await waitFor(() => {
@@ -277,10 +290,10 @@ describe('NewPasswordFormOrganism - Organism', () => {
       };
       (global.fetch as any).mockResolvedValue(mockResponse);
 
-      render(<NewPasswordFormOrganism />);
+      renderWithProviders(<NewPasswordFormOrganism />, { translations });
 
-      fireEvent.change(screen.getByLabelText('New Password'), { target: { value: 'newpass123' } });
-      fireEvent.change(screen.getByLabelText('Confirm Password'), { target: { value: 'newpass123' } });
+      fireEvent.change(screen.getByPlaceholderText('New Password'), { target: { value: 'newpass123' } });
+      fireEvent.change(screen.getByPlaceholderText('Confirm Password'), { target: { value: 'newpass123' } });
       fireEvent.click(screen.getByRole('button'));
 
       await waitFor(() => {
@@ -295,10 +308,10 @@ describe('NewPasswordFormOrganism - Organism', () => {
       };
       (global.fetch as any).mockResolvedValue(mockResponse);
 
-      render(<NewPasswordFormOrganism />);
+      renderWithProviders(<NewPasswordFormOrganism />, { translations });
 
-      const passwordInput = screen.getByLabelText('New Password');
-      const confirmInput = screen.getByLabelText('Confirm Password');
+      const passwordInput = screen.getByPlaceholderText('New Password');
+      const confirmInput = screen.getByPlaceholderText('Confirm Password');
       const submitButton = screen.getByRole('button');
 
       fireEvent.change(passwordInput, { target: { value: 'newpass123' } });
@@ -315,24 +328,23 @@ describe('NewPasswordFormOrganism - Organism', () => {
 
   describe('User Interactions', () => {
     it('should update password values when typing', async () => {
-      const user = userEvent.setup();
-      render(<NewPasswordFormOrganism />);
+      renderWithProviders(<NewPasswordFormOrganism />, { translations });
 
-      const passwordInput = screen.getByLabelText('New Password') as HTMLInputElement;
-      const confirmInput = screen.getByLabelText('Confirm Password') as HTMLInputElement;
+      const passwordInput = screen.getByPlaceholderText('New Password') as HTMLInputElement;
+      const confirmInput = screen.getByPlaceholderText('Confirm Password') as HTMLInputElement;
 
-      await user.type(passwordInput, 'password123');
-      await user.type(confirmInput, 'password123');
+      fireEvent.change(passwordInput, { target: { value: 'password123' } });
+      fireEvent.change(confirmInput, { target: { value: 'password123' } });
 
       expect(passwordInput.value).toBe('password123');
       expect(confirmInput.value).toBe('password123');
     });
 
     it('should clear previous errors on new submission', async () => {
-      render(<NewPasswordFormOrganism />);
+      renderWithProviders(<NewPasswordFormOrganism />, { translations });
 
-      const passwordInput = screen.getByLabelText('New Password');
-      const confirmInput = screen.getByLabelText('Confirm Password');
+      const passwordInput = screen.getByPlaceholderText('New Password');
+      const confirmInput = screen.getByPlaceholderText('Confirm Password');
       const submitButton = screen.getByRole('button');
 
       // First submission with mismatch
@@ -364,7 +376,7 @@ describe('NewPasswordFormOrganism - Organism', () => {
   describe('Ref Forwarding', () => {
     it('should forward ref to form element', () => {
       const ref = vi.fn();
-      render(<NewPasswordFormOrganism ref={ref} />);
+      renderWithProviders(<NewPasswordFormOrganism ref={ref} />, { translations });
 
       expect(ref).toHaveBeenCalled();
     });
@@ -372,7 +384,7 @@ describe('NewPasswordFormOrganism - Organism', () => {
 
   describe('Custom Styling', () => {
     it('should render with custom className', () => {
-      const { container } = render(<NewPasswordFormOrganism className="custom-class" />);
+      const { container } = renderWithProviders(<NewPasswordFormOrganism className="custom-class" />, { translations });
 
       expect(container.querySelector('.custom-class')).toBeInTheDocument();
     });

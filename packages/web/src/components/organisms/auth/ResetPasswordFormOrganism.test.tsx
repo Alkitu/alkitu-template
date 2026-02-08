@@ -1,33 +1,37 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import userEvent from '@testing-library/user-event';
-import { ResetPasswordFormOrganism } from './ResetPasswordFormOrganism';
-
-// Mock dependencies
-vi.mock('@/context/TranslationsContext', () => ({
-  useTranslations: () => (key: string) => {
-    const translations: Record<string, string> = {
-      'auth.resetPassword.title': 'Reset Password',
-      'auth.resetPassword.description': 'Enter your new password',
-      'auth.resetPassword.newPassword': 'New Password',
-      'auth.resetPassword.confirmPassword': 'Confirm Password',
-      'auth.resetPassword.submit': 'Update Password',
-      'auth.resetPassword.passwordMismatch': 'Passwords do not match',
-      'auth.resetPassword.passwordTooShort': 'Password must be at least 6 characters',
-      'auth.resetPassword.error': 'Error resetting password',
-      'auth.resetPassword.backToLogin': 'Back to login',
-      'Common.general.loading': 'Updating...',
-    };
-    return translations[key] || key;
-  },
-}));
+import { vi } from 'vitest';
 
 const mockPush = vi.fn();
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: mockPush }),
 }));
 
+import { renderWithProviders, screen, waitFor, userEvent, fireEvent } from '@/test/test-utils';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { ResetPasswordFormOrganism } from './ResetPasswordFormOrganism';
+
 global.fetch = vi.fn();
+
+const translations = {
+  auth: {
+    resetPassword: {
+      title: 'Reset Password',
+      description: 'Enter your new password',
+      newPassword: 'New Password',
+      confirmPassword: 'Confirm Password',
+      passwordPlaceholder: 'Minimum 6 characters',
+      submit: 'Update Password',
+      passwordMismatch: 'Passwords do not match',
+      passwordTooShort: 'Password must be at least 6 characters',
+      error: 'Error resetting password',
+      backToLogin: 'Back to login',
+    },
+  },
+  Common: {
+    general: {
+      loading: 'Updating...',
+    },
+  },
+};
 
 describe('ResetPasswordFormOrganism - Organism', () => {
   beforeEach(() => {
@@ -35,9 +39,13 @@ describe('ResetPasswordFormOrganism - Organism', () => {
     (global.fetch as any).mockClear();
   });
 
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
   describe('Rendering', () => {
     it('should render all form elements', () => {
-      render(<ResetPasswordFormOrganism token="test-token" />);
+      renderWithProviders(<ResetPasswordFormOrganism token="test-token" />, { translations });
 
       expect(screen.getByText('Reset Password')).toBeInTheDocument();
       expect(screen.getByText('Enter your new password')).toBeInTheDocument();
@@ -47,14 +55,14 @@ describe('ResetPasswordFormOrganism - Organism', () => {
     });
 
     it('should render back to login link', () => {
-      render(<ResetPasswordFormOrganism token="test-token" />);
+      renderWithProviders(<ResetPasswordFormOrganism token="test-token" />, { translations });
 
       const link = screen.getByRole('link', { name: 'Back to login' });
       expect(link).toHaveAttribute('href', '/auth/login');
     });
 
     it('should have password inputs with correct attributes', () => {
-      render(<ResetPasswordFormOrganism token="test-token" />);
+      renderWithProviders(<ResetPasswordFormOrganism token="test-token" />, { translations });
 
       const passwordInputs = screen.getAllByLabelText(/password/i);
       passwordInputs.forEach(input => {
@@ -67,7 +75,7 @@ describe('ResetPasswordFormOrganism - Organism', () => {
 
   describe('Form Validation', () => {
     it('should validate password match', async () => {
-      render(<ResetPasswordFormOrganism token="test-token" />);
+      renderWithProviders(<ResetPasswordFormOrganism token="test-token" />, { translations });
 
       fireEvent.change(screen.getByLabelText('New Password'), { target: { value: 'password1' } });
       fireEvent.change(screen.getByLabelText('Confirm Password'), { target: { value: 'password2' } });
@@ -81,7 +89,7 @@ describe('ResetPasswordFormOrganism - Organism', () => {
     });
 
     it('should validate minimum password length', async () => {
-      render(<ResetPasswordFormOrganism token="test-token" />);
+      renderWithProviders(<ResetPasswordFormOrganism token="test-token" />, { translations });
 
       fireEvent.change(screen.getByLabelText('New Password'), { target: { value: '12345' } });
       fireEvent.change(screen.getByLabelText('Confirm Password'), { target: { value: '12345' } });
@@ -101,7 +109,7 @@ describe('ResetPasswordFormOrganism - Organism', () => {
       };
       (global.fetch as any).mockResolvedValue(mockResponse);
 
-      render(<ResetPasswordFormOrganism token="test-token" />);
+      renderWithProviders(<ResetPasswordFormOrganism token="test-token" />, { translations });
 
       fireEvent.change(screen.getByLabelText('New Password'), { target: { value: 'password123' } });
       fireEvent.change(screen.getByLabelText('Confirm Password'), { target: { value: 'password123' } });
@@ -121,7 +129,7 @@ describe('ResetPasswordFormOrganism - Organism', () => {
       };
       (global.fetch as any).mockResolvedValue(mockResponse);
 
-      render(<ResetPasswordFormOrganism token="reset-token-123" />);
+      renderWithProviders(<ResetPasswordFormOrganism token="reset-token-123" />, { translations });
 
       fireEvent.change(screen.getByLabelText('New Password'), { target: { value: 'newpassword' } });
       fireEvent.change(screen.getByLabelText('Confirm Password'), { target: { value: 'newpassword' } });
@@ -148,7 +156,7 @@ describe('ResetPasswordFormOrganism - Organism', () => {
       };
       (global.fetch as any).mockResolvedValue(mockResponse);
 
-      render(<ResetPasswordFormOrganism token="test-token" />);
+      renderWithProviders(<ResetPasswordFormOrganism token="test-token" />, { translations });
 
       fireEvent.change(screen.getByLabelText('New Password'), { target: { value: 'newpassword' } });
       fireEvent.change(screen.getByLabelText('Confirm Password'), { target: { value: 'newpassword' } });
@@ -168,7 +176,7 @@ describe('ResetPasswordFormOrganism - Organism', () => {
       };
       (global.fetch as any).mockResolvedValue(mockResponse);
 
-      render(<ResetPasswordFormOrganism token="test-token" />);
+      renderWithProviders(<ResetPasswordFormOrganism token="test-token" />, { translations });
 
       fireEvent.change(screen.getByLabelText('New Password'), { target: { value: 'newpassword' } });
       fireEvent.change(screen.getByLabelText('Confirm Password'), { target: { value: 'newpassword' } });
@@ -194,7 +202,7 @@ describe('ResetPasswordFormOrganism - Organism', () => {
       };
       (global.fetch as any).mockResolvedValue(mockResponse);
 
-      render(<ResetPasswordFormOrganism token="test-token" />);
+      renderWithProviders(<ResetPasswordFormOrganism token="test-token" />, { translations });
 
       fireEvent.change(screen.getByLabelText('New Password'), { target: { value: 'newpassword' } });
       fireEvent.change(screen.getByLabelText('Confirm Password'), { target: { value: 'newpassword' } });
@@ -208,7 +216,7 @@ describe('ResetPasswordFormOrganism - Organism', () => {
     it('should handle network errors', async () => {
       (global.fetch as any).mockRejectedValue(new Error('Network error'));
 
-      render(<ResetPasswordFormOrganism token="test-token" />);
+      renderWithProviders(<ResetPasswordFormOrganism token="test-token" />, { translations });
 
       fireEvent.change(screen.getByLabelText('New Password'), { target: { value: 'newpassword' } });
       fireEvent.change(screen.getByLabelText('Confirm Password'), { target: { value: 'newpassword' } });
@@ -226,7 +234,7 @@ describe('ResetPasswordFormOrganism - Organism', () => {
       };
       (global.fetch as any).mockResolvedValue(mockResponse);
 
-      render(<ResetPasswordFormOrganism token="test-token" />);
+      renderWithProviders(<ResetPasswordFormOrganism token="test-token" />, { translations });
 
       fireEvent.change(screen.getByLabelText('New Password'), { target: { value: 'newpassword' } });
       fireEvent.change(screen.getByLabelText('Confirm Password'), { target: { value: 'newpassword' } });
@@ -246,7 +254,7 @@ describe('ResetPasswordFormOrganism - Organism', () => {
       };
       (global.fetch as any).mockResolvedValue(mockResponse);
 
-      render(<ResetPasswordFormOrganism token="test-token" />);
+      renderWithProviders(<ResetPasswordFormOrganism token="test-token" />, { translations });
 
       fireEvent.change(screen.getByLabelText('New Password'), { target: { value: 'newpassword' } });
       fireEvent.change(screen.getByLabelText('Confirm Password'), { target: { value: 'newpassword' } });
@@ -264,7 +272,7 @@ describe('ResetPasswordFormOrganism - Organism', () => {
       };
       (global.fetch as any).mockResolvedValue(mockResponse);
 
-      render(<ResetPasswordFormOrganism token="test-token" />);
+      renderWithProviders(<ResetPasswordFormOrganism token="test-token" />, { translations });
 
       const passwordInput = screen.getByLabelText('New Password');
       const confirmInput = screen.getByLabelText('Confirm Password');
@@ -284,21 +292,20 @@ describe('ResetPasswordFormOrganism - Organism', () => {
 
   describe('User Interactions', () => {
     it('should update password values when typing', async () => {
-      const user = userEvent.setup();
-      render(<ResetPasswordFormOrganism token="test-token" />);
+      renderWithProviders(<ResetPasswordFormOrganism token="test-token" />, { translations });
 
       const passwordInput = screen.getByLabelText('New Password') as HTMLInputElement;
       const confirmInput = screen.getByLabelText('Confirm Password') as HTMLInputElement;
 
-      await user.type(passwordInput, 'password123');
-      await user.type(confirmInput, 'password123');
+      fireEvent.change(passwordInput, { target: { value: 'password123' } });
+      fireEvent.change(confirmInput, { target: { value: 'password123' } });
 
       expect(passwordInput.value).toBe('password123');
       expect(confirmInput.value).toBe('password123');
     });
 
     it('should clear previous errors on new submission', async () => {
-      render(<ResetPasswordFormOrganism token="test-token" />);
+      renderWithProviders(<ResetPasswordFormOrganism token="test-token" />, { translations });
 
       // First submission with mismatch
       fireEvent.change(screen.getByLabelText('New Password'), { target: { value: 'pass1' } });
@@ -329,7 +336,7 @@ describe('ResetPasswordFormOrganism - Organism', () => {
   describe('Ref Forwarding', () => {
     it('should forward ref to wrapper div', () => {
       const ref = vi.fn();
-      render(<ResetPasswordFormOrganism ref={ref} token="test-token" />);
+      renderWithProviders(<ResetPasswordFormOrganism ref={ref} token="test-token" />, { translations });
 
       expect(ref).toHaveBeenCalled();
     });
@@ -337,7 +344,7 @@ describe('ResetPasswordFormOrganism - Organism', () => {
 
   describe('Custom Styling', () => {
     it('should render with custom className', () => {
-      const { container } = render(<ResetPasswordFormOrganism token="test-token" className="custom-class" />);
+      const { container } = renderWithProviders(<ResetPasswordFormOrganism token="test-token" className="custom-class" />, { translations });
 
       expect(container.querySelector('.custom-class')).toBeInTheDocument();
     });
@@ -351,7 +358,7 @@ describe('ResetPasswordFormOrganism - Organism', () => {
       };
       (global.fetch as any).mockResolvedValue(mockResponse);
 
-      render(<ResetPasswordFormOrganism token="my-custom-token" />);
+      renderWithProviders(<ResetPasswordFormOrganism token="my-custom-token" />, { translations });
 
       fireEvent.change(screen.getByLabelText('New Password'), { target: { value: 'newpassword' } });
       fireEvent.change(screen.getByLabelText('Confirm Password'), { target: { value: 'newpassword' } });

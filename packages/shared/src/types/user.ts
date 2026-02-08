@@ -3,11 +3,17 @@ import { UserRole } from '../enums/user-role.enum';
 export { UserRole };
 
 /**
- * User Status Enum
+ * User Status Enum (Account Status)
  * Must match Prisma schema
+ *
+ * - PENDING: User registered but email not verified OR profile incomplete
+ * - VERIFIED: Email verified AND profile complete (replaces ACTIVE)
+ * - SUSPENDED: Account blocked by admin
+ * - ANONYMIZED: Data anonymized for GDPR compliance (irreversible)
  */
 export enum UserStatus {
-  ACTIVE = "ACTIVE",
+  PENDING = "PENDING",
+  VERIFIED = "VERIFIED",
   SUSPENDED = "SUSPENDED",
   ANONYMIZED = "ANONYMIZED",
 }
@@ -46,13 +52,14 @@ export interface User {
   address?: string; // New field
   contactPerson?: ContactPerson; // New field
   role: UserRole;
-  status: UserStatus;
+  status: UserStatus; // Account status (PENDING, VERIFIED, etc.)
   profileComplete: boolean; // New field - indicates if onboarding is completed
   emailVerified?: Date;
   image?: string;
   terms: boolean;
   isTwoFactorEnabled: boolean;
-  isActive: boolean;
+  isActive: boolean; // Session state - true if currently logged in
+  lastActivity?: Date; // Last activity timestamp (updated on login/logout)
   createdAt: Date;
   updatedAt: Date;
   lastLogin?: Date;
@@ -69,6 +76,8 @@ export interface JwtPayload {
   firstname: string; // New field (ALI-115)
   lastname: string; // New field (ALI-115)
   emailVerified: boolean; // Security flag from backend (ALI-115)
+  status: UserStatus; // Account status (PENDING, VERIFIED, etc.)
+  isActive: boolean; // Session active state
   iat?: number;
   exp?: number;
 }

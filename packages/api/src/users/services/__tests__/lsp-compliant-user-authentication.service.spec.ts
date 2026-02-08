@@ -29,7 +29,7 @@ describe('LSPCompliantUserAuthenticationService', () => {
     lastname: 'User',
     password: 'hashedPassword123',
     role: UserRole.CLIENT,
-    status: UserStatus.ACTIVE,
+    status: UserStatus.VERIFIED,
     emailVerified: new Date(),
     lastLogin: null,
   };

@@ -61,6 +61,7 @@ export class UsersService {
         email,
         password: hashedPassword,
         profileComplete: false, // ALI-115: Users complete profile during onboarding
+        status: UserStatus.PENDING, // User starts as PENDING until email verified AND profile complete
         ...userData,
       },
       select: {
@@ -245,6 +246,8 @@ export class UsersService {
         profileComplete: true,
         role: true,
         status: true,
+        isActive: true,
+        lastActivity: true,
         createdAt: true,
         lastLogin: true,
         emailVerified: true,
@@ -501,7 +504,7 @@ export class UsersService {
    * Mark email as verified (ALI-115: updated field names)
    */
   async markEmailAsVerified(id: string) {
-    return this.prisma.user.update({
+    const result = await this.prisma.user.update({
       where: { id },
       data: { emailVerified: new Date() },
       select: {
@@ -511,8 +514,68 @@ export class UsersService {
         firstname: true,
         lastname: true,
         profileComplete: true,
+        status: true,
       },
     });
+
+    // Attempt automatic verification if email verified AND profile complete
+    await this.attemptUserVerification(id);
+
+    return result;
+  }
+
+  /**
+   * Attempt to verify user automatically if both conditions are met:
+   * - Email is verified
+   * - Profile is complete
+   * This is called after email verification or profile completion
+   */
+  async attemptUserVerification(userId: string): Promise<void> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        status: true,
+        emailVerified: true,
+        profileComplete: true,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found`);
+    }
+
+    // Only transition to VERIFIED if PENDING and both conditions are met
+    if (
+      user.status === UserStatus.PENDING &&
+      user.emailVerified !== null &&
+      user.profileComplete === true
+    ) {
+      await this.prisma.user.update({
+        where: { id: userId },
+        data: { status: UserStatus.VERIFIED },
+      });
+
+      this.logger.log(`User ${userId} verified automatically`);
+    }
+  }
+
+  /**
+   * Update session status for login/logout tracking
+   * @param userId - ID of the user
+   * @param isActive - true if logged in, false if logged out
+   */
+  async updateSessionStatus(userId: string, isActive: boolean): Promise<void> {
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        isActive,
+        lastActivity: new Date(),
+        ...(isActive && { lastLogin: new Date() }), // Only update lastLogin on login
+      },
+    });
+
+    this.logger.log(`User ${userId} session ${isActive ? 'started' : 'ended'}`);
   }
 
   // Bulk Operations

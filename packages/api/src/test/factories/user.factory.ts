@@ -93,7 +93,7 @@ export class UserFactory {
       lastName: 'User',
       contactNumber: '+1234567890',
       role: UserRole.USER,
-      status: UserStatus.ACTIVE,
+      status: UserStatus.VERIFIED,
       emailVerified: null,
       image: null,
       password: 'hashedPassword123',

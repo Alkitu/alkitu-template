@@ -15,7 +15,9 @@ export const mockUser: User = {
   contactPerson: null,
   profileComplete: false,
   role: UserRole.USER,
-  status: UserStatus.ACTIVE,
+  status: UserStatus.VERIFIED,
+  isActive: false,
+  lastActivity: null,
   terms: true,
   isTwoFactorEnabled: false,
   groupIds: [],
@@ -83,7 +85,8 @@ export function createVerifiedUserFixture(overrides: Partial<User> = {}): User {
   return createUserFixture({
     ...overrides,
     emailVerified: new Date(),
-    status: UserStatus.ACTIVE,
+    status: UserStatus.VERIFIED,
+    profileComplete: true,
   });
 }
 
@@ -148,7 +151,8 @@ export function createAuthUserFixture(overrides: Partial<User> = {}): User {
   return createUserFixture({
     ...overrides,
     emailVerified: new Date(),
-    status: UserStatus.ACTIVE,
+    status: UserStatus.VERIFIED,
+    profileComplete: true,
     password: "$2b$10$validhashedpassword",
   });
 }
@@ -171,7 +175,8 @@ export function createMinimalUserFixture(): Partial<User> {
     firstname: "Minimal",
     lastname: "User",
     role: UserRole.USER,
-    status: UserStatus.ACTIVE,
+    status: UserStatus.VERIFIED,
+    isActive: false,
   };
 }
 
@@ -190,7 +195,9 @@ export function createUserWithoutOptionalFields(): User {
     contactPerson: null,
     profileComplete: false,
     role: UserRole.USER,
-    status: UserStatus.ACTIVE,
+    status: UserStatus.PENDING,
+    isActive: false,
+    lastActivity: null,
     terms: false,
     isTwoFactorEnabled: false,
     groupIds: [],

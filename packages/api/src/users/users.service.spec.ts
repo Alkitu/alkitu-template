@@ -8,6 +8,8 @@ import {
 import { UsersService } from './users.service';
 import { PrismaService } from '../prisma.service';
 import { NotificationService } from '../notification/notification.service';
+import { EmailService } from '../email/email.service';
+import { AuditService } from '../audit/audit.service';
 import { UserStatus, UserRole } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
 import { NotificationType } from '../notification/dto/create-notification.dto';
@@ -21,6 +23,8 @@ describe('UsersService - Real Business Logic Tests', () => {
   let service: UsersService;
   let prismaService: jest.Mocked<PrismaService>;
   let notificationService: jest.Mocked<NotificationService>;
+  let emailService: jest.Mocked<EmailService>;
+  let auditService: jest.Mocked<AuditService>;
 
   const mockUser = {
     id: '507f1f77bcf86cd799439011',
@@ -34,9 +38,11 @@ describe('UsersService - Real Business Logic Tests', () => {
     contactPerson: null,
     profileComplete: false,
     role: UserRole.USER,
-    status: UserStatus.ACTIVE,
+    status: UserStatus.PENDING,
     terms: true,
     emailVerified: null,
+    isActive: false,
+    lastActivity: null,
     createdAt: new Date('2023-01-01T00:00:00Z'),
     updatedAt: new Date('2023-01-01T00:00:00Z'),
     lastLogin: null,
@@ -67,6 +73,17 @@ describe('UsersService - Real Business Logic Tests', () => {
       createNotification: jest.fn().mockResolvedValue({}),
     };
 
+    const mockEmailService = {
+      sendWelcomeEmail: jest.fn().mockResolvedValue(undefined),
+      sendNotification: jest.fn().mockResolvedValue(undefined),
+      sendPasswordResetEmail: jest.fn().mockResolvedValue(undefined),
+      sendVerificationEmail: jest.fn().mockResolvedValue(undefined),
+    };
+
+    const mockAuditService = {
+      log: jest.fn().mockResolvedValue(undefined),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UsersService,
@@ -78,6 +95,14 @@ describe('UsersService - Real Business Logic Tests', () => {
           provide: NotificationService,
           useValue: mockNotificationService,
         },
+        {
+          provide: EmailService,
+          useValue: mockEmailService,
+        },
+        {
+          provide: AuditService,
+          useValue: mockAuditService,
+        },
       ],
     }).compile();
 
@@ -88,6 +113,12 @@ describe('UsersService - Real Business Logic Tests', () => {
     notificationService = module.get<NotificationService>(
       NotificationService,
     ) as jest.Mocked<NotificationService>;
+    emailService = module.get<EmailService>(
+      EmailService,
+    ) as jest.Mocked<EmailService>;
+    auditService = module.get<AuditService>(
+      AuditService,
+    ) as jest.Mocked<AuditService>;
 
     // Reset mocks
     jest.clearAllMocks();
@@ -127,6 +158,7 @@ describe('UsersService - Real Business Logic Tests', () => {
           email: createUserDto.email,
           password: hashedPassword,
           profileComplete: false,
+          status: UserStatus.PENDING,
           firstname: createUserDto.firstname,
           lastname: createUserDto.lastname,
           terms: createUserDto.terms,
@@ -272,6 +304,7 @@ describe('UsersService - Real Business Logic Tests', () => {
           contactPerson: true,
           profileComplete: true,
           role: true,
+          status: true,
           createdAt: true,
           lastLogin: true,
           emailVerified: true,
@@ -309,6 +342,9 @@ describe('UsersService - Real Business Logic Tests', () => {
           contactPerson: true,
           profileComplete: true,
           role: true,
+          status: true,
+          isActive: true,
+          lastActivity: true,
           createdAt: true,
           lastLogin: true,
           emailVerified: true,
@@ -359,6 +395,7 @@ describe('UsersService - Real Business Logic Tests', () => {
           contactPerson: true,
           profileComplete: true,
           role: true,
+          status: true,
           createdAt: true,
           emailVerified: true,
         },

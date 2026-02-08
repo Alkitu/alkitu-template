@@ -170,7 +170,7 @@ describe('UserAnalyticsService', () => {
       ];
 
       const mockStatusDistribution = [
-        { status: UserStatus.ACTIVE, count: 850, percentage: 85.0 },
+        { status: UserStatus.VERIFIED, count: 850, percentage: 85.0 },
         { status: UserStatus.SUSPENDED, count: 150, percentage: 15.0 },
       ];
 
@@ -309,13 +309,13 @@ describe('UserAnalyticsService', () => {
     it('should return users grouped by status', async () => {
       // Arrange
       const mockStatusData = [
-        { status: UserStatus.ACTIVE, _count: { status: 850 } },
+        { status: UserStatus.VERIFIED, _count: { status: 850 } },
         { status: UserStatus.SUSPENDED, _count: { status: 100 } },
         { status: UserStatus.SUSPENDED, _count: { status: 50 } },
       ];
 
       const expectedResult = [
-        { status: UserStatus.ACTIVE, count: 850, percentage: 85.0 },
+        { status: UserStatus.VERIFIED, count: 850, percentage: 85.0 },
         { status: UserStatus.SUSPENDED, count: 100, percentage: 10.0 },
         { status: UserStatus.SUSPENDED, count: 50, percentage: 5.0 },
       ];
@@ -467,7 +467,7 @@ describe('UserAnalyticsService', () => {
         profileComplete: false,
         contactPerson: null,
         role: UserRole.CLIENT,
-        status: UserStatus.ACTIVE,
+        status: UserStatus.VERIFIED,
         image: 'profile.jpg',
         terms: true,
         isTwoFactorEnabled: false,

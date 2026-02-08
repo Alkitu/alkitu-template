@@ -285,7 +285,7 @@ describe('UsersController', () => {
         limit: 10,
         search: 'test',
         role: UserRole.CLIENT,
-        status: UserStatus.ACTIVE,
+        status: UserStatus.VERIFIED,
       };
       const filteredResult = {
         users: [mockUser],

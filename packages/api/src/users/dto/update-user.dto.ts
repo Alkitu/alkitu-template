@@ -123,7 +123,7 @@ export class UpdateUserDto {
   @ApiPropertyOptional({
     description: 'User status',
     enum: UserStatus,
-    example: UserStatus.ACTIVE,
+    example: UserStatus.VERIFIED,
   })
   @IsOptional()
   @IsEnum(UserStatus)

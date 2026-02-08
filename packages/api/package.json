@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "build": "npx nest build",
-    "dev": "npx nest start --watch --preserveWatchOutput",
+    "dev": "npx nest start --watch --preserveWatchOutput --entryFile api/src/main",
     "dev:ts": "ts-node -r tsconfig-paths/register src/main.ts",
     "start": "npx nest start",
     "start:prod": "node dist/api/src/main.js",
@@ -29,6 +29,8 @@
     "test:ci": "npm run test:cov && npm run test:mutation",
     "test:solid": "jest --testNamePattern='SOLID' --verbose",
     "seed:test-users": "ts-node -r tsconfig-paths/register scripts/seed-test-users.ts",
+    "db:reset": "./scripts/reset-and-seed-db.sh",
+    "db:fix-status": "ts-node -r tsconfig-paths/register scripts/fix-user-status.ts",
     "test:cleanup": "ts-node -r tsconfig-paths/register scripts/cleanup-test-data.ts",
     "test:contracts": "jest --testNamePattern='Contract' --verbose",
     "test:integration": "jest --testNamePattern='Integration' --verbose",

@@ -26,7 +26,7 @@ describe('UserRepositoryService - Advanced Tests', () => {
         profileComplete: false,
         contactPerson: null,
     role: UserRole.CLIENT,
-    status: UserStatus.ACTIVE,
+    status: UserStatus.VERIFIED,
     terms: true,
     isTwoFactorEnabled: false,
     emailVerified: new Date(),
@@ -700,7 +700,7 @@ describe('UserRepositoryService - Advanced Tests', () => {
     it('should handle complex filters', async () => {
       const filters = {
         role: UserRole.CLIENT,
-        status: UserStatus.ACTIVE,
+        status: UserStatus.VERIFIED,
       };
       prisma.user.count.mockResolvedValue(100);
 

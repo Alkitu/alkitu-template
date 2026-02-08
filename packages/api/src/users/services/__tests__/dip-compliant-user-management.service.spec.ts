@@ -28,7 +28,7 @@ describe('DIPCompliantUserManagementService', () => {
     lastName: 'User',
     contactNumber: '+1234567890',
     role: UserRole.CLIENT,
-    status: UserStatus.ACTIVE,
+    status: UserStatus.VERIFIED,
     terms: true,
     isTwoFactorEnabled: false,
     emailVerified: null,
@@ -93,7 +93,7 @@ describe('DIPCompliantUserManagementService', () => {
       expect(mockUserRepository.create).toHaveBeenCalledWith({
         ...createUserInput,
         role: UserRole.CLIENT,
-        status: UserStatus.ACTIVE,
+        status: UserStatus.VERIFIED,
         terms: true,
         isTwoFactorEnabled: false,
         emailVerified: null,
@@ -663,7 +663,7 @@ describe('ConcreteUserRepository', () => {
         name: 'Test',
         lastName: 'User',
         role: UserRole.CLIENT,
-        status: UserStatus.ACTIVE,
+        status: UserStatus.VERIFIED,
         terms: true,
       });
       expect(result.id).toBe('1');
@@ -677,7 +677,7 @@ describe('ConcreteUserRepository', () => {
         name: 'Test User',
         lastName: 'User',
         role: UserRole.CLIENT,
-        status: UserStatus.ACTIVE,
+        status: UserStatus.VERIFIED,
       });
     });
   });

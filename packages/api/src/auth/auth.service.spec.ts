@@ -34,7 +34,9 @@ describe('AuthService', () => {
     contactPerson: null,
     profileComplete: false,
     role: 'USER' as const,
-    status: 'ACTIVE' as const,
+    status: 'PENDING' as const,
+    isActive: false,
+    lastActivity: null,
     terms: true,
     isTwoFactorEnabled: false,
     groupIds: [],
@@ -58,6 +60,8 @@ describe('AuthService', () => {
             updatePassword: jest.fn(),
             markEmailAsVerified: jest.fn(),
             findOne: jest.fn(),
+            updateSessionStatus: jest.fn(),
+            attemptUserVerification: jest.fn(),
           },
         },
         {
@@ -175,15 +179,18 @@ describe('AuthService', () => {
         role: mockUser.role,
         profileComplete: mockUser.profileComplete,
         emailVerified: mockUser.emailVerified,
+        status: mockUser.status,
       };
       const accessToken = 'jwt-access-token';
       const refreshToken = 'jwt-refresh-token';
 
       jwtService.sign.mockReturnValue(accessToken);
       tokenService.createRefreshToken.mockResolvedValue(refreshToken);
+      usersService.updateSessionStatus.mockResolvedValue(undefined);
 
       const result = await service.login(user);
 
+      expect(usersService.updateSessionStatus).toHaveBeenCalledWith(user.id, true);
       expect(jwtService.sign).toHaveBeenCalledWith({
         email: user.email,
         sub: user.id,
@@ -192,6 +199,8 @@ describe('AuthService', () => {
         lastname: user.lastname,
         profileComplete: user.profileComplete,
         emailVerified: !!user.emailVerified,
+        status: user.status,
+        isActive: true,
       });
       expect(tokenService.createRefreshToken).toHaveBeenCalledWith(user.id);
       expect(result).toEqual({
@@ -243,6 +252,8 @@ describe('AuthService', () => {
         lastname: mockUser.lastname,
         profileComplete: mockUser.profileComplete,
         emailVerified: !!mockUser.emailVerified,
+        status: mockUser.status,
+        isActive: mockUser.isActive || false,
       });
       expect(tokenService.createRefreshToken).toHaveBeenCalledWith(userId);
       expect(result).toEqual({

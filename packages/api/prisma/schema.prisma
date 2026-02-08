@@ -22,9 +22,10 @@ enum UserRole {
 }
 
 enum UserStatus {
-  ACTIVE
-  SUSPENDED
-  ANONYMIZED
+  PENDING      // User registered but email not verified OR profile incomplete
+  VERIFIED     // Email verified AND profile complete (replaces ACTIVE)
+  SUSPENDED    // Account blocked by admin
+  ANONYMIZED   // Data anonymized for GDPR compliance (irreversible)
 }
 
 /// Contact person information for business clients (ALI-115)
@@ -75,10 +76,14 @@ model User {
 
   // Account settings
   role                    UserRole                @default(CLIENT)
-  status                  UserStatus              @default(ACTIVE)
+  status                  UserStatus              @default(PENDING)
   profileComplete         Boolean                 @default(false) // NEW: ALI-115 onboarding flag
   terms                   Boolean                 @default(false)
   isTwoFactorEnabled      Boolean                 @default(false)
+
+  // Session tracking
+  isActive                Boolean                 @default(false) // Session state - true if currently logged in
+  lastActivity            DateTime?               // Last activity timestamp (updated on login/logout)
 
   // Metadata
   image                   String?                 @default("")

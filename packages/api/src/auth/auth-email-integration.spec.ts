@@ -36,7 +36,7 @@ describe('AuthService Email Integration', () => {
     image: null,
     isTwoFactorEnabled: false,
     role: UserRole.CLIENT,
-    status: UserStatus.ACTIVE,
+    status: UserStatus.VERIFIED,
     createdAt: new Date(),
     updatedAt: new Date(),
     lastLogin: null,

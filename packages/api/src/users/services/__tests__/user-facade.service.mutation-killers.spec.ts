@@ -47,7 +47,7 @@ describe('UserFacadeService - Mutation Killer Tests', () => {
         profileComplete: false,
         contactPerson: null,
     role: UserRole.USER,
-    status: UserStatus.ACTIVE,
+    status: UserStatus.VERIFIED,
     emailVerified: null,
     image: null,
     password: 'hashedPassword',

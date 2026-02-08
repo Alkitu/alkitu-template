@@ -44,6 +44,9 @@ export class AuthService {
    * Updated to use new field names and include profileComplete in JWT payload
    */
   async login(user: any) {
+    // Mark user as active (session started)
+    await this.usersService.updateSessionStatus(user.id, true);
+
     const payload: JwtPayload = {
       email: user.email,
       sub: user.id,
@@ -52,6 +55,8 @@ export class AuthService {
       lastname: user.lastname || '',
       profileComplete: user.profileComplete || false,
       emailVerified: !!user.emailVerified,
+      status: user.status,
+      isActive: true,
     };
 
     const accessToken = this.jwtService.sign(payload);
@@ -100,6 +105,8 @@ export class AuthService {
       lastname: user.lastname || '',
       profileComplete: user.profileComplete || false,
       emailVerified: !!user.emailVerified,
+      status: user.status,
+      isActive: user.isActive || false,
     };
 
     const newAccessToken = this.jwtService.sign(payload);
@@ -319,6 +326,9 @@ export class AuthService {
       profileComplete: true,
     });
 
+    // Attempt automatic verification if email verified AND profile complete
+    await this.usersService.attemptUserVerification(userId);
+
     // Send profile completion notification
     try {
       await this.emailService.sendNotification(
@@ -351,5 +361,12 @@ export class AuthService {
         role: updatedUser.role,
       },
     };
+  }
+
+  /**
+   * User logout - marks session as inactive
+   */
+  async logout(userId: string): Promise<void> {
+    await this.usersService.updateSessionStatus(userId, false);
   }
 }

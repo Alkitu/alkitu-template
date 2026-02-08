@@ -92,7 +92,21 @@
       "Bash(bash:*)",
       "Bash(ln:*)",
       "Bash(git ls-tree:*)",
-      "Bash(git fetch:*)"
+      "Bash(git fetch:*)",
+      "Bash(for i in {1..60})",
+      "Bash(do)",
+      "Bash(if curl -s http://localhost:3001/health)",
+      "Bash(then)",
+      "Bash(fi)",
+      "Bash(echo:*)",
+      "Bash(done)",
+      "Bash(exit:*)",
+      "Bash(docker-compose:*)",
+      "Bash(if [ -f dist/main.js ])",
+      "Bash(then echo \"✅ API built successfully\")",
+      "Bash(else echo \"❌ Build failed or still running\")",
+      "Bash(npx playwright install:*)",
+      "Bash(docker exec:*)"
     ],
     "deny": [],
     "ask": []

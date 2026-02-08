@@ -1,36 +1,20 @@
-import { render, screen, waitFor, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { RegisterFormOrganism } from './RegisterFormOrganism';
+import { vi } from 'vitest';
 
-// Mock dependencies
-vi.mock('@/context/TranslationsContext', () => ({
-  useTranslations: () => (key: string) => {
-    const translations: Record<string, string> = {
-      'auth.register.name': 'First Name',
-      'auth.register.lastName': 'Last Name',
-      'auth.register.email': 'Email',
-      'auth.register.phone': 'Phone',
-      'auth.register.password': 'Password',
-      'auth.register.confirmPassword': 'Confirm Password',
-      'auth.register.terms': 'I accept the terms and conditions',
-      'auth.register.termsRequired': 'You must accept the terms and conditions',
-      'auth.register.submit': 'Create Account',
-      'auth.register.success': 'Registration successful!',
-      'auth.register.error': 'Registration failed',
-      'auth.newPassword.passwordMismatch': 'Passwords do not match',
-      'Common.general.loading': 'Loading...',
-    };
-    return translations[key] || key;
-  },
-}));
+// IMPORTANT: Mock next/navigation BEFORE importing test-utils or components
+// Get the mocked router functions
+const mockRouterPush = vi.fn();
 
-const mockPush = vi.fn();
 vi.mock('next/navigation', () => ({
-  usePathname: () => '/en/auth/register',
   useRouter: () => ({
-    push: mockPush,
+    push: mockRouterPush,
+    replace: vi.fn(),
+    back: vi.fn(),
+    forward: vi.fn(),
+    refresh: vi.fn(),
+    prefetch: vi.fn(),
   }),
+  usePathname: () => '/en/auth/register',
+  useSearchParams: () => new URLSearchParams(),
 }));
 
 vi.mock('@/lib/locale', () => ({
@@ -40,42 +24,83 @@ vi.mock('@/lib/locale', () => ({
 // Mock fetch globally
 global.fetch = vi.fn();
 
+// Now import everything else
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import {
+  renderWithProviders,
+  screen,
+  waitFor,
+  userEvent
+} from '@/test/test-utils';
+import { RegisterFormOrganism } from './RegisterFormOrganism';
+
 describe('RegisterFormOrganism', () => {
+  const translations = {
+    auth: {
+      register: {
+        name: 'First Name',
+        lastName: 'Last Name',
+        email: 'Email',
+        phone: 'Phone',
+        password: 'Password',
+        confirmPassword: 'Confirm Password',
+        terms: 'I accept the terms and conditions',
+        termsRequired: 'You must accept the terms and conditions',
+        submit: 'Create Account',
+        success: 'Registration successful!',
+        error: 'Registration failed',
+      },
+      newPassword: {
+        passwordMismatch: 'Passwords do not match',
+      },
+    },
+    Common: {
+      general: {
+        loading: 'Loading...',
+      },
+    },
+  };
+
+  // Helper to get checkbox button (it's rendered as a button, not input[type="checkbox"])
+  const getCheckbox = () => {
+    const buttons = screen.getAllByRole('button');
+    return buttons.find(btn => btn.getAttribute('data-name') === 'Checkbox')!;
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.useRealTimers();
+
+    // Reset fetch mock
     (global.fetch as any).mockClear();
   });
 
-  it('should render all form elements correctly', () => {
-    render(<RegisterFormOrganism />);
+  afterEach(() => {
+    vi.useRealTimers();
+  });
 
-    expect(screen.getByText('First Name')).toBeInTheDocument();
-    expect(screen.getByText('Last Name')).toBeInTheDocument();
-    expect(screen.getByText('Email')).toBeInTheDocument();
-    expect(screen.getByText(/Phone/i)).toBeInTheDocument();
-    expect(screen.getByText('Password')).toBeInTheDocument();
-    expect(screen.getByText('Confirm Password')).toBeInTheDocument();
+  it('should render all form elements correctly', () => {
+    renderWithProviders(<RegisterFormOrganism />, { translations });
+
+    expect(screen.getByPlaceholderText('First Name')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Last Name')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Email')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('+1234567890')).toBeInTheDocument();
+    expect(screen.getAllByPlaceholderText('Password')[0]).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Confirm Password')).toBeInTheDocument();
     expect(screen.getByText('I accept the terms and conditions')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Create Account' })).toBeInTheDocument();
-
-    // Check inputs by ID
-    expect(document.getElementById('firstname')).toBeInTheDocument();
-    expect(document.getElementById('lastname')).toBeInTheDocument();
-    expect(document.getElementById('email')).toBeInTheDocument();
-    expect(document.getElementById('phone')).toBeInTheDocument();
-    expect(document.getElementById('password')).toBeInTheDocument();
-    expect(document.getElementById('confirmPassword')).toBeInTheDocument();
   });
 
   it('should update input values when user types', async () => {
     const user = userEvent.setup();
-    render(<RegisterFormOrganism />);
+    renderWithProviders(<RegisterFormOrganism />, { translations });
 
-    const firstnameInput = document.getElementById('firstname') as HTMLInputElement;
-    const lastnameInput = document.getElementById('lastname') as HTMLInputElement;
-    const emailInput = document.getElementById('email') as HTMLInputElement;
-    const phoneInput = document.getElementById('phone') as HTMLInputElement;
-    const passwordInput = document.getElementById('password') as HTMLInputElement;
+    const firstnameInput = screen.getByPlaceholderText('First Name') as HTMLInputElement;
+    const lastnameInput = screen.getByPlaceholderText('Last Name') as HTMLInputElement;
+    const emailInput = screen.getByPlaceholderText('Email') as HTMLInputElement;
+    const phoneInput = screen.getByPlaceholderText('+1234567890') as HTMLInputElement;
+    const passwordInput = screen.getAllByPlaceholderText('Password')[0] as HTMLInputElement;
 
     await user.type(firstnameInput, 'John');
     await user.type(lastnameInput, 'Doe');
@@ -92,9 +117,9 @@ describe('RegisterFormOrganism', () => {
 
   it('should toggle password visibility', async () => {
     const user = userEvent.setup();
-    render(<RegisterFormOrganism />);
+    renderWithProviders(<RegisterFormOrganism />, { translations });
 
-    const passwordInput = document.getElementById('password') as HTMLInputElement;
+    const passwordInput = screen.getAllByPlaceholderText('Password')[0] as HTMLInputElement;
     expect(passwordInput.type).toBe('password');
 
     // Find the toggle button (Eye icon button)
@@ -110,15 +135,15 @@ describe('RegisterFormOrganism', () => {
 
   it('should show error when passwords do not match', async () => {
     const user = userEvent.setup();
-    render(<RegisterFormOrganism />);
+    renderWithProviders(<RegisterFormOrganism />, { translations });
 
-    await user.type(document.getElementById('firstname') as HTMLElement, 'John');
-    await user.type(document.getElementById('lastname') as HTMLElement, 'Doe');
-    await user.type(document.getElementById('email') as HTMLElement, 'john@example.com');
-    await user.type(document.getElementById('password') as HTMLElement, 'Password123!');
-    await user.type(document.getElementById('confirmPassword') as HTMLElement, 'DifferentPass123!');
+    await user.type(screen.getByPlaceholderText('First Name'), 'John');
+    await user.type(screen.getByPlaceholderText('Last Name'), 'Doe');
+    await user.type(screen.getByPlaceholderText('Email'), 'john@example.com');
+    await user.type(screen.getAllByPlaceholderText('Password')[0], 'Password123!');
+    await user.type(screen.getByPlaceholderText('Confirm Password'), 'DifferentPass123!');
 
-    const checkbox = screen.getByRole('checkbox');
+    const checkbox = getCheckbox();
     await user.click(checkbox);
 
     const submitButton = screen.getByRole('button', { name: 'Create Account' });
@@ -131,13 +156,13 @@ describe('RegisterFormOrganism', () => {
 
   it('should show error when terms are not accepted', async () => {
     const user = userEvent.setup();
-    render(<RegisterFormOrganism />);
+    renderWithProviders(<RegisterFormOrganism />, { translations });
 
-    await user.type(document.getElementById('firstname') as HTMLElement, 'John');
-    await user.type(document.getElementById('lastname') as HTMLElement, 'Doe');
-    await user.type(document.getElementById('email') as HTMLElement, 'john@example.com');
-    await user.type(document.getElementById('password') as HTMLElement, 'Password123!');
-    await user.type(document.getElementById('confirmPassword') as HTMLElement, 'Password123!');
+    await user.type(screen.getByPlaceholderText('First Name'), 'John');
+    await user.type(screen.getByPlaceholderText('Last Name'), 'Doe');
+    await user.type(screen.getByPlaceholderText('Email'), 'john@example.com');
+    await user.type(screen.getAllByPlaceholderText('Password')[0], 'Password123!');
+    await user.type(screen.getByPlaceholderText('Confirm Password'), 'Password123!');
 
     const submitButton = screen.getByRole('button', { name: 'Create Account' });
     await user.click(submitButton);
@@ -156,16 +181,16 @@ describe('RegisterFormOrganism', () => {
 
     (global.fetch as any).mockResolvedValue(mockResponse);
 
-    render(<RegisterFormOrganism />);
+    renderWithProviders(<RegisterFormOrganism />, { translations });
 
-    await user.type(document.getElementById('firstname') as HTMLElement, 'John');
-    await user.type(document.getElementById('lastname') as HTMLElement, 'Doe');
-    await user.type(document.getElementById('email') as HTMLElement, 'john@example.com');
-    await user.type(document.getElementById('phone') as HTMLElement, '+1234567890');
-    await user.type(document.getElementById('password') as HTMLElement, 'Password123!');
-    await user.type(document.getElementById('confirmPassword') as HTMLElement, 'Password123!');
+    await user.type(screen.getByPlaceholderText('First Name'), 'John');
+    await user.type(screen.getByPlaceholderText('Last Name'), 'Doe');
+    await user.type(screen.getByPlaceholderText('Email'), 'john@example.com');
+    await user.type(screen.getByPlaceholderText('+1234567890'), '+1234567890');
+    await user.type(screen.getAllByPlaceholderText('Password')[0], 'Password123!');
+    await user.type(screen.getByPlaceholderText('Confirm Password'), 'Password123!');
 
-    const checkbox = screen.getByRole('checkbox');
+    const checkbox = getCheckbox();
     await user.click(checkbox);
 
     const submitButton = screen.getByRole('button', { name: 'Create Account' });
@@ -190,8 +215,7 @@ describe('RegisterFormOrganism', () => {
   });
 
   it('should show success message and redirect on successful registration', async () => {
-    vi.useFakeTimers();
-    const user = userEvent.setup({ delay: null });
+    const user = userEvent.setup();
 
     const mockResponse = {
       ok: true,
@@ -200,15 +224,15 @@ describe('RegisterFormOrganism', () => {
 
     (global.fetch as any).mockResolvedValue(mockResponse);
 
-    render(<RegisterFormOrganism />);
+    renderWithProviders(<RegisterFormOrganism />, { translations });
 
-    await user.type(document.getElementById('firstname') as HTMLElement, 'John');
-    await user.type(document.getElementById('lastname') as HTMLElement, 'Doe');
-    await user.type(document.getElementById('email') as HTMLElement, 'john@example.com');
-    await user.type(document.getElementById('password') as HTMLElement, 'Password123!');
-    await user.type(document.getElementById('confirmPassword') as HTMLElement, 'Password123!');
+    await user.type(screen.getByPlaceholderText('First Name'), 'John');
+    await user.type(screen.getByPlaceholderText('Last Name'), 'Doe');
+    await user.type(screen.getByPlaceholderText('Email'), 'john@example.com');
+    await user.type(screen.getAllByPlaceholderText('Password')[0], 'Password123!');
+    await user.type(screen.getByPlaceholderText('Confirm Password'), 'Password123!');
 
-    const checkbox = screen.getByRole('checkbox');
+    const checkbox = getCheckbox();
     await user.click(checkbox);
 
     const submitButton = screen.getByRole('button', { name: 'Create Account' });
@@ -218,13 +242,10 @@ describe('RegisterFormOrganism', () => {
       expect(screen.getByText('Registration successful!')).toBeInTheDocument();
     });
 
-    vi.advanceTimersByTime(1500);
-
+    // Wait for the redirect to be called (after 1500ms timeout in the component)
     await waitFor(() => {
-      expect(mockPush).toHaveBeenCalledWith('/auth/login');
-    });
-
-    vi.useRealTimers();
+      expect(mockRouterPush).toHaveBeenCalledWith('/auth/login');
+    }, { timeout: 3000 });
   });
 
   it('should show error message on failed registration', async () => {
@@ -236,15 +257,15 @@ describe('RegisterFormOrganism', () => {
 
     (global.fetch as any).mockResolvedValue(mockResponse);
 
-    render(<RegisterFormOrganism />);
+    renderWithProviders(<RegisterFormOrganism />, { translations });
 
-    await user.type(document.getElementById('firstname') as HTMLElement, 'John');
-    await user.type(document.getElementById('lastname') as HTMLElement, 'Doe');
-    await user.type(document.getElementById('email') as HTMLElement, 'john@example.com');
-    await user.type(document.getElementById('password') as HTMLElement, 'Password123!');
-    await user.type(document.getElementById('confirmPassword') as HTMLElement, 'Password123!');
+    await user.type(screen.getByPlaceholderText('First Name'), 'John');
+    await user.type(screen.getByPlaceholderText('Last Name'), 'Doe');
+    await user.type(screen.getByPlaceholderText('Email'), 'john@example.com');
+    await user.type(screen.getAllByPlaceholderText('Password')[0], 'Password123!');
+    await user.type(screen.getByPlaceholderText('Confirm Password'), 'Password123!');
 
-    const checkbox = screen.getByRole('checkbox');
+    const checkbox = getCheckbox();
     await user.click(checkbox);
 
     const submitButton = screen.getByRole('button', { name: 'Create Account' });
@@ -267,38 +288,38 @@ describe('RegisterFormOrganism', () => {
 
     (global.fetch as any).mockResolvedValue(mockResponse);
 
-    render(<RegisterFormOrganism />);
+    renderWithProviders(<RegisterFormOrganism />, { translations });
 
-    await user.type(document.getElementById('firstname') as HTMLElement, 'John');
-    await user.type(document.getElementById('lastname') as HTMLElement, 'Doe');
-    await user.type(document.getElementById('email') as HTMLElement, 'john@example.com');
-    await user.type(document.getElementById('password') as HTMLElement, 'Password123!');
-    await user.type(document.getElementById('confirmPassword') as HTMLElement, 'Password123!');
+    await user.type(screen.getByPlaceholderText('First Name'), 'John');
+    await user.type(screen.getByPlaceholderText('Last Name'), 'Doe');
+    await user.type(screen.getByPlaceholderText('Email'), 'john@example.com');
+    await user.type(screen.getAllByPlaceholderText('Password')[0], 'Password123!');
+    await user.type(screen.getByPlaceholderText('Confirm Password'), 'Password123!');
 
-    const checkbox = screen.getByRole('checkbox');
+    const checkbox = getCheckbox();
     await user.click(checkbox);
 
     const submitButton = screen.getByRole('button', { name: 'Create Account' });
     await user.click(submitButton);
 
     await waitFor(() => {
-      expect(document.getElementById('firstname')).toBeDisabled();
-      expect(document.getElementById('lastname')).toBeDisabled();
-      expect(document.getElementById('email')).toBeDisabled();
-      expect(document.getElementById('password')).toBeDisabled();
+      expect(screen.getByPlaceholderText('First Name')).toBeDisabled();
+      expect(screen.getByPlaceholderText('Last Name')).toBeDisabled();
+      expect(screen.getByPlaceholderText('Email')).toBeDisabled();
+      expect(screen.getAllByPlaceholderText('Password')[0]).toBeDisabled();
       expect(submitButton).toBeDisabled();
       expect(screen.getByText('Loading...')).toBeInTheDocument();
     });
   });
 
   it('should require all mandatory fields', () => {
-    render(<RegisterFormOrganism />);
+    renderWithProviders(<RegisterFormOrganism />, { translations });
 
-    const firstnameInput = document.getElementById('firstname') as HTMLInputElement;
-    const lastnameInput = document.getElementById('lastname') as HTMLInputElement;
-    const emailInput = document.getElementById('email') as HTMLInputElement;
-    const passwordInput = document.getElementById('password') as HTMLInputElement;
-    const confirmPasswordInput = document.getElementById('confirmPassword') as HTMLInputElement;
+    const firstnameInput = screen.getByPlaceholderText('First Name') as HTMLInputElement;
+    const lastnameInput = screen.getByPlaceholderText('Last Name') as HTMLInputElement;
+    const emailInput = screen.getByPlaceholderText('Email') as HTMLInputElement;
+    const passwordInput = screen.getAllByPlaceholderText('Password')[0] as HTMLInputElement;
+    const confirmPasswordInput = screen.getByPlaceholderText('Confirm Password') as HTMLInputElement;
 
     expect(firstnameInput).toHaveAttribute('required');
     expect(lastnameInput).toHaveAttribute('required');
@@ -311,25 +332,26 @@ describe('RegisterFormOrganism', () => {
 
   it('should toggle terms checkbox when clicking label', async () => {
     const user = userEvent.setup();
-    render(<RegisterFormOrganism />);
+    renderWithProviders(<RegisterFormOrganism />, { translations });
 
-    const checkbox = screen.getByRole('checkbox');
     const label = screen.getByText('I accept the terms and conditions');
 
-    expect(checkbox).not.toBeChecked();
+    // Click label to toggle checkbox
+    await user.click(label);
+
+    // Check that checkbox button has the checked class (bg-primary)
+    const checkbox = getCheckbox();
+    expect(checkbox.className).toContain('bg-primary');
 
     await user.click(label);
-    expect(checkbox).toBeChecked();
-
-    await user.click(label);
-    expect(checkbox).not.toBeChecked();
+    expect(checkbox.className).toContain('bg-background');
   });
 
   it('should display password strength indicator', () => {
-    render(<RegisterFormOrganism />);
+    renderWithProviders(<RegisterFormOrganism />, { translations });
 
     // PasswordStrengthIndicator component should be rendered
-    const passwordInput = document.getElementById('password');
+    const passwordInput = screen.getAllByPlaceholderText('Password')[0];
     expect(passwordInput).toBeInTheDocument();
   });
 
@@ -337,15 +359,15 @@ describe('RegisterFormOrganism', () => {
     const user = userEvent.setup();
     (global.fetch as any).mockRejectedValue(new Error('Network error'));
 
-    render(<RegisterFormOrganism />);
+    renderWithProviders(<RegisterFormOrganism />, { translations });
 
-    await user.type(document.getElementById('firstname') as HTMLElement, 'John');
-    await user.type(document.getElementById('lastname') as HTMLElement, 'Doe');
-    await user.type(document.getElementById('email') as HTMLElement, 'john@example.com');
-    await user.type(document.getElementById('password') as HTMLElement, 'Password123!');
-    await user.type(document.getElementById('confirmPassword') as HTMLElement, 'Password123!');
+    await user.type(screen.getByPlaceholderText('First Name'), 'John');
+    await user.type(screen.getByPlaceholderText('Last Name'), 'Doe');
+    await user.type(screen.getByPlaceholderText('Email'), 'john@example.com');
+    await user.type(screen.getAllByPlaceholderText('Password')[0], 'Password123!');
+    await user.type(screen.getByPlaceholderText('Confirm Password'), 'Password123!');
 
-    const checkbox = screen.getByRole('checkbox');
+    const checkbox = getCheckbox();
     await user.click(checkbox);
 
     const submitButton = screen.getByRole('button', { name: 'Create Account' });
@@ -365,16 +387,16 @@ describe('RegisterFormOrganism', () => {
 
     (global.fetch as any).mockResolvedValue(mockResponse);
 
-    render(<RegisterFormOrganism />);
+    renderWithProviders(<RegisterFormOrganism />, { translations });
 
     // Fill required fields only (skip phone)
-    await user.type(document.getElementById('firstname') as HTMLElement, 'John');
-    await user.type(document.getElementById('lastname') as HTMLElement, 'Doe');
-    await user.type(document.getElementById('email') as HTMLElement, 'john@example.com');
-    await user.type(document.getElementById('password') as HTMLElement, 'Password123!');
-    await user.type(document.getElementById('confirmPassword') as HTMLElement, 'Password123!');
+    await user.type(screen.getByPlaceholderText('First Name'), 'John');
+    await user.type(screen.getByPlaceholderText('Last Name'), 'Doe');
+    await user.type(screen.getByPlaceholderText('Email'), 'john@example.com');
+    await user.type(screen.getAllByPlaceholderText('Password')[0], 'Password123!');
+    await user.type(screen.getByPlaceholderText('Confirm Password'), 'Password123!');
 
-    const checkbox = screen.getByRole('checkbox');
+    const checkbox = getCheckbox();
     await user.click(checkbox);
 
     const submitButton = screen.getByRole('button', { name: 'Create Account' });
@@ -399,23 +421,23 @@ describe('RegisterFormOrganism', () => {
   });
 
   it('should render password field with correct type attribute', () => {
-    render(<RegisterFormOrganism />);
+    renderWithProviders(<RegisterFormOrganism />, { translations });
 
-    const passwordInput = document.getElementById('password') as HTMLInputElement;
+    const passwordInput = screen.getAllByPlaceholderText('Password')[0] as HTMLInputElement;
     expect(passwordInput.type).toBe('password');
   });
 
   it('should render email field with correct type attribute', () => {
-    render(<RegisterFormOrganism />);
+    renderWithProviders(<RegisterFormOrganism />, { translations });
 
-    const emailInput = document.getElementById('email') as HTMLInputElement;
+    const emailInput = screen.getByPlaceholderText('Email') as HTMLInputElement;
     expect(emailInput.type).toBe('email');
   });
 
   it('should render phone field with correct type attribute', () => {
-    render(<RegisterFormOrganism />);
+    renderWithProviders(<RegisterFormOrganism />, { translations });
 
-    const phoneInput = document.getElementById('phone') as HTMLInputElement;
+    const phoneInput = screen.getByPlaceholderText('+1234567890') as HTMLInputElement;
     expect(phoneInput.type).toBe('tel');
   });
 });

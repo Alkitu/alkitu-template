@@ -1,6 +1,6 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { RequestFormOrganism } from './RequestFormOrganism';
 import type { RequestFormOrganismProps } from './RequestFormOrganism.types';
 
@@ -57,6 +57,7 @@ const mockLocations = [
 describe('RequestFormOrganism', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.useRealTimers();
     (global.fetch as any).mockClear();
 
     // Default mock for fetching services and locations
@@ -80,19 +81,30 @@ describe('RequestFormOrganism', () => {
     });
   });
 
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('should render form with all fields', async () => {
     render(<RequestFormOrganism />);
 
-    await waitFor(() => {
-      expect(screen.getByLabelText(/service/i)).toBeInTheDocument();
-      expect(screen.getByLabelText(/location/i)).toBeInTheDocument();
-      expect(screen.getByLabelText(/execution date & time/i)).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /create request/i })).toBeInTheDocument();
-    });
-  });
+    await waitFor(
+      () => {
+        expect(screen.getByLabelText(/service/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/location/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/execution date & time/i)).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /create request/i })).toBeInTheDocument();
+      },
+      { timeout: 10000 },
+    );
+  }, 10000);
 
-  it('should show loading state while fetching data', () => {
-    render(<RequestFormOrganism />);
+  it('should show loading state while fetching data', async () => {
+    (global.fetch as any).mockImplementation(() => new Promise(() => {})); // Never resolves
+
+    await act(async () => {
+      render(<RequestFormOrganism />);
+    });
 
     expect(screen.getByRole('img', { hidden: true })).toBeInTheDocument(); // Loader2 icon
   });

@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { ServiceFormOrganism } from './ServiceFormOrganism';
 import type { ServiceFormOrganismProps } from './ServiceFormOrganism.types';
 
@@ -16,6 +16,7 @@ const mockCategories = [
 describe('ServiceFormOrganism', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.useRealTimers();
     (global.fetch as any).mockClear();
 
     // Default mock for fetching categories
@@ -31,6 +32,10 @@ describe('ServiceFormOrganism', () => {
         json: () => Promise.resolve({}),
       });
     });
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it('should show loading state while fetching categories', () => {

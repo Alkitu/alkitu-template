@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { CategoryListOrganism } from './CategoryListOrganism';
 import type { CategoryListOrganismProps } from './CategoryListOrganism.types';
 
@@ -32,9 +32,14 @@ const mockCategories = [
 describe('CategoryListOrganism', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.useRealTimers();
     (global.fetch as any).mockClear();
     (global.confirm as any).mockClear();
     (global.alert as any).mockClear();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it('should show loading state initially', () => {

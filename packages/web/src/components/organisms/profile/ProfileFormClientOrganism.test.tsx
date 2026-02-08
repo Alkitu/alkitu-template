@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { ProfileFormClientOrganism } from './ProfileFormClientOrganism';
 import type { ProfileFormClientOrganismProps } from './ProfileFormClientOrganism.types';
 
@@ -25,7 +25,12 @@ describe('ProfileFormClientOrganism', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.useRealTimers();
     (global.fetch as any).mockClear();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it('should render with initial data', () => {

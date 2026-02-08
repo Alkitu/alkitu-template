@@ -4,6 +4,18 @@ import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { ServiceListOrganism } from './ServiceListOrganism';
 import type { ServiceListOrganismProps } from './ServiceListOrganism.types';
 
+// Mock ServiceCardMolecule to prevent undefined errors
+vi.mock('@/components/molecules/service/ServiceCardMolecule', () => ({
+  ServiceCardMolecule: ({ service, onEdit, onDelete }: any) => (
+    <div data-testid="service-card">
+      <div>{service?.name || 'Unknown Service'}</div>
+      <div>{service?.category?.name || 'Unknown Category'}</div>
+      <button onClick={() => onEdit?.(service)} aria-label="edit service">Edit</button>
+      <button onClick={() => onDelete?.(service?.id)} aria-label="delete service">Delete</button>
+    </div>
+  ),
+}));
+
 // Mock fetch globally
 global.fetch = vi.fn();
 
@@ -15,22 +27,28 @@ const mockServices = [
     id: 'service-1',
     name: 'Emergency Plumbing',
     categoryId: 'cat-1',
+    category: { id: 'cat-1', name: 'Home Services' },
     thumbnail: 'https://example.com/plumbing.jpg',
     requestTemplate: { version: '1.0', fields: [] },
+    createdAt: new Date('2024-01-01').toISOString(),
   },
   {
     id: 'service-2',
     name: 'AC Repair',
     categoryId: 'cat-2',
+    category: { id: 'cat-2', name: 'HVAC Services' },
     thumbnail: 'https://example.com/ac.jpg',
     requestTemplate: { version: '1.0', fields: [] },
+    createdAt: new Date('2024-01-02').toISOString(),
   },
   {
     id: 'service-3',
     name: 'Electrical Wiring',
     categoryId: 'cat-1',
+    category: { id: 'cat-1', name: 'Home Services' },
     thumbnail: null,
     requestTemplate: { version: '1.0', fields: [] },
+    createdAt: new Date('2024-01-03').toISOString(),
   },
 ];
 

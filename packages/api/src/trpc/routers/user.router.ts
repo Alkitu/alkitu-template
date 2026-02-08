@@ -1,9 +1,30 @@
 import { z } from 'zod';
 import { UsersService } from '../../users/users.service';
 import { EmailService } from '../../email/email.service';
-import { t } from '../trpc';
+import { t, protectedProcedure } from '../trpc';
 import { UserStatus, UserRole } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
+import { adminProcedure } from '../middlewares/roles.middleware';
+import { handlePrismaError } from '../utils/prisma-error-mapper';
+import {
+  paginatedSortingSchema,
+  createPaginatedResponse,
+  calculatePagination,
+} from '../schemas/common.schemas';
+import {
+  registerSchema,
+  updateProfileSchema,
+  getUserByEmailSchema,
+  getFilteredUsersSchema,
+  bulkDeleteUsersSchema,
+  bulkUpdateRoleSchema,
+  bulkUpdateStatusSchema,
+  resetUserPasswordSchema,
+  adminChangePasswordSchema,
+  sendMessageToUserSchema,
+  anonymizeUserSchema,
+  createImpersonationTokenSchema,
+} from '../schemas/user.schemas';
 import { CreateUserDto } from '../../users/dto/create-user.dto';
 import { UpdateProfileDto } from '../../users/dto/update-profile.dto';
 import { FilterUsersDto } from '../../users/dto/filter-users.dto';
@@ -14,82 +35,10 @@ import {
   AdminResetPasswordDto,
 } from '../../users/dto/bulk-users.dto';
 
-// --- Zod Schemas ---
-
-const registerSchema = z.object({
-  email: z.string().email('Invalid email format'),
-  firstname: z.string().min(2, 'First name must be at least 2 characters'),
-  lastname: z.string().min(2, 'Last name must be at least 2 characters'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
-  phone: z.string().optional(),
-  role: z.enum(['ADMIN', 'EMPLOYEE', 'CLIENT', 'LEAD']).optional(),
-  terms: z.boolean().refine((val) => val === true, {
-    message: 'You must accept the terms and conditions',
-  }),
-});
-
-const updateProfileSchema = z.object({
-  id: z.string(),
-  firstname: z.string().optional(),
-  lastname: z.string().optional(),
-  phone: z.string().optional(),
-  role: z.enum(['ADMIN', 'EMPLOYEE', 'CLIENT', 'LEAD']).optional(),
-});
-
-const getUserByEmailSchema = z.object({ email: z.string().email() });
-
-const getFilteredUsersSchema = z.object({
-  search: z.string().optional(),
-  role: z.enum(['ADMIN', 'EMPLOYEE', 'CLIENT', 'LEAD']).optional(),
-  teamOnly: z.boolean().optional(),
-  createdFrom: z.string().optional(),
-  createdTo: z.string().optional(),
-  page: z.number().min(1).default(1),
-  limit: z.number().min(1).max(100).default(20),
-  sortBy: z
-    .enum(['email', 'firstname', 'lastname', 'createdAt', 'lastLogin'])
-    .default('createdAt'),
-  sortOrder: z.enum(['asc', 'desc']).default('desc'),
-});
-
-const bulkDeleteUsersSchema = z.object({ userIds: z.array(z.string()) });
-
-const bulkUpdateRoleSchema = z.object({
-  userIds: z.array(z.string()),
-  role: z.enum(['ADMIN', 'EMPLOYEE', 'CLIENT', 'LEAD']),
-});
-
-const bulkUpdateStatusSchema = z.object({
-  userIds: z.array(z.string()),
-  isActive: z.boolean(),
-});
-
-const resetUserPasswordSchema = z.object({
-  userId: z.string(),
-  sendEmail: z.boolean().default(true),
-});
-
-const adminChangePasswordSchema = z.object({
-  userId: z.string(),
-  newPassword: z.string().min(8, 'Password must be at least 8 characters'),
-});
-
-const sendMessageToUserSchema = z.object({
-  userId: z.string(),
-  message: z
-    .string()
-    .min(1, 'Message is required')
-    .max(500, 'Message too long'),
-});
-
-const anonymizeUserSchema = z.object({ userId: z.string() });
-
-const createImpersonationTokenSchema = z.object({
-  adminId: z.string(),
-  targetUserId: z.string(),
-});
-
-// --- Router ---
+/**
+ * User Router
+ * All schemas are imported from '../schemas/user.schemas.ts'
+ */
 
 export const createUserRouter = (
   usersService: UsersService,
@@ -149,19 +98,21 @@ export const createUserRouter = (
           user,
         };
       } catch (error: unknown) {
-        const errorMessage =
-          error instanceof Error ? error.message : 'Registration failed';
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: errorMessage,
-          cause: error,
-        });
+        handlePrismaError(error, 'register user');
       }
     }),
 
-    updateProfile: t.procedure
+    updateProfile: protectedProcedure
       .input(updateProfileSchema)
-      .mutation(async ({ input }) => {
+      .mutation(async ({ input, ctx }) => {
+        // Security: Users can only update their own profile (except ADMIN)
+        if (ctx.user.role !== UserRole.ADMIN && ctx.user.id !== input.id) {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'Cannot update profile of another user',
+          });
+        }
+
         try {
           const updateDto = {
             firstname: input.firstname,
@@ -190,41 +141,61 @@ export const createUserRouter = (
             `[UserRouter] Failed to update profile for ${input.id}:`,
             error,
           );
-          throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: 'Failed to update profile',
-            cause: error,
-          });
+          handlePrismaError(error, 'update user profile');
         }
       }),
 
-    getAllUsers: t.procedure.query(async () => {
-      try {
-        return await usersService.findAll();
-      } catch (error) {
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to fetch users',
-          cause: error,
-        });
-      }
-    }),
+    getAllUsers: adminProcedure
+      .input(paginatedSortingSchema.optional())
+      .query(async ({ input }) => {
+        try {
+          // Use default values if no input provided
+          const page = input?.page || 1;
+          const limit = input?.limit || 20;
+          const sortBy = input?.sortBy || 'createdAt';
+          const sortOrder = input?.sortOrder || 'desc';
 
-    getUserByEmail: t.procedure
+          const { skip, take } = calculatePagination(page, limit);
+
+          // Get users with pagination
+          const [users, total] = await Promise.all([
+            usersService['prisma'].user.findMany({
+              skip,
+              take,
+              orderBy: { [sortBy]: sortOrder },
+              select: {
+                id: true,
+                email: true,
+                firstname: true,
+                lastname: true,
+                phone: true,
+                role: true,
+                status: true,
+                createdAt: true,
+                updatedAt: true,
+                lastLogin: true,
+              },
+            }),
+            usersService['prisma'].user.count(),
+          ]);
+
+          return createPaginatedResponse(users, { page, limit, total });
+        } catch (error) {
+          handlePrismaError(error, 'fetch all users');
+        }
+      }),
+
+    getUserByEmail: adminProcedure
       .input(getUserByEmailSchema)
       .query(async ({ input }) => {
         try {
           return await usersService.findByEmail(input.email);
         } catch (error) {
-          throw new TRPCError({
-            code: 'NOT_FOUND',
-            message: 'User not found',
-            cause: error,
-          });
+          handlePrismaError(error, 'find user by email');
         }
       }),
 
-    getFilteredUsers: t.procedure
+    getFilteredUsers: adminProcedure
       .input(getFilteredUsersSchema)
       .query(async ({ input }) => {
         try {
@@ -237,11 +208,7 @@ export const createUserRouter = (
 
           return await usersService.findAllWithFilters(filterDto);
         } catch (error) {
-          throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: 'Failed to filter users',
-            cause: error,
-          });
+          handlePrismaError(error, 'filter users');
         }
       }),
 
@@ -249,13 +216,13 @@ export const createUserRouter = (
       return usersService.getUserStats();
     }),
 
-    bulkDeleteUsers: t.procedure
+    bulkDeleteUsers: adminProcedure
       .input(bulkDeleteUsersSchema)
       .mutation(async ({ input }) => {
         return usersService.bulkDeleteUsers(input as BulkDeleteUsersDto);
       }),
 
-    bulkUpdateRole: t.procedure
+    bulkUpdateRole: adminProcedure
       .input(bulkUpdateRoleSchema)
       .mutation(async ({ input }) => {
         return usersService.bulkUpdateRole({
@@ -264,18 +231,18 @@ export const createUserRouter = (
         } as BulkUpdateRoleDto);
       }),
 
-    bulkUpdateStatus: t.procedure
+    bulkUpdateStatus: adminProcedure
       .input(bulkUpdateStatusSchema)
       .mutation(async ({ input }) => {
         // Convert isActive boolean to UserStatus enum
         const statusDto: BulkUpdateStatusDto = {
           userIds: input.userIds,
-          status: input.isActive ? UserStatus.ACTIVE : UserStatus.SUSPENDED,
+          status: input.isActive ? UserStatus.VERIFIED : UserStatus.SUSPENDED,
         };
         return usersService.bulkUpdateStatus(statusDto);
       }),
 
-    resetUserPassword: t.procedure
+    resetUserPassword: adminProcedure
       .input(resetUserPasswordSchema)
       .mutation(async ({ input }) => {
         try {
@@ -287,16 +254,12 @@ export const createUserRouter = (
             `[UserRouter] Failed to reset password for ${input.userId}:`,
             error,
           );
-          throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: 'Failed to reset password',
-            cause: error,
-          });
+          handlePrismaError(error, 'reset user password');
         }
       }),
 
     // New admin functions
-    adminChangePassword: t.procedure
+    adminChangePassword: adminProcedure
       .input(adminChangePasswordSchema)
       .mutation(async ({ input }) => {
         try {
@@ -305,33 +268,41 @@ export const createUserRouter = (
             input.newPassword,
           );
         } catch (error) {
-          throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: 'Failed to change password',
-            cause: error,
-          });
+          handlePrismaError(error, 'change user password');
         }
       }),
 
-    sendMessageToUser: t.procedure
+    sendMessageToUser: adminProcedure
       .input(sendMessageToUserSchema)
       .mutation(async ({ input }) => {
-        return usersService.sendMessageToUser(input.userId, input.message);
+        try {
+          return await usersService.sendMessageToUser(input.userId, input.message);
+        } catch (error) {
+          handlePrismaError(error, 'send message to user');
+        }
       }),
 
-    anonymizeUser: t.procedure
+    anonymizeUser: adminProcedure
       .input(anonymizeUserSchema)
       .mutation(async ({ input }) => {
-        return usersService.anonymizeUser(input.userId);
+        try {
+          return await usersService.anonymizeUser(input.userId);
+        } catch (error) {
+          handlePrismaError(error, 'anonymize user');
+        }
       }),
 
-    createImpersonationToken: t.procedure
+    createImpersonationToken: adminProcedure
       .input(createImpersonationTokenSchema)
       .mutation(async ({ input }) => {
-        return usersService.createImpersonationToken(
-          input.adminId,
-          input.targetUserId,
-        );
+        try {
+          return await usersService.createImpersonationToken(
+            input.adminId,
+            input.targetUserId,
+          );
+        } catch (error) {
+          handlePrismaError(error, 'create impersonation token');
+        }
       }),
   });
 

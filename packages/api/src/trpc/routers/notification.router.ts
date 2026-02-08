@@ -1,14 +1,14 @@
 import { z } from 'zod';
-import { t } from '../trpc';
+import { t, protectedProcedure } from '../trpc';
 import { NotificationService } from '../../notification/notification.service';
 import { NotificationType } from '@prisma/client';
-import { TRPCError } from '@trpc/server';
+import { handlePrismaError } from '../utils/prisma-error-mapper';
 
 export const createNotificationRouter = (
   notificationService: NotificationService,
 ) =>
   t.router({
-    getNotifications: t.procedure
+    getNotifications: protectedProcedure
       .input(z.object({ userId: z.string() }))
       .query(async ({ input }) => {
         try {
@@ -18,11 +18,11 @@ export const createNotificationRouter = (
           return notifications;
         } catch (error) {
           console.error('Error fetching notifications:', error);
-          throw new Error('Failed to fetch notifications');
+          handlePrismaError(error, 'fetch notifications');
         }
       }),
 
-    getNotificationsWithFilters: t.procedure
+    getNotificationsWithFilters: protectedProcedure
       .input(
         z.object({
           userId: z.string(),
@@ -46,14 +46,11 @@ export const createNotificationRouter = (
           });
         } catch (error) {
           console.error('Error getting filtered notifications:', error);
-          throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: 'Failed to get filtered notifications',
-          });
+          handlePrismaError(error, 'get filtered notifications');
         }
       }),
 
-    exportNotifications: t.procedure
+    exportNotifications: protectedProcedure
       .input(
         z.object({
           userId: z.string(),
@@ -75,14 +72,11 @@ export const createNotificationRouter = (
           });
         } catch (error) {
           console.error('Error exporting notifications:', error);
-          throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: 'Failed to export notifications',
-          });
+          handlePrismaError(error, 'export notifications');
         }
       }),
 
-    getNotificationAnalytics: t.procedure
+    getNotificationAnalytics: protectedProcedure
       .input(
         z.object({
           userId: z.string(),
@@ -97,42 +91,33 @@ export const createNotificationRouter = (
           );
         } catch (error) {
           console.error('Error getting notification analytics:', error);
-          throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: 'Failed to get notification analytics',
-          });
+          handlePrismaError(error, 'get notification analytics');
         }
       }),
 
-    markAsRead: t.procedure
+    markAsRead: protectedProcedure
       .input(z.object({ notificationId: z.string() }))
       .mutation(async ({ input }) => {
         try {
           return await notificationService.markAsRead(input.notificationId);
         } catch (error) {
           console.error('Error marking notification as read:', error);
-          throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: 'Failed to mark notification as read',
-          });
+          handlePrismaError(error, 'mark notification as read');
         }
       }),
 
-    markAsUnread: t.procedure
+    markAsUnread: protectedProcedure
       .input(z.object({ notificationId: z.string() }))
       .mutation(async ({ input }) => {
         try {
           return await notificationService.markAsUnread(input.notificationId);
         } catch (error) {
           console.error('Error marking notification as unread:', error);
-          throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: 'Failed to mark notification as unread',
-          });
+          handlePrismaError(error, 'mark notification as unread');
         }
       }),
 
-    deleteNotification: t.procedure
+    deleteNotification: protectedProcedure
       .input(z.object({ notificationId: z.string() }))
       .mutation(async ({ input }) => {
         try {
@@ -141,14 +126,11 @@ export const createNotificationRouter = (
           );
         } catch (error) {
           console.error('Error deleting notification:', error);
-          throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: 'Failed to delete notification',
-          });
+          handlePrismaError(error, 'delete notification');
         }
       }),
 
-    bulkMarkAsRead: t.procedure
+    bulkMarkAsRead: protectedProcedure
       .input(z.object({ notificationIds: z.array(z.string()) }))
       .mutation(async ({ input }) => {
         try {
@@ -157,14 +139,11 @@ export const createNotificationRouter = (
           );
         } catch (error) {
           console.error('Error bulk marking as read:', error);
-          throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: 'Failed to bulk mark as read',
-          });
+          handlePrismaError(error, 'bulk mark notifications as read');
         }
       }),
 
-    bulkMarkAsUnread: t.procedure
+    bulkMarkAsUnread: protectedProcedure
       .input(z.object({ notificationIds: z.array(z.string()) }))
       .mutation(async ({ input }) => {
         try {
@@ -173,70 +152,55 @@ export const createNotificationRouter = (
           );
         } catch (error) {
           console.error('Error bulk marking as unread:', error);
-          throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: 'Failed to bulk mark as unread',
-          });
+          handlePrismaError(error, 'bulk mark notifications as unread');
         }
       }),
 
-    bulkDelete: t.procedure
+    bulkDelete: protectedProcedure
       .input(z.object({ notificationIds: z.array(z.string()) }))
       .mutation(async ({ input }) => {
         try {
           return await notificationService.bulkDelete(input.notificationIds);
         } catch (error) {
           console.error('Error bulk deleting notifications:', error);
-          throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: 'Failed to bulk delete notifications',
-          });
+          handlePrismaError(error, 'bulk delete notifications');
         }
       }),
 
-    getUnreadCount: t.procedure
+    getUnreadCount: protectedProcedure
       .input(z.object({ userId: z.string() }))
       .query(async ({ input }) => {
         try {
           return await notificationService.getUnreadCount(input.userId);
         } catch (error) {
           console.error('Error getting unread count:', error);
-          throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: 'Failed to get unread count',
-          });
+          handlePrismaError(error, 'get unread notification count');
         }
       }),
 
-    markAllAsRead: t.procedure
+    markAllAsRead: protectedProcedure
       .input(z.object({ userId: z.string() }))
       .mutation(async ({ input }) => {
         try {
           return await notificationService.markAllAsRead(input.userId);
         } catch (error) {
           console.error('Error marking all as read:', error);
-          throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: 'Failed to mark all as read',
-          });
+          handlePrismaError(error, 'mark all notifications as read');
         }
       }),
 
-    deleteAllNotifications: t.procedure
+    deleteAllNotifications: protectedProcedure
       .input(z.object({ userId: z.string() }))
       .mutation(async ({ input }) => {
         try {
           return await notificationService.deleteAllNotifications(input.userId);
         } catch (error) {
           console.error('Error deleting all notifications:', error);
-          throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: 'Failed to delete all notifications',
-          });
+          handlePrismaError(error, 'delete all notifications');
         }
       }),
 
-    deleteReadNotifications: t.procedure
+    deleteReadNotifications: protectedProcedure
       .input(z.object({ userId: z.string() }))
       .mutation(async ({ input }) => {
         try {
@@ -245,14 +209,11 @@ export const createNotificationRouter = (
           );
         } catch (error) {
           console.error('Error deleting read notifications:', error);
-          throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: 'Failed to delete read notifications',
-          });
+          handlePrismaError(error, 'delete read notifications');
         }
       }),
 
-    deleteNotificationsByType: t.procedure
+    deleteNotificationsByType: protectedProcedure
       .input(
         z.object({ userId: z.string(), type: z.nativeEnum(NotificationType) }),
       )
@@ -264,43 +225,34 @@ export const createNotificationRouter = (
           );
         } catch (error) {
           console.error('Error deleting notifications by type:', error);
-          throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: 'Failed to delete notifications by type',
-          });
+          handlePrismaError(error, 'delete notifications by type');
         }
       }),
 
-    getNotificationStats: t.procedure
+    getNotificationStats: protectedProcedure
       .input(z.object({ userId: z.string() }))
       .query(async ({ input }) => {
         try {
           return await notificationService.getNotificationStats(input.userId);
         } catch (error) {
           console.error('Error getting notification stats:', error);
-          throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: 'Failed to get notification stats',
-          });
+          handlePrismaError(error, 'get notification stats');
         }
       }),
 
     // Preferences endpoints
-    getUserPreferences: t.procedure
+    getUserPreferences: protectedProcedure
       .input(z.object({ userId: z.string() }))
       .query(async ({ input }) => {
         try {
           return await notificationService.getUserPreferences(input.userId);
         } catch (error) {
           console.error('Error getting user preferences:', error);
-          throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: 'Failed to get user preferences',
-          });
+          handlePrismaError(error, 'get notification preferences');
         }
       }),
 
-    createOrUpdatePreferences: t.procedure
+    createOrUpdatePreferences: protectedProcedure
       .input(
         z.object({
           userId: z.string(),
@@ -331,29 +283,23 @@ export const createNotificationRouter = (
           );
         } catch (error) {
           console.error('Error updating preferences:', error);
-          throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: 'Failed to update preferences',
-          });
+          handlePrismaError(error, 'update notification preferences');
         }
       }),
 
-    deletePreferences: t.procedure
+    deletePreferences: protectedProcedure
       .input(z.object({ userId: z.string() }))
       .mutation(async ({ input }) => {
         try {
           return await notificationService.deletePreferences(input.userId);
         } catch (error) {
           console.error('Error deleting preferences:', error);
-          throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: 'Failed to delete preferences',
-          });
+          handlePrismaError(error, 'delete notification preferences');
         }
       }),
 
     // Optimized pagination endpoints for TICKET #7
-    getNotificationsWithCursor: t.procedure
+    getNotificationsWithCursor: protectedProcedure
       .input(
         z.object({
           userId: z.string(),
@@ -377,14 +323,11 @@ export const createNotificationRouter = (
           });
         } catch (error) {
           console.error('Error getting notifications with cursor:', error);
-          throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: 'Failed to get notifications with cursor',
-          });
+          handlePrismaError(error, 'get notifications with cursor pagination');
         }
       }),
 
-    getRecentNotifications: t.procedure
+    getRecentNotifications: protectedProcedure
       .input(
         z.object({
           userId: z.string(),
@@ -399,14 +342,11 @@ export const createNotificationRouter = (
           );
         } catch (error) {
           console.error('Error getting recent notifications:', error);
-          throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: 'Failed to get recent notifications',
-          });
+          handlePrismaError(error, 'get recent notifications');
         }
       }),
 
-    getNotificationCountsOptimized: t.procedure
+    getNotificationCountsOptimized: protectedProcedure
       .input(z.object({ userId: z.string() }))
       .query(async ({ input }) => {
         try {
@@ -415,14 +355,11 @@ export const createNotificationRouter = (
           );
         } catch (error) {
           console.error('Error getting optimized notification counts:', error);
-          throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: 'Failed to get optimized notification counts',
-          });
+          handlePrismaError(error, 'get optimized notification counts');
         }
       }),
 
-    bulkMarkAsReadOptimized: t.procedure
+    bulkMarkAsReadOptimized: protectedProcedure
       .input(
         z.object({
           notificationIds: z.array(z.string()),
@@ -437,10 +374,7 @@ export const createNotificationRouter = (
           );
         } catch (error) {
           console.error('Error bulk marking as read (optimized):', error);
-          throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: 'Failed to bulk mark as read (optimized)',
-          });
+          handlePrismaError(error, 'bulk mark notifications as read (optimized)');
         }
       }),
   });

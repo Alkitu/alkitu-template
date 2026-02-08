@@ -1,6 +1,7 @@
 import { z } from 'zod';
-import { t } from '../trpc';
-import { PrismaClient, RequestStatus } from '@prisma/client';
+import { t, protectedProcedure } from '../trpc';
+import { PrismaClient, RequestStatus, UserRole, AccessLevel } from '@prisma/client';
+import { TRPCError } from '@trpc/server';
 import {
   updateRequestSchema,
   createRequestSchema,
@@ -9,19 +10,35 @@ import {
   assignRequestSchema,
   cancelRequestSchema,
 } from '../schemas/request.schemas';
+import {
+  adminProcedure,
+  employeeProcedure,
+  requireResourceAccess,
+} from '../middlewares/roles.middleware';
 
 const prisma = new PrismaClient();
 
 /**
  * Request tRPC Router
  * Handles all request-related queries and mutations
+ *
+ * Security:
+ * - All endpoints require authentication
+ * - CLIENT role: can only view/create/cancel their own requests
+ * - EMPLOYEE role: can view assigned requests + own requests, update status, assign
+ * - ADMIN role: full access to all requests
  */
 export function createRequestRouter() {
   return t.router({
-    // Get all requests with optional filters
-    getFilteredRequests: t.procedure
+    /**
+     * Get filtered requests with role-based access control
+     * - CLIENT: only sees their own requests
+     * - EMPLOYEE: sees assigned requests + own requests
+     * - ADMIN: sees all requests
+     */
+    getFilteredRequests: protectedProcedure
       .input(getFilteredRequestsSchema)
-      .query(async ({ input }) => {
+      .query(async ({ input, ctx }) => {
         const {
           page,
           limit,
@@ -33,12 +50,33 @@ export function createRequestRouter() {
           sortOrder,
         } = input;
 
-        // Build where clause
+        // Build where clause based on role
         const where: any = {};
         if (status) where.status = status;
-        if (userId) where.userId = userId;
         if (serviceId) where.serviceId = serviceId;
-        if (assignedToId) where.assignedToId = assignedToId;
+
+        // Role-based filtering
+        if (ctx.user.role === UserRole.CLIENT) {
+          // Clients only see their own requests
+          where.userId = ctx.user.id;
+        } else if (ctx.user.role === UserRole.EMPLOYEE || ctx.user.role === UserRole.LEAD) {
+          // Employees see assigned requests + own requests
+          where.OR = [
+            { userId: ctx.user.id },
+            { assignedToId: ctx.user.id },
+          ];
+          // If userId filter is provided, respect it (within their scope)
+          if (userId) {
+            where.OR.push({ userId });
+          }
+          if (assignedToId) {
+            where.OR.push({ assignedToId });
+          }
+        } else if (ctx.user.role === UserRole.ADMIN) {
+          // Admins see everything, respect all filters
+          if (userId) where.userId = userId;
+          if (assignedToId) where.assignedToId = assignedToId;
+        }
 
         // Get total count
         const total = await prisma.request.count({ where });
@@ -101,32 +139,62 @@ export function createRequestRouter() {
         };
       }),
 
-    // Get request stats (counts by status)
-    getRequestStats: t.procedure.input(z.object({})).query(async () => {
-      const [total, pending, ongoing, completed, cancelled] = await Promise.all([
-        prisma.request.count(),
-        prisma.request.count({ where: { status: RequestStatus.PENDING } }),
-        prisma.request.count({ where: { status: RequestStatus.ONGOING } }),
-        prisma.request.count({ where: { status: RequestStatus.COMPLETED } }),
-        prisma.request.count({ where: { status: RequestStatus.CANCELLED } }),
-      ]);
+    /**
+     * Get request stats
+     * - CLIENT: only their own stats
+     * - EMPLOYEE: assigned + own stats
+     * - ADMIN: global stats
+     */
+    getRequestStats: protectedProcedure
+      .input(z.object({}).optional())
+      .query(async ({ ctx }) => {
+        // Build where clause based on role
+        let where: any = {};
 
-      return {
-        total,
-        byStatus: {
-          PENDING: pending,
-          ONGOING: ongoing,
-          COMPLETED: completed,
-          CANCELLED: cancelled,
-        },
-      };
-    }),
+        if (ctx.user.role === UserRole.CLIENT) {
+          where.userId = ctx.user.id;
+        } else if (ctx.user.role === UserRole.EMPLOYEE || ctx.user.role === UserRole.LEAD) {
+          where.OR = [
+            { userId: ctx.user.id },
+            { assignedToId: ctx.user.id },
+          ];
+        }
+        // ADMIN: no filter (sees all)
 
-    // Get single request by ID
-    getRequestById: t.procedure
+        const [total, pending, ongoing, completed, cancelled] = await Promise.all([
+          prisma.request.count({ where }),
+          prisma.request.count({ where: { ...where, status: RequestStatus.PENDING } }),
+          prisma.request.count({ where: { ...where, status: RequestStatus.ONGOING } }),
+          prisma.request.count({ where: { ...where, status: RequestStatus.COMPLETED } }),
+          prisma.request.count({ where: { ...where, status: RequestStatus.CANCELLED } }),
+        ]);
+
+        return {
+          total,
+          byStatus: {
+            PENDING: pending,
+            ONGOING: ongoing,
+            COMPLETED: completed,
+            CANCELLED: cancelled,
+          },
+        };
+      }),
+
+    /**
+     * Get single request by ID
+     * Security: Uses requireResourceAccess middleware
+     */
+    getRequestById: protectedProcedure
       .input(z.object({ id: z.string() }))
+      .use(
+        requireResourceAccess({
+          resourceType: 'REQUEST',
+          accessLevel: AccessLevel.READ,
+          resourceIdKey: 'id',
+        }),
+      )
       .query(async ({ input }) => {
-        return await prisma.request.findUnique({
+        const request = await prisma.request.findUnique({
           where: { id: input.id },
           include: {
             user: true,
@@ -139,12 +207,32 @@ export function createRequestRouter() {
             assignedTo: true,
           },
         });
+
+        if (!request) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Request not found',
+          });
+        }
+
+        return request;
       }),
 
-    // Create a new request
-    createRequest: t.procedure
+    /**
+     * Create a new request
+     * Security: Users can only create requests for themselves (unless ADMIN)
+     */
+    createRequest: protectedProcedure
       .input(createRequestSchema)
-      .mutation(async ({ input }) => {
+      .mutation(async ({ input, ctx }) => {
+        // Validate user can create request for this userId
+        if (ctx.user.role !== UserRole.ADMIN && ctx.user.id !== input.userId) {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'Cannot create request for another user',
+          });
+        }
+
         return await prisma.request.create({
           data: {
             userId: input.userId,
@@ -159,9 +247,19 @@ export function createRequestRouter() {
         });
       }),
 
-    // Update request (full edit)
-    updateRequest: t.procedure
+    /**
+     * Update request (full edit)
+     * Security: EMPLOYEE+ role required, uses resource access control
+     */
+    updateRequest: employeeProcedure
       .input(updateRequestSchema)
+      .use(
+        requireResourceAccess({
+          resourceType: 'REQUEST',
+          accessLevel: AccessLevel.WRITE,
+          resourceIdKey: 'id',
+        }),
+      )
       .mutation(async ({ input }) => {
         const {
           id,
@@ -180,7 +278,10 @@ export function createRequestRouter() {
         });
 
         if (!existingRequest) {
-          throw new Error('Request not found');
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Request not found',
+          });
         }
 
         // Handle location (use existing or create new)
@@ -223,9 +324,19 @@ export function createRequestRouter() {
         return updatedRequest;
       }),
 
-    // Update request status
-    updateRequestStatus: t.procedure
+    /**
+     * Update request status
+     * Security: EMPLOYEE+ role required, uses resource access control
+     */
+    updateRequestStatus: employeeProcedure
       .input(updateRequestStatusSchema)
+      .use(
+        requireResourceAccess({
+          resourceType: 'REQUEST',
+          accessLevel: AccessLevel.WRITE,
+          resourceIdKey: 'id',
+        }),
+      )
       .mutation(async ({ input }) => {
         const updateData: any = { status: input.status };
 
@@ -239,9 +350,19 @@ export function createRequestRouter() {
         });
       }),
 
-    // Assign request to employee
-    assignRequest: t.procedure
+    /**
+     * Assign request to employee
+     * Security: EMPLOYEE+ role required
+     */
+    assignRequest: employeeProcedure
       .input(assignRequestSchema)
+      .use(
+        requireResourceAccess({
+          resourceType: 'REQUEST',
+          accessLevel: AccessLevel.WRITE,
+          resourceIdKey: 'id',
+        }),
+      )
       .mutation(async ({ input }) => {
         return await prisma.request.update({
           where: { id: input.id },
@@ -252,10 +373,39 @@ export function createRequestRouter() {
         });
       }),
 
-    // Cancel request
-    cancelRequest: t.procedure
+    /**
+     * Cancel request
+     * Security: Users can cancel their own requests, EMPLOYEE+ can cancel any
+     */
+    cancelRequest: protectedProcedure
       .input(cancelRequestSchema)
-      .mutation(async ({ input }) => {
+      .mutation(async ({ input, ctx }) => {
+        // Check if user owns the request or has EMPLOYEE+ role
+        const request = await prisma.request.findUnique({
+          where: { id: input.id },
+          select: { userId: true },
+        });
+
+        if (!request) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Request not found',
+          });
+        }
+
+        const canCancel =
+          ctx.user.id === request.userId ||
+          ctx.user.role === UserRole.EMPLOYEE ||
+          ctx.user.role === UserRole.LEAD ||
+          ctx.user.role === UserRole.ADMIN;
+
+        if (!canCancel) {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'Cannot cancel this request',
+          });
+        }
+
         return await prisma.request.update({
           where: { id: input.id },
           data: {
@@ -266,9 +416,19 @@ export function createRequestRouter() {
         });
       }),
 
-    // Delete request
-    deleteRequest: t.procedure
+    /**
+     * Delete request
+     * Security: ADMIN only
+     */
+    deleteRequest: adminProcedure
       .input(z.object({ id: z.string() }))
+      .use(
+        requireResourceAccess({
+          resourceType: 'REQUEST',
+          accessLevel: AccessLevel.ADMIN,
+          resourceIdKey: 'id',
+        }),
+      )
       .mutation(async ({ input }) => {
         return await prisma.request.delete({
           where: { id: input.id },

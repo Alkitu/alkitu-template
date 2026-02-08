@@ -108,7 +108,8 @@
       "Bash(npx playwright install:*)",
       "Bash(docker exec:*)",
       "Bash(git rm:*)",
-      "Bash(cd /Users/luiseurdanetamartucci/Desktop/Proyectos\\\\ en\\\\ GitHub/Alkitu/alkitu-template/packages/api && npx nest build:*)"
+      "Bash(cd /Users/luiseurdanetamartucci/Desktop/Proyectos\\\\ en\\\\ GitHub/Alkitu/alkitu-template/packages/api && npx nest build:*)",
+      "Bash(git pull origin main)"
     ],
     "deny": [],
     "ask": []

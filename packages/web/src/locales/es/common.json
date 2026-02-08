@@ -270,6 +270,23 @@
   "admin": {
     "dashboard": {
       "title": "Panel de Administración",
+      "description": "Panel de administración del sistema",
+      "stats": {
+        "title": "Estadísticas de Usuarios",
+        "totalUsers": "Total Usuarios",
+        "clients": "Clientes",
+        "employees": "Empleados",
+        "admins": "Administradores"
+      },
+      "recentActivity": {
+        "title": "Actividad Reciente",
+        "subtitle": "Últimos 30 días",
+        "newUsers": "Nuevos usuarios"
+      },
+      "userDistribution": {
+        "title": "Distribución de Usuarios",
+        "subtitle": "Por tipo de rol"
+      },
       "userManagement": {
         "title": "Gestión de Usuarios",
         "description": "Gestionar usuarios, roles y permisos",
@@ -285,6 +302,43 @@
       }
     },
     "users": {
+      "title": "Usuarios",
+      "description": "Gestión de usuarios del sistema",
+      "table": {
+        "user": "Usuario",
+        "role": "Rol",
+        "phone": "Teléfono",
+        "actions": "Acciones",
+        "edit": "Editar",
+        "delete": "Eliminar"
+      },
+      "roles": {
+        "ADMIN": "Administrador",
+        "EMPLOYEE": "Empleado",
+        "CLIENT": "Cliente",
+        "LEAD": "Lead"
+      },
+      "filters": {
+        "all": "Todos",
+        "admin": "Administradores",
+        "employee": "Empleados",
+        "client": "Clientes"
+      },
+      "stats": {
+        "total": "Total de Usuarios",
+        "admins": "Administradores",
+        "employees": "Empleados",
+        "clients": "Clientes"
+      },
+      "actions": {
+        "search": "Buscar usuarios...",
+        "createUser": "Crear nuevo usuario"
+      },
+      "messages": {
+        "deleteConfirm": "¿Estás seguro de que deseas eliminar este usuario? Esta acción no se puede deshacer.",
+        "deleteSuccess": "Usuario eliminado exitosamente",
+        "deleteError": "Error al cargar usuarios"
+      },
       "form": {
         "name": "Nombre",
         "lastName": "Apellido",

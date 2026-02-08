@@ -19,7 +19,7 @@ export class UserFactory {
     firstName: "Test",
     lastName: "User",
     role: UserRole.USER,
-    status: UserStatus.ACTIVE,
+    status: UserStatus.VERIFIED,
     emailVerified: null,
     phone: "+1234567890",
   };
@@ -65,14 +65,14 @@ export class UserFactory {
     return this.create({
       ...overrides,
       emailVerified: true,
-      status: UserStatus.ACTIVE,
+      status: UserStatus.VERIFIED,
     });
   }
 
   static createInactiveUser(overrides: CreateUserData = {}): User {
     return this.create({
       ...overrides,
-      status: UserStatus.INACTIVE,
+      status: UserStatus.PENDING,
     });
   }
 
@@ -107,7 +107,7 @@ export class UserFactory {
       email: overrides.email || "minimal@example.com",
       lastName: overrides.lastName || "User",
       role: overrides.role || UserRole.USER,
-      status: overrides.status || UserStatus.ACTIVE,
+      status: overrides.status || UserStatus.VERIFIED,
     };
   }
 
@@ -115,7 +115,7 @@ export class UserFactory {
     return this.create({
       ...overrides,
       emailVerified: true,
-      status: UserStatus.ACTIVE,
+      status: UserStatus.VERIFIED,
       password: "$2b$10$validhashedpassword",
     });
   }

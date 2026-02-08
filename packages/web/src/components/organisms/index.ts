@@ -61,3 +61,23 @@ export type {
   SonnerOrganismProps,
   ToastHelpers,
 } from './sonner';
+
+// Admin organisms
+export { UserManagementTable, RequestManagementTable } from './admin';
+export type {
+  UserManagementTableProps,
+  UserFilterType,
+  UserTableItem,
+  UserStats,
+  TableLabels,
+  RoleLabels,
+  FilterLabels,
+  StatsLabels,
+  ActionLabels,
+  UserManagementLabels,
+  RequestManagementTableProps,
+  RequestFilterType,
+  RequestFilters,
+  RequestStats,
+  RequestTableItem,
+} from './admin';

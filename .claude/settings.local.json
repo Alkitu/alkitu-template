@@ -109,7 +109,12 @@
       "Bash(docker exec:*)",
       "Bash(git rm:*)",
       "Bash(cd /Users/luiseurdanetamartucci/Desktop/Proyectos\\\\ en\\\\ GitHub/Alkitu/alkitu-template/packages/api && npx nest build:*)",
-      "Bash(git pull origin main)"
+      "Bash(git pull origin main)",
+      "Bash(DATABASE_URL=\"mongodb+srv://alkitu:Al123kitu.com@alkitu.bfid3.mongodb.net/TEMPLATE?retryWrites=true&w=majority&appName=alkitu\" npm run db:fix-status:*)",
+      "Bash(git diff HEAD~1 --stat -- packages/web/src/app/[lang]/\\\\\\(private\\\\\\)/client/layout.tsx packages/web/src/app/[lang]/\\\\\\(private\\\\\\)/employee/layout.tsx packages/web/src/components/features/dashboard/dashboard.tsx)",
+      "Bash(npx playwright codegen:*)",
+      "Bash(node:*)",
+      "Bash(test:*)"
     ],
     "deny": [],
     "ask": []

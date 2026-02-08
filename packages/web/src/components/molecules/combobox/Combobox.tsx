@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Check, ChevronDown, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/features/theme-editor-3.0/design-system/primitives/Button';
+import { Button } from '@/components/primitives/ui/button';
 import { Badge } from '@/components/atoms/badges';
 import {
   Command,

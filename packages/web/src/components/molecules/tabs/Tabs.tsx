@@ -15,7 +15,7 @@ import {
   TabsTrigger as TabsTriggerAtom,
   TabsContent as TabsContentAtom,
 } from '@/components/atoms/tabs';
-import { Button } from '@/components/features/theme-editor-3.0/design-system/primitives/Button';
+import { Button } from '@/components/primitives/ui/button';
 import { Badge } from '@/components/atoms/badges';
 import type { TabsProps, TabItem } from './Tabs.types';
 

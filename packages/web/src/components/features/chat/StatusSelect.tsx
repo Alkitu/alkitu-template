@@ -8,7 +8,7 @@ import {
 import { Label } from '@/components/primitives/ui/label';
 import { Badge } from '@/components/atoms/badge';
 
-import { ConversationStatus } from '@prisma/client';
+import { ConversationStatus } from '@alkitu/shared';
 
 interface StatusSelectProps {
   currentStatus: ConversationStatus;

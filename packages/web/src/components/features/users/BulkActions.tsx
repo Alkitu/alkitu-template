@@ -5,7 +5,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/primitives/DropdownMenu';
-import { UserRole, UserStatus } from '@prisma/client';
+import { UserRole, UserStatus } from '@alkitu/shared';
 
 interface BulkActionsProps {
   selectedUserIds: string[];

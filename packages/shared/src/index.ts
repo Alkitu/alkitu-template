@@ -29,3 +29,6 @@ export * from "./config/freemium-flags";
 
 // RBAC
 export * from "./rbac/role-hierarchy";
+
+// Enums
+export * from "./enums/conversation-status.enum";

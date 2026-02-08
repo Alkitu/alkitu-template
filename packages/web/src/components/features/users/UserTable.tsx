@@ -9,7 +9,7 @@ import {
 } from '@/components/primitives/ui/table';
 import { Checkbox } from '@/components/primitives/ui/checkbox';
 import { Button } from '@/components/primitives/ui/button';
-import { User } from '@prisma/client';
+import { User } from '@alkitu/shared';
 import { BulkActions } from './BulkActions';
 
 interface UserTableProps {

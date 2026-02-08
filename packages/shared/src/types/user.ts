@@ -1,15 +1,15 @@
-export enum UserRole {
-  ADMIN = "ADMIN",
-  CLIENT = "CLIENT",
-  EMPLOYEE = "EMPLOYEE",
-  LEAD = "LEAD",
-}
+// Import and re-export UserRole
+import { UserRole } from '../enums/user-role.enum';
+export { UserRole };
 
+/**
+ * User Status Enum
+ * Must match Prisma schema
+ */
 export enum UserStatus {
   ACTIVE = "ACTIVE",
-  INACTIVE = "INACTIVE",
   SUSPENDED = "SUSPENDED",
-  PENDING = "PENDING",
+  ANONYMIZED = "ANONYMIZED",
 }
 
 /**

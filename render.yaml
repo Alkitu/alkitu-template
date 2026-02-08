@@ -51,7 +51,7 @@ services:
     region: oregon
     plan: free
     branch: main
-    buildCommand: npm ci && npm run build:shared && npm run build:web
+    buildCommand: npm ci && npx prisma generate --schema=packages/api/prisma/schema.prisma && npm run build:shared && npm run build:web
     startCommand: cd packages/web && npm start
     healthCheckPath: /
     autoDeploy: true

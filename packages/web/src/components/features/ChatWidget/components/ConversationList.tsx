@@ -4,7 +4,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { MessageSquare, ChevronRight, Clock } from 'lucide-react';
 import { Badge } from '@/components/atoms/badge';
 import { cn } from '@/lib/utils';
-import { ConversationStatus } from '@prisma/client';
+import { ConversationStatus } from '@alkitu/shared';
 
 interface ConversationListProps {
   conversations: any[];

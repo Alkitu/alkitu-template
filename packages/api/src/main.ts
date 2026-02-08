@@ -12,8 +12,15 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // Enable CORS
+  const allowedOrigins = [
+    process.env.APP_URL,
+    process.env.FRONTEND_URL,
+    process.env.CORS_ORIGINS,
+    'http://localhost:3000',
+  ].filter(Boolean);
+
   app.enableCors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: allowedOrigins.length > 0 ? allowedOrigins : true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
@@ -52,7 +59,7 @@ async function bootstrap() {
       
       ## Environment
       - Base URL: ${process.env.API_URL || 'http://localhost:3001'}
-      - Frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:3000'}
+      - Frontend URL: ${process.env.APP_URL || process.env.FRONTEND_URL || 'http://localhost:3000'}
     `,
     )
     .setVersion('1.0.0')

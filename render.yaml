@@ -43,6 +43,11 @@ services:
           type: web
           name: alkitu-web
           envVarKey: RENDER_EXTERNAL_URL
+      - key: FRONTEND_URL
+        fromService:
+          type: web
+          name: alkitu-web
+          envVarKey: RENDER_EXTERNAL_URL
 
   # Frontend Web Service (Next.js)
   - type: web

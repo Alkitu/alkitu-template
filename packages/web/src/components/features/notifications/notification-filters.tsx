@@ -16,7 +16,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/primitives/Card';
-import { Badge } from '@/components/atoms/badge';
+import { Badge } from '@/components/atoms-alianza/Badge';
 import { Button } from '@/components/primitives/ui/button';
 import { Checkbox } from '@/components/primitives/ui/checkbox';
 import { Switch } from '@/components/primitives/ui/switch';

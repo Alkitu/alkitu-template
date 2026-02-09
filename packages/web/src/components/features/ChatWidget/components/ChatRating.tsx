@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/primitives/ui/button';
 import { Star } from 'lucide-react';
-import { Textarea } from '@/components/atoms/textarea';
+import { Textarea } from '@/components/atoms-alianza/Textarea';
 
 interface ChatRatingProps {
   onSubmit: (rating: number, feedback?: string) => void;

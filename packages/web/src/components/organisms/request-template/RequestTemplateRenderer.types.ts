@@ -1,4 +1,4 @@
-import type { DynamicField } from '@/components/molecules/dynamic-form';
+import type { DynamicField } from '@/components/molecules-alianza/DynamicForm';
 
 /**
  * Request Template structure (ALI-118)

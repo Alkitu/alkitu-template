@@ -8,7 +8,7 @@ import { Checkbox } from '@/components/molecules-alianza/Checkbox';
 import { useTranslations } from '@/context/TranslationsContext';
 import { FormError } from '@/components/primitives/ui/form-error';
 import { FormSuccess } from '@/components/primitives/ui/form-success';
-import { PasswordStrengthIndicator } from '@/components/atoms/password-strength-indicator';
+import { PasswordStrengthIndicator } from '@/components/atoms-alianza/PasswordStrengthIndicator';
 import { getCurrentLocalizedRoute } from '@/lib/locale';
 import { User, Mail, Lock, Eye, EyeOff, Phone } from 'lucide-react';
 import type { RegisterFormOrganismProps } from './RegisterFormOrganism.types';

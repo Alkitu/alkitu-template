@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useParams } from 'next/navigation'; // Added
-import { AdminPageHeader } from '@/components/molecules/admin-page-header'; // Added
+import { AdminPageHeader } from '@/components/molecules-alianza/AdminPageHeader'; // Added
 import { trpc } from '@/lib/trpc';
 import {
   Card,
@@ -15,7 +15,7 @@ import {
   CardTitle,
 } from '@/components/primitives/Card';
 import { Button } from '@/components/primitives/ui/button';
-import { Typography } from '@/components/atoms/typography';
+import { Typography } from '@/components/atoms-alianza/Typography';
 import {
   Form,
   FormControl,
@@ -34,8 +34,8 @@ import {
   SelectValue,
 } from '@/components/primitives/Select';
 import { Input } from '@/components/primitives/Input';
-import { Separator } from '@/components/atoms/separator';
-import { Badge } from '@/components/atoms/badge';
+import { Separator } from '@/components/atoms-alianza/Separator';
+import { Badge } from '@/components/atoms-alianza/Badge';
 import { Checkbox } from '@/components/primitives/ui/checkbox';
 import { useTranslations } from '@/context/TranslationsContext';
 import LoadingSpinner from '@/components/primitives/ui/LoadingSpinner';

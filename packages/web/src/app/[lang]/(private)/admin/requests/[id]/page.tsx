@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { RequestDetailOrganism } from '@/components/organisms/request';
 import { ArrowLeft } from 'lucide-react';
 import type { UserRole } from '@alkitu/shared';
-import { AdminPageHeader } from '@/components/molecules/admin-page-header';
+import { AdminPageHeader } from '@/components/molecules-alianza/AdminPageHeader';
 
 /**
  * Admin Service Request Detail Page

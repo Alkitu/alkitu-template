@@ -4,8 +4,8 @@ import { trpc } from '@/lib/trpc';
 import { AppearanceForm } from '@/components/features/chatbot-settings/AppearanceForm';
 import { ContactFormFields } from '@/components/features/chatbot-settings/ContactFormFields';
 import { MessagesForm } from '@/components/features/chatbot-settings/MessagesForm';
-import { Typography } from '@/components/atoms/typography';
-import { AdminPageHeader } from '@/components/molecules/admin-page-header';
+import { Typography } from '@/components/atoms-alianza/Typography';
+import { AdminPageHeader } from '@/components/molecules-alianza/AdminPageHeader';
 
 export default function ChatbotSettingsPage() {
   const {

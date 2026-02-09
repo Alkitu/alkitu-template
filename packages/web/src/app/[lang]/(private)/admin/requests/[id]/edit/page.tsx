@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { trpc } from '@/lib/trpc';
 import { Loader2, ArrowLeft, Save, X } from 'lucide-react';
 import { toast } from 'sonner';
-import { AdminPageHeader } from '@/components/molecules/admin-page-header';
+import { AdminPageHeader } from '@/components/molecules-alianza/AdminPageHeader';
 import { Button } from '@/components/primitives/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/primitives/ui/card';
 import { FormInput } from '@/components/molecules-alianza/FormInput';

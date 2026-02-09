@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { SonnerOrganism, useToast } from './SonnerOrganism';
-import { Button } from '@/components/atoms';
+import { Button } from '@/components/molecules-alianza/Button';
 import { Star, Mail, ShoppingCart } from 'lucide-react';
 
 /**

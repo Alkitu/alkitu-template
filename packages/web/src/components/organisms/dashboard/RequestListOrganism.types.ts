@@ -3,8 +3,8 @@
  * Atomic Design: Organism
  */
 
-import { RequestStatus } from '@/components/molecules/dashboard/StatusBadge.types';
-import { Priority } from '@/components/atoms/dashboard/PriorityIcon.types';
+import { RequestStatus } from '@alkitu/shared';
+import { Priority } from '@/components/atoms-alianza/PriorityIcon/PriorityIcon.types';
 
 export interface RequestItem {
   id: string;

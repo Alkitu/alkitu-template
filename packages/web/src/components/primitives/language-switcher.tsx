@@ -7,7 +7,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/molecules/dropdown-menu';
+} from '@/components/molecules-alianza/DropdownMenu';
 import { Globe } from 'lucide-react';
 
 export function LanguageSwitcher() {

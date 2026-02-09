@@ -13,7 +13,7 @@
  * />
  */
 
-import { StatCard } from '@/components/molecules/dashboard';
+import { StatCard } from '@/components/molecules-alianza/StatCard';
 import { StatsCardGridProps } from './StatsCardGrid.types';
 
 export function StatsCardGrid({

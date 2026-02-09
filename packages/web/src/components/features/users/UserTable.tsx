@@ -11,7 +11,7 @@ import { Checkbox } from '@/components/primitives/ui/checkbox';
 import { Button } from '@/components/primitives/ui/button';
 import { User } from '@alkitu/shared';
 import { BulkActions } from './BulkActions';
-import { StatusBadge } from '@/components/atoms/StatusBadge';
+import { StatusBadge } from '@/components/atoms-alianza/StatusBadge';
 
 interface UserTableProps {
   users: User[];

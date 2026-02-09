@@ -6,7 +6,7 @@ import { RequestTemplateRenderer } from '@/components/organisms/request-template
 import { Loader2, AlertCircle, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/primitives/ui/button';
 import Link from 'next/link';
-import type { Service } from '@/components/molecules/service';
+import type { Service } from '@/components/molecules-alianza/ServiceCard';
 
 /**
  * Service Request Page (ALI-118)

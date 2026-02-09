@@ -18,8 +18,8 @@
 import Link from 'next/link';
 import { Card } from '@/components/primitives/Card';
 import { Button } from '@/components/primitives/Button';
-import { StatusBadge } from '@/components/molecules/dashboard';
-import { PriorityIcon } from '@/components/atoms/dashboard';
+import { RequestStatusBadgeMolecule } from '@/components/molecules/request';
+import { PriorityIcon } from '@/components/atoms-alianza/PriorityIcon';
 import { formatDate } from '@/lib/utils/date';
 import { ClipboardList, Plus } from 'lucide-react';
 import { RequestListOrganismProps } from './RequestListOrganism.types';
@@ -89,7 +89,7 @@ export function RequestListOrganism({
                           </p>
                         )}
                       </div>
-                      <StatusBadge status={request.status} />
+                      <RequestStatusBadgeMolecule status={request.status} />
                     </div>
                     <p className="text-xs text-muted-foreground">
                       {formatDate(request.createdAt)}

@@ -6,7 +6,7 @@ import {
   SelectValue,
 } from '@/components/primitives/Select';
 import { Label } from '@/components/primitives/ui/label';
-import { Badge } from '@/components/atoms/badge';
+import { Badge } from '@/components/atoms-alianza/Badge';
 
 import { ConversationStatus } from '@alkitu/shared';
 

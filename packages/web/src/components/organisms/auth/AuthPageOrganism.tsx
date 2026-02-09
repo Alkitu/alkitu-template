@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { AuthCardWrapper } from '@/components/molecules';
+import { AuthCardWrapper } from '@/components/molecules-alianza/AuthCardWrapper';
 import type { AuthPageOrganismProps } from './AuthPageOrganism.types';
 
 /**

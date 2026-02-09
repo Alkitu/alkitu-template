@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { ShowcaseContainer } from './ShowcaseContainer';
-import { BreadcrumbNavigation as Breadcrumb, BreadcrumbItemData } from '@/components/molecules/breadcrumb';
+import { BreadcrumbNavigation as Breadcrumb, BreadcrumbItemData } from '@/components/molecules-alianza/Breadcrumb';
 import { Home, Folder, File, Settings, User, ShoppingBag } from 'lucide-react';
 
 /**

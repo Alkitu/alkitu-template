@@ -2,7 +2,7 @@
 
 import { AuthPageOrganism } from '@/components/organisms';
 import { useTranslations } from '@/context/TranslationsContext';
-import { Typography } from '@/components/atoms/typography';
+import { Typography } from '@/components/atoms-alianza/Typography';
 
 export default function VerifyRequestPage() {
   const t = useTranslations();

@@ -2,7 +2,7 @@
 
 import { formatDistanceToNow } from 'date-fns';
 import { MessageSquare, ChevronRight, Clock } from 'lucide-react';
-import { Badge } from '@/components/atoms/badge';
+import { Badge } from '@/components/atoms-alianza/Badge';
 import { cn } from '@/lib/utils';
 import { ConversationStatus } from '@alkitu/shared';
 

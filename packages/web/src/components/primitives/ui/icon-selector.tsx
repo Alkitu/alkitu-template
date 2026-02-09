@@ -16,7 +16,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/atoms/select';
+} from '@/components/atoms-alianza/Select';
 import { Icons, iconCategories } from '@/lib/icons';
 
 interface IconSelectorProps {

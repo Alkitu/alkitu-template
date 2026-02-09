@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { ClipboardList, MapPin, FileText, Clock, CheckCircle2, Users, TrendingUp } from 'lucide-react';
-import { QuickActionCard } from '@/components/molecules/dashboard';
+import { QuickActionCard } from '@/components/molecules-alianza/QuickActionCard';
 import { StatsCardGrid } from '@/components/organisms/dashboard';
 import { RequestListOrganism } from '@/components/organisms/dashboard';
 import type { StatCardData } from '@/components/organisms/dashboard';
@@ -105,21 +105,21 @@ export default function EmployeeDashboardPage() {
       label: 'de Trabajo',
       subtitle: 'Ubicaciones',
       href: '/locations',
-      iconColor: 'text-green-600 dark:text-green-400',
+      customIconColor: 'text-green-600 dark:text-green-400',
     },
     {
       icon: FileText,
       label: 'Notificaciones',
       subtitle: 'Ver',
       href: '/employee/notifications',
-      iconColor: 'text-purple-600 dark:text-purple-400',
+      customIconColor: 'text-purple-600 dark:text-purple-400',
     },
     {
       icon: Users,
       label: 'Perfil',
       subtitle: 'Mi',
       href: '/profile',
-      iconColor: 'text-orange-600 dark:text-orange-400',
+      customIconColor: 'text-orange-600 dark:text-orange-400',
     },
   ];
 

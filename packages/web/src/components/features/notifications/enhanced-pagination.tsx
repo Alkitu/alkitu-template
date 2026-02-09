@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/primitives/ui/button';
-import { Badge } from '@/components/atoms/badge';
+import { Badge } from '@/components/atoms-alianza/Badge';
 import {
   Select,
   SelectContent,

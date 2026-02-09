@@ -14,7 +14,7 @@ import {
 import { Button } from '@/components/molecules-alianza/Button';
 import { FormInput } from '@/components/molecules-alianza/FormInput';
 import { FormSelect } from '@/components/molecules-alianza/FormSelect';
-import { AdminPageHeader } from '@/components/molecules/admin-page-header';
+import { AdminPageHeader } from '@/components/molecules-alianza/AdminPageHeader';
 
 interface ServiceForm {
   name: string;

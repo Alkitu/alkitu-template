@@ -2,7 +2,7 @@
 
 import { useTranslations } from '@/context/TranslationsContext';
 import { Button } from '@/components/primitives/ui/button';
-import { Typography } from '@/components/atoms/typography';
+import { Typography } from '@/components/atoms-alianza/Typography';
 import Link from 'next/link';
 
 export default function NotFound() {

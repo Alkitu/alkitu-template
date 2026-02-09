@@ -9,9 +9,9 @@ import {
   CardTitle,
 } from '@/components/primitives/Card';
 import { Button } from '@/components/primitives/ui/button';
-import { Badge } from '@/components/atoms/badge';
-import { Alert, AlertDescription } from '@/components/atoms/alert';
-import { Separator } from '@/components/atoms/separator';
+import { Badge } from '@/components/atoms-alianza/Badge';
+import { Alert, AlertDescription } from '@/components/atoms-alianza/Alert';
+import { Separator } from '@/components/atoms-alianza/Separator';
 import { useTranslations } from '@/context/TranslationsContext';
 import { usePushNotifications } from '@/hooks/use-push-notifications';
 import {

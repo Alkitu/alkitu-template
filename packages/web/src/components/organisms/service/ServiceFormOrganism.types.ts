@@ -1,4 +1,4 @@
-import type { Service } from '@/components/molecules/service';
+import type { Service } from '@/components/molecules-alianza/ServiceCard';
 
 /**
  * ServiceFormOrganism Props (ALI-118)

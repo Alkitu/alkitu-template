@@ -14,7 +14,7 @@ import {
 import { LucideIcon } from 'lucide-react';
 import type { NavItem, User, Team } from '@/types';
 import { IconType } from 'react-icons';
-import { ThemeToggle } from '@/components/atoms/ThemeToggle';
+import { ThemeToggle } from '@/components/atoms-alianza/ThemeToggle';
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
   navMain?: NavItem[];

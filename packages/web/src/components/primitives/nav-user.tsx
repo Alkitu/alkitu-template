@@ -18,7 +18,7 @@ import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from '@/components/atoms/avatars';
+} from '@/components/atoms-alianza/Avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,7 +27,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/molecules/dropdown-menu';
+} from '@/components/molecules-alianza/DropdownMenu';
 import {
   SidebarMenu,
   SidebarMenuButton,

@@ -3,13 +3,13 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from '@/components/molecules/Card';
+} from '@/components/molecules-alianza/Card';
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from '@/components/atoms/avatars';
-import { Badge } from '@/components/atoms/badge';
+} from '@/components/atoms-alianza/Avatar';
+import { Badge } from '@/components/atoms-alianza/Badge';
 
 interface UserCardProps {
   user: {

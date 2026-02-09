@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/primitives/ui/button';
-import { Typography } from '@/components/atoms/typography';
+import { Typography } from '@/components/atoms-alianza/Typography';
 
 export default function Custom500() {
   return (

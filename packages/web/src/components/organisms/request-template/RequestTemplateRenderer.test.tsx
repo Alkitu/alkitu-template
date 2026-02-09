@@ -4,8 +4,8 @@ import userEvent from '@testing-library/user-event';
 import { RequestTemplateRenderer } from './RequestTemplateRenderer';
 
 // Mock dependencies
-vi.mock('@/components/molecules/dynamic-form', () => ({
-  DynamicFieldRenderer: ({ field, register, errors, disabled }: any) => (
+vi.mock('@/components/molecules-alianza/DynamicForm', () => ({
+  DynamicForm: ({ field, register, errors, disabled }: any) => (
     <div data-testid={`field-${field.id}`}>
       <label htmlFor={field.id}>{field.label}</label>
       <input

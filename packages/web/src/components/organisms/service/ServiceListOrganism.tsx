@@ -3,19 +3,19 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/primitives/ui/button';
 import { Plus, AlertCircle, Loader2, Wrench } from 'lucide-react';
-import { ServiceCardMolecule } from '@/components/molecules/service';
+import { ServiceCard } from '@/components/molecules-alianza/ServiceCard';
 import { ServiceFormOrganism } from './ServiceFormOrganism';
 import type {
   ServiceListOrganismProps,
   ServiceListState,
 } from './ServiceListOrganism.types';
-import type { Service } from '@/components/molecules/service';
+import type { Service } from '@/components/molecules-alianza/ServiceCard';
 
 /**
  * ServiceListOrganism - Organism Component (ALI-118)
  *
  * Complete CRUD interface for managing services.
- * Combines ServiceFormOrganism and ServiceCardMolecule to provide
+ * Combines ServiceFormOrganism and ServiceCard to provide
  * full service management functionality with optional category filtering.
  *
  * Features:
@@ -269,9 +269,11 @@ export const ServiceListOrganism: React.FC<ServiceListOrganismProps> = ({
       {state.services.length > 0 ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {state.services.map((service) => (
-            <ServiceCardMolecule
+            <ServiceCard
               key={service.id}
               service={service}
+              showEdit
+              showDelete
               onEdit={handleEdit}
               onDelete={handleDelete}
               isDeleting={state.deletingServiceId === service.id}

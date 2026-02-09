@@ -2,8 +2,8 @@
 
 import { trpc } from '@/lib/trpc';
 import { ChatAnalyticsDashboard } from '@/components/features/chat/ChatAnalyticsDashboard';
-import { Typography } from '@/components/atoms/typography';
-import { AdminPageHeader } from '@/components/molecules/admin-page-header';
+import { Typography } from '@/components/atoms-alianza/Typography';
+import { AdminPageHeader } from '@/components/molecules-alianza/AdminPageHeader';
 
 export default function ChatAnalyticsPage() {
   const {

@@ -4,7 +4,8 @@ import React from 'react';
 import Link from 'next/link';
 import { AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Button, Typography } from '@/components/atoms';
+import { Button } from '@/components/molecules-alianza/Button';
+import { Typography } from '@/components/atoms-alianza/Typography';
 import {
   Card,
   CardContent,

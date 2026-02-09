@@ -9,8 +9,8 @@ import { io } from 'socket.io-client';
 import { AssignmentSelect } from '@/components/features/chat/AssignmentSelect';
 import { StatusSelect } from '@/components/features/chat/StatusSelect';
 import { InternalNotes } from '@/components/features/chat/InternalNotes';
-import { Typography } from '@/components/atoms/typography';
-import { AdminPageHeader } from '@/components/molecules/admin-page-header';
+import { Typography } from '@/components/atoms-alianza/Typography';
+import { AdminPageHeader } from '@/components/molecules-alianza/AdminPageHeader';
 
 export default function ConversationDetailPage() {
   const params = useParams();

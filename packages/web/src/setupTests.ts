@@ -51,3 +51,8 @@ global.ResizeObserver = vi.fn().mockImplementation(() => ({
 
 // Mock scrollIntoView for components using cmdk and other libraries
 Element.prototype.scrollIntoView = vi.fn();
+
+// Mock PointerCapture methods for Radix UI components (Select, Dropdown, etc.)
+Element.prototype.hasPointerCapture = vi.fn(() => false);
+Element.prototype.setPointerCapture = vi.fn();
+Element.prototype.releasePointerCapture = vi.fn();

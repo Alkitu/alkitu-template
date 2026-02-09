@@ -17,7 +17,7 @@ import { toast } from 'sonner';
 import { Save, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 import { UserRole } from '@alkitu/shared';
-import { AdminPageHeader } from '@/components/molecules/admin-page-header';
+import { AdminPageHeader } from '@/components/molecules-alianza/AdminPageHeader';
 
 interface CreateUserForm {
   name: string;

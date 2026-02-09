@@ -17,7 +17,7 @@ import { CategoryListOrganism } from '@/components/organisms/category';
  * @route /admin/catalog/categories
  * @access ADMIN only
  */
-import { AdminPageHeader } from '@/components/molecules/admin-page-header';
+import { AdminPageHeader } from '@/components/molecules-alianza/AdminPageHeader';
 
 // (imports)
 

@@ -45,8 +45,8 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { Card } from '@/components/primitives/Card';
-import { StatCard } from '@/components/molecules/dashboard/StatCard';
-import { QuickActionCard } from '@/components/molecules/dashboard/QuickActionCard';
+import { StatCard } from '@/components/molecules-alianza/StatCard';
+import { QuickActionCard } from '@/components/molecules-alianza/QuickActionCard';
 import { Construction, Settings, Wrench } from 'lucide-react';
 import type { DashboardOverviewProps } from './DashboardOverview.types';
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { AdminPageHeader } from '@/components/molecules/admin-page-header';
+import { AdminPageHeader } from '@/components/molecules-alianza/AdminPageHeader';
 import { Button } from '@/components/primitives/ui/button';
 import { Plus } from 'lucide-react';
 import { trpc } from '@/lib/trpc';
@@ -12,8 +12,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/primitives/Card';
-import { Badge } from '@/components/atoms/badge';
-import { Typography } from '@/components/atoms/typography';
+import { Badge } from '@/components/atoms-alianza/Badge';
+import { Typography } from '@/components/atoms-alianza/Typography';
 
 /**
  * Admin Email Templates Page (ALI-121)

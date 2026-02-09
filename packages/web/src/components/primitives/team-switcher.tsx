@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuShortcut,
   DropdownMenuTrigger,
-} from '@/components/molecules/dropdown-menu';
+} from '@/components/molecules-alianza/DropdownMenu';
 import {
   SidebarMenu,
   SidebarMenuButton,

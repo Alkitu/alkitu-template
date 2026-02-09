@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from '@/components/primitives/Card';
 import { Button } from '@/components/primitives/ui/button';
-import { Badge } from '@/components/atoms/badge';
+import { Badge } from '@/components/atoms-alianza/Badge';
 import {
   Select,
   SelectContent,

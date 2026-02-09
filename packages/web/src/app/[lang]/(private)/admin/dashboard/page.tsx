@@ -4,7 +4,7 @@ import { Users, Briefcase, UserCheck, UserCog } from 'lucide-react';
 import { trpc } from '@/lib/trpc';
 import { useTranslations } from '@/context/TranslationsContext';
 
-import { AdminPageHeader } from '@/components/molecules/admin-page-header';
+import { AdminPageHeader } from '@/components/molecules-alianza/AdminPageHeader';
 import {
   StatsCardGrid,
   AdminRecentActivityCard,

@@ -59,7 +59,7 @@ import {
   EyeOff,
 } from 'lucide-react';
 import { UserRole } from '@alkitu/shared';
-import { AdminPageHeader } from '@/components/molecules/admin-page-header';
+import { AdminPageHeader } from '@/components/molecules-alianza/AdminPageHeader';
 
 interface PasswordValidation {
   minLength: boolean;

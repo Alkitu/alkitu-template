@@ -6,7 +6,7 @@ import { InputGroup } from '@/components/molecules-alianza/InputGroup';
 import { useTranslations } from '@/context/TranslationsContext';
 import { FormError } from '@/components/primitives/ui/form-error';
 import { FormSuccess } from '@/components/primitives/ui/form-success';
-import { Icon } from '@/components/atoms/icons/Icon';
+import { Icon } from '@/components/atoms-alianza/Icon';
 import type { ForgotPasswordFormOrganismProps } from './ForgotPasswordFormOrganism.types';
 
 /**

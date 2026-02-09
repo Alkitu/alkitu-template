@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/molecules/dropdown-menu';
+} from '@/components/molecules-alianza/DropdownMenu';
 import { Button } from '@/components/primitives/ui/button';
 import { 
   Menu, 

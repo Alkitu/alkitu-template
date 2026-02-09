@@ -3,19 +3,19 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/primitives/ui/button';
 import { Plus, AlertCircle, Loader2, FolderPlus } from 'lucide-react';
-import { CategoryCardMolecule } from '@/components/molecules/category';
+import { CategoryCard } from '@/components/molecules-alianza/CategoryCard';
 import { CategoryFormOrganism } from './CategoryFormOrganism';
 import type {
   CategoryListOrganismProps,
   CategoryListState,
 } from './CategoryListOrganism.types';
-import type { Category } from '@/components/molecules/category';
+import type { Category } from '@/components/molecules-alianza/CategoryCard';
 
 /**
  * CategoryListOrganism - Organism Component (ALI-118)
  *
  * Complete CRUD interface for managing service categories.
- * Combines CategoryFormOrganism and CategoryCardMolecule to provide
+ * Combines CategoryFormOrganism and CategoryCard to provide
  * full category management functionality.
  *
  * Features:
@@ -268,9 +268,11 @@ export const CategoryListOrganism: React.FC<CategoryListOrganismProps> = ({
       {state.categories.length > 0 ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {state.categories.map((category) => (
-            <CategoryCardMolecule
+            <CategoryCard
               key={category.id}
               category={category}
+              showEdit
+              showDelete
               onEdit={handleEdit}
               onDelete={handleDelete}
               isDeleting={state.deletingCategoryId === category.id}

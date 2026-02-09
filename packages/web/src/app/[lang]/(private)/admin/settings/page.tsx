@@ -2,19 +2,19 @@
 
 import Link from 'next/link';
 import { useTranslations } from '@/context/TranslationsContext';
-import { Typography } from '@/components/atoms/typography';
+import { Typography } from '@/components/atoms-alianza/Typography';
 import { Card } from '@/components/primitives/Card';
-import { Badge } from '@/components/atoms/badge';
-import { Icon } from '@/components/atoms/icons/Icon';
+import { Badge } from '@/components/atoms-alianza/Badge';
+import { Icon } from '@/components/atoms-alianza/Icon';
 import { cn } from '@/lib/utils';
-import { AdminPageHeader } from '@/components/molecules/admin-page-header';
+import { AdminPageHeader } from '@/components/molecules-alianza/AdminPageHeader';
 
 const settingsOptions = [
   {
     title: 'Addons & Features',
     description: 'Enable or disable platform features and addons',
     href: '/admin/settings/addons',
-    icon: 'Blocks' as const,
+    icon: 'Blocks',
     badge: 'New',
   },
   {
@@ -22,19 +22,19 @@ const settingsOptions = [
     description:
       'Advanced theme customization with OKLCH colors, typography, spacing, and more',
     href: '/dashboard/settings/themes',
-    icon: 'palette' as const,
+    icon: 'Palette',
   },
   {
     title: 'Chatbot Settings',
     description: 'Configure chatbot behavior and appearance',
     href: '/dashboard/settings/chatbot',
-    icon: 'Bot' as const,
+    icon: 'Bot',
   },
   {
     title: 'General Settings',
     description: 'Application preferences and configuration',
     href: '/dashboard/settings/general',
-    icon: 'Settings' as const,
+    icon: 'Settings',
   },
 ];
 
@@ -60,7 +60,7 @@ export default function SettingsPage() {
             >
               <div className="flex items-start gap-4">
                 <div className="flex-shrink-0 p-2 bg-primary/10 rounded-lg">
-                  <Icon name={option.icon} size="md" color="primary" />
+                  <Icon name={option.icon} size="md" variant="primary" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">

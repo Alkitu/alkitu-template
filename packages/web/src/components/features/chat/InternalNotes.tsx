@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@/components/primitives/ui/button';
-import { Textarea } from '@/components/atoms/textarea';
+import { Textarea } from '@/components/atoms-alianza/Textarea';
 import { Label } from '@/components/primitives/ui/label';
 import {
   Card,

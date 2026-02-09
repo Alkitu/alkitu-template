@@ -3,9 +3,9 @@
 import { trpc } from '@/lib/trpc';
 import { ChatConversationsTableAlianza } from '@/components/organisms-alianza/ChatConversationsTableAlianza';
 import { ConversationFilters } from '@/components/features/chat/ConversationFilters';
-import { Typography } from '@/components/atoms/typography';
+import { Typography } from '@/components/atoms-alianza/Typography';
 import { useState } from 'react';
-import { AdminPageHeader } from '@/components/molecules/admin-page-header';
+import { AdminPageHeader } from '@/components/molecules-alianza/AdminPageHeader';
 
 export default function ChatDashboardPage() {
   const [filters, setFilters] = useState({});

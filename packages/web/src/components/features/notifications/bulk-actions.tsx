@@ -9,8 +9,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/primitives/Card';
-import { Badge } from '@/components/atoms/badge';
-import { Separator } from '@/components/atoms/separator';
+import { Badge } from '@/components/atoms-alianza/Badge';
+import { Separator } from '@/components/atoms-alianza/Separator';
 import {
   AlertDialog,
   AlertDialogAction,

@@ -2,9 +2,9 @@
 
 import React, { useState, useRef, useCallback } from 'react';
 import { Upload, X, Check, AlertCircle } from 'lucide-react';
-import { Button } from '@/components/atoms/buttons';
-import { Input } from '@/components/atoms/inputs';
-import { CustomIcon } from '@/components/atoms/custom-icon';
+import { Button } from '@/components/molecules-alianza/Button';
+import { Input } from '@/components/atoms-alianza/Input';
+import { CustomIcon } from '@/components/atoms-alianza/CustomIcon';
 import {
   Dialog,
   DialogContent,

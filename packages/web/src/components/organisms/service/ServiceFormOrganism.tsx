@@ -11,7 +11,7 @@ import type {
   ServiceFormOrganismProps,
   ServiceFormData,
 } from './ServiceFormOrganism.types';
-import type { Category } from '@/components/molecules/category';
+import type { Category } from '@/components/molecules-alianza/CategoryCard';
 import { z } from 'zod';
 
 // Local schema override - accepts requestTemplate as object (Controller ensures it's always an object)

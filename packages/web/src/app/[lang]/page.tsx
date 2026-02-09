@@ -1,7 +1,7 @@
 'use client';
 
-import { HeaderAlianza } from '@/components/organisms-alianza';
-import { Hero, FeatureGrid, PricingCard, Footer } from '@/components/organisms';
+import { HeaderAlianza, FeatureGrid, PricingCard, Hero } from '@/components/organisms-alianza';
+import { Footer } from '@/components/organisms';
 import { useTranslations } from '@/context/TranslationsContext';
 
 export default function Home() {

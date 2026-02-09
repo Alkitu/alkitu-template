@@ -2,13 +2,13 @@
 
 import { useTranslations } from '@/context/TranslationsContext';
 import { Button } from '@/components/primitives/ui/button';
-import { Typography } from '@/components/atoms/typography';
+import { Typography } from '@/components/atoms-alianza/Typography';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { NotificationAnalytics } from '@/components/features/notifications/notification-analytics';
 
 import { useParams } from 'next/navigation';
-import { AdminPageHeader } from '@/components/molecules/admin-page-header';
+import { AdminPageHeader } from '@/components/molecules-alianza/AdminPageHeader';
 
 // Test user ID - En una aplicación real, esto vendría de la sesión del usuario
 const TEST_USER_ID = '6861ea1a1c0cf932169adce4';

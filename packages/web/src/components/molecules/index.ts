@@ -1,188 +1,47 @@
-// Auth Molecules
-export { AuthCardWrapper } from './auth';
-export type { AuthCardWrapperProps } from './auth';
+/**
+ * Domain-Specific Molecules
+ *
+ * This barrel export contains domain-specific business logic components
+ * that are NOT part of the generic design system (molecules-alianza).
+ *
+ * Architecture:
+ * - molecules-alianza/ = Generic, reusable design system components
+ * - molecules/ = Domain-specific business logic components
+ *
+ * Components in this directory are tightly coupled to:
+ * - Business workflows (requests, locations, email templates)
+ * - tRPC APIs
+ * - Shared types from @alkitu/shared
+ * - Specific use cases in the application
+ */
 
-// Service Molecules
-export { default as ServiceCard } from './ServiceCard';
-export type { ServiceCardProps, ServiceStatus } from './ServiceCard.types';
+// Location Molecules - Work location CRUD
+export { LocationCardMolecule } from './location';
+export type { LocationCardMoleculeProps } from './location';
 
-// Request Molecules
-export { default as RequestCard } from './RequestCard';
-export type { RequestCardProps, RequestStatus, RequestPriority } from './RequestCard.types';
+// PlaceholderPalette Molecules - Email template placeholders
+export { PlaceholderPaletteMolecule } from './placeholder-palette';
+export type { PlaceholderPaletteMoleculeProps } from './placeholder-palette';
 
-// Chip Molecules
-export { ChipMolecule } from './chip';
-export type { ChipMoleculeProps, ChipVariant, ChipSize } from './chip';
+// Request Molecules - Request management business logic
+export { RequestCardMolecule } from './request';
+export { RequestClientCardMolecule } from './request';
+export { RequestStatusBadgeMolecule } from './request';
+export { RequestTimelineMolecule } from './request';
+export { AssignRequestModal } from './request';
+export { CancelRequestModal } from './request';
+export { CompleteRequestModal } from './request';
+export { QuickAssignModal } from './request';
+export { QuickStatusModal } from './request';
 
-// Tabs Molecules - Migrated to design-system/primitives/Tabs
-// export { Tabs } from './tabs';
-// export type {
-//   TabsProps,
-//   TabItem,
-//   TabBadge,
-//   TabsVariant,
-//   TabsOrientation,
-//   TabsActivationMode,
-//   BadgeVariant,
-//   TabsPreset,
-// } from './tabs';
-// export { TabsPresets } from './tabs';
-
-// ToggleGroup Molecules
-export { ToggleGroup } from './toggle-group';
 export type {
-  ToggleGroupProps,
-  ToggleGroupItem,
-  ToggleGroupType,
-  ToggleGroupSize,
-  ToggleGroupVariant,
-  ToggleGroupOrientation,
-} from './toggle-group';
-
-// Accordion Molecules
-export { Accordion, AccordionPresets } from './accordion';
-export type {
-  AccordionProps,
-  AccordionItem,
-  AccordionVariant,
-  AccordionBadgeVariant,
-  AccordionPresetConfig,
-} from './accordion';
-
-// Breadcrumb Molecules
-export {
-  Breadcrumb,
-  BreadcrumbList,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-  BreadcrumbEllipsis,
-  BreadcrumbNavigation,
-} from './breadcrumb';
-export type {
-  BreadcrumbProps,
-  BreadcrumbListProps,
-  BreadcrumbItemProps,
-  BreadcrumbLinkProps,
-  BreadcrumbPageProps,
-  BreadcrumbSeparatorProps,
-  BreadcrumbEllipsisProps,
-  BreadcrumbNavigationProps,
-  BreadcrumbItemData,
-  BreadcrumbSeparatorVariant,
-  BreadcrumbSize,
-} from './breadcrumb';
-
-// Card Molecules
-export {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
-} from './Card';
-export type {
-  CardProps,
-  CardHeaderProps,
-  CardTitleProps,
-  CardDescriptionProps,
-  CardContentProps,
-  CardFooterProps,
-  CardVariant,
-  CardPadding,
-} from './Card';
-
-// Combobox Molecules
-export { Combobox, ComboboxPresets } from './combobox';
-export type {
-  ComboboxProps,
-  ComboboxOption,
-  ComboboxVariant,
-  ComboboxPreset,
-} from './combobox';
-
-// PreviewImage Molecules
-export { PreviewImage } from './preview-image';
-export type {
-  PreviewImageProps,
-  PreviewImageAspectRatio,
-  PreviewImageSize,
-  PreviewImageRadius,
-  PreviewImageObjectFit,
-} from './preview-image';
-
-// Pagination Molecules
-export { PaginationMolecule, PaginationPresets } from './pagination';
-export type {
-  PaginationMoleculeProps,
-  PaginationVariant,
-  PaginationPresetConfig,
-} from './pagination';
-
-// DatePicker Molecules
-export { DatePicker } from './date-picker';
-export type {
-  DatePickerProps,
-  DatePickerVariant,
-  DatePickerSize,
-  DateRange,
-  DateValue,
-} from './date-picker';
-
-// NavigationMenu Molecules
-export { NavigationMenu, NavigationMenuPresets } from './navigation-menu';
-export type {
-  NavigationMenuProps,
-  NavigationItem,
-  NavigationMenuVariant,
-  NavigationMenuOrientation,
-  NavigationMenuPresetConfig,
-} from './navigation-menu';
-
-// DropdownMenu Molecules
-export {
-  DropdownMenu,
-  DropdownMenuPortal,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuLabel,
-  DropdownMenuItem,
-  DropdownMenuCheckboxItem,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubTrigger,
-  DropdownMenuSubContent,
-  DropdownMenuMolecule,
-  DropdownMenuPresets,
-  ExampleMenuItems,
-} from './dropdown-menu';
-export type {
-  DropdownMenuRootProps,
-  DropdownMenuTriggerProps,
-  DropdownMenuContentProps,
-  DropdownMenuItemProps,
-  DropdownMenuCheckboxItemProps,
-  DropdownMenuRadioGroupProps,
-  DropdownMenuRadioItemProps,
-  DropdownMenuLabelProps,
-  DropdownMenuSeparatorProps,
-  DropdownMenuShortcutProps,
-  DropdownMenuGroupProps,
-  DropdownMenuPortalProps,
-  DropdownMenuSubProps,
-  DropdownMenuSubTriggerProps,
-  DropdownMenuSubContentProps,
-  DropdownMenuItemType,
-  DropdownMenuItemBadge,
-  DropdownMenuDataItem,
-  DropdownMenuMoleculeVariant,
-  DropdownMenuPlacement,
-  DropdownMenuMoleculeProps,
-  DropdownMenuPreset,
-} from './dropdown-menu';
+  RequestCardMoleculeProps,
+  RequestClientCardMoleculeProps,
+  RequestStatusBadgeMoleculeProps,
+  RequestTimelineMoleculeProps,
+  AssignRequestModalProps,
+  CancelRequestModalProps,
+  CompleteRequestModalProps,
+  QuickAssignModalProps,
+  QuickStatusModalProps,
+} from './request';

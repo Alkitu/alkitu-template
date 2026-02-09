@@ -23,7 +23,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from '@/components/primitives/DropdownMenu';
-import { Badge } from '@/components/atoms/badge';
+import { Badge } from '@/components/atoms-alianza/Badge';
 import { useGlobalTheme } from '@/hooks/useGlobalTheme';
 
 export interface ThemeSwitcherProps {

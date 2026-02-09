@@ -1,4 +1,4 @@
-import type { Category } from '@/components/molecules/category';
+import type { Category } from '@/components/molecules-alianza/CategoryCard';
 
 /**
  * CategoryListOrganism Props (ALI-118)

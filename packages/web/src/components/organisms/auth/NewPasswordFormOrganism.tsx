@@ -8,7 +8,7 @@ import { useTranslations } from '@/context/TranslationsContext';
 import { FormError } from '@/components/primitives/ui/form-error';
 import { FormSuccess } from '@/components/primitives/ui/form-success';
 import { getCurrentLocalizedRoute } from '@/lib/locale';
-import { Icon } from '@/components/atoms/icons/Icon';
+import { Icon } from '@/components/atoms-alianza/Icon';
 import type { NewPasswordFormOrganismProps } from './NewPasswordFormOrganism.types';
 
 /**

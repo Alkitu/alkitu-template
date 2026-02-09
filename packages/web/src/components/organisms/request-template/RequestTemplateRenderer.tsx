@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/primitives/ui/button';
-import { DynamicFieldRenderer } from '@/components/molecules/dynamic-form';
+import { DynamicForm } from '@/components/molecules-alianza/DynamicForm';
 import { Loader2, Send, X } from 'lucide-react';
 import type { RequestTemplateRendererProps } from './RequestTemplateRenderer.types';
 
@@ -111,7 +111,7 @@ export const RequestTemplateRenderer: React.FC<
       {/* Render all fields */}
       <div className="space-y-4">
         {template.fields.map((field) => (
-          <DynamicFieldRenderer
+          <DynamicForm
             key={field.id}
             field={field}
             register={register}

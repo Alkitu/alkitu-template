@@ -2,11 +2,11 @@
 
 import { useState } from 'react';
 import { trpc } from '@/lib/trpc';
-import { AdminPageHeader } from '@/components/molecules/admin-page-header';
+import { AdminPageHeader } from '@/components/molecules-alianza/AdminPageHeader';
 import { Card } from '@/components/primitives/Card';
 import { Switch } from '@/components/primitives/ui/switch';
-import { Badge } from '@/components/atoms/badge';
-import { Icon } from '@/components/atoms/icons/Icon';
+import { Badge } from '@/components/atoms-alianza/Badge';
+import { Icon } from '@/components/atoms-alianza/Icon';
 import { toast } from 'sonner';
 import { Skeleton } from '@/components/primitives/ui/skeleton';
 import { ChevronDown, ChevronUp, Check, X } from 'lucide-react';
@@ -134,9 +134,9 @@ export default function AddonsPage() {
                 <div className="flex items-center gap-3 flex-1">
                   <div className="flex-shrink-0 p-2 bg-primary/10 rounded-lg">
                     <Icon
-                      name={(feature.icon as any) || 'Box'}
+                      name={feature.icon || 'Box'}
                       size="md"
-                      color="primary"
+                      variant="primary"
                     />
                   </div>
                   <div className="flex-1 min-w-0">

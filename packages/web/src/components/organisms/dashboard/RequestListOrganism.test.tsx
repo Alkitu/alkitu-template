@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { RequestListOrganism } from './RequestListOrganism';
 import type { RequestListOrganismProps } from './RequestListOrganism.types';
 
@@ -23,7 +23,7 @@ describe('RequestListOrganism', () => {
     {
       id: 'req-2',
       title: 'Install new AC unit',
-      status: 'IN_PROGRESS' as const,
+      status: 'ONGOING' as const,
       priority: 'MEDIUM' as const,
       createdAt: new Date('2024-01-20'),
       client: { name: 'TechStart Inc' },

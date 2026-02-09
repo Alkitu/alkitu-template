@@ -16,7 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from './dropdown-menu';
-import { ThemeToggle } from '@/components/atoms/ThemeToggle';
+import { ThemeToggle } from '@/components/atoms-alianza/ThemeToggle';
 
 export function LandingNavbar() {
   const [isOpen, setIsOpen] = useState(false);

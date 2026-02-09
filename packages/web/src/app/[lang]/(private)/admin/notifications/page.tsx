@@ -16,7 +16,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { TabsAlianza } from '@/components/molecules-alianza/TabsAlianza';
 import { Button } from '@/components/molecules-alianza/Button';
-import { Heading, Body, Caption } from '@/components/atoms-alianza/Typography';
+import { Heading, Typography } from '@/components/atoms-alianza/Typography';
 import { Chip } from '@/components/atoms-alianza/Chip';
 import { cn } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
@@ -100,18 +100,18 @@ export default function NotificationsPage() {
                 <Heading level={4} className="text-base font-semibold text-foreground">
                     {notification.title || 'Notificación'}
                 </Heading>
-                <Body size="sm" className="text-muted-foreground/80 leading-relaxed max-w-2xl">
+                <Typography variant="p" size="sm" className="text-muted-foreground/80 leading-relaxed max-w-2xl">
                   {notification.message}
-                </Body>
+                </Typography>
             </div>
           </div>
           
           {/* Footer / Meta */}
           <div className="flex items-center gap-2 mt-3">
               <Clock className="w-3.5 h-3.5 text-muted-foreground/60" />
-              <Caption className="text-xs text-muted-foreground/60 font-medium">
+              <Typography variant="caption" className="text-xs text-muted-foreground/60 font-medium">
                 {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true, locale: es })}
-              </Caption>
+              </Typography>
           </div>
         </div>
 
@@ -192,7 +192,7 @@ export default function NotificationsPage() {
             content: (
               notifications.length === 0 ? (
                  <div className="text-center py-12 bg-muted/5 rounded-2xl border border-dashed">
-                   <Caption className="text-lg">No tienes notificaciones.</Caption>
+                   <Typography variant="caption" className="text-lg">No tienes notificaciones.</Typography>
                  </div>
               ) : (
                 <div className="space-y-4 animate-in fade-in-50 duration-500">
@@ -218,7 +218,7 @@ export default function NotificationsPage() {
             content: (
               unreadList.length === 0 ? (
                  <div className="text-center py-12 bg-muted/5 rounded-2xl border border-dashed">
-                   <Caption className="text-lg">¡Estás al día! No tienes notificaciones nuevas.</Caption>
+                   <Typography variant="caption" className="text-lg">¡Estás al día! No tienes notificaciones nuevas.</Typography>
                  </div>
               ) : (
                 <div className="space-y-4 animate-in fade-in-50 duration-500">
@@ -235,7 +235,7 @@ export default function NotificationsPage() {
             content: (
                readList.length === 0 ? (
                    <div className="text-center py-12 bg-muted/5 rounded-2xl border border-dashed">
-                     <Caption className="text-lg">No tienes notificaciones leídas.</Caption>
+                     <Typography variant="caption" className="text-lg">No tienes notificaciones leídas.</Typography>
                    </div>
                 ) : (
                   <div className="space-y-4 animate-in fade-in-50 duration-500">

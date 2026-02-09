@@ -1,6 +1,6 @@
 'use client';
 
-import { UnauthorizedOrganism } from '@/components/organisms';
+import { UnauthorizedOrganism } from '@/components/organisms-alianza';
 import { useTranslations } from '@/context/TranslationsContext';
 
 /**

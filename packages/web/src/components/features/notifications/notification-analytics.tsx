@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import {
   Card,
   CardContent,
@@ -28,23 +28,19 @@ import {
   Activity,
   Loader2,
 } from 'lucide-react';
+import { trpc } from '@/lib/trpc';
 
 interface NotificationAnalytics {
-  period: string;
-  totalNotifications: number;
-  unreadNotifications: number;
-  readingRate: string;
+  totalCount: number;
+  unreadCount: number;
+  readCount: number;
+  readRate: number;
   typeDistribution: Array<{
     type: string;
     count: number;
-    percentage: string;
   }>;
   dailyActivity: Array<{
-    date: string;
-    count: number;
-  }>;
-  readVsUnread: Array<{
-    status: string;
+    date: Date | string;
     count: number;
   }>;
 }
@@ -72,45 +68,18 @@ const TYPE_COLORS: Record<string, string> = {
 };
 
 export function NotificationAnalytics({ userId }: NotificationAnalyticsProps) {
-  const [analytics, setAnalytics] = useState<NotificationAnalytics | null>(
-    null,
-  );
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [selectedPeriod, setSelectedPeriod] = useState(30);
 
-  const fetchAnalytics = useCallback(
-    async (days: number) => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const encodedInput = encodeURIComponent(
-          JSON.stringify({ userId, days }),
-        );
-        const response = await fetch(
-          `http://localhost:3001/trpc/notification.getNotificationAnalytics?input=${encodedInput}`,
-        );
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch analytics');
-        }
-
-        const data = await response.json();
-        setAnalytics(data.result.data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
-        console.error('Error fetching analytics:', err);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [userId],
+  // Use tRPC client instead of manual fetch
+  const {
+    data: analytics,
+    isLoading: loading,
+    error,
+    refetch,
+  } = trpc.notification.getNotificationAnalytics.useQuery(
+    { userId, days: selectedPeriod },
+    { enabled: !!userId },
   );
-
-  useEffect(() => {
-    fetchAnalytics(selectedPeriod);
-  }, [selectedPeriod, userId, fetchAnalytics]);
 
   const handlePeriodChange = (value: string) => {
     const days = parseInt(value, 10);
@@ -137,13 +106,9 @@ export function NotificationAnalytics({ userId }: NotificationAnalyticsProps) {
           <BarChart3 className="w-16 h-16 text-muted-foreground mb-4" />
           <CardTitle className="text-xl mb-2 text-red-600">Error</CardTitle>
           <CardDescription className="text-center">
-            {error || 'Failed to load analytics'}
+            {error?.message || 'Failed to load analytics'}
           </CardDescription>
-          <Button
-            onClick={() => fetchAnalytics(selectedPeriod)}
-            className="mt-4"
-            variant="outline"
-          >
+          <Button onClick={() => refetch()} className="mt-4" variant="outline">
             Try Again
           </Button>
         </CardContent>
@@ -151,8 +116,13 @@ export function NotificationAnalytics({ userId }: NotificationAnalyticsProps) {
     );
   }
 
-  const readingRateNum = parseFloat(analytics.readingRate);
+  const readingRateNum = analytics.readRate;
   const isGoodReadingRate = readingRateNum >= 80;
+
+  // Calculate period label
+  const periodLabel = selectedPeriod === 7 ? 'Last 7 days' :
+                      selectedPeriod === 30 ? 'Last 30 days' :
+                      selectedPeriod === 90 ? 'Last 3 months' : 'Last year';
 
   return (
     <div className="space-y-6">
@@ -195,10 +165,10 @@ export function NotificationAnalytics({ userId }: NotificationAnalyticsProps) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {analytics.totalNotifications}
+              {analytics.totalCount}
             </div>
             <p className="text-xs text-muted-foreground">
-              in {analytics.period}
+              in {periodLabel}
             </p>
           </CardContent>
         </Card>
@@ -210,7 +180,7 @@ export function NotificationAnalytics({ userId }: NotificationAnalyticsProps) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-orange-600">
-              {analytics.unreadNotifications}
+              {analytics.unreadCount}
             </div>
             <p className="text-xs text-muted-foreground">
               pending notifications
@@ -231,7 +201,7 @@ export function NotificationAnalytics({ userId }: NotificationAnalyticsProps) {
             <div
               className={`text-2xl font-bold ${isGoodReadingRate ? 'text-green-600' : 'text-red-600'}`}
             >
-              {analytics.readingRate}%
+              {analytics.readRate.toFixed(1)}%
             </div>
             <p className="text-xs text-muted-foreground">
               {isGoodReadingRate ? 'Excellent!' : 'Needs attention'}
@@ -267,42 +237,47 @@ export function NotificationAnalytics({ userId }: NotificationAnalyticsProps) {
             Notification Types Distribution
           </CardTitle>
           <CardDescription>
-            Breakdown of notifications by type over {analytics.period}
+            Breakdown of notifications by type over {periodLabel}
           </CardDescription>
         </CardHeader>
         <CardContent>
           {analytics.typeDistribution &&
           analytics.typeDistribution.length > 0 ? (
             <div className="space-y-3">
-              {analytics.typeDistribution.map((item) => (
-                <div
-                  key={item.type}
-                  className="flex items-center justify-between"
-                >
-                  <div className="flex items-center gap-3">
-                    <Badge
-                      className={TYPE_COLORS[item.type] || TYPE_COLORS.info}
-                      variant="secondary"
-                    >
-                      {item.type}
-                    </Badge>
-                    <span className="text-sm font-medium">
-                      {item.count} notifications
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-24 bg-muted rounded-full h-2">
-                      <div
-                        className="bg-primary h-2 rounded-full transition-all duration-300"
-                        style={{ width: `${item.percentage}%` }}
-                      />
+              {analytics.typeDistribution.map((item) => {
+                const percentage = analytics.totalCount > 0
+                  ? ((item.count / analytics.totalCount) * 100).toFixed(1)
+                  : '0';
+                return (
+                  <div
+                    key={item.type}
+                    className="flex items-center justify-between"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Badge
+                        className={TYPE_COLORS[item.type] || TYPE_COLORS.info}
+                        variant="secondary"
+                      >
+                        {item.type}
+                      </Badge>
+                      <span className="text-sm font-medium">
+                        {item.count} notifications
+                      </span>
                     </div>
-                    <span className="text-sm text-muted-foreground min-w-[40px]">
-                      {item.percentage}%
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-24 bg-muted rounded-full h-2">
+                        <div
+                          className="bg-primary h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${percentage}%` }}
+                        />
+                      </div>
+                      <span className="text-sm text-muted-foreground min-w-[40px]">
+                        {percentage}%
+                      </span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           ) : (
             <div className="text-center py-8 text-muted-foreground">
@@ -382,26 +357,22 @@ export function NotificationAnalytics({ userId }: NotificationAnalyticsProps) {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 gap-4">
-            {analytics.readVsUnread &&
-              analytics.readVsUnread.map((item) => (
-                <div
-                  key={item.status}
-                  className="text-center p-4 rounded-lg border"
-                >
-                  <div
-                    className={`text-3xl font-bold ${
-                      item.status === 'read'
-                        ? 'text-green-600'
-                        : 'text-orange-600'
-                    }`}
-                  >
-                    {item.count}
-                  </div>
-                  <div className="text-sm text-muted-foreground capitalize">
-                    {item.status} notifications
-                  </div>
-                </div>
-              ))}
+            <div className="text-center p-4 rounded-lg border">
+              <div className="text-3xl font-bold text-green-600">
+                {analytics.readCount}
+              </div>
+              <div className="text-sm text-muted-foreground capitalize">
+                read notifications
+              </div>
+            </div>
+            <div className="text-center p-4 rounded-lg border">
+              <div className="text-3xl font-bold text-orange-600">
+                {analytics.unreadCount}
+              </div>
+              <div className="text-sm text-muted-foreground capitalize">
+                unread notifications
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -426,7 +397,7 @@ export function NotificationAnalytics({ userId }: NotificationAnalyticsProps) {
               </div>
             )}
 
-            {analytics.unreadNotifications > 50 && (
+            {analytics.unreadCount > 50 && (
               <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg">
                 <p className="text-sm text-orange-800">
                   <strong>High Unread Count:</strong> Consider using bulk
@@ -436,7 +407,7 @@ export function NotificationAnalytics({ userId }: NotificationAnalyticsProps) {
               </div>
             )}
 
-            {analytics.totalNotifications === 0 && (
+            {analytics.totalCount === 0 && (
               <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
                 <p className="text-sm text-blue-800">
                   <strong>No Activity:</strong> No notifications received in
@@ -446,7 +417,7 @@ export function NotificationAnalytics({ userId }: NotificationAnalyticsProps) {
               </div>
             )}
 
-            {readingRateNum >= 80 && analytics.unreadNotifications < 10 && (
+            {readingRateNum >= 80 && analytics.unreadCount < 10 && (
               <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
                 <p className="text-sm text-green-800">
                   <strong>Excellent Management:</strong> You&apos;re doing great

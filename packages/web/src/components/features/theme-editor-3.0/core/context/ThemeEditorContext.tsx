@@ -432,9 +432,12 @@ export function ThemeEditorProvider({ children, companyId: propCompanyId, initia
   const companyId = (propCompanyId && propCompanyId !== HARDCODED_ID)
     ? propCompanyId
     : (authCompanyId || userId || propCompanyId || HARDCODED_ID);
-    
+
   // Debug log to verify we are using the correct ID
   // console.log('🔍 [ThemeEditorProvider] Loading themes for companyId:', companyId);
+
+  // FIX: Only execute query on client side to prevent React 19 hydration errors
+  const isClient = typeof window !== 'undefined';
 
   // Always fetch from database to detect theme updates (favorite/default changes)
   const { data: dbThemes, refetch: refetchThemes } = trpc.theme.getCompanyThemes.useQuery(
@@ -446,7 +449,7 @@ export function ThemeEditorProvider({ children, companyId: propCompanyId, initia
       refetchOnMount: true,
       refetchOnWindowFocus: false,
       staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
-      enabled: !!companyId, // Only fetch if we have an ID
+      enabled: !!companyId && isClient, // Only fetch if we have an ID AND we're on client side
     }
   );
 

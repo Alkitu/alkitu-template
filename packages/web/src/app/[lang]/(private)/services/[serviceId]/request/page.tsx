@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
-import { RequestTemplateRenderer } from '@/components/organisms/request-template';
+import { RequestTemplateRenderer } from '@/components/organisms-alianza/RequestTemplateRenderer';
 import { Loader2, AlertCircle, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/primitives/ui/button';
 import Link from 'next/link';

@@ -56,6 +56,8 @@ const getTransformedData = (
   featureFlags?: {
     supportChatEnabled?: boolean;
     teamChannelsEnabled?: boolean;
+    analyticsEnabled?: boolean;
+    notificationsEnabled?: boolean;
   }
 ) => {
   // Client navigation
@@ -287,11 +289,12 @@ const getTransformedData = (
             },
           ],
         }] : []),
-        {
+        // Notifications - conditionally rendered based on feature flag
+        ...(featureFlags?.notificationsEnabled !== false ? [{
           title: t?.('nav.notifications') || 'Notificaciones',
           url: '/admin/notifications',
           icon: Bell,
-          section: 'communication',
+          section: 'communication' as const,
           items: [
             {
               title: t?.('nav.allNotifications') || 'Todas las Notificaciones',
@@ -306,7 +309,24 @@ const getTransformedData = (
               url: '/admin/notifications/preferences',
             },
           ],
-        },
+        }] : []),
+        // Analytics - conditionally rendered based on feature flag
+        ...(featureFlags?.analyticsEnabled !== false ? [{
+          title: t?.('nav.analytics') || 'Analytics',
+          url: '/admin/analytics',
+          icon: BarChart,
+          section: 'communication' as const,
+          items: [
+            {
+              title: t?.('nav.analyticsOverview') || 'Resumen',
+              url: '/admin/analytics',
+            },
+            {
+              title: t?.('nav.analyticsReports') || 'Reportes',
+              url: '/admin/analytics/reports',
+            },
+          ],
+        }] : []),
         // Team Channels - conditionally rendered based on feature flag
         ...(featureFlags?.teamChannelsEnabled !== false ? [{
           title: t?.('nav.teamChat') || 'Team Chat',
@@ -414,10 +434,14 @@ function Dashboard({ children, showWelcome = false, userRole = 'admin' }: Dashbo
   // Feature flags for conditional navigation
   const { isEnabled: supportChatEnabled } = useFeatureFlag('support-chat');
   const { isEnabled: teamChannelsEnabled } = useFeatureFlag('team-channels');
+  const { isEnabled: analyticsEnabled } = useFeatureFlag('analytics');
+  const { isEnabled: notificationsEnabled } = useFeatureFlag('notifications');
 
   const transformedData = getTransformedData(t, pathname, userRole, {
     supportChatEnabled,
     teamChannelsEnabled,
+    analyticsEnabled,
+    notificationsEnabled,
   });
 
   const currentUser = fullUser || sessionUser;

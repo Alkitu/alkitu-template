@@ -57,7 +57,7 @@ const sizeMap: IconSizeMap = {
 };
 
 const variantClasses: IconVariantMap = {
-  default: 'text-current',
+  default: 'text-foreground', // Changed from 'text-current' to ensure icons are always visible
   primary: 'text-primary',
   secondary: 'text-muted-foreground',
   success: 'text-green-600 dark:text-green-400',
@@ -107,7 +107,11 @@ export const Icon = React.forwardRef<HTMLElement, IconProps>(
     }
 
     // Handle both "iconName" and "iconNameIcon" formats
-    const iconKey = (name.endsWith('Icon') ? name : `${name}Icon`) as IconKeys;
+    // Convert to camelCase if needed (e.g., "BarChart" → "barChartIcon")
+    let normalizedName = name.endsWith('Icon') ? name : `${name}Icon`;
+    // Ensure first letter is lowercase for camelCase
+    normalizedName = normalizedName.charAt(0).toLowerCase() + normalizedName.slice(1);
+    const iconKey = normalizedName as IconKeys;
     const LucideIcon = Icons[iconKey];
 
     if (!LucideIcon) {

@@ -3,6 +3,7 @@ import {
   Home,
   Users,
   LineChart,
+  BarChart,
   Mail,
   Workflow,
   Database,
@@ -111,6 +112,10 @@ import {
   DollarSign,
   TrendingUp,
   TrendingDown,
+  MessageSquare,
+  Hash,
+  Bot,
+  Blocks,
 } from "lucide-react";
 
 export type Icon = LucideIcon | React.ComponentType<any>;
@@ -178,6 +183,10 @@ export const Icons = {
   // Communication
   mailIcon: Mail,
   phoneIcon: Phone,
+  messageSquareIcon: MessageSquare,
+  hashIcon: Hash,
+  botIcon: Bot,
+  blocksIcon: Blocks,
   
   // Devices
   monitorIcon: Monitor,
@@ -226,6 +235,7 @@ export const Icons = {
   
   // Business & Analytics
   lineChartIcon: LineChart,
+  barChartIcon: BarChart,
   packageIcon: Package,
   workflowIcon: Workflow,
   databaseIcon: Database,

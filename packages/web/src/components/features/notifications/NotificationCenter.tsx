@@ -17,7 +17,7 @@ import {
 import { useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Heading, Caption, Body } from '@/components/atoms-alianza/Typography';
+import { Typography, Heading } from '@/components/atoms-alianza/Typography';
 import { Button } from '@/components/molecules-alianza/Button';
 import { Chip } from '@/components/atoms-alianza/Chip';
 import { cn } from '@/lib/utils';
@@ -83,7 +83,7 @@ export function NotificationCenter({ userId }: NotificationCenterProps) {
       return (
         <div className="flex flex-col items-center justify-center py-12 text-center">
           <Bell className="h-8 w-8 mb-2 text-muted-foreground/30" />
-          <Caption>No hay notificaciones</Caption>
+          <Typography variant="caption">No hay notificaciones</Typography>
         </div>
       );
     }

@@ -9,15 +9,15 @@ export default function LoginPage() {
 
   return (
     <AuthPageOrganism
-      headerLabel={t('auth.login.title') || 'Iniciar Sesión'}
-      headerIcon="lock"
-      headerSubtitle={t('auth.login.subtitle') || 'Ingresa los detalles de tu cuenta para continuar'}
-      backButtonLabel={t('auth.backToHome') || 'Volver al Inicio'}
-      backButtonHref="/"
-      showSocial
-      socialDividerText={t('auth.socialDivider') || 'O CONTINUAR CON'}
-      socialPlaceholderText={t('auth.socialPlaceholder') || 'Los proveedores OAuth serán configurados con el backend'}
-    >
+        headerLabel={t('auth.login.title') || 'Iniciar Sesión'}
+        headerIcon="lock"
+        headerSubtitle={t('auth.login.subtitle') || 'Ingresa los detalles de tu cuenta para continuar'}
+        backButtonLabel={t('auth.backToHome') || 'Volver al Inicio'}
+        backButtonHref="/"
+        showSocial
+        socialDividerText={t('auth.socialDivider') || 'O CONTINUAR CON'}
+        socialPlaceholderText={t('auth.socialPlaceholder') || 'Los proveedores OAuth serán configurados con el backend'}
+      >
       <div className="flex flex-col gap-6">
         <LoginFormOrganism />
 

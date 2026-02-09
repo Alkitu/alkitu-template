@@ -35,16 +35,32 @@ export default function EmployeeDashboardPage() {
   useEffect(() => {
     const fetchDashboardData = async () => {
       setIsLoading(true);
+
+      // Helper function to fetch with timeout
+      const fetchWithTimeout = async (url: string, timeout = 5000) => {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+        try {
+          const response = await fetch(url, { signal: controller.signal });
+          clearTimeout(timeoutId);
+          return response;
+        } catch (error) {
+          clearTimeout(timeoutId);
+          throw error;
+        }
+      };
+
       try {
-        // Fetch assigned requests and stats in parallel
-        const [requestsResponse, statsResponse] = await Promise.all([
-          fetch('/api/requests?limit=10&sort=createdAt:desc'),
-          fetch('/api/requests/stats/count'),
+        // Fetch data with timeout protection
+        const [requestsResponse, statsResponse] = await Promise.allSettled([
+          fetchWithTimeout('/api/requests?limit=10&sort=createdAt:desc').catch(() => null),
+          fetchWithTimeout('/api/requests/stats/count').catch(() => null),
         ]);
 
         // Parse assigned requests
-        if (requestsResponse.ok) {
-          const requestsData = await requestsResponse.json();
+        if (requestsResponse.status === 'fulfilled' && requestsResponse.value?.ok) {
+          const requestsData = await requestsResponse.value.json();
           const requests = Array.isArray(requestsData) ? requestsData : [];
           setAssignedRequests(requests.slice(0, 10));
 
@@ -67,8 +83,8 @@ export default function EmployeeDashboardPage() {
         }
 
         // Use stats API if available for more accurate data
-        if (statsResponse.ok) {
-          const statsData = await statsResponse.json();
+        if (statsResponse.status === 'fulfilled' && statsResponse.value?.ok) {
+          const statsData = await statsResponse.value.json();
           const inProgress = statsData.ONGOING || 0;
           const completed = statsData.COMPLETED || 0;
           const assigned = (statsData.PENDING || 0) + inProgress + completed;

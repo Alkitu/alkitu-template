@@ -1,9 +1,5 @@
 // Organisms - Complex components composed of atoms and molecules
-export { Footer } from './footer';
-export type { FooterProps, FooterBrand, FooterSection, FooterLink } from './footer';
-
-export { ThemeEditorOrganism } from './theme-editor';
-export type { ThemeEditorOrganismProps, ThemeEditorLabels } from './theme-editor';
+// Note: Footer has been migrated to organisms-alianza
 
 export {
   AuthPageOrganism,
@@ -36,22 +32,8 @@ export type {
   ContactPersonData,
 } from './onboarding';
 
-export { UnauthorizedOrganism } from './unauthorized';
-export type { UnauthorizedOrganismProps } from './unauthorized';
-
 export { IconUploaderOrganism } from './icon-uploader';
 export type { IconUploaderOrganismProps } from './icon-uploader';
-
-export { SonnerOrganism, useToast, toast } from './sonner';
-export type {
-  Toast,
-  ToastType,
-  ToastPosition,
-  ToastAction,
-  ToastContextType,
-  SonnerOrganismProps,
-  ToastHelpers,
-} from './sonner';
 
 // Admin organisms
 export { UserManagementTable, RequestManagementTable } from './admin';

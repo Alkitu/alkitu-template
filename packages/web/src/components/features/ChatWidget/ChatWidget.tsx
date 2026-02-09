@@ -31,20 +31,7 @@ type ViewState = 'welcome' | 'conversations' | 'contact' | 'chat' | 'rating';
 export function ChatWidget() {
   const pathname = usePathname();
 
-  // Visibility logic: only show on public pages
-  // Private route segments based on application folder structure
-  const privateSegments = ['admin', 'client', 'employee', 'dashboard', 'locations', 'onboarding', 'profile', 'requests', 'services', 'chat'];
-
-  const isPrivateRoute = privateSegments.some(segment =>
-    pathname?.includes(`/${segment}/`) || pathname?.endsWith(`/${segment}`)
-  );
-
-  // If we are in a private route, don't render the widget
-  // IMPORTANT: This must be checked BEFORE any other hooks to avoid Rules of Hooks violation
-  if (isPrivateRoute) {
-    return null;
-  }
-
+  // State hooks - MUST be called unconditionally before any returns
   const [isOpen, setIsOpen] = useState(false);
   const [view, setView] = useState<ViewState>('welcome');
   const [showQuickReplies, setShowQuickReplies] = useState(true);
@@ -247,13 +234,25 @@ export function ChatWidget() {
   const widgetMotionProps = {
     ...baseMotionProps,
     className: 'fixed z-40 cursor-move',
-    style: { 
-      ...positionStyles, 
+    style: {
+      ...positionStyles,
       touchAction: 'none',
       bottom: '1rem', // Ensure it stays anchored to the bottom area
       maxHeight: 'calc(100vh - 2rem)',
     },
   };
+
+  // FIX: Check visibility AFTER all hooks to prevent Rules of Hooks violation
+  // Visibility logic: only show on public pages
+  const privateSegments = ['admin', 'client', 'employee', 'dashboard', 'locations', 'onboarding', 'profile', 'requests', 'services', 'chat'];
+  const isPrivateRoute = privateSegments.some(segment =>
+    pathname?.includes(`/${segment}/`) || pathname?.endsWith(`/${segment}`)
+  );
+
+  // If we are in a private route, don't render the widget
+  if (isPrivateRoute) {
+    return null;
+  }
 
   return (
     <AnimatePresence mode="wait">

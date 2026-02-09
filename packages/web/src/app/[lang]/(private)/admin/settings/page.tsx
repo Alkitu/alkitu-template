@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
 import { useTranslations } from '@/context/TranslationsContext';
 import { Typography } from '@/components/atoms-alianza/Typography';
 import { Card } from '@/components/primitives/Card';
@@ -13,7 +14,7 @@ const settingsOptions = [
   {
     title: 'Addons & Features',
     description: 'Enable or disable platform features and addons',
-    href: '/admin/settings/addons',
+    href: 'addons',
     icon: 'Blocks',
     badge: 'New',
   },
@@ -21,25 +22,20 @@ const settingsOptions = [
     title: 'Theme Editor 3.0',
     description:
       'Advanced theme customization with OKLCH colors, typography, spacing, and more',
-    href: '/dashboard/settings/themes',
+    href: 'themes',
     icon: 'Palette',
   },
   {
     title: 'Chatbot Settings',
     description: 'Configure chatbot behavior and appearance',
-    href: '/dashboard/settings/chatbot',
+    href: 'chatbot',
     icon: 'Bot',
-  },
-  {
-    title: 'General Settings',
-    description: 'Application preferences and configuration',
-    href: '/dashboard/settings/general',
-    icon: 'Settings',
   },
 ];
 
 export default function SettingsPage() {
   const t = useTranslations('dashboard.settings');
+  const { lang } = useParams();
 
   return (
     <div className="p-6 space-y-6">
@@ -50,7 +46,7 @@ export default function SettingsPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {settingsOptions.map((option) => (
-          <Link key={option.href} href={option.href}>
+          <Link key={option.href} href={`/${lang}/admin/settings/${option.href}`}>
             <Card
               className={cn(
                 'p-6 h-full transition-all duration-200',

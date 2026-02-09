@@ -1,6 +1,6 @@
 'use client';
 
-import { ThemeEditorOrganism } from '@/components/organisms';
+import { ThemeEditorOrganism } from '@/components/organisms-alianza';
 import { useTranslations } from '@/context/TranslationsContext';
 
 /**

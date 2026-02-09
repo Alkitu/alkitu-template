@@ -156,7 +156,7 @@ export default function RequestEditPage({
       }));
     } else {
       setUseNewLocation(false);
-      const selectedLocation = locations?.find((l) => l.id === value);
+      const selectedLocation = locations?.data?.find((l) => l.id === value);
       if (selectedLocation) {
         setFormData((prev) => ({
           ...prev,
@@ -228,7 +228,7 @@ export default function RequestEditPage({
                     setFormData({ ...formData, serviceId: value })
                   }
                   options={
-                    services?.map((s) => ({
+                    services?.data?.map((s) => ({
                       value: s.id,
                       label: `${s.name} (${s.category.name})`,
                     })) || []
@@ -238,7 +238,7 @@ export default function RequestEditPage({
                 {formData.serviceId && (
                   <div className="text-sm text-muted-foreground">
                     Categoría:{' '}
-                    {services?.find((s) => s.id === formData.serviceId)?.category
+                    {services?.data?.find((s) => s.id === formData.serviceId)?.category
                       .name || 'N/A'}
                   </div>
                 )}
@@ -275,7 +275,7 @@ export default function RequestEditPage({
                   onValueChange={handleLocationChange}
                   options={[
                     { value: 'new', label: '+ Nueva Ubicación' },
-                    ...(locations?.map((l) => ({
+                    ...(locations?.data?.map((l) => ({
                       value: l.id,
                       label: `${l.street}, ${l.city}`,
                     })) || []),

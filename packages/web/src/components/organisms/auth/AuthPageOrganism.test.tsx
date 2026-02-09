@@ -3,13 +3,28 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { AuthPageOrganism } from './AuthPageOrganism';
 
 // Mock dependencies
-vi.mock('@/components/molecules', () => ({
-  AuthCardWrapper: ({ children, headerLabel, backButtonLabel, backButtonHref, showSocial, ...props }: any) => (
+vi.mock('@/components/molecules-alianza/AuthCardWrapper', () => ({
+  AuthCardWrapper: ({
+    children,
+    title,
+    icon,
+    subtitle,
+    backButtonLabel,
+    backButtonHref,
+    showSocial,
+    socialDividerText,
+    socialPlaceholderText,
+    ...props
+  }: any) => (
     <div data-testid="auth-card-wrapper" {...props}>
-      <div data-testid="header-label">{headerLabel}</div>
+      <div data-testid="header-label">{title}</div>
+      {icon && <div data-testid="header-icon">{icon}</div>}
+      {subtitle && <div data-testid="header-subtitle">{subtitle}</div>}
       {backButtonLabel && <div data-testid="back-button-label">{backButtonLabel}</div>}
       {backButtonHref && <div data-testid="back-button-href">{backButtonHref}</div>}
       {showSocial && <div data-testid="show-social">social-enabled</div>}
+      {socialDividerText && <div data-testid="social-divider-text">{socialDividerText}</div>}
+      {socialPlaceholderText && <div data-testid="social-placeholder-text">{socialPlaceholderText}</div>}
       {children}
     </div>
   ),

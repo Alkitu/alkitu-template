@@ -3,6 +3,26 @@ import type { CheckboxProps } from './Checkbox.types';
 
 const CHECK_PATH = "M10.665 1.56249L3.79 8.43749L0.665 5.31249";
 
+/**
+ * Checkbox component - A custom checkbox molecule following Atomic Design principles.
+ *
+ * This component provides a visually styled checkbox alternative to the native HTML checkbox,
+ * with customizable appearance and controlled state management.
+ *
+ * @component
+ * @example
+ * ```tsx
+ * // Basic usage
+ * <Checkbox checked={isChecked} onCheckedChange={setIsChecked} />
+ *
+ * // With custom styling
+ * <Checkbox
+ *   checked={agreed}
+ *   onCheckedChange={setAgreed}
+ *   className="ml-2"
+ * />
+ * ```
+ */
 export function Checkbox({ checked = false, onCheckedChange, className }: CheckboxProps) {
   return (
     <button
@@ -14,6 +34,7 @@ export function Checkbox({ checked = false, onCheckedChange, className }: Checkb
         ${className}
       `}
       data-name="Checkbox"
+      data-testid="checkbox"
     >
       <Icon
         paths={[CHECK_PATH]}

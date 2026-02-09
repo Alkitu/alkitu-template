@@ -1,10 +1,11 @@
 'use client';
 
+import { Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { AlertCircle, ArrowLeft, Settings } from 'lucide-react';
 
 /**
- * Feature Disabled Page
+ * Feature Disabled Page Content
  *
  * Displayed when a user tries to access a feature-gated route
  * while the feature flag is disabled.
@@ -13,7 +14,7 @@ import { AlertCircle, ArrowLeft, Settings } from 'lucide-react';
  * - feature: The feature flag key that is disabled
  * - redirect: The original URL the user tried to access
  */
-export default function FeatureDisabledPage() {
+function FeatureDisabledContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -113,5 +114,26 @@ export default function FeatureDisabledPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+/**
+ * Feature Disabled Page with Suspense boundary
+ *
+ * FIX: Wrap in Suspense to prevent React 19 hydration error
+ * "Expected static flag was missing" when using useSearchParams()
+ */
+export default function FeatureDisabledPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center bg-background p-4">
+        <div className="text-center">
+          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent"></div>
+          <p className="mt-4 text-sm text-foreground-600">Cargando...</p>
+        </div>
+      </div>
+    }>
+      <FeatureDisabledContent />
+    </Suspense>
   );
 }

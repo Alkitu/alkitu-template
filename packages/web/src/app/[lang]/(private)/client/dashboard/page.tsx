@@ -29,24 +29,40 @@ export default function ClientDashboardPage() {
   useEffect(() => {
     const fetchDashboardData = async () => {
       setIsLoading(true);
+
+      // Helper function to fetch with timeout
+      const fetchWithTimeout = async (url: string, timeout = 5000) => {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+        try {
+          const response = await fetch(url, { signal: controller.signal });
+          clearTimeout(timeoutId);
+          return response;
+        } catch (error) {
+          clearTimeout(timeoutId);
+          throw error;
+        }
+      };
+
       try {
-        // Fetch stats in parallel
-        const [statsResponse, locationsResponse, requestsResponse] = await Promise.all([
-          fetch('/api/requests/stats/count'),
-          fetch('/api/locations'),
-          fetch('/api/requests?limit=5&sort=createdAt:desc'),
+        // Fetch data with timeout protection
+        const [statsResponse, locationsResponse, requestsResponse] = await Promise.allSettled([
+          fetchWithTimeout('/api/requests/stats/count').catch(() => null),
+          fetchWithTimeout('/api/locations').catch(() => null),
+          fetchWithTimeout('/api/requests?limit=5&sort=createdAt:desc').catch(() => null),
         ]);
 
-        // Parse stats
-        if (statsResponse.ok) {
-          const statsData = await statsResponse.json();
+        // Parse stats (fallback to 0 if API doesn't exist)
+        if (statsResponse.status === 'fulfilled' && statsResponse.value?.ok) {
+          const statsData = await statsResponse.value.json();
           const active = (statsData.PENDING || 0) + (statsData.ONGOING || 0);
           const completed = statsData.COMPLETED || 0;
 
           // Parse locations
           let locationsCount = 0;
-          if (locationsResponse.ok) {
-            const locationsData = await locationsResponse.json();
+          if (locationsResponse.status === 'fulfilled' && locationsResponse.value?.ok) {
+            const locationsData = await locationsResponse.value.json();
             locationsCount = Array.isArray(locationsData) ? locationsData.length : 0;
           }
 
@@ -54,8 +70,8 @@ export default function ClientDashboardPage() {
         }
 
         // Parse recent requests
-        if (requestsResponse.ok) {
-          const requestsData = await requestsResponse.json();
+        if (requestsResponse.status === 'fulfilled' && requestsResponse.value?.ok) {
+          const requestsData = await requestsResponse.value.json();
           setRecentRequests(Array.isArray(requestsData) ? requestsData.slice(0, 5) : []);
         }
       } catch (error) {

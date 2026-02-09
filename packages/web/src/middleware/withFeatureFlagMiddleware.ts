@@ -18,6 +18,10 @@ import type { NextRequest } from 'next/server';
 /**
  * Map of routes to required feature flags
  * Sorted by path length (longest first) for accurate matching
+ *
+ * NOTE: The addons management page (/admin/settings/addons) is NOT included here
+ * because it's where admins manage feature flags. Gating it would create a circular
+ * dependency where you can't access the page to enable features.
  */
 const FEATURE_GATED_ROUTES: Record<string, string> = {
   '/admin/chat/analytics': 'support-chat',
@@ -25,7 +29,7 @@ const FEATURE_GATED_ROUTES: Record<string, string> = {
   '/admin/channels': 'team-channels',
   '/admin/analytics': 'analytics',
   '/admin/notifications': 'notifications',
-  '/admin/settings/addons': 'support-chat', // Feature flag management requires at least one feature
+  // REMOVED: '/admin/settings/addons' - Must always be accessible to admins
 };
 
 /**

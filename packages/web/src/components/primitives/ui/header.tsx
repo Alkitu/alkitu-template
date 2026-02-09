@@ -3,6 +3,7 @@ import TailwindGrid from './TailwindGrid';
 import BreadcrumbNavigation from './breadcrumb-navigation';
 import { Separator } from './separator';
 import { NotificationCenter } from '../../features/notifications/NotificationCenter';
+import { useFeatureFlag } from '@/hooks/useFeatureFlag';
 
 interface HeaderProps {
   type: 'auth' | 'admin' | 'user';
@@ -13,6 +14,9 @@ interface HeaderProps {
 }
 
 function Header({ type, homeLabel, dropdownSliceEnd, separator, userId }: HeaderProps) {
+  // Check if notifications feature is enabled
+  const { isEnabled: notificationsEnabled } = useFeatureFlag('notifications');
+
   return (
     <header className="flex w-full items-center justify-between gap-4">
       <div className="flex items-center gap-2">
@@ -26,7 +30,7 @@ function Header({ type, homeLabel, dropdownSliceEnd, separator, userId }: Header
         />
       </div>
       <div className="flex items-center gap-2">
-        <NotificationCenter userId={userId} />
+        {notificationsEnabled !== false && <NotificationCenter userId={userId} />}
       </div>
     </header>
   );

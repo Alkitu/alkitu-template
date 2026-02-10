@@ -12,14 +12,15 @@ import { InputGroup } from '@/components/molecules-alianza/InputGroup';
 import { ServiceFilterButtons, type ServiceFilterType } from '@/components/molecules-alianza/ServiceFilterButtons';
 import { ServicesTableAlianza, type ServiceTableItem } from '@/components/organisms-alianza/ServicesTableAlianza';
 import { UserPagination } from '@/components/molecules-alianza/UserPagination';
+import { AdminPageHeader } from '@/components/molecules-alianza/AdminPageHeader';
+import { BreadcrumbNavigation } from '@/components/molecules-alianza/Breadcrumb';
 
 import { useRouter, useParams } from 'next/navigation';
-// ... imports
 
 const ServicesPage = () => {
   const router = useRouter();
   const params = useParams();
-  const lang = params.lang;
+  const lang = params.lang as string;
   
   // State
   const [activeFilter, setActiveFilter] = useState<ServiceFilterType>('all');
@@ -104,13 +105,31 @@ const ServicesPage = () => {
 
   return (
     <div className="flex flex-col gap-[36px] p-6">
-      {/* Page Title */}
-      <div className="flex items-center justify-between">
-         <Heading level={1} className="text-foreground font-bold">
-            Servicios
-         </Heading>
-         {/* Mock Global Action if needed */}
-      </div>
+      {/* Page Header with Breadcrumbs */}
+      <AdminPageHeader
+        title="Servicios"
+        description="Gestiona el catálogo de servicios de tu organización"
+        breadcrumbs={
+          <BreadcrumbNavigation
+            items={[
+              { label: 'Dashboard', href: `/${lang}/admin` },
+              { label: 'Catálogo', href: `/${lang}/admin/catalog` },
+              { label: 'Servicios', current: true },
+            ]}
+            separator="chevron"
+            size="sm"
+          />
+        }
+        actions={
+          <Button
+            variant="active"
+            onClick={handleAddService}
+            iconLeft={<Plus className="h-4 w-4" />}
+          >
+            Crear Nuevo Servicio
+          </Button>
+        }
+      />
 
       {/* Stats Cards */}
       <div className="flex gap-[42px] items-center overflow-x-auto pb-4 scrollbar-hide">
@@ -133,24 +152,14 @@ const ServicesPage = () => {
           onFilterChange={handleFilterChange}
         />
 
-        {/* Search + Create Button */}
-        <div className="flex items-center gap-3">
-          <InputGroup
-            placeholder="Buscar servicios..."
-            value={searchValue}
-            onChange={handleSearchChange}
-            iconLeft={<Search className="h-4 w-4 text-muted-foreground" />}
-            className="w-[200px] md:w-[250px]"
-          />
-
-          <Button 
-            variant="active" 
-            onClick={handleAddService}
-            iconLeft={<Plus className="h-4 w-4" />}
-          >
-            Crear Nuevo Servicio
-          </Button>
-        </div>
+        {/* Search Bar */}
+        <InputGroup
+          placeholder="Buscar servicios..."
+          value={searchValue}
+          onChange={handleSearchChange}
+          iconLeft={<Search className="h-4 w-4 text-muted-foreground" />}
+          className="w-[200px] md:w-[250px]"
+        />
       </div>
 
       {/* Services Table */}

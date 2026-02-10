@@ -20,6 +20,7 @@ import {
 } from '@/components/primitives/DropdownMenu';
 import { Button } from '@/components/primitives/ui/button';
 import { Heading } from '@/components/atoms-alianza/Typography';
+import { ServiceRequestLink } from '@/components/molecules-alianza/ServiceRequestLink';
 import type { ServicesTableAlianzaProps, ServiceTableItem } from './ServicesTableAlianza.types';
 
 const defaultLabels = {
@@ -27,6 +28,7 @@ const defaultLabels = {
   category: 'Categoría',
   status: 'Estado',
   questions: 'Preguntas',
+  requests: 'Solicitudes',
   actions: 'Acciones',
   edit: 'Editar',
   delete: 'Eliminar',
@@ -54,29 +56,39 @@ export function ServicesTableAlianza({
   services,
   onEdit,
   onDelete,
+  showRequestsColumn = false,
+  lang = 'es',
+  requestsBaseHref = '/admin/requests',
   labels = defaultLabels,
   className,
 }: ServicesTableAlianzaProps) {
-  
+  // Merge default labels with custom labels
+  const mergedLabels = { ...defaultLabels, ...labels };
+
   return (
     <div className={cn("w-full relative max-h-[600px] overflow-auto rounded-[8px] border border-secondary-foreground", className)}>
       <table className="w-full caption-bottom text-sm">
         <TableHeader>
             <TableRow className="bg-secondary hover:bg-secondary border-b border-secondary-foreground h-[46px] sticky top-0 z-20">
-            <TableHead className="text-card-foreground font-medium text-base px-[18px] w-[35%]">
-              {labels.service}
+            <TableHead className={cn("text-card-foreground font-medium text-base px-[18px]", showRequestsColumn ? "w-[30%]" : "w-[35%]")}>
+              {mergedLabels.service}
             </TableHead>
             <TableHead className="text-card-foreground font-medium text-base px-[9px] w-[20%]">
-              {labels.category}
+              {mergedLabels.category}
             </TableHead>
             <TableHead className="text-card-foreground font-medium text-base px-[9px] w-[15%]">
-              {labels.status}
+              {mergedLabels.status}
             </TableHead>
-            <TableHead className="text-card-foreground font-medium text-base px-[9px] w-[15%] text-center">
-              {labels.questions}
+            <TableHead className="text-card-foreground font-medium text-base px-[9px] w-[10%] text-center">
+              {mergedLabels.questions}
             </TableHead>
-            <TableHead className="text-card-foreground font-medium text-base px-[18px] text-right w-[15%] sticky right-0 z-20 bg-secondary shadow-[-12px_0_15px_-4px_rgba(0,0,0,0.1)] clip-inset-left">
-              {labels.actions}
+            {showRequestsColumn && (
+              <TableHead className="text-card-foreground font-medium text-base px-[9px] w-[15%]">
+                {mergedLabels.requests}
+              </TableHead>
+            )}
+            <TableHead className={cn("text-card-foreground font-medium text-base px-[18px] text-right sticky right-0 z-20 bg-secondary shadow-[-12px_0_15px_-4px_rgba(0,0,0,0.1)] clip-inset-left", showRequestsColumn ? "w-[10%]" : "w-[15%]")}>
+              {mergedLabels.actions}
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -93,11 +105,24 @@ export function ServicesTableAlianza({
                 {service.category}
               </TableCell>
               <TableCell className="py-4 px-[9px]">
-                <StatusBadge status={service.status} labels={labels} />
+                <StatusBadge status={service.status} labels={mergedLabels} />
               </TableCell>
               <TableCell className="py-4 px-[9px] text-center text-muted-foreground">
                   {service.questionsCount}
               </TableCell>
+              {showRequestsColumn && (
+                <TableCell className="py-4 px-[9px]">
+                  <ServiceRequestLink
+                    serviceId={service.id}
+                    serviceName={service.name}
+                    requestCount={service.requestStats?.total || 0}
+                    pendingCount={service.requestStats?.pending || 0}
+                    ongoingCount={service.requestStats?.ongoing || 0}
+                    baseHref={requestsBaseHref}
+                    lang={lang}
+                  />
+                </TableCell>
+              )}
               <TableCell className="text-right py-4 px-[18px] sticky right-0 z-10 bg-background group-hover:bg-muted/50 transition-colors shadow-[-12px_0_15px_-4px_rgba(0,0,0,0.05)] clip-inset-left h-full">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>

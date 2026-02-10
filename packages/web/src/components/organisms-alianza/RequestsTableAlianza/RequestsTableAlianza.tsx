@@ -106,8 +106,11 @@ export const RequestsTableAlianza: React.FC<RequestsTableAlianzaProps> = ({
 
                   {/* Service Details */}
                   <div className="flex flex-col gap-1">
-                    {/* Service Name */}
-                    <span className="text-sm font-medium text-foreground">
+                    {/* Request Title (serviceName now contains the specific request title) */}
+                    <span
+                      className="text-sm font-medium text-foreground"
+                      title={`Servicio: ${request.categoryName}`}
+                    >
                       {request.serviceName}
                     </span>
 

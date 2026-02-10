@@ -5,6 +5,7 @@ import { PrismaService } from '../prisma.service';
 import { NotificationModule } from '../notification/notification.module';
 import { EmailTemplateModule } from '../email-templates/email-template.module';
 import { AccessControlModule } from '../access-control/access-control.module';
+import { RequestStatusChangedHook } from './hooks/request-status-changed.hook';
 
 /**
  * Module for managing service requests lifecycle (ALI-119 + ALI-120 + ALI-121)
@@ -13,7 +14,7 @@ import { AccessControlModule } from '../access-control/access-control.module';
 @Module({
   imports: [NotificationModule, EmailTemplateModule, AccessControlModule],
   controllers: [RequestsController],
-  providers: [RequestsService, PrismaService],
-  exports: [RequestsService],
+  providers: [RequestsService, PrismaService, RequestStatusChangedHook],
+  exports: [RequestsService, RequestStatusChangedHook],
 })
 export class RequestsModule {}

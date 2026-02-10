@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { t, protectedProcedure } from '../trpc';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, RequestStatus } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { handlePrismaError } from '../utils/prisma-error-mapper';
 import {
@@ -115,6 +115,73 @@ export function createServiceRouter() {
           });
         } catch (error) {
           handlePrismaError(error, 'fetch services by category');
+        }
+      }),
+
+    /**
+     * Get request stats for all services
+     * Returns aggregated request counts per service by status
+     *
+     * Response structure:
+     * {
+     *   [serviceId: string]: {
+     *     total: number;
+     *     pending: number;
+     *     ongoing: number;
+     *     completed: number;
+     *     cancelled: number;
+     *   }
+     * }
+     *
+     * Security: Requires authentication
+     */
+    getServiceRequestStats: protectedProcedure
+      .input(z.object({}).optional())
+      .query(async () => {
+        try {
+          // Get all services with their requests
+          const services = await prisma.service.findMany({
+            where: {
+              deletedAt: null,
+            },
+            include: {
+              requests: {
+                select: {
+                  id: true,
+                  status: true,
+                },
+              },
+            },
+          });
+
+          // Build stats object keyed by service ID
+          return services.reduce(
+            (acc, service) => {
+              const requests = service.requests;
+
+              acc[service.id] = {
+                total: requests.length,
+                pending: requests.filter((r) => r.status === RequestStatus.PENDING).length,
+                ongoing: requests.filter((r) => r.status === RequestStatus.ONGOING).length,
+                completed: requests.filter((r) => r.status === RequestStatus.COMPLETED).length,
+                cancelled: requests.filter((r) => r.status === RequestStatus.CANCELLED).length,
+              };
+
+              return acc;
+            },
+            {} as Record<
+              string,
+              {
+                total: number;
+                pending: number;
+                ongoing: number;
+                completed: number;
+                cancelled: number;
+              }
+            >,
+          );
+        } catch (error) {
+          handlePrismaError(error, 'fetch service request stats');
         }
       }),
   });

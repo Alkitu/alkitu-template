@@ -690,6 +690,9 @@ enum RequestStatus {
 model Request {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
 
+  // Request title (specific title entered by client, e.g., "Aire roto oficina principal")
+  title     String   @default("Nueva Solicitud")
+
   // Request creator (CLIENT role)
   user      User     @relation("UserRequests", fields: [userId], references: [id], onDelete: Cascade)
   userId    String   @db.ObjectId

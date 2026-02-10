@@ -5,37 +5,27 @@
       "value": "es",
       "domain": "localhost",
       "path": "/",
-      "expires": 1802175974.600089,
-      "httpOnly": false,
-      "secure": false,
-      "sameSite": "Lax"
-    },
-    {
-      "name": "__next_hmr_refresh_hash__",
-      "value": "264",
-      "domain": "localhost",
-      "path": "/",
-      "expires": -1,
+      "expires": 1802240542.026826,
       "httpOnly": false,
       "secure": false,
       "sameSite": "Lax"
     },
     {
       "name": "auth-token",
-      "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImVtcGxveWVlLWUyZUBhbGtpdHUudGVzdCIsInN1YiI6IjY5ODdkMmQ3OWZkZjczNmQ2ZGQ3NWVjMyIsInJvbGUiOiJFTVBMT1lFRSIsImZpcnN0bmFtZSI6IkVtcGxveWVlIiwibGFzdG5hbWUiOiJVc2VyIiwicHJvZmlsZUNvbXBsZXRlIjp0cnVlLCJlbWFpbFZlcmlmaWVkIjpmYWxzZSwiaXNBY3RpdmUiOnRydWUsImlhdCI6MTc3MDYzOTk3NCwiZXhwIjoxNzcwNzI2Mzc0fQ.ApIOmxwpaKsEu1_B5mh2BQ-11NM6Ctim4dXM9gUoJW8",
+      "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImVtcGxveWVlLWUyZUBhbGtpdHUudGVzdCIsInN1YiI6IjY5ODdkMmQ3OWZkZjczNmQ2ZGQ3NWVjMyIsInJvbGUiOiJFTVBMT1lFRSIsImZpcnN0bmFtZSI6IkVtcGxveWVlIiwibGFzdG5hbWUiOiJVc2VyIiwicHJvZmlsZUNvbXBsZXRlIjp0cnVlLCJlbWFpbFZlcmlmaWVkIjpmYWxzZSwiaXNBY3RpdmUiOnRydWUsImlhdCI6MTc3MDcwNDU0MSwiZXhwIjoxNzcwNzkwOTQxfQ.ZzesABu7wTuktRaf8ELadz_Dpx_SCkpCzZwKVfoh92I",
       "domain": "localhost",
       "path": "/",
-      "expires": 1770726374.541638,
+      "expires": 1770790941.943709,
       "httpOnly": true,
       "secure": false,
       "sameSite": "Lax"
     },
     {
       "name": "refresh-token",
-      "value": "746e95fdc0b6a8e854cb54578f2d698ad1adedd9dff1593e08a263b0b37af0f7",
+      "value": "9effd9080f559ab2f84924633b8fcc68a05e58a88d80eced5bf47eb36217e1bf",
       "domain": "localhost",
       "path": "/",
-      "expires": 1771244774.541679,
+      "expires": 1771309341.943766,
       "httpOnly": true,
       "secure": false,
       "sameSite": "Lax"

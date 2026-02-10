@@ -15,8 +15,16 @@ import {
   employeeProcedure,
   requireResourceAccess,
 } from '../middlewares/roles.middleware';
+import { RequestStatusChangedHook } from '../../requests/hooks/request-status-changed.hook';
+import { NotificationService } from '../../notification/notification.service';
+import { PushNotificationService } from '../../notification/push-notification.service';
+import { PrismaService } from '../../prisma.service';
 
 const prisma = new PrismaClient();
+const prismaService = new PrismaService();
+const pushNotificationService = new PushNotificationService();
+const notificationService = new NotificationService(prismaService, pushNotificationService);
+const requestStatusChangedHook = new RequestStatusChangedHook(notificationService);
 
 /**
  * Request tRPC Router
@@ -233,11 +241,15 @@ export function createRequestRouter() {
           });
         }
 
+        // Extract title from templateResponses or use default
+        const title = (input.templateResponses as any)?.title || 'Nueva Solicitud';
+
         return await prisma.request.create({
           data: {
             userId: input.userId,
             serviceId: input.serviceId,
             locationId: input.locationId,
+            title, // Save title as direct field
             executionDateTime: new Date(input.executionDateTime),
             templateResponses: input.templateResponses,
             note: input.note,
@@ -327,6 +339,7 @@ export function createRequestRouter() {
     /**
      * Update request status
      * Security: EMPLOYEE+ role required, uses resource access control
+     * Triggers: REQUEST_STATUS_CHANGED notification hook
      */
     updateRequestStatus: employeeProcedure
       .input(updateRequestStatusSchema)
@@ -338,16 +351,49 @@ export function createRequestRouter() {
         }),
       )
       .mutation(async ({ input }) => {
+        // Get old status before updating
+        const oldRequest = await prisma.request.findUnique({
+          where: { id: input.id },
+          select: { status: true },
+        });
+
+        if (!oldRequest) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Request not found',
+          });
+        }
+
         const updateData: any = { status: input.status };
 
         if (input.status === RequestStatus.COMPLETED) {
           updateData.completedAt = new Date();
         }
 
-        return await prisma.request.update({
+        // Update request with full relations for notification hook
+        const updatedRequest = await prisma.request.update({
           where: { id: input.id },
           data: updateData,
+          include: {
+            service: {
+              include: {
+                category: true,
+              },
+            },
+            user: true,
+            assignedTo: true,
+          },
         });
+
+        // Trigger notification hook (non-blocking)
+        await requestStatusChangedHook
+          .execute(updatedRequest, oldRequest.status, input.status)
+          .catch((error) => {
+            console.error('Failed to send status change notifications:', error);
+            // Don't throw - notification failures shouldn't block the mutation
+          });
+
+        return updatedRequest;
       }),
 
     /**

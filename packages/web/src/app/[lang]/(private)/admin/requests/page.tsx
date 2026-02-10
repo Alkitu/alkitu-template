@@ -7,8 +7,9 @@ import { useTranslations } from '@/context/TranslationsContext';
 // Organisms
 import { RequestManagementTable } from '@/components/organisms/admin';
 
-// Atoms
-import { Heading } from '@/components/atoms-alianza/Typography';
+// Molecules
+import { AdminPageHeader } from '@/components/molecules-alianza/AdminPageHeader';
+import { BreadcrumbNavigation } from '@/components/molecules-alianza/Breadcrumb';
 
 /**
  * Admin Service Requests Page
@@ -39,10 +40,21 @@ export default function AdminRequestsPage() {
 
   return (
     <div className="flex flex-col gap-[36px] p-6">
-      {/* Page Header */}
-      <Heading level={1} className="text-foreground">
-        {t('title') || 'Solicitudes de Servicio'}
-      </Heading>
+      {/* Page Header with Breadcrumbs */}
+      <AdminPageHeader
+        title={t('title') || 'Solicitudes de Servicio'}
+        description="Gestiona y monitorea todas las solicitudes de servicio"
+        breadcrumbs={
+          <BreadcrumbNavigation
+            items={[
+              { label: 'Dashboard', href: `/${lang}/admin` },
+              { label: 'Solicitudes', current: true },
+            ]}
+            separator="chevron"
+            size="sm"
+          />
+        }
+      />
 
       {/* Request Management Table Organism */}
       <RequestManagementTable

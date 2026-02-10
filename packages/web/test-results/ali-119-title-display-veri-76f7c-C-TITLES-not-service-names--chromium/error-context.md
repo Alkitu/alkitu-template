@@ -1,0 +1,281 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e6]:
+        - generic [ref=e8]:
+          - generic [ref=e9]:
+            - generic [ref=e10]: RESUMEN
+            - list [ref=e11]:
+              - listitem [ref=e12]:
+                - link "Panel" [ref=e13] [cursor=pointer]:
+                  - /url: /admin/dashboard
+                  - img [ref=e14]
+                  - generic: Panel
+          - generic [ref=e17]:
+            - generic [ref=e18]: GESTIÓN
+            - list [ref=e19]:
+              - listitem [ref=e20]:
+                - button "Solicitudes" [ref=e21]:
+                  - img [ref=e22]
+                  - generic [ref=e25]: Solicitudes
+                  - img [ref=e26]
+              - listitem [ref=e28]:
+                - button "Usuarios" [ref=e29]:
+                  - img [ref=e30]
+                  - generic [ref=e35]: Usuarios
+                  - img [ref=e36]
+              - listitem [ref=e38]:
+                - button "Catálogo" [ref=e39]:
+                  - img [ref=e40]
+                  - generic [ref=e43]: Catálogo
+                  - img [ref=e44]
+          - generic [ref=e46]:
+            - generic [ref=e47]: COMUNICACIÓN
+            - list [ref=e48]:
+              - listitem [ref=e49]:
+                - button "Notificaciones" [ref=e50]:
+                  - img [ref=e51]
+                  - generic [ref=e54]: Notificaciones
+                  - img [ref=e55]
+          - generic [ref=e57]:
+            - generic [ref=e58]: CONFIGURACIÓN
+            - list [ref=e59]:
+              - listitem [ref=e60]:
+                - button "Configuración" [ref=e61]:
+                  - img [ref=e62]
+                  - generic [ref=e65]: Configuración
+                  - img [ref=e66]
+        - list [ref=e69]:
+          - listitem [ref=e70]:
+            - button "CN Admin User admin-e2e@alkitu.test" [ref=e71]:
+              - generic [ref=e74]: CN
+              - generic:
+                - generic: Admin User
+                - generic: admin-e2e@alkitu.test
+              - img [ref=e75]
+        - button "Toggle Sidebar" [ref=e78]
+      - main [ref=e79]:
+        - generic [ref=e80]:
+          - button "Toggle Sidebar" [ref=e81] [cursor=pointer]:
+            - img [ref=e82]
+            - generic [ref=e84]: Toggle Sidebar
+          - generic [ref=e86]:
+            - navigation "breadcrumb" [ref=e89]:
+              - list [ref=e90]:
+                - listitem [ref=e91]:
+                  - link "Panel" [ref=e92] [cursor=pointer]:
+                    - /url: /
+                - listitem [ref=e93]:
+                  - img [ref=e94]
+                - listitem:
+                  - link "requests" [disabled]
+            - button [ref=e97] [cursor=pointer]:
+              - img [ref=e98]
+        - generic [ref=e104]:
+          - generic [ref=e105]:
+            - navigation "breadcrumb" [ref=e107]:
+              - list [ref=e108]:
+                - listitem [ref=e109]:
+                  - link "Dashboard" [ref=e110] [cursor=pointer]:
+                    - /url: /es/admin
+                - listitem [ref=e111]:
+                  - img [ref=e112]
+                - listitem [ref=e114]:
+                  - link "Solicitudes" [disabled] [ref=e115]
+            - generic [ref=e117]:
+              - heading "admin.requests.title" [level=1] [ref=e119]
+              - generic [ref=e120]: Gestiona y monitorea todas las solicitudes de servicio
+          - generic [ref=e121]:
+            - generic [ref=e122]:
+              - generic [ref=e123]:
+                - generic [ref=e124]: Total de Solicitudes
+                - generic [ref=e125]: "4"
+              - generic [ref=e126]:
+                - generic [ref=e127]: Pendientes
+                - generic [ref=e128]: "2"
+              - generic [ref=e129]:
+                - generic [ref=e130]: En Progreso
+                - generic [ref=e131]: "1"
+              - generic [ref=e132]:
+                - generic [ref=e133]: Completadas
+                - generic [ref=e134]: "1"
+              - generic [ref=e135]:
+                - generic [ref=e136]: Canceladas
+                - generic [ref=e137]: "0"
+            - generic [ref=e138]:
+              - generic [ref=e139]:
+                - button "Todas" [ref=e140]
+                - button "Pendientes" [ref=e141]
+                - button "En Progreso" [ref=e142]
+                - button "Completadas" [ref=e143]
+                - button "Canceladas" [ref=e144]
+              - generic [ref=e145]:
+                - generic [ref=e147]:
+                  - generic:
+                    - img
+                  - textbox "Buscar solicitudes..." [ref=e148]
+                - button "Nueva Solicitud" [ref=e149] [cursor=pointer]:
+                  - img [ref=e151]
+                  - text: Nueva Solicitud
+            - table [ref=e154]:
+              - rowgroup [ref=e155]:
+                - row "Servicio Cliente Estado Fecha Ejecución Asignado a Acciones" [ref=e156]:
+                  - cell "Servicio" [ref=e157]
+                  - cell "Cliente" [ref=e158]
+                  - cell "Estado" [ref=e159]
+                  - cell "Fecha Ejecución" [ref=e160]
+                  - cell "Asignado a" [ref=e161]
+                  - cell "Acciones" [ref=e162]
+              - rowgroup [ref=e163]:
+                - row "Reparación de Aires Acondicionados Mantenimiento HVAC 07:20 a. m. • San José, SJ Client User client-e2e@alkitu.test Pendiente 17 feb 2026 Sin asignar" [ref=e164]:
+                  - cell "Reparación de Aires Acondicionados Mantenimiento HVAC 07:20 a. m. • San José, SJ" [ref=e165]:
+                    - generic [ref=e166]:
+                      - img [ref=e168]
+                      - generic [ref=e171]:
+                        - 'generic "Servicio: Mantenimiento HVAC" [ref=e172]': Reparación de Aires Acondicionados
+                        - generic [ref=e173]: Mantenimiento HVAC
+                        - generic [ref=e174]:
+                          - generic [ref=e175]:
+                            - img [ref=e176]
+                            - text: 07:20 a. m.
+                          - generic [ref=e179]: •
+                          - generic [ref=e180]:
+                            - img [ref=e181]
+                            - text: San José, SJ
+                  - cell "Client User client-e2e@alkitu.test" [ref=e184]:
+                    - generic [ref=e185]:
+                      - generic [ref=e186]: Client User
+                      - generic [ref=e187]: client-e2e@alkitu.test
+                  - cell "Pendiente" [ref=e188]
+                  - cell "17 feb 2026" [ref=e189]
+                  - cell "Sin asignar" [ref=e190]
+                  - cell [ref=e191]:
+                    - generic [ref=e192]:
+                      - button "Ver detalles" [ref=e193]:
+                        - img [ref=e194]
+                      - button "Editar solicitud" [ref=e197]:
+                        - img [ref=e198]
+                      - button "Asignar" [ref=e201]:
+                        - img [ref=e202]
+                      - button "Cancelar" [ref=e205]:
+                        - img [ref=e206]
+                - row "Reparación de Plomería Mantenimiento General 07:20 a. m. • San José, SJ Client User client-e2e@alkitu.test Completada 9 feb 2026 Employee User" [ref=e210]:
+                  - cell "Reparación de Plomería Mantenimiento General 07:20 a. m. • San José, SJ" [ref=e211]:
+                    - generic [ref=e212]:
+                      - img [ref=e214]
+                      - generic [ref=e217]:
+                        - 'generic "Servicio: Mantenimiento General" [ref=e218]': Reparación de Plomería
+                        - generic [ref=e219]: Mantenimiento General
+                        - generic [ref=e220]:
+                          - generic [ref=e221]:
+                            - img [ref=e222]
+                            - text: 07:20 a. m.
+                          - generic [ref=e225]: •
+                          - generic [ref=e226]:
+                            - img [ref=e227]
+                            - text: San José, SJ
+                  - cell "Client User client-e2e@alkitu.test" [ref=e230]:
+                    - generic [ref=e231]:
+                      - generic [ref=e232]: Client User
+                      - generic [ref=e233]: client-e2e@alkitu.test
+                  - cell "Completada" [ref=e234]
+                  - cell "9 feb 2026" [ref=e235]
+                  - cell "Employee User" [ref=e236]
+                  - cell [ref=e237]:
+                    - generic [ref=e238]:
+                      - button "Ver detalles" [ref=e239]:
+                        - img [ref=e240]
+                      - button "Editar solicitud" [ref=e243]:
+                        - img [ref=e244]
+                - row "Limpieza Profunda de Oficinas Limpieza 09:20 a. m. • San José, SJ Client User client-e2e@alkitu.test En Progreso 10 feb 2026 Employee User" [ref=e247]:
+                  - cell "Limpieza Profunda de Oficinas Limpieza 09:20 a. m. • San José, SJ" [ref=e248]:
+                    - generic [ref=e249]:
+                      - img [ref=e251]
+                      - generic [ref=e253]:
+                        - 'generic "Servicio: Limpieza" [ref=e254]': Limpieza Profunda de Oficinas
+                        - generic [ref=e255]: Limpieza
+                        - generic [ref=e256]:
+                          - generic [ref=e257]:
+                            - img [ref=e258]
+                            - text: 09:20 a. m.
+                          - generic [ref=e261]: •
+                          - generic [ref=e262]:
+                            - img [ref=e263]
+                            - text: San José, SJ
+                  - cell "Client User client-e2e@alkitu.test" [ref=e266]:
+                    - generic [ref=e267]:
+                      - generic [ref=e268]: Client User
+                      - generic [ref=e269]: client-e2e@alkitu.test
+                  - cell "En Progreso" [ref=e270]
+                  - cell "10 feb 2026" [ref=e271]
+                  - cell "Employee User" [ref=e272]:
+                    - button "Employee User" [ref=e273] [cursor=pointer]:
+                      - generic [ref=e274]: Employee User
+                      - img [ref=e275]
+                  - cell [ref=e287]:
+                    - generic [ref=e288]:
+                      - button "Ver detalles" [ref=e289]:
+                        - img [ref=e290]
+                      - button "Editar solicitud" [ref=e293]:
+                        - img [ref=e294]
+                      - button "Completar" [ref=e297]:
+                        - img [ref=e298]
+                      - button "Cancelar" [ref=e301]:
+                        - img [ref=e302]
+                - row "Reparación de Aires Acondicionados Mantenimiento HVAC 07:20 a. m. • San José, SJ Client User client-e2e@alkitu.test Pendiente 11 feb 2026 Sin asignar" [ref=e306]:
+                  - cell "Reparación de Aires Acondicionados Mantenimiento HVAC 07:20 a. m. • San José, SJ" [ref=e307]:
+                    - generic [ref=e308]:
+                      - img [ref=e310]
+                      - generic [ref=e313]:
+                        - 'generic "Servicio: Mantenimiento HVAC" [ref=e314]': Reparación de Aires Acondicionados
+                        - generic [ref=e315]: Mantenimiento HVAC
+                        - generic [ref=e316]:
+                          - generic [ref=e317]:
+                            - img [ref=e318]
+                            - text: 07:20 a. m.
+                          - generic [ref=e321]: •
+                          - generic [ref=e322]:
+                            - img [ref=e323]
+                            - text: San José, SJ
+                  - cell "Client User client-e2e@alkitu.test" [ref=e326]:
+                    - generic [ref=e327]:
+                      - generic [ref=e328]: Client User
+                      - generic [ref=e329]: client-e2e@alkitu.test
+                  - cell "Pendiente" [ref=e330]
+                  - cell "11 feb 2026" [ref=e331]
+                  - cell "Sin asignar" [ref=e332]
+                  - cell [ref=e333]:
+                    - generic [ref=e334]:
+                      - button "Ver detalles" [ref=e335]:
+                        - img [ref=e336]
+                      - button "Editar solicitud" [ref=e339]:
+                        - img [ref=e340]
+                      - button "Asignar" [ref=e343]:
+                        - img [ref=e344]
+                      - button "Cancelar" [ref=e347]:
+                        - img [ref=e348]
+            - generic [ref=e352]:
+              - generic [ref=e353]: Mostrando 1 a 4 de 4 resultados
+              - generic [ref=e354]:
+                - generic [ref=e355]:
+                  - generic [ref=e356]: Filas por página
+                  - combobox [ref=e357]:
+                    - generic: "20"
+                    - img
+                - generic [ref=e358]:
+                  - generic [ref=e359]: Página 1 de 1
+                  - button "Anterior" [disabled] [ref=e360]:
+                    - img [ref=e361]
+                    - generic [ref=e363]: Anterior
+                  - button "Siguiente" [disabled] [ref=e364]:
+                    - img [ref=e365]
+                    - generic [ref=e367]: Siguiente
+    - region "Notifications (F8)":
+      - list
+  - button "Open Next.js Dev Tools" [ref=e373] [cursor=pointer]:
+    - img [ref=e374]
+  - alert [ref=e377]
+```

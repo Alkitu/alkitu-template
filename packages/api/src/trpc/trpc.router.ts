@@ -14,6 +14,7 @@ import { createThemeRouter } from './routers/theme.router';
 import { createEmailTemplateRouter } from './routers/email-template.router';
 import { createRequestRouter } from './routers/request.router';
 import { createServiceRouter } from './routers/service.router';
+import { createCategoryRouter } from './routers/category.router';
 import { createLocationRouter } from './routers/location.router';
 import { createFeatureFlagsRouter } from './routers/feature-flags.router';
 import { t } from './trpc';
@@ -54,6 +55,7 @@ export class TrpcRouter {
       emailTemplate: createEmailTemplateRouter(this.emailTemplateService), // ALI-121: Router de email templates
       request: createRequestRouter(), // ALI-119: Router de solicitudes (requests)
       service: createServiceRouter(), // Service catalog router
+      category: createCategoryRouter(), // Category catalog router with stats
       location: createLocationRouter(), // Work location router
       featureFlags: createFeatureFlagsRouter(this.featureFlagsService), // Feature flags router
     });

@@ -1,0 +1,178 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e6]:
+        - generic [ref=e8]:
+          - generic [ref=e9]:
+            - generic [ref=e10]: RESUMEN
+            - list [ref=e11]:
+              - listitem [ref=e12]:
+                - link "Panel" [ref=e13] [cursor=pointer]:
+                  - /url: /employee/dashboard
+                  - img [ref=e14]
+                  - generic: Panel
+          - generic [ref=e17]:
+            - generic [ref=e18]: GESTIÓN
+            - list [ref=e19]:
+              - listitem [ref=e20]:
+                - button "dashboard.nav.assignedRequests" [ref=e21]:
+                  - img [ref=e22]
+                  - generic [ref=e25]: dashboard.nav.assignedRequests
+                  - img [ref=e26]
+              - listitem [ref=e28]:
+                - link "dashboard.nav.locations" [ref=e29] [cursor=pointer]:
+                  - /url: /locations
+                  - img [ref=e30]
+                  - generic: dashboard.nav.locations
+          - generic [ref=e33]:
+            - generic [ref=e34]: COMUNICACIÓN
+            - list [ref=e35]:
+              - listitem [ref=e36]:
+                - link "Notificaciones" [ref=e37] [cursor=pointer]:
+                  - /url: /employee/notifications
+                  - img [ref=e38]
+                  - generic: Notificaciones
+          - generic [ref=e41]:
+            - generic [ref=e42]: CONFIGURACIÓN
+            - list [ref=e43]:
+              - listitem [ref=e44]:
+                - button "Mi Perfil" [ref=e45]:
+                  - img [ref=e46]
+                  - generic [ref=e49]: Mi Perfil
+                  - img [ref=e50]
+        - list [ref=e53]:
+          - listitem [ref=e54]:
+            - button "CN Employee User employee-e2e@alkitu.test" [ref=e55]:
+              - generic [ref=e58]: CN
+              - generic:
+                - generic: Employee User
+                - generic: employee-e2e@alkitu.test
+              - img [ref=e59]
+        - button "Toggle Sidebar" [ref=e62]
+      - main [ref=e63]:
+        - generic [ref=e64]:
+          - button "Toggle Sidebar" [ref=e65] [cursor=pointer]:
+            - img [ref=e66]
+            - generic [ref=e68]: Toggle Sidebar
+          - generic [ref=e70]:
+            - navigation "breadcrumb" [ref=e73]:
+              - list [ref=e74]:
+                - listitem [ref=e75]:
+                  - link "dashboard.nav.employeeDashboard" [ref=e76] [cursor=pointer]:
+                    - /url: /
+                - listitem [ref=e77]:
+                  - img [ref=e78]
+                - listitem:
+                  - link "requests" [disabled]
+            - button [ref=e81] [cursor=pointer]:
+              - img [ref=e82]
+        - generic [ref=e88]:
+          - generic [ref=e89]:
+            - navigation "breadcrumb" [ref=e91]:
+              - list [ref=e92]:
+                - listitem [ref=e93]:
+                  - link "Dashboard" [ref=e94] [cursor=pointer]:
+                    - /url: /es/employee
+                - listitem [ref=e95]:
+                  - img [ref=e96]
+                - listitem [ref=e98]:
+                  - link "Solicitudes" [disabled] [ref=e99]
+            - generic [ref=e101]:
+              - heading "Mis Solicitudes" [level=1] [ref=e103]
+              - generic [ref=e104]: Gestiona y visualiza todas las solicitudes asignadas
+          - generic [ref=e105]:
+            - generic [ref=e106]:
+              - button "Todas" [ref=e107]
+              - button "Pendientes" [ref=e108]
+              - button "En Proceso" [ref=e109]
+              - button "Completadas" [ref=e110]
+              - button "Canceladas" [ref=e111]
+            - generic [ref=e113]:
+              - generic:
+                - img
+              - textbox "Buscar solicitudes..." [ref=e114]
+          - table [ref=e117]:
+            - rowgroup [ref=e118]:
+              - row "Servicio Cliente Estado Fecha Ejecución Asignado a Acciones" [ref=e119]:
+                - cell "Servicio" [ref=e120]
+                - cell "Cliente" [ref=e121]
+                - cell "Estado" [ref=e122]
+                - cell "Fecha Ejecución" [ref=e123]
+                - cell "Asignado a" [ref=e124]
+                - cell "Acciones" [ref=e125]
+            - rowgroup [ref=e126]:
+              - row "Reparación de Plomería Mantenimiento General 07:20 a. m. • San José, SJ Client User client-e2e@alkitu.test Completada 9 feb 2026 Employee User" [ref=e127]:
+                - cell "Reparación de Plomería Mantenimiento General 07:20 a. m. • San José, SJ" [ref=e128]:
+                  - generic [ref=e129]:
+                    - img [ref=e131]
+                    - generic [ref=e134]:
+                      - 'generic "Servicio: Mantenimiento General" [ref=e135]': Reparación de Plomería
+                      - generic [ref=e136]: Mantenimiento General
+                      - generic [ref=e137]:
+                        - generic [ref=e138]:
+                          - img [ref=e139]
+                          - text: 07:20 a. m.
+                        - generic [ref=e142]: •
+                        - generic [ref=e143]:
+                          - img [ref=e144]
+                          - text: San José, SJ
+                - cell "Client User client-e2e@alkitu.test" [ref=e147]:
+                  - generic [ref=e148]:
+                    - generic [ref=e149]: Client User
+                    - generic [ref=e150]: client-e2e@alkitu.test
+                - cell "Completada" [ref=e151]
+                - cell "9 feb 2026" [ref=e152]
+                - cell "Employee User" [ref=e153]
+                - cell [ref=e154]:
+                  - button "Ver detalles" [ref=e156]:
+                    - img [ref=e157]
+              - row "Limpieza Profunda de Oficinas Limpieza 09:20 a. m. • San José, SJ Client User client-e2e@alkitu.test En Progreso 10 feb 2026 Employee User" [ref=e160]:
+                - cell "Limpieza Profunda de Oficinas Limpieza 09:20 a. m. • San José, SJ" [ref=e161]:
+                  - generic [ref=e162]:
+                    - img [ref=e164]
+                    - generic [ref=e166]:
+                      - 'generic "Servicio: Limpieza" [ref=e167]': Limpieza Profunda de Oficinas
+                      - generic [ref=e168]: Limpieza
+                      - generic [ref=e169]:
+                        - generic [ref=e170]:
+                          - img [ref=e171]
+                          - text: 09:20 a. m.
+                        - generic [ref=e174]: •
+                        - generic [ref=e175]:
+                          - img [ref=e176]
+                          - text: San José, SJ
+                - cell "Client User client-e2e@alkitu.test" [ref=e179]:
+                  - generic [ref=e180]:
+                    - generic [ref=e181]: Client User
+                    - generic [ref=e182]: client-e2e@alkitu.test
+                - cell "En Progreso" [ref=e183]
+                - cell "10 feb 2026" [ref=e184]
+                - cell "Employee User" [ref=e185]
+                - cell [ref=e186]:
+                  - button "Ver detalles" [ref=e188]:
+                    - img [ref=e189]
+          - generic [ref=e192]:
+            - generic [ref=e193]: Mostrando 1 a 2 de 2 resultados
+            - generic [ref=e194]:
+              - generic [ref=e195]:
+                - generic [ref=e196]: Filas por página
+                - combobox [ref=e197]:
+                  - generic: "20"
+                  - img
+              - generic [ref=e198]:
+                - generic [ref=e199]: Página 1 de 1
+                - button "Anterior" [disabled] [ref=e200]:
+                  - img [ref=e201]
+                  - generic [ref=e203]: Anterior
+                - button "Siguiente" [disabled] [ref=e204]:
+                  - img [ref=e205]
+                  - generic [ref=e207]: Siguiente
+    - region "Notifications (F8)":
+      - list
+  - button "Open Next.js Dev Tools" [ref=e213] [cursor=pointer]:
+    - img [ref=e214]
+  - alert [ref=e217]
+```

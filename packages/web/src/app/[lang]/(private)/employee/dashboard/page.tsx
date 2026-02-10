@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useParams } from 'next/navigation';
 import { ClipboardList, MapPin, FileText, Clock, CheckCircle2, Users, TrendingUp } from 'lucide-react';
+import { trpc } from '@/lib/trpc';
 import { QuickActionCard } from '@/components/molecules-alianza/QuickActionCard';
 import { StatsCardGrid } from '@/components/organisms/dashboard';
 import { RequestListOrganism } from '@/components/organisms/dashboard';
@@ -13,133 +14,78 @@ import type { RequestItem } from '@/components/organisms/dashboard';
  *
  * Main dashboard for EMPLOYEE role users.
  * Displays assigned requests, work metrics, and quick actions.
+ *
+ * Features:
+ * - Real-time stats using tRPC with React Query caching
+ * - Role-based filtering (only shows assigned requests)
+ * - Quick action cards for common tasks
+ * - Recent requests list
+ *
+ * Migration Note: Converted from fetch() to tRPC for type safety and better error handling
  */
-
-interface Stats {
-  assigned: number;
-  inProgress: number;
-  completed: number;
-  completionRate: number;
-}
-
 export default function EmployeeDashboardPage() {
-  const [stats, setStats] = useState<Stats>({
-    assigned: 0,
-    inProgress: 0,
-    completed: 0,
-    completionRate: 0,
+  const { lang } = useParams();
+
+  // Fetch assigned requests with tRPC (backend automatically filters by role)
+  const { data: requestsData, isLoading: requestsLoading } = trpc.request.getFilteredRequests.useQuery({
+    page: 1,
+    limit: 10,
+    sortBy: 'createdAt',
+    sortOrder: 'desc',
   });
-  const [assignedRequests, setAssignedRequests] = useState<RequestItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchDashboardData = async () => {
-      setIsLoading(true);
+  // Fetch request stats with tRPC (backend automatically filters by role)
+  const { data: statsData, isLoading: statsLoading } = trpc.request.getRequestStats.useQuery({});
 
-      // Helper function to fetch with timeout
-      const fetchWithTimeout = async (url: string, timeout = 5000) => {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), timeout);
+  // Extract data
+  const assignedRequests = requestsData?.requests || [];
+  const isLoading = requestsLoading || statsLoading;
 
-        try {
-          const response = await fetch(url, { signal: controller.signal });
-          clearTimeout(timeoutId);
-          return response;
-        } catch (error) {
-          clearTimeout(timeoutId);
-          throw error;
-        }
-      };
+  // Calculate stats from API response
+  const stats = {
+    assigned: statsData?.total || 0,
+    inProgress: statsData?.byStatus?.ONGOING || 0,
+    completed: statsData?.byStatus?.COMPLETED || 0,
+    completionRate:
+      statsData?.total && statsData?.total > 0
+        ? Math.round(((statsData?.byStatus?.COMPLETED || 0) / statsData.total) * 100)
+        : 0,
+  };
 
-      try {
-        // Fetch data with timeout protection
-        const [requestsResponse, statsResponse] = await Promise.allSettled([
-          fetchWithTimeout('/api/requests?limit=10&sort=createdAt:desc').catch(() => null),
-          fetchWithTimeout('/api/requests/stats/count').catch(() => null),
-        ]);
-
-        // Parse assigned requests
-        if (requestsResponse.status === 'fulfilled' && requestsResponse.value?.ok) {
-          const requestsData = await requestsResponse.value.json();
-          const requests = Array.isArray(requestsData) ? requestsData : [];
-          setAssignedRequests(requests.slice(0, 10));
-
-          // Calculate stats from requests
-          const inProgress = requests.filter(
-            (r: RequestItem) => r.status === 'ONGOING'
-          ).length;
-          const completed = requests.filter(
-            (r: RequestItem) => r.status === 'COMPLETED'
-          ).length;
-          const total = requests.length;
-          const completionRate = total > 0 ? Math.round((completed / total) * 100) : 0;
-
-          setStats({
-            assigned: total,
-            inProgress,
-            completed,
-            completionRate,
-          });
-        }
-
-        // Use stats API if available for more accurate data
-        if (statsResponse.status === 'fulfilled' && statsResponse.value?.ok) {
-          const statsData = await statsResponse.value.json();
-          const inProgress = statsData.ONGOING || 0;
-          const completed = statsData.COMPLETED || 0;
-          const assigned = (statsData.PENDING || 0) + inProgress + completed;
-          const completionRate =
-            assigned > 0 ? Math.round((completed / assigned) * 100) : 0;
-
-          setStats({
-            assigned,
-            inProgress,
-            completed,
-            completionRate,
-          });
-        }
-      } catch (error) {
-        console.error('Error fetching dashboard data:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchDashboardData();
-  }, []);
-
+  // Quick actions configuration
   const quickActions = [
     {
       icon: ClipboardList,
       label: 'Solicitudes',
       subtitle: 'Mis',
-      href: '/employee/requests',
+      href: `/${lang}/employee/requests`,
       variant: 'primary' as const,
     },
     {
       icon: MapPin,
       label: 'de Trabajo',
       subtitle: 'Ubicaciones',
-      href: '/locations',
+      href: `/${lang}/locations`,
       customIconColor: 'text-green-600 dark:text-green-400',
     },
     {
       icon: FileText,
       label: 'Notificaciones',
       subtitle: 'Ver',
-      href: '/employee/notifications',
+      href: `/${lang}/employee/notifications`,
       customIconColor: 'text-purple-600 dark:text-purple-400',
     },
     {
       icon: Users,
       label: 'Perfil',
       subtitle: 'Mi',
-      href: '/profile',
+      href: `/${lang}/profile`,
       customIconColor: 'text-orange-600 dark:text-orange-400',
     },
   ];
 
-  const statsData: StatCardData[] = [
+  // Stats cards configuration
+  const statsCardsData: StatCardData[] = [
     {
       label: 'Solicitudes Asignadas',
       value: stats.assigned,
@@ -186,13 +132,13 @@ export default function EmployeeDashboardPage() {
       </div>
 
       {/* Statistics Cards */}
-      <StatsCardGrid stats={statsData} isLoading={isLoading} columns={4} />
+      <StatsCardGrid stats={statsCardsData} isLoading={isLoading} columns={4} />
 
       {/* Assigned Requests */}
       <RequestListOrganism
-        requests={assignedRequests}
+        requests={assignedRequests as RequestItem[]}
         isLoading={isLoading}
-        baseHref="/employee/requests"
+        baseHref={`/${lang}/employee/requests`}
         emptyMessage="No tienes solicitudes asignadas"
         title="Solicitudes Asignadas"
         showClientName={true}

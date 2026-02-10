@@ -211,7 +211,8 @@ export const RequestManagementTable: React.FC<RequestManagementTableProps> = ({
 
       return {
         id: req.id,
-        serviceName: req.service?.name || 'N/A',
+        // Use title (specific request title) instead of service name
+        serviceName: req.title || req.service?.name || 'N/A',
         categoryName: req.service?.category?.name || 'N/A',
         clientName: `${req.user?.firstname || ''} ${req.user?.lastname || ''}`.trim() || 'N/A',
         clientEmail: req.user?.email,

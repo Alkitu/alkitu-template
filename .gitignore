@@ -120,3 +120,6 @@ api.log
 storybook-static
 .env.secrets
 .claude/settings.local.json
+
+# Backup .env files
+*.env.backup

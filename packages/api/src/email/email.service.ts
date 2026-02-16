@@ -192,9 +192,10 @@ export class EmailService {
       const dbResult = await this.renderTemplateFromDB(
         'welcome',
         {
-          'user.name': userData.userName,
+          'user.firstname': userData.userName,
           'user.email': userData.userEmail,
-          'login.url': userData.loginUrl,
+          'loginUrl': userData.loginUrl,
+          'registrationDate': userData.registrationDate,
         },
         locale,
       );
@@ -239,8 +240,8 @@ export class EmailService {
       const dbResult = await this.renderTemplateFromDB(
         'password_reset',
         {
-          'user.name': userData.userName,
-          'reset.url': userData.resetUrl,
+          'user.firstname': userData.userName,
+          'resetUrl': userData.resetUrl,
         },
         locale,
       );
@@ -285,8 +286,8 @@ export class EmailService {
       const dbResult = await this.renderTemplateFromDB(
         'email_verification',
         {
-          'user.name': userData.userName,
-          'verification.url': userData.verificationUrl,
+          'user.firstname': userData.userName,
+          'verificationUrl': userData.verificationUrl,
         },
         locale,
       );
@@ -337,10 +338,11 @@ export class EmailService {
       const dbResult = await this.renderTemplateFromDB(
         'notification_general',
         {
-          'user.name': userName,
-          message: message,
-          'action.url': buttonUrl || '#',
-          'action.text': buttonText || 'Ver',
+          'user.firstname': userName,
+          'notification.title': title,
+          'notification.message': message,
+          'notification.actionUrl': buttonUrl || '#',
+          'notification.actionText': buttonText || 'Ver',
         },
         locale,
       );

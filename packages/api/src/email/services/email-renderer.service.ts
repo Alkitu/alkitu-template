@@ -2,7 +2,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import * as React from 'react';
 import { render } from '@react-email/render';
 import { BaseEmailLayout } from '../templates/BaseEmailLayout';
-import { Section } from '@react-email/components';
 
 @Injectable()
 export class EmailRendererService {
@@ -97,10 +96,12 @@ export class EmailRendererService {
         );
       }
 
+      // Use a plain 'div' instead of Section to avoid the React conflict
+      // where Section's internal <table> children clash with dangerouslySetInnerHTML
       const emailElement = React.createElement(
         BaseEmailLayout,
         { locale, previewText },
-        React.createElement(Section, {
+        React.createElement('div', {
           dangerouslySetInnerHTML: { __html: innerContent },
         }),
       );

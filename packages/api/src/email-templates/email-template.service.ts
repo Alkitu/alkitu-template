@@ -80,6 +80,31 @@ export class EmailTemplateService {
         this.logger.log(
           `Found ${existingCount} existing email templates, skipping initialization`,
         );
+
+        // Backfill slug for existing templates that don't have one set
+        const templatesWithoutSlug = await this.prisma.emailTemplate.findMany({
+          where: { slug: null },
+          select: { id: true, name: true },
+        });
+
+        if (templatesWithoutSlug.length > 0) {
+          this.logger.log(
+            `Backfilling slug for ${templatesWithoutSlug.length} templates...`,
+          );
+          for (const t of templatesWithoutSlug) {
+            try {
+              await this.prisma.emailTemplate.update({
+                where: { id: t.id },
+                data: { slug: t.name },
+              });
+              this.logger.log(`Backfilled slug="${t.name}" for template ${t.id}`);
+            } catch (err) {
+              this.logger.warn(
+                `Could not backfill slug for template ${t.id} (${t.name}): ${getErrorMessage(err)}`,
+              );
+            }
+          }
+        }
       } else {
         this.logger.log('Initializing default email templates...');
 
@@ -110,6 +135,7 @@ export class EmailTemplateService {
           await this.prisma.emailTemplate.create({
             data: {
               name: def.name,
+              slug: def.name,
               subject: defaultSubject,
               body: defaultBody,
               trigger: def.trigger,
@@ -873,39 +899,62 @@ export class EmailTemplateService {
       error?: string;
     }> = [];
 
+    // Extra replacements for AUTH/NOTIFICATION templates that use non-standard placeholders
+    const extraReplacements: Record<string, string> = {
+      // Auth templates
+      '{{loginUrl}}': 'https://app.example.com/login',
+      '{{resetUrl}}': 'https://app.example.com/reset-password?token=sample',
+      '{{verificationUrl}}': 'https://app.example.com/verify-email?token=sample',
+      '{{registrationDate}}': new Date().toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      }),
+      // Notification templates
+      '{{notification.title}}': 'New Service Update',
+      '{{notification.message}}': 'Your request REQ-2024-00123 has been updated. A technician has been assigned and will arrive at the scheduled time.',
+      '{{notification.actionUrl}}': 'https://app.example.com/requests/REQ-2024-00123',
+      '{{notification.actionText}}': 'View Details',
+      // Misc
+      '{{year}}': String(new Date().getFullYear()),
+    };
+
     for (const template of templates) {
       try {
-        const { subject, body } = await this.previewTemplate(
-          template.id,
-          sampleData,
-        );
+        // Replace standard placeholders (same approach as sendTemplatedEmail)
+        let subject = this.replacePlaceholders(template.subject, sampleData);
+        let rawBody = this.replacePlaceholders(template.body, sampleData);
 
-        // Post-process any remaining {{...}} tokens (e.g. AUTH/NOTIFICATION templates)
-        const authReplacements: Record<string, string> = {
-          '{{user.name}}': 'Maria Garcia',
-          '{{login.url}}': 'https://app.example.com/login',
-          '{{reset.url}}': 'https://app.example.com/reset-password?token=sample',
-          '{{verification.url}}': 'https://app.example.com/verify-email?token=sample',
-          '{{company.name}}': 'Alkitu',
-          '{{support.email}}': 'support@example.com',
-        };
-
-        let finalBody = body;
-        let finalSubject = `[TEST] ${subject}`;
-
-        for (const [token, value] of Object.entries(authReplacements)) {
+        // Post-process remaining {{...}} tokens for AUTH/NOTIFICATION templates
+        for (const [token, value] of Object.entries(extraReplacements)) {
           const regex = new RegExp(
             token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
             'g',
           );
-          finalBody = finalBody.replace(regex, escapeHtml(value));
-          finalSubject = finalSubject.replace(regex, escapeHtml(value));
+          rawBody = rawBody.replace(regex, escapeHtml(value));
+          subject = subject.replace(regex, escapeHtml(value));
+        }
+
+        // Wrap in React Email layout if renderer is available (same as sendTemplatedEmail)
+        let html = rawBody;
+        if (this.emailRendererService) {
+          try {
+            html = await this.emailRendererService.renderWithLayout(
+              rawBody,
+              template.defaultLocale,
+              subject,
+            );
+          } catch (renderError) {
+            this.logger.warn(
+              `Layout render failed for template "${template.name}", sending raw HTML: ${getErrorMessage(renderError)}`,
+            );
+          }
         }
 
         const result = await this.emailService.sendEmail({
           to: recipient,
-          subject: finalSubject,
-          html: finalBody,
+          subject: `[TEST] ${subject}`,
+          html,
         });
 
         results.push({

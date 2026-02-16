@@ -17,6 +17,7 @@ export const RequestsTableAlianza: React.FC<RequestsTableAlianzaProps> = ({
   onCompleteRequest,
   onCancelRequest,
   onEditRequest,
+  hideColumns = [],
   className = '',
 }) => {
   const getStatusBadge = (status: string) => {
@@ -67,18 +68,22 @@ export const RequestsTableAlianza: React.FC<RequestsTableAlianzaProps> = ({
             <th className="text-left py-3 px-4 text-sm font-semibold text-foreground">
               Servicio
             </th>
-            <th className="text-left py-3 px-4 text-sm font-semibold text-foreground">
-              Cliente
-            </th>
+            {!hideColumns.includes('client') && (
+              <th className="text-left py-3 px-4 text-sm font-semibold text-foreground">
+                Cliente
+              </th>
+            )}
             <th className="text-left py-3 px-4 text-sm font-semibold text-foreground">
               Estado
             </th>
             <th className="text-left py-3 px-4 text-sm font-semibold text-foreground">
               Fecha Ejecución
             </th>
-            <th className="text-left py-3 px-4 text-sm font-semibold text-foreground">
-              Asignado a
-            </th>
+            {!hideColumns.includes('assignedTo') && (
+              <th className="text-left py-3 px-4 text-sm font-semibold text-foreground">
+                Asignado a
+              </th>
+            )}
             <th className="text-right py-3 px-4 text-sm font-semibold text-foreground">
               Acciones
             </th>
@@ -145,18 +150,20 @@ export const RequestsTableAlianza: React.FC<RequestsTableAlianzaProps> = ({
               </td>
 
               {/* Client */}
-              <td className="py-3 px-4">
-                <div className="flex flex-col">
-                  <span className="text-sm text-foreground">
-                    {request.clientName}
-                  </span>
-                  {request.clientEmail && (
-                    <span className="text-xs text-muted-foreground">
-                      {request.clientEmail}
+              {!hideColumns.includes('client') && (
+                <td className="py-3 px-4">
+                  <div className="flex flex-col">
+                    <span className="text-sm text-foreground">
+                      {request.clientName}
                     </span>
-                  )}
-                </div>
-              </td>
+                    {request.clientEmail && (
+                      <span className="text-xs text-muted-foreground">
+                        {request.clientEmail}
+                      </span>
+                    )}
+                  </div>
+                </td>
+              )}
 
               {/* Status */}
               <td className="py-3 px-4">{getStatusBadge(request.status)}</td>
@@ -167,29 +174,31 @@ export const RequestsTableAlianza: React.FC<RequestsTableAlianzaProps> = ({
               </td>
 
               {/* Assigned To */}
-              <td className="py-3 px-4">
-                {request.assignedTo ? (
-                  // Only allow reassigning if not completed or cancelled
-                  request.status !== 'COMPLETED' && request.status !== 'CANCELLED' && onAssignRequest ? (
-                    <button
-                      onClick={() => onAssignRequest(request.id)}
-                      className="group flex items-center gap-2 text-sm text-foreground hover:text-primary transition-colors cursor-pointer"
-                      title="Cambiar empleado asignado"
-                    >
-                      <span>{request.assignedTo}</span>
-                      <UserCog className="h-3.5 w-3.5 opacity-0 group-hover:opacity-100 transition-opacity text-primary" />
-                    </button>
+              {!hideColumns.includes('assignedTo') && (
+                <td className="py-3 px-4">
+                  {request.assignedTo ? (
+                    // Only allow reassigning if not completed or cancelled
+                    request.status !== 'COMPLETED' && request.status !== 'CANCELLED' && onAssignRequest ? (
+                      <button
+                        onClick={() => onAssignRequest(request.id)}
+                        className="group flex items-center gap-2 text-sm text-foreground hover:text-primary transition-colors cursor-pointer"
+                        title="Cambiar empleado asignado"
+                      >
+                        <span>{request.assignedTo}</span>
+                        <UserCog className="h-3.5 w-3.5 opacity-0 group-hover:opacity-100 transition-opacity text-primary" />
+                      </button>
+                    ) : (
+                      <span className="text-sm text-foreground">
+                        {request.assignedTo}
+                      </span>
+                    )
                   ) : (
-                    <span className="text-sm text-foreground">
-                      {request.assignedTo}
+                    <span className="text-sm text-muted-foreground italic">
+                      Sin asignar
                     </span>
-                  )
-                ) : (
-                  <span className="text-sm text-muted-foreground italic">
-                    Sin asignar
-                  </span>
-                )}
-              </td>
+                  )}
+                </td>
+              )}
 
               {/* Actions */}
               <td className="py-3 px-4">

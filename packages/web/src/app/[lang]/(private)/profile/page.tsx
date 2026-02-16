@@ -1,41 +1,37 @@
 'use client';
 
-import { useTranslations } from '@/context/TranslationsContext';
-import { ProfileManagement } from '@/components/organisms/profile';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { trpc } from '@/lib/trpc';
 
 /**
- * Profile Page
+ * Standalone Profile Page - Redirect
  *
- * User profile management page with tabbed interface.
- * Delegates all functionality to the ProfileManagement organism.
+ * Redirects to the role-based profile page inside the dashboard layout.
+ * Reads the user's role from the session and navigates to /{role}/profile.
  *
- * Features:
- * - Profile information management
- * - Password change
- * - User preferences
- * - Internationalization support
- *
- * @route /[lang]/profile
+ * @route /[lang]/profile -> /[lang]/{role}/profile
  */
-export default function ProfilePage() {
-  const t = useTranslations('profile');
+export default function ProfileRedirectPage() {
+  const router = useRouter();
+  const { data: sessionUser, isLoading } = trpc.user.me.useQuery();
 
-  const tabLabels = {
-    info: t('tabs.info'),
-    security: t('tabs.security'),
-    preferences: t('tabs.preferences'),
-  };
+  useEffect(() => {
+    if (isLoading) return;
+
+    const role = (sessionUser as any)?.role?.toLowerCase() || 'admin';
+    const roleMap: Record<string, string> = {
+      admin: 'admin',
+      client: 'client',
+      employee: 'employee',
+    };
+    const targetRole = roleMap[role] || 'admin';
+    router.replace(`/${targetRole}/profile`);
+  }, [sessionUser, isLoading, router]);
 
   return (
-    <div className="min-h-screen bg-background py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold tracking-tight">{t('title')}</h1>
-          <p className="mt-2 text-muted-foreground">{t('description')}</p>
-        </div>
-
-        <ProfileManagement tabLabels={tabLabels} />
-      </div>
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
     </div>
   );
 }

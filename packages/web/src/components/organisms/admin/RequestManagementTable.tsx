@@ -45,15 +45,17 @@ import {
  */
 export const RequestManagementTable: React.FC<RequestManagementTableProps> = ({
   lang,
+  mode = 'admin',
   onRequestUpdated,
   onRequestCancelled,
   onRequestCompleted,
 }) => {
+  const isClient = mode === 'client';
   const router = useRouter();
   const searchParams = useSearchParams();
 
   // State management
-  const [activeFilter, setActiveFilter] = useState<RequestFilterType>('pending');
+  const [activeFilter, setActiveFilter] = useState<RequestFilterType>(isClient ? 'ongoing' : 'pending');
   const [searchValue, setSearchValue] = useState('');
   const [selectedServiceId, setSelectedServiceId] = useState<string>(
     searchParams.get('serviceId') || '',
@@ -188,11 +190,11 @@ export const RequestManagementTable: React.FC<RequestManagementTableProps> = ({
   };
 
   const handleAddRequest = () => {
-    router.push(`/${lang}/admin/requests/create`);
+    router.push(isClient ? `/${lang}/client/requests/new` : `/${lang}/admin/requests/create`);
   };
 
   const handleViewRequest = (requestId: string, clientEmail: string) => {
-    router.push(`/${lang}/admin/requests/${requestId}`);
+    router.push(isClient ? `/${lang}/client/requests/${requestId}` : `/${lang}/admin/requests/${requestId}`);
   };
 
   const handleAssignRequest = (requestId: string) => {
@@ -305,16 +307,18 @@ export const RequestManagementTable: React.FC<RequestManagementTableProps> = ({
 
         {/* Service Filter + Search + Create Button */}
         <div className="flex items-center gap-3">
-          <Combobox
-            options={serviceOptions}
-            value={selectedServiceId}
-            onChange={handleServiceFilterChange}
-            placeholder="Filtrar por servicio..."
-            searchPlaceholder="Buscar servicio..."
-            emptyMessage="No se encontraron servicios."
-            clearable
-            className="w-[220px]"
-          />
+          {!isClient && (
+            <Combobox
+              options={serviceOptions}
+              value={selectedServiceId}
+              onChange={handleServiceFilterChange}
+              placeholder="Filtrar por servicio..."
+              searchPlaceholder="Buscar servicio..."
+              emptyMessage="No se encontraron servicios."
+              clearable
+              className="w-[220px]"
+            />
+          )}
           <InputGroup
             placeholder="Buscar solicitudes..."
             value={searchValue}
@@ -341,7 +345,8 @@ export const RequestManagementTable: React.FC<RequestManagementTableProps> = ({
             requests={tableRequests}
             lang={lang}
             onViewRequest={handleViewRequest}
-            onAssignRequest={handleAssignRequest}
+            onAssignRequest={isClient ? undefined : handleAssignRequest}
+            hideColumns={isClient ? ['client', 'assignedTo'] : []}
           />
         )}
       </div>
@@ -358,8 +363,8 @@ export const RequestManagementTable: React.FC<RequestManagementTableProps> = ({
         />
       )}
 
-      {/* Assign/Reassign Employee Modal */}
-      {selectedRequestId && (
+      {/* Assign/Reassign Employee Modal (admin only) */}
+      {!isClient && selectedRequestId && (
         <QuickAssignModal
           open={isAssignModalOpen}
           onOpenChange={setIsAssignModalOpen}

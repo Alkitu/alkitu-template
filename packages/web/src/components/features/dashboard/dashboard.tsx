@@ -26,9 +26,7 @@ import {
   Folder,
   Wrench,
   Hash,
-  Plus,
   ClipboardList,
-  MapPin,
 } from 'lucide-react';
 import { AppSidebar } from '../../primitives/app-sidebar';
 import Header from '../../primitives/ui/header';
@@ -72,36 +70,9 @@ const getTransformedData = (
         section: 'overview',
       },
       {
-        title: t?.('nav.newRequest') || 'Nueva Solicitud',
-        url: '/client/requests/new',
-        icon: Plus,
-        section: 'management',
-        items: [],
-      },
-      {
         title: t?.('nav.myRequests') || 'Mis Solicitudes',
         url: '/client/requests',
         icon: ClipboardList,
-        section: 'management',
-        items: [
-          {
-            title: t?.('nav.allRequests') || 'Todas las Solicitudes',
-            url: '/client/requests',
-          },
-          {
-            title: t?.('nav.activeRequests') || 'Solicitudes Activas',
-            url: '/client/requests?status=active',
-          },
-          {
-            title: t?.('nav.completedRequests') || 'Solicitudes Completadas',
-            url: '/client/requests?status=completed',
-          },
-        ],
-      },
-      {
-        title: t?.('nav.locations') || 'Ubicaciones',
-        url: '/client/locations',
-        icon: MapPin,
         section: 'management',
         items: [],
       },
@@ -172,6 +143,13 @@ const getTransformedData = (
         url: '/employee/notifications',
         icon: Bell,
         section: 'communication',
+        items: [],
+      },
+      {
+        title: t?.('nav.profile') || 'Mi Perfil',
+        url: '/employee/profile',
+        icon: User,
+        section: 'settings',
         items: [],
       },
     ];
@@ -312,6 +290,13 @@ const getTransformedData = (
 
         // CONFIGURACIÓN SECTION
         {
+          title: t?.('nav.profile') || 'Mi Perfil',
+          url: '/admin/profile',
+          icon: User,
+          section: 'settings',
+          items: [],
+        },
+        {
           title: t?.('nav.settings') || 'Ajustes',
           url: '/admin/settings',
           icon: Settings,
@@ -431,7 +416,8 @@ function Dashboard({ children, showWelcome = false, userRole = 'admin' }: Dashbo
     name: (currentUser as any).name || `${(currentUser as any).firstname || ''} ${(currentUser as any).lastname || ''}`.trim() || (currentUser as any).role || 'User',
     email: currentUser.email || '',
     avatar: (currentUser as any).avatar || '/avatars/default.jpg',
-  } : transformedData.user;
+    role: userRole,
+  } : { ...transformedData.user, role: userRole };
 
   // Determine header type and home label based on role
   const headerType = userRole === 'admin' ? 'admin' : 'user';

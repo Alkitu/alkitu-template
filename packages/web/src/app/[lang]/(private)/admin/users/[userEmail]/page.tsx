@@ -58,9 +58,11 @@ import {
   Users,
   Eye,
   EyeOff,
+  MapPin,
 } from 'lucide-react';
 import { UserRole } from '@alkitu/shared';
 import { AdminPageHeader } from '@/components/molecules-alianza/AdminPageHeader';
+import { LocationListOrganism } from '@/components/organisms/location';
 
 interface PasswordValidation {
   minLength: boolean;
@@ -613,6 +615,26 @@ const UserDetailPage = ({
         </Card>
       )
     },
+    ...(user.role === 'CLIENT' ? [{
+      value: 'locations',
+      label: 'Locations',
+      content: (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <MapPin className="h-5 w-5" />
+              Work Locations
+            </CardTitle>
+            <CardDescription className='mb-4'>
+              Manage this client&apos;s work locations for service requests.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <LocationListOrganism userId={user.id} showAddButton />
+          </CardContent>
+        </Card>
+      )
+    }] : []),
     {
       value: 'actions',
       label: 'Actions',

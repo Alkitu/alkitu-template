@@ -52,6 +52,11 @@ export interface RequestsTableAlianzaProps {
   onEditRequest?: (requestId: string) => void;
 
   /**
+   * Column keys to hide (e.g., ['client', 'assignedTo'])
+   */
+  hideColumns?: string[];
+
+  /**
    * Additional CSS classes
    */
   className?: string;

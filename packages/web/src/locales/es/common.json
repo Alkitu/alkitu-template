@@ -1390,6 +1390,16 @@
       "canceling": "Cancelando..."
     }
   },
+  "profile": {
+    "title": "Mi Perfil",
+    "description": "Administra tu información de perfil, seguridad y preferencias.",
+    "tabs": {
+      "info": "Información del Perfil",
+      "security": "Seguridad",
+      "preferences": "Preferencias",
+      "locations": "Ubicaciones"
+    }
+  },
   "locations": {
     "badges": {
       "inUse": "En uso",

@@ -26,6 +26,7 @@ export interface User {
   name: string;
   email: string;
   avatar: string;
+  role?: 'admin' | 'client' | 'employee' | 'user';
 }
 
 export interface Team {

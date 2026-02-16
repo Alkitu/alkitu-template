@@ -19,6 +19,8 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/guards/roles.decorator';
 import { LocationsService } from './locations.service';
 import { CreateLocationDto, UpdateLocationDto } from './dto';
 import { UserRole } from '@alkitu/shared/enums/user-role.enum';
@@ -80,6 +82,26 @@ export class LocationsController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async findAll(@Req() req: AuthenticatedRequest) {
     return this.locationsService.findAllByUser(req.user.userId);
+  }
+
+  /**
+   * Get all locations for a specific user (Admin only)
+   * GET /locations/user/:userId
+   */
+  @Get('user/:userId')
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get locations for a specific user (Admin only)' })
+  @ApiParam({ name: 'userId', description: 'Target user ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of user locations',
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - Admin only' })
+  async findAllByUserId(@Param('userId') userId: string) {
+    return this.locationsService.findAllByUser(userId);
   }
 
   /**

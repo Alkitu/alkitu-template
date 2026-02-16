@@ -10,6 +10,9 @@ export interface LocationListOrganismProps {
   /** Show add new location button */
   showAddButton?: boolean;
 
+  /** Optional userId to fetch locations for a specific user (admin use) */
+  userId?: string;
+
   /** Callback when a location is created/updated/deleted */
   onLocationChange?: () => void;
 }

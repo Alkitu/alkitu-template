@@ -4,21 +4,20 @@ import { useTranslations } from '@/context/TranslationsContext';
 import { ProfileManagement } from '@/components/organisms/profile';
 
 /**
- * Client Profile Page
+ * Admin Profile Page
  *
- * Profile management page for client users, rendered inside the client dashboard layout.
+ * Profile management page for admin users, rendered inside the admin dashboard layout.
  * Delegates all functionality to the ProfileManagement organism.
  *
- * @route /[lang]/client/profile
+ * @route /[lang]/admin/profile
  */
-export default function ClientProfilePage() {
+export default function AdminProfilePage() {
   const t = useTranslations('profile');
 
   const tabLabels = {
     info: t('tabs.info'),
     security: t('tabs.security'),
     preferences: t('tabs.preferences'),
-    locations: t('tabs.locations'),
   };
 
   return (

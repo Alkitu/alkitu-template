@@ -29,6 +29,7 @@ export interface TabLabels {
   info: string;
   security: string;
   preferences: string;
+  locations?: string;
 }
 
 export interface ProfileManagementProps {

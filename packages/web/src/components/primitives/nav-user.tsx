@@ -142,9 +142,11 @@ export function NavUser({ user }: { user: User }) {
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheck />
-                {t('account')}
+              <DropdownMenuItem asChild>
+                <Link href={`/${user.role || 'admin'}/profile`}>
+                  <BadgeCheck />
+                  {t('account')}
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link href="/dashboard/billing">

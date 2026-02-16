@@ -14,6 +14,7 @@ import {
   ProfileFormClientOrganism,
   ProfileFormEmployeeOrganism,
 } from '@/components/organisms/profile';
+import { LocationListOrganism } from '@/components/organisms/location';
 import type {
   ProfileManagementProps,
   UserProfile,
@@ -257,13 +258,19 @@ export const ProfileManagement = React.forwardRef<HTMLDivElement, ProfileManagem
       );
     }
 
+    const isClient = user?.role === 'CLIENT';
+    const showLocationsTab = isClient && tabLabels.locations;
+
     return (
       <div ref={ref} className={className}>
         <Tabs defaultValue="info" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className={`grid w-full ${showLocationsTab ? 'grid-cols-4' : 'grid-cols-3'}`}>
             <TabsTrigger value="info">{tabLabels.info}</TabsTrigger>
             <TabsTrigger value="security">{tabLabels.security}</TabsTrigger>
             <TabsTrigger value="preferences">{tabLabels.preferences}</TabsTrigger>
+            {showLocationsTab && (
+              <TabsTrigger value="locations">{tabLabels.locations}</TabsTrigger>
+            )}
           </TabsList>
 
           {/* Profile Information Tab */}
@@ -500,6 +507,13 @@ export const ProfileManagement = React.forwardRef<HTMLDivElement, ProfileManagem
               </form>
             </div>
           </TabsContent>
+
+          {/* Locations Tab (CLIENT only) */}
+          {showLocationsTab && (
+            <TabsContent value="locations" className="mt-6">
+              <LocationListOrganism showAddButton />
+            </TabsContent>
+          )}
         </Tabs>
       </div>
     );

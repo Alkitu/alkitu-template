@@ -28,8 +28,14 @@ export async function GET(request: NextRequest) {
     const backendUrl =
       process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
+    const { searchParams } = new URL(request.url);
+    const userId = searchParams.get('userId');
+    const endpoint = userId
+      ? `${backendUrl}/locations/user/${userId}`
+      : `${backendUrl}/locations`;
+
     try {
-      const response = await fetch(`${backendUrl}/locations`, {
+      const response = await fetch(endpoint, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

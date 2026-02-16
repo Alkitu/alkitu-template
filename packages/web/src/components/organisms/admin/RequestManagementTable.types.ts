@@ -55,6 +55,11 @@ export interface RequestManagementTableProps {
   lang: string;
 
   /**
+   * Display mode - 'admin' shows full controls, 'client' hides admin-only UI
+   */
+  mode?: 'admin' | 'client';
+
+  /**
    * Callback when a request is updated (e.g., assigned)
    */
   onRequestUpdated?: () => void;

@@ -36,6 +36,7 @@ import type { LocationListOrganismProps } from './LocationListOrganism.types';
 export const LocationListOrganism: React.FC<LocationListOrganismProps> = ({
   className = '',
   showAddButton = true,
+  userId,
   onLocationChange,
 }) => {
   const [locations, setLocations] = useState<(WorkLocation & { _count?: { requests: number } })[]>([]);
@@ -53,7 +54,8 @@ export const LocationListOrganism: React.FC<LocationListOrganismProps> = ({
       setIsLoading(true);
       setError('');
 
-      const response = await fetch('/api/locations');
+      const url = userId ? `/api/locations?userId=${userId}` : '/api/locations';
+      const response = await fetch(url);
       const data = await response.json();
 
       if (!response.ok) {
@@ -73,7 +75,7 @@ export const LocationListOrganism: React.FC<LocationListOrganismProps> = ({
   // Initial fetch
   useEffect(() => {
     void fetchLocations();
-  }, []);
+  }, [userId]);
 
   // Handle add new location
   const handleAddClick = () => {
@@ -168,6 +170,7 @@ export const LocationListOrganism: React.FC<LocationListOrganismProps> = ({
             onSuccess={handleFormSuccess}
             onCancel={handleFormCancel}
             showCancel
+            userId={userId}
           />
         </div>
       )}

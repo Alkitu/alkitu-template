@@ -22,7 +22,7 @@ describe('OnboardingStepsCard', () => {
       icon: MapPin,
       status: 'current',
       completed: false,
-      href: '/locations',
+      href: '/client/locations',
     },
     {
       id: 3,

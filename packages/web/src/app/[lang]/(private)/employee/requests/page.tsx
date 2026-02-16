@@ -75,6 +75,7 @@ export default function EmployeeRequestsPage() {
       assignedTo: req.assignedTo
         ? `${req.assignedTo.firstname || ''} ${req.assignedTo.lastname || ''}`.trim()
         : undefined,
+      serviceThumbnail: req.service?.thumbnail,
       executionTime,
       locationCity: req.location?.city,
       locationState: req.location?.state,

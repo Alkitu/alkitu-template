@@ -8,6 +8,7 @@ import { Button } from '@/components/molecules-alianza/Button';
 import { Badge } from '@/components/atoms-alianza/Badge';
 import { Chip } from '@/components/atoms-alianza/Chip';
 import { ServiceIcon } from '@/components/atoms-alianza/ServiceIcon';
+import { getDynamicBackgroundColor } from '@/lib/utils/color';
 import type { ServiceCardProps } from './ServiceCard.types';
 
 /**
@@ -291,14 +292,28 @@ export const ServiceCard = React.forwardRef<HTMLDivElement, ServiceCardProps>(
                     />
                     <div
                       data-fallback
-                      className="hidden h-full w-full items-center justify-center bg-muted"
+                      className="hidden h-full w-full items-center justify-center transition-colors"
+                      style={{ backgroundColor: getDynamicBackgroundColor(service.iconColor || '#000000') }}
                     >
-                      <ServiceIcon category={service.category.name} className="h-8 w-8" />
+                      <ServiceIcon 
+                        category={service.category.name} 
+                        thumbnail={service.thumbnail}
+                        className="h-8 w-8" 
+                        color={service.iconColor || '#000000'}
+                      />
                     </div>
                   </div>
                 ) : (
-                  <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-muted">
-                    <ServiceIcon category={service.category.name} className="h-8 w-8" />
+                  <div 
+                    className="flex h-16 w-16 items-center justify-center rounded-lg transition-colors"
+                    style={{ backgroundColor: getDynamicBackgroundColor(service.iconColor || '#000000') }}
+                  >
+                    <ServiceIcon 
+                        category={service.category.name} 
+                        thumbnail={service.thumbnail} // Pass thumbnail if valid icon name, or handle in ServiceIcon
+                        className="h-8 w-8" 
+                        color={service.iconColor || '#000000'}
+                    />
                   </div>
                 )}
               </div>

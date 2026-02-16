@@ -263,3 +263,20 @@ export class MarkAsReadDto {
   @IsString()
   userId: string;
 }
+
+export class MarkAsDeliveredDto {
+  @ApiProperty({
+    description: 'Conversation ID to mark as delivered',
+    example: '60d5ecb74f3b2c001c8b4567',
+  })
+  @IsString()
+  conversationId: string;
+
+  @ApiPropertyOptional({
+    description: 'Whether marking as visitor or agent',
+    example: true,
+  })
+  @IsOptional()
+  @IsBoolean()
+  isVisitor?: boolean;
+}

@@ -18,11 +18,7 @@ import { cache } from 'react';
  * import { serverTrpc } from '@/lib/server-trpc';
  *
  * export default async function Page() {
- *   const themes = await serverTrpc.theme.getCompanyThemes.query({
- *     companyId: '6733c2fd80b7b58d4c36d966',
- *     activeOnly: false
- *   });
- *
+ *   const themes = await serverTrpc.theme.listAllThemes.query();
  *   return <div>{themes.length} themes found</div>;
  * }
  * ```
@@ -42,7 +38,7 @@ export const serverTrpc = createTRPCProxyClient<AppRouter>({
 });
 
 /**
- * NEW: Get the GLOBAL active theme (platform-wide)
+ * Get the GLOBAL active theme (platform-wide)
  *
  * Uses React's cache() to deduplicate requests within the same render pass
  */
@@ -53,34 +49,4 @@ export const getGlobalActiveTheme = cache(async () => {
     console.error('Failed to fetch global active theme:', error);
     return null;
   }
-});
-
-/**
- * @deprecated Use getGlobalActiveTheme instead
- * Cached version of getCompanyThemes for better performance
- */
-export const getCompanyThemesCached = cache(async (companyId: string) => {
-  console.warn('getCompanyThemesCached is deprecated. Use getGlobalActiveTheme instead.');
-  return serverTrpc.theme.getCompanyThemes.query({
-    companyId,
-    activeOnly: false,
-  });
-});
-
-/**
- * @deprecated Use getGlobalActiveTheme instead
- * Get the default or favorite theme for a company
- */
-export const getDefaultTheme = cache(async (companyId: string) => {
-  console.warn('getDefaultTheme is deprecated. Use getGlobalActiveTheme instead.');
-  return getGlobalActiveTheme();
-});
-
-/**
- * @deprecated Use getGlobalActiveTheme instead
- * Get the active theme for a specific user
- */
-export const getUserActiveTheme = cache(async (userId: string) => {
-  console.warn('getUserActiveTheme is deprecated. Use getGlobalActiveTheme instead.');
-  return getGlobalActiveTheme();
 });

@@ -2,10 +2,16 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/primitives/ui/button';
+import { LocationColorPicker } from '@/components/molecules/location/LocationColorPicker';
 import { Input } from '@/components/primitives/Input';
 import { Label } from '@/components/primitives/ui/label';
 import { FormError } from '@/components/primitives/ui/form-error';
 import { FormSuccess } from '@/components/primitives/ui/form-success';
+import { Checkbox } from '@/components/primitives/ui/checkbox';
+import { IconSelector } from '@/components/primitives/ui/icon-selector';
+import { MapPin } from 'lucide-react';
+import { Icons } from '@/lib/icons';
+import { getDynamicBackgroundColor } from '@/lib/utils/color';
 import { CreateLocationSchema, US_STATE_CODES } from '@alkitu/shared';
 import type {
   LocationFormOrganismProps,
@@ -55,6 +61,7 @@ export const LocationFormOrganism = React.forwardRef<
       onError,
       onCancel,
       showCancel = true,
+      userId,
     },
     ref,
   ) => {
@@ -69,8 +76,12 @@ export const LocationFormOrganism = React.forwardRef<
       city: initialData?.city || '',
       zip: initialData?.zip || '',
       state: initialData?.state || '',
+      icon: initialData?.icon || 'MapPin',
+      iconColor: initialData?.iconColor || '#000000',
+      isDefault: initialData?.isDefault || false,
     });
 
+    const [isIconSelectorOpen, setIsIconSelectorOpen] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -88,6 +99,9 @@ export const LocationFormOrganism = React.forwardRef<
           city: initialData.city || '',
           zip: initialData.zip || '',
           state: initialData.state || '',
+          icon: initialData.icon || 'MapPin',
+          iconColor: initialData.iconColor || '#000000',
+          isDefault: initialData.isDefault || false,
         });
       }
     }, [initialData]);
@@ -107,6 +121,15 @@ export const LocationFormOrganism = React.forwardRef<
       }
     };
 
+    const handleIconSelect = (iconName: string) => {
+      setFormData((prev) => ({ ...prev, icon: iconName }));
+      setIsIconSelectorOpen(false);
+    };
+
+    const handleDefaultChange = (checked: boolean) => {
+      setFormData((prev) => ({ ...prev, isDefault: checked }));
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
       setError('');
@@ -124,10 +147,14 @@ export const LocationFormOrganism = React.forwardRef<
           : '/api/locations';
         const method = isEditMode ? 'PUT' : 'POST';
 
+        const payload = userId
+          ? { ...validatedData, userId }
+          : validatedData;
+
         const response = await fetch(url, {
           method,
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(validatedData),
+          body: JSON.stringify(payload),
         });
 
         const data = await response.json();
@@ -157,6 +184,9 @@ export const LocationFormOrganism = React.forwardRef<
             city: '',
             zip: '',
             state: '',
+            icon: 'MapPin',
+            iconColor: '#000000',
+            isDefault: false,
           });
         }
       } catch (err) {
@@ -203,6 +233,60 @@ export const LocationFormOrganism = React.forwardRef<
               : 'Enter the work location details'}
           </p>
         </div>
+
+        {/* Icon Selector */}
+        <div className="flex items-center gap-4">
+          <div 
+            className="flex h-12 w-12 items-center justify-center rounded-full transition-colors"
+            style={{ backgroundColor: getDynamicBackgroundColor(formData.iconColor || '#000000') }}
+          >
+            {(() => {
+              const iconStyle = { color: formData.iconColor || '#000000' };
+              
+              if (isIconSelectorOpen) return <MapPin className="h-6 w-6" style={iconStyle} />;
+              
+              if (!formData.icon) return <MapPin className="h-6 w-6" style={iconStyle} />;
+
+              const IconComponent = (Icons as any)[formData.icon];
+              if (IconComponent) {
+                return <IconComponent className="h-6 w-6" style={iconStyle} />;
+              }
+              
+              // Emoji
+              return <span className="text-2xl leading-none">{formData.icon}</span>;
+            })()}
+          </div>
+          <div className="flex-1 space-y-4">
+           <div className="flex gap-4">
+            <div className="flex-1">
+             <Label>Icon</Label>
+             <div className="mt-2">
+                <Button 
+                    type="button" 
+                    variant="outline" 
+                    className="w-full justify-start text-left font-normal"
+                    onClick={() => setIsIconSelectorOpen(true)}
+                >
+                    {formData.icon === 'MapPin' ? 'Select Icon' : 'Change Icon'}
+                </Button>
+             </div>
+            </div>
+            <div className="flex-1">
+              <LocationColorPicker
+                color={formData.iconColor || '#000000'}
+                onChange={(color) => setFormData(prev => ({ ...prev, iconColor: color }))}
+                label="Icon Color"
+              />
+            </div>
+           </div>
+          </div>
+        </div>
+
+        <IconSelector
+            open={isIconSelectorOpen}
+            onClose={() => setIsIconSelectorOpen(false)}
+            onSelect={handleIconSelect}
+        />
 
         {/* Error and Success Messages */}
         {error && <FormError message={error} />}
@@ -378,6 +462,22 @@ export const LocationFormOrganism = React.forwardRef<
 
         {/* Action Buttons */}
         <div className="flex items-center gap-3 pt-4">
+            {/* Default Location Checkbox */}
+            <div className="mr-auto flex items-center space-x-2">
+                <Checkbox 
+                    id="isDefault" 
+                    checked={formData.isDefault}
+                    onCheckedChange={handleDefaultChange}
+                    disabled={isLoading}
+                />
+                <Label 
+                    htmlFor="isDefault" 
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                    Default Location
+                </Label>
+            </div>
+
           <Button type="submit" disabled={isLoading} className="min-w-[120px]">
             {isLoading ? (
               <>

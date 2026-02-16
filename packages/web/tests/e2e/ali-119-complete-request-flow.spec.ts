@@ -93,7 +93,7 @@ test.describe.serial('ALI-119: Complete Request Management Flow', () => {
     const clientPage = authenticatedClientPage;
     test.setTimeout(60000);
 
-    await clientPage.goto('http://localhost:3000/es/locations');
+    await clientPage.goto('http://localhost:3000/es/client/locations');
     await clientPage.waitForLoadState('networkidle');
 
     const addLocationBtn = clientPage.getByRole('button', { name: /add.*location|agregar.*ubicación|nueva/i }).first();
@@ -363,7 +363,7 @@ test.describe('Cleanup', () => {
 
     // Delete location
     if (!clientPage.isClosed()) {
-      await clientPage.goto('http://localhost:3000/es/locations');
+      await clientPage.goto('http://localhost:3000/es/client/locations');
       await clientPage.waitForLoadState('networkidle');
 
       const locationCard = clientPage.getByText('Calle Principal 123').first();

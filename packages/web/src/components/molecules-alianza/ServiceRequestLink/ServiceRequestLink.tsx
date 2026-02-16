@@ -42,6 +42,17 @@ import type { ServiceRequestLinkProps } from './ServiceRequestLink.types';
  * />
  * ```
  */
+const defaultLabels = {
+  noRequests: 'Sin solicitudes',
+  request: 'solicitud',
+  requests: 'solicitudes',
+  pending: 'pendiente',
+  pendingPlural: 'pendientes',
+  pendingTitle: 'Pendientes',
+  ongoingTitle: 'En progreso',
+  viewRequests: 'Ver {count} solicitudes de {name}',
+};
+
 export const ServiceRequestLink = React.forwardRef<HTMLAnchorElement, ServiceRequestLinkProps>(
   (
     {
@@ -53,11 +64,13 @@ export const ServiceRequestLink = React.forwardRef<HTMLAnchorElement, ServiceReq
       baseHref = '/admin/requests',
       lang = 'es',
       detailed = false,
+      labels: labelsProp,
       className,
       ...props
     },
     ref,
   ) => {
+    const l = { ...defaultLabels, ...labelsProp };
     const href = `/${lang}${baseHref}?serviceId=${serviceId}`;
     const hasRequests = requestCount > 0;
     const hasPending = pendingCount > 0;
@@ -73,10 +86,14 @@ export const ServiceRequestLink = React.forwardRef<HTMLAnchorElement, ServiceReq
           )}
           data-testid="service-request-link-zero"
         >
-          <span>Sin solicitudes</span>
+          <span>{l.noRequests}</span>
         </div>
       );
     }
+
+    const ariaLabel = l.viewRequests
+      .replace('{count}', String(requestCount))
+      .replace('{name}', serviceName);
 
     return (
       <Link
@@ -89,12 +106,12 @@ export const ServiceRequestLink = React.forwardRef<HTMLAnchorElement, ServiceReq
           className,
         )}
         data-testid="service-request-link"
-        aria-label={`Ver ${requestCount} solicitudes de ${serviceName}`}
+        aria-label={ariaLabel}
         {...props}
       >
         {/* Request count */}
         <span className="font-medium text-foreground group-hover:text-primary">
-          {requestCount} {requestCount === 1 ? 'solicitud' : 'solicitudes'}
+          {requestCount} {requestCount === 1 ? l.request : l.requests}
         </span>
 
         {/* Status indicators */}
@@ -103,7 +120,7 @@ export const ServiceRequestLink = React.forwardRef<HTMLAnchorElement, ServiceReq
             {hasPending && (
               <span
                 className="flex items-center gap-1 text-amber-600 dark:text-amber-400"
-                title="Pendientes"
+                title={l.pendingTitle}
               >
                 <AlertCircle className="h-3 w-3" />
                 {pendingCount}
@@ -112,7 +129,7 @@ export const ServiceRequestLink = React.forwardRef<HTMLAnchorElement, ServiceReq
             {hasOngoing && (
               <span
                 className="flex items-center gap-1 text-blue-600 dark:text-blue-400"
-                title="En progreso"
+                title={l.ongoingTitle}
               >
                 <Clock className="h-3 w-3" />
                 {ongoingCount}
@@ -123,9 +140,9 @@ export const ServiceRequestLink = React.forwardRef<HTMLAnchorElement, ServiceReq
           hasPending && (
             <span
               className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400"
-              title="Solicitudes pendientes"
+              title={l.pendingTitle}
             >
-              {pendingCount} pendiente{pendingCount !== 1 && 's'}
+              {pendingCount} {pendingCount !== 1 ? l.pendingPlural : l.pending}
             </span>
           )
         )}

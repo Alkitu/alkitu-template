@@ -7,6 +7,7 @@ export * from "./types/request-template";
 export * from "./types/request";
 export * from "./types/notification"; // ALI-120
 export * from "./types/email-template"; // ALI-121
+export * from "./types/form-template.types"; // Form Builder types
 
 // Schemas
 export * from "./schemas/auth";

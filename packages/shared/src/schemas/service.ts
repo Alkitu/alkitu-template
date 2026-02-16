@@ -1,8 +1,7 @@
 import { z } from 'zod';
-import { RequestTemplateSchema } from './request-template';
 
 /**
- * Service Zod Schemas (ALI-118)
+ * Service Zod Schemas (ALI-118 + Form Template Migration)
  */
 
 /**
@@ -16,19 +15,8 @@ export const CreateServiceSchema = z.object({
     .trim(),
   categoryId: z.string().min(1, 'Category ID is required'),
   thumbnail: z.string().url('Thumbnail must be a valid URL').optional(),
-  requestTemplate: z
-    .union([z.string(), RequestTemplateSchema])
-    .transform((val) => {
-      if (typeof val === 'string') {
-        try {
-          return JSON.parse(val);
-        } catch {
-          throw new Error('Invalid JSON in request template');
-        }
-      }
-      return val;
-    })
-    .pipe(RequestTemplateSchema),
+  iconColor: z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Invalid hex color').default('#000000').optional(),
+  formTemplateIds: z.array(z.string()).default([]),
 });
 
 /**
@@ -47,20 +35,8 @@ export const UpdateServiceSchema = z.object({
     .url('Thumbnail must be a valid URL')
     .nullable()
     .optional(),
-  requestTemplate: z
-    .union([z.string(), RequestTemplateSchema])
-    .transform((val) => {
-      if (typeof val === 'string') {
-        try {
-          return JSON.parse(val);
-        } catch {
-          throw new Error('Invalid JSON in request template');
-        }
-      }
-      return val;
-    })
-    .pipe(RequestTemplateSchema)
-    .optional(),
+  iconColor: z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Invalid hex color').optional(),
+  formTemplateIds: z.array(z.string()).optional(),
 });
 
 /**

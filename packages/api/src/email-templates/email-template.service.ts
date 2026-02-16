@@ -5,6 +5,7 @@ import {
   ConflictException,
   BadRequestException,
   InternalServerErrorException,
+  Optional,
 } from '@nestjs/common';
 import {
   EmailTemplate,
@@ -14,15 +15,39 @@ import {
   User,
   Service,
   WorkLocation,
+  TemplateCategory,
+  LocalizedEmailContent,
 } from '@prisma/client';
 import {
   CreateEmailTemplateInput,
   UpdateEmailTemplateInput,
   PlaceholderData,
   AVAILABLE_PLACEHOLDERS,
+  PLACEHOLDERS_BY_CATEGORY,
 } from '@alkitu/shared';
-import { EmailService } from '../email/email.service';
+import { EmailService, escapeHtml } from '../email/email.service';
+import { EmailRendererService } from '../email/services/email-renderer.service';
 import { PrismaService } from '../prisma.service';
+import {
+  getDefaultTemplateDefinitions,
+  loadTemplateBody,
+  DEFAULT_LOCALE,
+  SUPPORTED_LOCALES,
+  type SupportedLocale,
+} from './templates';
+
+/** Safely extract error message from unknown catch values */
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  if (typeof error === 'string') return error;
+  return 'Unknown error';
+}
+
+/** Safely extract error stack from unknown catch values */
+function getErrorStack(error: unknown): string | undefined {
+  if (error instanceof Error) return error.stack;
+  return undefined;
+}
 
 // Type for Request with all necessary relations
 export type RequestWithRelations = Request & {
@@ -30,7 +55,7 @@ export type RequestWithRelations = Request & {
   service: Service & { category: { name: string } };
   location: WorkLocation;
   assignedTo?: User | null;
-  templateResponses?: Record<string, any> | null;
+  templateResponses?: Record<string, unknown> | null;
 };
 
 @Injectable()
@@ -40,6 +65,7 @@ export class EmailTemplateService {
   constructor(
     private readonly emailService: EmailService,
     private readonly prisma: PrismaService,
+    @Optional() private readonly emailRendererService?: EmailRendererService,
   ) {}
 
   /**
@@ -54,22 +80,71 @@ export class EmailTemplateService {
         this.logger.log(
           `Found ${existingCount} existing email templates, skipping initialization`,
         );
-        return;
+      } else {
+        this.logger.log('Initializing default email templates...');
+
+        const definitions = getDefaultTemplateDefinitions();
+
+        for (const def of definitions) {
+          // Load body from HTML file for the default locale
+          const defaultBody = loadTemplateBody(def.name, DEFAULT_LOCALE);
+          const defaultSubject = def.subjects[DEFAULT_LOCALE];
+
+          // Build localizations for non-default locales
+          const localizations: { locale: string; subject: string; body: string }[] = [];
+          for (const locale of SUPPORTED_LOCALES) {
+            if (locale === DEFAULT_LOCALE) continue;
+            try {
+              localizations.push({
+                locale,
+                subject: def.subjects[locale as SupportedLocale] ?? defaultSubject,
+                body: loadTemplateBody(def.name, locale as SupportedLocale),
+              });
+            } catch (err) {
+              this.logger.warn(
+                `Could not load ${locale} template for ${def.name}: ${getErrorMessage(err)}`,
+              );
+            }
+          }
+
+          await this.prisma.emailTemplate.create({
+            data: {
+              name: def.name,
+              subject: defaultSubject,
+              body: defaultBody,
+              trigger: def.trigger,
+              status: def.status,
+              active: def.active,
+              defaultLocale: DEFAULT_LOCALE,
+              defaultBody,
+              defaultSubject,
+              isDefault: true,
+              localizations,
+            },
+          });
+        }
+
+        this.logger.log(
+          `✅ Successfully created ${definitions.length} default email templates with i18n support`,
+        );
       }
 
-      this.logger.log('Initializing default email templates...');
-
-      const defaultTemplates = this.getDefaultTemplates();
-
-      for (const template of defaultTemplates) {
-        await this.prisma.emailTemplate.create({
-          data: template,
-        });
-      }
-
-      this.logger.log(
-        `✅ Successfully created ${defaultTemplates.length} default email templates`,
-      );
+      // Ensure the email-templates feature flag exists
+      await this.prisma.featureFlag.upsert({
+        where: { key: 'email-templates' },
+        update: {},
+        create: {
+          key: 'email-templates',
+          name: 'Email Templates Editor',
+          description:
+            'UI to customize email templates. Emails are always sent from DB regardless of this flag.',
+          category: 'addon',
+          status: 'DISABLED',
+          icon: 'Mail',
+          badge: 'New',
+          sortOrder: 10,
+        },
+      });
     } catch (error) {
       this.logger.error('Failed to initialize default email templates', error);
       // Don't throw - initialization failure shouldn't prevent app startup
@@ -118,11 +193,11 @@ export class EmailTemplateService {
         throw error;
       }
       this.logger.error(
-        `Failed to create email template: ${error.message}`,
-        error.stack,
+        `Failed to create email template: ${getErrorMessage(error)}`,
+        getErrorStack(error),
       );
       throw new InternalServerErrorException(
-        `Failed to create email template: ${error.message}`,
+        `Failed to create email template: ${getErrorMessage(error)}`,
       );
     }
   }
@@ -137,7 +212,7 @@ export class EmailTemplateService {
     search?: string;
   }): Promise<EmailTemplate[]> {
     try {
-      const where: any = {};
+      const where: Record<string, unknown> = {};
 
       if (filters?.trigger) {
         where.trigger = filters.trigger;
@@ -166,10 +241,12 @@ export class EmailTemplateService {
       return templates;
     } catch (error) {
       this.logger.error(
-        `Failed to fetch email templates: ${error.message}`,
-        error.stack,
+        `Failed to fetch email templates: ${getErrorMessage(error)}`,
+        getErrorStack(error),
       );
-      throw new Error(`Failed to fetch email templates: ${error.message}`);
+      throw new Error(
+        `Failed to fetch email templates: ${getErrorMessage(error)}`,
+      );
     }
   }
 
@@ -178,9 +255,9 @@ export class EmailTemplateService {
    */
   async findOne(id: string): Promise<EmailTemplate> {
     try {
-      const template = await this.prisma.emailTemplate.findUnique({
+      const template = (await this.prisma.emailTemplate.findUnique({
         where: { id },
-      });
+      })) as EmailTemplate | null;
 
       if (!template) {
         throw new NotFoundException(`Email template with id "${id}" not found`);
@@ -192,10 +269,12 @@ export class EmailTemplateService {
         throw error;
       }
       this.logger.error(
-        `Failed to fetch email template ${id}: ${error.message}`,
-        error.stack,
+        `Failed to fetch email template ${id}: ${getErrorMessage(error)}`,
+        getErrorStack(error),
       );
-      throw new Error(`Failed to fetch email template: ${error.message}`);
+      throw new Error(
+        `Failed to fetch email template: ${getErrorMessage(error)}`,
+      );
     }
   }
 
@@ -249,11 +328,11 @@ export class EmailTemplateService {
         throw error;
       }
       this.logger.error(
-        `Failed to update email template ${id}: ${error.message}`,
-        error.stack,
+        `Failed to update email template ${id}: ${getErrorMessage(error)}`,
+        getErrorStack(error),
       );
       throw new InternalServerErrorException(
-        `Failed to update email template: ${error.message}`,
+        `Failed to update email template: ${getErrorMessage(error)}`,
       );
     }
   }
@@ -277,11 +356,11 @@ export class EmailTemplateService {
         throw error;
       }
       this.logger.error(
-        `Failed to delete email template ${id}: ${error.message}`,
-        error.stack,
+        `Failed to delete email template ${id}: ${getErrorMessage(error)}`,
+        getErrorStack(error),
       );
       throw new InternalServerErrorException(
-        `Failed to delete email template: ${error.message}`,
+        `Failed to delete email template: ${getErrorMessage(error)}`,
       );
     }
   }
@@ -295,7 +374,7 @@ export class EmailTemplateService {
     status?: RequestStatus,
   ): Promise<EmailTemplate[]> {
     try {
-      const where: any = {
+      const where: Record<string, unknown> = {
         trigger,
         active: true, // Only return active templates
       };
@@ -312,92 +391,93 @@ export class EmailTemplateService {
       return templates;
     } catch (error) {
       this.logger.error(
-        `Failed to find templates for trigger ${trigger}: ${error.message}`,
-        error.stack,
+        `Failed to find templates for trigger ${trigger}: ${getErrorMessage(error)}`,
+        getErrorStack(error),
       );
       return []; // Return empty array instead of throwing - email failure shouldn't block operations
     }
   }
 
   /**
-   * Replace placeholders in a template with actual data
+   * Replace placeholders in a template with actual data.
+   * All values are HTML-escaped to prevent XSS attacks.
    */
   replacePlaceholders(template: string, data: PlaceholderData): string {
     let result = template;
 
     // Replace request placeholders
-    result = result.replace(/\{\{request\.id\}\}/g, data.request.id || '');
+    result = result.replace(/\{\{request\.id\}\}/g, escapeHtml(data.request.id || ''));
     result = result.replace(
       /\{\{request\.status\}\}/g,
-      data.request.status || '',
+      escapeHtml(data.request.status || ''),
     );
     result = result.replace(
       /\{\{request\.executionDateTime\}\}/g,
-      this.formatDateTime(data.request.executionDateTime) || '',
+      escapeHtml(this.formatDateTime(data.request.executionDateTime) || ''),
     );
     result = result.replace(
       /\{\{request\.createdAt\}\}/g,
-      this.formatDateTime(data.request.createdAt) || '',
+      escapeHtml(this.formatDateTime(data.request.createdAt) || ''),
     );
     result = result.replace(
       /\{\{request\.completedAt\}\}/g,
-      this.formatDateTime(data.request.completedAt) || '',
+      escapeHtml(this.formatDateTime(data.request.completedAt) || ''),
     );
 
     // Replace user placeholders
     result = result.replace(
       /\{\{user\.firstname\}\}/g,
-      data.user.firstname || '',
+      escapeHtml(data.user.firstname || ''),
     );
     result = result.replace(
       /\{\{user\.lastname\}\}/g,
-      data.user.lastname || '',
+      escapeHtml(data.user.lastname || ''),
     );
-    result = result.replace(/\{\{user\.email\}\}/g, data.user.email || '');
-    result = result.replace(/\{\{user\.phone\}\}/g, data.user.phone || '');
+    result = result.replace(/\{\{user\.email\}\}/g, escapeHtml(data.user.email || ''));
+    result = result.replace(/\{\{user\.phone\}\}/g, escapeHtml(data.user.phone || ''));
 
     // Replace service placeholders
-    result = result.replace(/\{\{service\.name\}\}/g, data.service.name || '');
+    result = result.replace(/\{\{service\.name\}\}/g, escapeHtml(data.service.name || ''));
     result = result.replace(
       /\{\{service\.category\}\}/g,
-      data.service.category || '',
+      escapeHtml(data.service.category || ''),
     );
 
     // Replace location placeholders
     result = result.replace(
       /\{\{location\.street\}\}/g,
-      data.location.street || '',
+      escapeHtml(data.location.street || ''),
     );
     result = result.replace(
       /\{\{location\.city\}\}/g,
-      data.location.city || '',
+      escapeHtml(data.location.city || ''),
     );
     result = result.replace(
       /\{\{location\.state\}\}/g,
-      data.location.state || '',
+      escapeHtml(data.location.state || ''),
     );
     result = result.replace(
       /\{\{location\.zipCode\}\}/g,
-      data.location.zip || '',
+      escapeHtml(data.location.zip || ''),
     );
 
     // Replace employee placeholders (if assigned)
     if (data.employee) {
       result = result.replace(
         /\{\{employee\.firstname\}\}/g,
-        data.employee.firstname || '',
+        escapeHtml(data.employee.firstname || ''),
       );
       result = result.replace(
         /\{\{employee\.lastname\}\}/g,
-        data.employee.lastname || '',
+        escapeHtml(data.employee.lastname || ''),
       );
       result = result.replace(
         /\{\{employee\.email\}\}/g,
-        data.employee.email || '',
+        escapeHtml(data.employee.email || ''),
       );
       result = result.replace(
         /\{\{employee\.phone\}\}/g,
-        data.employee.phone || '',
+        escapeHtml(data.employee.phone || ''),
       );
     } else {
       // Replace with empty strings if no employee assigned
@@ -415,7 +495,7 @@ export class EmailTemplateService {
           placeholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
           'g',
         );
-        result = result.replace(regex, String(value || ''));
+        result = result.replace(regex, escapeHtml(String(value || '')));
       });
     }
 
@@ -430,11 +510,15 @@ export class EmailTemplateService {
     data: PlaceholderData,
   ): Promise<{ subject: string; body: string }> {
     const template = await this.findOne(templateId);
+    const subject = this.replacePlaceholders(template.subject, data);
+    const rawBody = this.replacePlaceholders(template.body, data);
 
-    return {
-      subject: this.replacePlaceholders(template.subject, data),
-      body: this.replacePlaceholders(template.body, data),
-    };
+    // Wrap in React Email layout for preview to match production output
+    const body = this.emailRendererService
+      ? await this.emailRendererService.renderWithLayout(rawBody, template.defaultLocale, subject)
+      : rawBody;
+
+    return { subject, body };
   }
 
   /**
@@ -442,6 +526,165 @@ export class EmailTemplateService {
    */
   getAvailablePlaceholders() {
     return AVAILABLE_PLACEHOLDERS;
+  }
+
+  /**
+   * Render an email template by slug with locale support
+   * Looks up template by slug, applies localization if available, and replaces placeholders
+   */
+  async renderBySlug(
+    slug: string,
+    variables: Record<string, string>,
+    locale?: string,
+  ): Promise<{ subject: string; body: string } | null> {
+    try {
+      const template = (await this.prisma.emailTemplate.findUnique({
+        where: { slug },
+      })) as EmailTemplate | null;
+
+      if (!template || !template.active) {
+        this.logger.warn(`Template with slug "${slug}" not found or inactive`);
+        return null;
+      }
+
+      let subject = template.subject;
+      let body = template.body;
+
+      // Check for localized content
+      if (
+        locale &&
+        locale !== template.defaultLocale &&
+        template.localizations
+      ) {
+        const localized = (
+          template.localizations as LocalizedEmailContent[]
+        ).find((l) => l.locale === locale);
+        if (localized) {
+          subject = localized.subject;
+          body = localized.body;
+        }
+      }
+
+      // Replace all {{key}} placeholders (escape values to prevent XSS)
+      for (const [key, value] of Object.entries(variables)) {
+        const regex = new RegExp(
+          `\\{\\{${key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\}\\}`,
+          'g',
+        );
+        const safeValue = escapeHtml(value);
+        subject = subject.replace(regex, safeValue);
+        body = body.replace(regex, safeValue);
+      }
+
+      return { subject, body };
+    } catch (error) {
+      this.logger.error(
+        `Failed to render template by slug "${slug}": ${getErrorMessage(error)}`,
+        getErrorStack(error),
+      );
+      return null;
+    }
+  }
+
+  /**
+   * Reset a template to its default content
+   * Copies defaultSubject → subject and defaultBody → body
+   */
+  async resetToDefault(id: string): Promise<EmailTemplate> {
+    const template = await this.findOne(id);
+
+    if (
+      !template.isDefault ||
+      !template.defaultBody ||
+      !template.defaultSubject
+    ) {
+      throw new BadRequestException(
+        'This template does not have default content to reset to',
+      );
+    }
+
+    const updated = (await this.prisma.emailTemplate.update({
+      where: { id },
+      data: {
+        subject: template.defaultSubject,
+        body: template.defaultBody,
+      },
+    })) as EmailTemplate;
+
+    this.logger.log(`Reset template "${template.name}" to default content`);
+    return updated;
+  }
+
+  /**
+   * Update or insert a localized version of a template
+   */
+  async updateLocalization(
+    id: string,
+    locale: string,
+    subject: string,
+    body: string,
+  ): Promise<EmailTemplate> {
+    const template = await this.findOne(id);
+
+    const localizations =
+      (template.localizations as LocalizedEmailContent[]) || [];
+    const existingIndex = localizations.findIndex((l) => l.locale === locale);
+
+    if (existingIndex >= 0) {
+      localizations[existingIndex] = { locale, subject, body };
+    } else {
+      localizations.push({ locale, subject, body });
+    }
+
+    const updated = (await this.prisma.emailTemplate.update({
+      where: { id },
+      data: { localizations: localizations as any },
+    })) as EmailTemplate;
+
+    this.logger.log(
+      `Updated localization "${locale}" for template "${template.name}"`,
+    );
+    return updated;
+  }
+
+  /**
+   * Get available placeholder variables by template category
+   */
+  getVariablesByCategory(category: TemplateCategory): string[] {
+    return PLACEHOLDERS_BY_CATEGORY[category] || [];
+  }
+
+  /**
+   * Find all templates grouped by category
+   */
+  async findAllGroupedByCategory() {
+    const templates = (await this.prisma.emailTemplate.findMany({
+      orderBy: [{ category: 'asc' }, { name: 'asc' }],
+    })) as EmailTemplate[];
+
+    const categoryLabels: Record<string, string> = {
+      REQUEST: 'Request Lifecycle',
+      AUTH: 'Authentication',
+      NOTIFICATION: 'Notifications',
+      MARKETING: 'Marketing',
+    };
+
+    const grouped = new Map<string, EmailTemplate[]>();
+    for (const template of templates) {
+      const cat = template.category || 'REQUEST';
+      if (!grouped.has(cat)) {
+        grouped.set(cat, []);
+      }
+      grouped.get(cat).push(template);
+    }
+
+    return Array.from(grouped.entries()).map(
+      ([category, categoryTemplates]) => ({
+        category,
+        label: categoryLabels[category] || category,
+        templates: categoryTemplates,
+      }),
+    );
   }
 
   /**
@@ -479,148 +722,12 @@ export class EmailTemplateService {
         hour: '2-digit',
         minute: '2-digit',
       });
-    } catch (error) {
-      this.logger.warn(`Failed to format date: ${date}`);
+    } catch {
+      this.logger.warn(`Failed to format date: ${String(date)}`);
       return String(date);
     }
   }
 
-  /**
-   * Get default email templates
-   */
-  private getDefaultTemplates() {
-    return [
-      {
-        name: 'request_created_client',
-        subject: 'Solicitud Recibida - {{service.name}}',
-        body: `Estimado/a {{user.firstname}} {{user.lastname}},
-
-Hemos recibido su solicitud de servicio.
-
-Detalles del Servicio:
-- Servicio: {{service.name}}
-- Categoría: {{service.category}}
-- Fecha Programada: {{request.executionDateTime}}
-
-Ubicación:
-{{location.street}}
-{{location.city}}, {{location.state}} {{location.zipCode}}
-
-ID de Solicitud: {{request.id}}
-Estado: {{request.status}}
-
-Revisaremos su solicitud y asignaremos un técnico en breve.
-
-Saludos cordiales,
-Equipo Alkitu`,
-        trigger: 'ON_REQUEST_CREATED' as TemplateTrigger,
-        status: null,
-        active: true,
-      },
-      {
-        name: 'request_ongoing_client',
-        subject: 'Técnico Asignado - {{service.name}}',
-        body: `Estimado/a {{user.firstname}},
-
-¡Buenas noticias! Se ha asignado un técnico a su solicitud de servicio.
-
-Técnico: {{employee.firstname}} {{employee.lastname}}
-Teléfono: {{employee.phone}}
-Email: {{employee.email}}
-
-Servicio: {{service.name}}
-Fecha Programada: {{request.executionDateTime}}
-Ubicación: {{location.street}}, {{location.city}}
-
-Su técnico se pondrá en contacto con usted en breve.
-
-ID de Solicitud: {{request.id}}
-
-Gracias,
-Equipo Alkitu`,
-        trigger: 'ON_STATUS_CHANGED' as TemplateTrigger,
-        status: 'ONGOING' as RequestStatus,
-        active: true,
-      },
-      {
-        name: 'request_ongoing_employee',
-        subject: 'Nueva Asignación - {{service.name}}',
-        body: `Hola {{employee.firstname}},
-
-Se te ha asignado una nueva solicitud de servicio.
-
-Cliente: {{user.firstname}} {{user.lastname}}
-Teléfono: {{user.phone}}
-Email: {{user.email}}
-
-Servicio: {{service.name}}
-Categoría: {{service.category}}
-Fecha Programada: {{request.executionDateTime}}
-
-Ubicación:
-{{location.street}}
-{{location.city}}, {{location.state}} {{location.zipCode}}
-
-ID de Solicitud: {{request.id}}
-
-Por favor, contacta al cliente para confirmar la cita.
-
-Saludos,
-Equipo Alkitu`,
-        trigger: 'ON_STATUS_CHANGED' as TemplateTrigger,
-        status: 'ONGOING' as RequestStatus,
-        active: true,
-      },
-      {
-        name: 'request_completed_client',
-        subject: 'Servicio Completado - {{service.name}}',
-        body: `Estimado/a {{user.firstname}},
-
-¡Su solicitud de servicio se ha completado exitosamente!
-
-Servicio: {{service.name}}
-Completado: {{request.completedAt}}
-Técnico: {{employee.firstname}} {{employee.lastname}}
-
-ID de Solicitud: {{request.id}}
-
-Esperamos que esté satisfecho/a con nuestro servicio. No dude en solicitar otro servicio cuando lo necesite.
-
-¡Gracias por elegir Alkitu!
-
-Saludos cordiales,
-Equipo Alkitu`,
-        trigger: 'ON_STATUS_CHANGED' as TemplateTrigger,
-        status: 'COMPLETED' as RequestStatus,
-        active: true,
-      },
-      {
-        name: 'request_cancelled_client',
-        subject: 'Solicitud Cancelada - {{service.name}}',
-        body: `Estimado/a {{user.firstname}},
-
-Su solicitud de servicio ha sido cancelada.
-
-Servicio: {{service.name}}
-ID de Solicitud: {{request.id}}
-
-Si no solicitó esta cancelación o tiene alguna pregunta, por favor contáctenos de inmediato.
-
-Puede enviar una nueva solicitud en cualquier momento.
-
-Saludos cordiales,
-Equipo Alkitu`,
-        trigger: 'ON_STATUS_CHANGED' as TemplateTrigger,
-        status: 'CANCELLED' as RequestStatus,
-        active: true,
-      },
-    ];
-  }
-
-  /**
-   * Send an email using a template
-   * Private helper method used by public email sending methods
-   */
   private async sendTemplatedEmail(
     template: EmailTemplate,
     recipientEmail: string,
@@ -628,12 +735,17 @@ Equipo Alkitu`,
   ): Promise<void> {
     try {
       const subject = this.replacePlaceholders(template.subject, data);
-      const body = this.replacePlaceholders(template.body, data);
+      const rawBody = this.replacePlaceholders(template.body, data);
+
+      // Wrap in React Email layout if renderer is available
+      const html = this.emailRendererService
+        ? await this.emailRendererService.renderWithLayout(rawBody, template.defaultLocale, subject)
+        : rawBody;
 
       const result = await this.emailService.sendEmail({
         to: recipientEmail,
         subject,
-        html: body,
+        html,
       });
 
       if (!result.success) {
@@ -648,8 +760,8 @@ Equipo Alkitu`,
       );
     } catch (error) {
       this.logger.error(
-        `Error sending template email ${template.name}: ${error.message}`,
-        error.stack,
+        `Error sending template email ${template.name}: ${getErrorMessage(error)}`,
+        getErrorStack(error),
       );
       // Don't throw - email failure shouldn't block request operations
     }
@@ -693,6 +805,138 @@ Equipo Alkitu`,
         : null,
       templateResponses: request.templateResponses,
     };
+  }
+
+  /**
+   * Generate sample placeholder data for test emails
+   */
+  private generateSamplePlaceholderData(): PlaceholderData {
+    return {
+      request: {
+        id: 'REQ-2024-00123',
+        status: 'IN_PROGRESS',
+        executionDateTime: new Date('2024-03-15T10:00:00Z'),
+        createdAt: new Date('2024-03-10T14:30:00Z'),
+        completedAt: new Date('2024-03-15T16:45:00Z'),
+      },
+      user: {
+        firstname: 'Maria',
+        lastname: 'Garcia',
+        email: 'maria.garcia@example.com',
+        phone: '+1 (305) 555-0147',
+      },
+      service: {
+        name: 'Deep Cleaning',
+        category: 'Cleaning Services',
+      },
+      location: {
+        street: '1250 Ocean Drive',
+        city: 'Miami',
+        state: 'FL',
+        zip: '33139',
+      },
+      employee: {
+        firstname: 'Carlos',
+        lastname: 'Rodriguez',
+        email: 'carlos.rodriguez@example.com',
+        phone: '+1 (305) 555-0198',
+      },
+      templateResponses: {
+        preferredTime: 'Morning (8am - 12pm)',
+        specialInstructions: 'Please use eco-friendly products',
+      },
+    };
+  }
+
+  /**
+   * Send all active email templates as test emails to a recipient.
+   * Each template is rendered with sample data and sent with [TEST] prefix.
+   */
+  async sendAllTestEmails(recipient: string): Promise<{
+    totalSent: number;
+    totalFailed: number;
+    results: Array<{
+      templateId: string;
+      templateName: string;
+      category: string;
+      success: boolean;
+      error?: string;
+    }>;
+  }> {
+    const templates = await this.findAll({ active: true });
+    const sampleData = this.generateSamplePlaceholderData();
+    const results: Array<{
+      templateId: string;
+      templateName: string;
+      category: string;
+      success: boolean;
+      error?: string;
+    }> = [];
+
+    for (const template of templates) {
+      try {
+        const { subject, body } = await this.previewTemplate(
+          template.id,
+          sampleData,
+        );
+
+        // Post-process any remaining {{...}} tokens (e.g. AUTH/NOTIFICATION templates)
+        const authReplacements: Record<string, string> = {
+          '{{user.name}}': 'Maria Garcia',
+          '{{login.url}}': 'https://app.example.com/login',
+          '{{reset.url}}': 'https://app.example.com/reset-password?token=sample',
+          '{{verification.url}}': 'https://app.example.com/verify-email?token=sample',
+          '{{company.name}}': 'Alkitu',
+          '{{support.email}}': 'support@example.com',
+        };
+
+        let finalBody = body;
+        let finalSubject = `[TEST] ${subject}`;
+
+        for (const [token, value] of Object.entries(authReplacements)) {
+          const regex = new RegExp(
+            token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
+            'g',
+          );
+          finalBody = finalBody.replace(regex, escapeHtml(value));
+          finalSubject = finalSubject.replace(regex, escapeHtml(value));
+        }
+
+        const result = await this.emailService.sendEmail({
+          to: recipient,
+          subject: finalSubject,
+          html: finalBody,
+        });
+
+        results.push({
+          templateId: template.id,
+          templateName: template.name,
+          category: template.category || 'REQUEST',
+          success: result.success,
+          error: result.error,
+        });
+      } catch (error) {
+        results.push({
+          templateId: template.id,
+          templateName: template.name,
+          category: template.category || 'REQUEST',
+          success: false,
+          error: getErrorMessage(error),
+        });
+      }
+
+      // 250ms delay between sends to respect Resend rate limits
+      await new Promise((resolve) => setTimeout(resolve, 250));
+    }
+
+    const totalSent = results.filter((r) => r.success).length;
+    const totalFailed = results.filter((r) => !r.success).length;
+
+    this.logger.log(
+      `Test emails sent to ${recipient}: ${totalSent} succeeded, ${totalFailed} failed out of ${templates.length} templates`,
+    );
+
+    return { totalSent, totalFailed, results };
   }
 
   /**
@@ -748,8 +992,8 @@ Equipo Alkitu`,
       );
     } catch (error) {
       this.logger.error(
-        `Error sending request created emails: ${error.message}`,
-        error.stack,
+        `Error sending request created emails: ${getErrorMessage(error)}`,
+        getErrorStack(error),
       );
       // Don't throw - email failure shouldn't block request creation
     }
@@ -822,8 +1066,8 @@ Equipo Alkitu`,
       );
     } catch (error) {
       this.logger.error(
-        `Error sending status changed emails: ${error.message}`,
-        error.stack,
+        `Error sending status changed emails: ${getErrorMessage(error)}`,
+        getErrorStack(error),
       );
       // Don't throw - email failure shouldn't block status updates
     }

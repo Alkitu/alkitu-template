@@ -15,7 +15,7 @@ import {
 } from '@/components/primitives/ui/form';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { trpc } from '@/lib/trpc';
-import { toast } from '@/components/primitives/ui/use-toast';
+import { toast } from 'sonner';
 
 const contactFormSchema = z.object({
   requireEmail: z.boolean(),
@@ -49,17 +49,10 @@ export function ContactFormFields({ initialConfig }: ContactFormFieldsProps) {
       trpc.chatbotConfig.update.mutate(data), // TODO: Implement this
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['chatbotConfig'] });
-      toast({
-        title: 'Success',
-        description: 'Chatbot contact form fields updated successfully.',
-      });
+      toast.success('Chatbot contact form fields updated successfully.');
     },
     onError: (error) => {
-      toast({
-        title: 'Error',
-        description: `Failed to update contact form fields: ${error.message}`,
-        variant: 'destructive',
-      });
+      toast.error(`Failed to update contact form fields: ${error.message}`);
     },
   });
 

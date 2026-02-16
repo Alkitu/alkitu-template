@@ -5,6 +5,20 @@
  * with a link to view filtered requests.
  */
 
+/**
+ * Translated labels for ServiceRequestLink
+ */
+export interface ServiceRequestLinkLabels {
+  noRequests: string;
+  request: string;
+  requests: string;
+  pending: string;
+  pendingPlural: string;
+  pendingTitle: string;
+  ongoingTitle: string;
+  viewRequests: string;
+}
+
 export interface ServiceRequestLinkProps {
   /**
    * Service ID for linking to requests
@@ -50,6 +64,11 @@ export interface ServiceRequestLinkProps {
    * @default false
    */
   detailed?: boolean;
+
+  /**
+   * Translated labels (optional, defaults to Spanish)
+   */
+  labels?: Partial<ServiceRequestLinkLabels>;
 
   /**
    * Custom className for styling

@@ -14,6 +14,7 @@ import { FormInput } from '@/components/molecules-alianza/FormInput';
 import { FormSelect } from '@/components/molecules-alianza/FormSelect';
 import { Checkbox } from '@/components/molecules-alianza/Checkbox';
 import { toast } from 'sonner';
+import { handleApiError } from '@/lib/trpc-error-handler';
 import { Save, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 import { UserRole } from '@alkitu/shared';
@@ -80,9 +81,7 @@ const CreateUserPage = () => {
       toast.success('User created successfully!');
       router.push(`/${lang}/admin/users`);
     },
-    onError: (error) => {
-      toast.error(`Failed to create user: ${error.message}`);
-    },
+    onError: (error) => handleApiError(error, router),
   });
 
   const validateForm = (): boolean => {

@@ -390,6 +390,182 @@
       "admin": "Administración",
       "users": "Usuarios",
       "dashboard": "Panel"
+    },
+    "requests": {
+      "title": "Solicitudes de Servicio",
+      "description": "Gestiona y monitorea todas las solicitudes de servicio",
+      "breadcrumbs": {
+        "dashboard": "Dashboard",
+        "requests": "Solicitudes"
+      },
+      "create": {
+        "title": "Nueva Solicitud de Servicio",
+        "back": "Volver",
+        "steps": {
+          "client": "Cliente",
+          "location": "Ubicación",
+          "service": "Servicio",
+          "details": "Detalles",
+          "dateTime": "Fecha/Hora"
+        },
+        "step1": {
+          "title": "Seleccionar Cliente",
+          "description": "Elige el cliente para quien se creará la solicitud",
+          "label": "Cliente *",
+          "placeholder": "Seleccionar cliente",
+          "loading": "Cargando...",
+          "selected": "Cliente seleccionado:",
+          "next": "Siguiente: Seleccionar Ubicación",
+          "required": "Por favor seleccione un cliente"
+        },
+        "step2": {
+          "title": "Seleccionar Ubicación",
+          "description": "Elige dónde se realizará el servicio",
+          "label": "Ubicación *",
+          "placeholder": "Seleccionar ubicación",
+          "loading": "Cargando ubicaciones...",
+          "selected": "Ubicación seleccionada:",
+          "next": "Siguiente: Seleccionar Servicio",
+          "required": "Por favor seleccione una ubicación",
+          "noLocations": "No se encontraron ubicaciones para este cliente",
+          "addLocation": "Agregar Nueva Ubicación",
+          "addLocationSuccess": "Ubicación creada exitosamente"
+        },
+        "step3": {
+          "title": "Seleccionar Servicio",
+          "description": "Elige el servicio a solicitar",
+          "searchPlaceholder": "Buscar servicios...",
+          "noResults": "Ningún servicio coincide con tu búsqueda",
+          "empty": "No hay servicios disponibles",
+          "selected": "Servicio seleccionado:",
+          "fieldsInForm": "campos en el formulario",
+          "services": "servicios",
+          "next": "Siguiente: Detalles del Servicio",
+          "required": "Por favor seleccione un servicio"
+        },
+        "step4": {
+          "title": "Detalles del Servicio",
+          "description": "Complete la información requerida para",
+          "noCustomFields": "Este servicio no tiene campos personalizados configurados.",
+          "nextDateTime": "Siguiente: Fecha y Hora",
+          "submitText": "Siguiente: Fecha y Hora",
+          "cancelText": "Volver"
+        },
+        "step5": {
+          "title": "Fecha y Hora de Ejecución",
+          "description": "Programar cuándo se debe realizar el servicio",
+          "summary": "Resumen:",
+          "fieldsCompleted": "Campos completados:",
+          "dateLabel": "Fecha de Ejecución *",
+          "timeLabel": "Hora de Ejecución *",
+          "dateTimeRequired": "Por favor seleccione fecha y hora de ejecución",
+          "futureRequired": "La fecha de ejecución debe ser futura",
+          "creating": "Creando...",
+          "submit": "Crear Solicitud"
+        },
+        "success": "Solicitud creada exitosamente",
+        "labels": {
+          "client": "Cliente:",
+          "location": "Ubicación:",
+          "service": "Servicio:"
+        }
+      }
+    },
+    "catalog": {
+      "services": {
+        "title": "Servicios",
+        "description": "Gestiona el catálogo de servicios de tu organización",
+        "breadcrumbs": {
+          "dashboard": "Dashboard",
+          "catalog": "Catálogo",
+          "services": "Servicios"
+        },
+        "actions": {
+          "createService": "Crear Nuevo Servicio",
+          "search": "Buscar servicios..."
+        },
+        "stats": {
+          "services": "Servicios",
+          "categories": "Categorías"
+        },
+        "filters": {
+          "all": "Todas",
+          "active": "Activos",
+          "inactive": "Inactivos",
+          "placeholder": "Filtrar por estado"
+        },
+        "table": {
+          "service": "Servicio",
+          "category": "Categoría",
+          "status": "Estado",
+          "questions": "Preguntas",
+          "requests": "Solicitudes",
+          "actions": "Acciones",
+          "edit": "Editar",
+          "delete": "Eliminar",
+          "active": "Activo",
+          "inactive": "Inactivo",
+          "noCategory": "Sin categoría"
+        },
+        "requestLink": {
+          "noRequests": "Sin solicitudes",
+          "request": "solicitud",
+          "requests": "solicitudes",
+          "pending": "pendiente",
+          "pendingPlural": "pendientes",
+          "pendingTitle": "Pendientes",
+          "ongoingTitle": "En progreso",
+          "viewRequests": "Ver {count} solicitudes de {name}"
+        },
+        "loading": "Cargando servicios...",
+        "messages": {
+          "deleteConfirm": "¿Estás seguro? Si el servicio tiene solicitudes asociadas, será desactivado en lugar de eliminado.",
+          "deleteSuccess": "Servicio eliminado permanentemente",
+          "deactivated": "Servicio desactivado. Tiene solicitudes asociadas y no puede eliminarse permanentemente."
+        },
+        "create": {
+          "title": "Crear Nuevo Servicio",
+          "description": "Agrega un nuevo servicio al catálogo con un formulario personalizado.",
+          "backToServices": "Volver a Servicios",
+          "steps": {
+            "basicInfo": "Información Básica",
+            "designForm": "Diseñar Formulario"
+          },
+          "basicCard": {
+            "title": "Información del Servicio",
+            "description": "Detalles básicos del servicio que aparecerá en el catálogo."
+          },
+          "form": {
+            "serviceIcon": "Icono del Servicio",
+            "serviceName": "Nombre del Servicio *",
+            "serviceNamePlaceholder": "ej. Limpieza de Oficinas",
+            "category": "Categoría *",
+            "categoryPlaceholder": "Seleccionar categoría",
+            "categoryLoading": "Cargando...",
+            "active": "Activo",
+            "inactive": "Inactivo",
+            "activeDescription": "El servicio será visible en el catálogo",
+            "inactiveDescription": "El servicio estará oculto en el catálogo"
+          },
+          "buttons": {
+            "next": "Siguiente: Diseñar Formulario",
+            "cancel": "Cancelar",
+            "back": "Volver a Información Básica",
+            "create": "Crear Servicio",
+            "creating": "Creando..."
+          },
+          "summary": {
+            "service": "Servicio",
+            "category": "Categoría"
+          },
+          "fieldsConfigured": "campo(s) configurado(s)",
+          "validation": {
+            "requiredFields": "Por favor completa todos los campos requeridos",
+            "atLeastOneField": "Por favor agrega al menos un campo al formulario"
+          },
+          "success": "Servicio creado exitosamente"
+        }
+      }
     }
   },
   "dashboard": {
@@ -419,6 +595,7 @@
       "settingsGeneral": "General",
       "settingsChatbot": "Chatbot",
       "settingsThemes": "Temas",
+      "settingsEmailTemplates": "Plantillas de Email",
       "billing": "Facturación",
       "analytics": "Analíticas",
       "reports": "Reportes",
@@ -436,7 +613,20 @@
       "catalog": "Catálogo",
       "categories": "Categorías",
       "services": "Servicios",
-      "teamChat": "Chat de Equipo"
+      "teamChat": "Chat de Equipo",
+      "newRequest": "Nueva Solicitud",
+      "myRequests": "Mis Solicitudes",
+      "allRequests": "Todas las Solicitudes",
+      "activeRequests": "Solicitudes Activas",
+      "completedRequests": "Solicitudes Completadas",
+      "assignedRequests": "Solicitudes Asignadas",
+      "inProgress": "En Proceso",
+      "pending": "Pendientes",
+      "locations": "Ubicaciones",
+      "clientDashboard": "Panel de Cliente",
+      "employeeDashboard": "Panel de Empleado",
+      "analyticsOverview": "Resumen",
+      "analyticsReports": "Reportes"
     },
     "projects": {
       "alkitu": "Plataforma Alkitu"
@@ -701,7 +891,13 @@
     "pagination": {
       "previous": "Anterior",
       "next": "Siguiente",
-      "morePages": "Más páginas"
+      "morePages": "Más páginas",
+      "showing": "Mostrando",
+      "to": "a",
+      "of": "de",
+      "results": "resultados",
+      "rowsPerPage": "Filas por página",
+      "page": "Página"
     },
     "general": {
       "loading": "Cargando...",
@@ -1192,6 +1388,18 @@
       "back": "Volver",
       "confirm": "Cancelar Solicitud",
       "canceling": "Cancelando..."
+    }
+  },
+  "locations": {
+    "badges": {
+      "inUse": "En uso",
+      "requestCount_one": "{{count}} solicitud",
+      "requestCount_other": "{{count}} solicitudes"
+    },
+    "errors": {
+      "cannotEditHasRequests": "Esta ubicación no se puede editar porque tiene solicitudes de servicio asociadas.",
+      "cannotDeleteHasRequests": "Esta ubicación no se puede eliminar porque tiene solicitudes de servicio asociadas.",
+      "employeeCannotEdit": "Los empleados no pueden modificar las ubicaciones de los clientes."
     }
   }
 }

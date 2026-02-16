@@ -5,7 +5,7 @@ import { RequestStatus } from '@alkitu/shared';
 import { ResponsiveModal } from '@/components/primitives/ui/responsive-modal';
 import { Button } from '@/components/primitives/ui/button';
 import { useTranslations } from '@/context/TranslationsContext';
-import { Clock, Play, CheckCircle } from 'lucide-react';
+import { Clock, Play, CheckCircle, XCircle } from 'lucide-react';
 
 interface QuickStatusModalProps {
   open: boolean;
@@ -57,6 +57,13 @@ export const QuickStatusModal: React.FC<QuickStatusModalProps> = ({
       icon: CheckCircle,
       color: 'bg-success/10 text-success border-success/20',
       activeColor: 'bg-success text-success-foreground',
+    },
+    {
+      value: RequestStatus.CANCELLED,
+      label: 'Cancelada',
+      icon: XCircle,
+      color: 'bg-destructive/10 text-destructive border-destructive/20',
+      activeColor: 'bg-destructive text-destructive-foreground',
     },
   ];
 

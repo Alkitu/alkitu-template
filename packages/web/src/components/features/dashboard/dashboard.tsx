@@ -58,6 +58,7 @@ const getTransformedData = (
     teamChannelsEnabled?: boolean;
     analyticsEnabled?: boolean;
     notificationsEnabled?: boolean;
+    emailTemplatesEnabled?: boolean;
   }
 ) => {
   // Client navigation
@@ -99,7 +100,7 @@ const getTransformedData = (
       },
       {
         title: t?.('nav.locations') || 'Ubicaciones',
-        url: '/locations',
+        url: '/client/locations',
         icon: MapPin,
         section: 'management',
         items: [],
@@ -113,17 +114,13 @@ const getTransformedData = (
       },
       {
         title: t?.('nav.profile') || 'Mi Perfil',
-        url: '/profile',
+        url: '/client/profile',
         icon: User,
         section: 'settings',
         items: [
           {
             title: t?.('nav.account') || 'Cuenta',
-            url: '/profile',
-          },
-          {
-            title: t?.('nav.settings') || 'Configuración',
-            url: '/settings',
+            url: '/client/profile',
           },
         ],
       },
@@ -171,34 +168,11 @@ const getTransformedData = (
         ],
       },
       {
-        title: t?.('nav.locations') || 'Ubicaciones',
-        url: '/locations',
-        icon: MapPin,
-        section: 'management',
-        items: [],
-      },
-      {
         title: t?.('nav.notifications') || 'Notificaciones',
         url: '/employee/notifications',
         icon: Bell,
         section: 'communication',
         items: [],
-      },
-      {
-        title: t?.('nav.profile') || 'Mi Perfil',
-        url: '/profile',
-        icon: User,
-        section: 'settings',
-        items: [
-          {
-            title: t?.('nav.account') || 'Cuenta',
-            url: '/profile',
-          },
-          {
-            title: t?.('nav.settings') || 'Configuración',
-            url: '/settings',
-          },
-        ],
       },
     ];
 
@@ -355,6 +329,10 @@ const getTransformedData = (
               title: t?.('nav.settingsThemes') || 'Temas',
               url: '/admin/settings/themes',
             },
+            ...(featureFlags?.emailTemplatesEnabled !== false ? [{
+              title: t?.('nav.settingsEmailTemplates') || 'Email Templates',
+              url: '/admin/settings/email-templates',
+            }] : []),
           ],
         },
       ];
@@ -436,12 +414,14 @@ function Dashboard({ children, showWelcome = false, userRole = 'admin' }: Dashbo
   const { isEnabled: teamChannelsEnabled } = useFeatureFlag('team-channels');
   const { isEnabled: analyticsEnabled } = useFeatureFlag('analytics');
   const { isEnabled: notificationsEnabled } = useFeatureFlag('notifications');
+  const { isEnabled: emailTemplatesEnabled } = useFeatureFlag('email-templates');
 
   const transformedData = getTransformedData(t, pathname, userRole, {
     supportChatEnabled,
     teamChannelsEnabled,
     analyticsEnabled,
     notificationsEnabled,
+    emailTemplatesEnabled,
   });
 
   const currentUser = fullUser || sessionUser;

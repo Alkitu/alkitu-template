@@ -26,7 +26,7 @@ export function createThemeRouter(themeService: ThemeService) {
           description: input.description,
           author: input.author,
           userId: input.userId,
-          themeData: input.themeData,
+          themeData: input.themeData as Record<string, unknown>,
           tags: input.tags,
           isPublic: input.isPublic,
           isFavorite: input.isFavorite,
@@ -57,7 +57,7 @@ export function createThemeRouter(themeService: ThemeService) {
           description: input.description,
           author: input.author,
           userId: input.userId,
-          themeData: input.themeData,
+          themeData: input.themeData as Record<string, unknown> | undefined,
           tags: input.tags,
           isPublic: input.isPublic,
           isFavorite: input.isFavorite,
@@ -83,16 +83,16 @@ export function createThemeRouter(themeService: ThemeService) {
     getActive: t.procedure
       .input(z.object({ userId: z.string().optional() }))
       .query(async ({ input }) => {
-        console.warn('getActive is deprecated. Use getGlobalActiveTheme instead.');
+        console.warn(
+          'getActive is deprecated. Use getGlobalActiveTheme instead.',
+        );
         return themeService.getActiveTheme(input.userId);
       }),
 
     // NEW: List all themes (platform-wide, no filters)
-    listAllThemes: t.procedure
-      .input(z.void().optional())
-      .query(async () => {
-        return themeService.listAllThemes();
-      }),
+    listAllThemes: t.procedure.input(z.void().optional()).query(async () => {
+      return themeService.listAllThemes();
+    }),
 
     // @deprecated Use listAllThemes instead
     list: t.procedure
@@ -161,7 +161,9 @@ export function createThemeRouter(themeService: ThemeService) {
         }),
       )
       .mutation(async ({ input }) => {
-        console.warn('setActive is deprecated. Use setGlobalActiveTheme instead.');
+        console.warn(
+          'setActive is deprecated. Use setGlobalActiveTheme instead.',
+        );
         return themeService.setActiveTheme(input.id, input.userId);
       }),
 
@@ -174,7 +176,9 @@ export function createThemeRouter(themeService: ThemeService) {
         }),
       )
       .query(async ({ input }) => {
-        console.warn('getCompanyThemes is deprecated. Use listAllThemes instead.');
+        console.warn(
+          'getCompanyThemes is deprecated. Use listAllThemes instead.',
+        );
         return themeService.getCompanyThemes(input.companyId, input.activeOnly);
       }),
 
@@ -214,13 +218,18 @@ export function createThemeRouter(themeService: ThemeService) {
           author: input.author,
           createdById: input.createdById,
           companyId: input.companyId,
-          lightModeConfig: input.lightModeConfig,
-          darkModeConfig: input.darkModeConfig,
-          typography: input.typography,
+          lightModeConfig: input.lightModeConfig as Record<string, unknown>,
+          darkModeConfig: input.darkModeConfig as
+            | Record<string, unknown>
+            | undefined,
+          typography: input.typography as Record<string, unknown> | undefined,
           tags: input.tags,
           isDefault: input.isDefault,
         });
-        console.log('✅ [tRPC] createTheme mutation successful, theme ID:', result.id);
+        console.log(
+          '✅ [tRPC] createTheme mutation successful, theme ID:',
+          result.id,
+        );
         return result;
       }),
 
@@ -251,12 +260,19 @@ export function createThemeRouter(themeService: ThemeService) {
           name: input.name,
           description: input.description,
           userId: input.userId,
-          lightModeConfig: input.lightModeConfig,
-          darkModeConfig: input.darkModeConfig,
-          typography: input.typography,
+          lightModeConfig: input.lightModeConfig as
+            | Record<string, unknown>
+            | undefined,
+          darkModeConfig: input.darkModeConfig as
+            | Record<string, unknown>
+            | undefined,
+          typography: input.typography as Record<string, unknown> | undefined,
           tags: input.tags,
         });
-        console.log('✅ [tRPC] updateTheme mutation successful, theme ID:', result.id);
+        console.log(
+          '✅ [tRPC] updateTheme mutation successful, theme ID:',
+          result.id,
+        );
         return result;
       }),
 
@@ -270,7 +286,9 @@ export function createThemeRouter(themeService: ThemeService) {
         }),
       )
       .mutation(async ({ input }) => {
-        console.warn('setDefaultTheme is deprecated. Use setGlobalActiveTheme instead.');
+        console.warn(
+          'setDefaultTheme is deprecated. Use setGlobalActiveTheme instead.',
+        );
         console.log('⭐ [tRPC] setDefaultTheme mutation called with:', {
           themeId: input.themeId,
           companyId: input.companyId,

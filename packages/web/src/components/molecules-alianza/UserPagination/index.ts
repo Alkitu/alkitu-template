@@ -5,4 +5,4 @@
  */
 
 export { UserPagination } from './UserPagination';
-export type { UserPaginationProps } from './UserPagination.types';
+export type { UserPaginationProps, PaginationLabels } from './UserPagination.types';

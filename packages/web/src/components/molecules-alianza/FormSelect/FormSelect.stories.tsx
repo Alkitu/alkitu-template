@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { fn } from '@storybook/test';
+
 import { Mail, User, MapPin, Phone, CheckCircle, AlertCircle } from 'lucide-react';
 import { FormSelect } from './FormSelect';
 import type { SelectOption, SelectGroupOption } from '@/components/atoms-alianza/Select';
@@ -42,7 +42,7 @@ const meta = {
     },
   },
   args: {
-    onValueChange: fn(),
+    onValueChange: () => {},
   },
 } satisfies Meta<typeof FormSelect>;
 

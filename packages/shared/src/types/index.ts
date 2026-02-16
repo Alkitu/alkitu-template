@@ -7,3 +7,4 @@ export * from './request-template';
 export * from './request';
 export * from './notification';
 export * from './email-template';
+export * from './form-template.types';

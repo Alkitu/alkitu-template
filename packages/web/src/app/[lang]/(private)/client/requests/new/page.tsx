@@ -358,7 +358,7 @@ export default function NewRequestWizardPage() {
             <p className="text-muted-foreground mb-4">No tienes ubicaciones registradas</p>
             <Button
               variant="outline"
-              onClick={() => router.push('/locations')}
+              onClick={() => router.push('/client/locations')}
             >
               <MapPin className="h-4 w-4 mr-2" />
               Agregar Primera Ubicación
@@ -404,7 +404,7 @@ export default function NewRequestWizardPage() {
               <Button
                 variant="outline"
                 className="w-full"
-                onClick={() => router.push('/locations')}
+                onClick={() => router.push('/client/locations')}
               >
                 <MapPin className="h-4 w-4 mr-2" />
                 Agregar Nueva Ubicación

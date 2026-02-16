@@ -23,7 +23,7 @@ export default function ClientOnboardingPage() {
       icon: User,
       status: 'upcoming',
       completed: false,
-      href: '/profile',
+      href: '/client/profile',
     },
     {
       id: 2,
@@ -32,7 +32,7 @@ export default function ClientOnboardingPage() {
       icon: MapPin,
       status: 'upcoming',
       completed: false,
-      href: '/locations',
+      href: '/client/locations',
     },
     {
       id: 3,

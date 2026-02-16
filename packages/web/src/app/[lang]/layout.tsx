@@ -1,7 +1,7 @@
 import './globals.css';
 import { Providers } from '@/context/providers';
 import { cn, inter } from '@/lib/utils';
-import { Toaster } from '@/components/primitives/ui/toaster';
+import { Toaster } from '@/components/primitives/ui/sonner';
 import { ChatWidgetWrapper } from '@/components/features/ChatWidget/ChatWidgetWrapper';
 // import { Analytics } from '@vercel/analytics/react';
 // import { SpeedInsights }m from '@vercel/speed-insights/next';

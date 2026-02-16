@@ -1,0 +1,40 @@
+<!-- Header -->
+    <div style="background-color: #48bb78; background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); padding: 40px 20px; text-align: center;">
+      <div style="background-color: rgba(255,255,255,0.2); width: 50px; height: 50px; border-radius: 25px; margin: 0 auto 15px; line-height: 50px;">
+        <span style="color: #ffffff; font-size: 22px;">&#9993;</span>
+      </div>
+      <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 600;">Verificar tu Email</h1>
+      <p style="color: #c6f6d5; margin: 8px 0 0 0; font-size: 14px;">Confirma tu direcci&oacute;n de correo electr&oacute;nico</p>
+    </div>
+    <!-- Content -->
+    <div style="padding: 40px 30px; text-align: center;">
+      <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">
+        Hola <strong>{{user.firstname}}</strong>,
+      </p>
+      <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 0 0 25px 0;">
+        Por favor, verifica tu direcci&oacute;n de email haciendo clic en el bot&oacute;n de abajo:
+      </p>
+      <!-- CTA Button -->
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="{{verificationUrl}}"
+           style="background-color: #48bb78; background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+                  color: #ffffff; text-decoration: none; padding: 15px 30px; border-radius: 6px;
+                  font-weight: 600; font-size: 16px; display: inline-block;">
+          Verificar Email
+        </a>
+      </div>
+      <p style="color: #718096; font-size: 14px; line-height: 1.6; margin: 20px 0;">
+        Si no puedes hacer clic en el bot&oacute;n, copia este enlace:<br>
+        <a href="{{verificationUrl}}" style="color: #48bb78;">{{verificationUrl}}</a>
+      </p>
+      <!-- Warning Box -->
+      <div style="background-color: #f0fff4; border: 1px solid #9ae6b4; border-radius: 8px; padding: 16px; margin: 0 0 25px 0; text-align: left;">
+        <p style="color: #276749; font-size: 14px; margin: 0; line-height: 1.5;">
+          Si no creaste una cuenta en Alkitu, puedes ignorar este correo de forma segura.
+        </p>
+      </div>
+      <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 0;">
+        Saludos,<br>
+        <strong>El equipo de Alkitu</strong>
+      </p>
+    </div>

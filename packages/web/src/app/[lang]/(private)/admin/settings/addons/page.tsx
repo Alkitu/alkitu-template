@@ -8,6 +8,7 @@ import { Switch } from '@/components/primitives/ui/switch';
 import { Badge } from '@/components/atoms-alianza/Badge';
 import { Icon } from '@/components/atoms-alianza/Icon';
 import { toast } from 'sonner';
+import { handleApiError } from '@/lib/trpc-error-handler';
 import { Skeleton } from '@/components/primitives/ui/skeleton';
 import { ChevronDown, ChevronUp, Check, X } from 'lucide-react';
 import { Button } from '@/components/primitives/ui/button';
@@ -74,6 +75,19 @@ const featureImpact: Record<string, {
       { name: 'Notificaciones In-App', location: 'Campana de notificaciones', status: 'visible' },
     ],
   },
+  'email-templates': {
+    sidebarItems: [
+      { name: 'Email Templates', url: '/admin/settings/email-templates', status: 'visible' },
+    ],
+    pages: [
+      { name: 'Editor de Email Templates', url: '/admin/settings/email-templates', status: 'enabled' },
+    ],
+    components: [
+      { name: 'Editor HTML con Preview', location: 'Pagina de Email Templates', status: 'visible' },
+      { name: 'Selector de Idioma (es/en)', location: 'Pagina de Email Templates', status: 'visible' },
+      { name: 'Chips de Variables', location: 'Pagina de Email Templates', status: 'visible' },
+    ],
+  },
 };
 
 export default function AddonsPage() {
@@ -89,8 +103,8 @@ export default function AddonsPage() {
       });
       toast.success(`Feature ${!currentlyEnabled ? 'enabled' : 'disabled'} successfully`);
       refetch();
-    } catch (error: any) {
-      toast.error(error?.message || 'Failed to toggle feature');
+    } catch (error) {
+      handleApiError(error);
     }
   };
 

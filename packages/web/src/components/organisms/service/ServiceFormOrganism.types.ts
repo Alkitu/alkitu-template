@@ -30,5 +30,6 @@ export interface ServiceFormData {
   name: string;
   categoryId: string;
   thumbnail?: string;
+  iconColor?: string;
   requestTemplate: any; // JSON object
 }

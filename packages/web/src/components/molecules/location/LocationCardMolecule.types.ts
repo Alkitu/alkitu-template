@@ -24,4 +24,7 @@ export interface LocationCardMoleculeProps {
 
   /** Loading state for delete operation */
   isDeleting?: boolean;
+
+  /** Number of associated requests (for "In use" badge) */
+  requestCount?: number;
 }

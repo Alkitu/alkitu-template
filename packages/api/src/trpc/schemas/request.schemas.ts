@@ -56,7 +56,9 @@ export const getFilteredRequestsSchema = z.object({
   sortOrder: z.enum(['asc', 'desc']).default('desc'),
 });
 
-export type GetFilteredRequestsInput = z.infer<typeof getFilteredRequestsSchema>;
+export type GetFilteredRequestsInput = z.infer<
+  typeof getFilteredRequestsSchema
+>;
 
 /**
  * Schema for updating request status
@@ -66,7 +68,9 @@ export const updateRequestStatusSchema = z.object({
   status: z.nativeEnum(RequestStatus),
 });
 
-export type UpdateRequestStatusInput = z.infer<typeof updateRequestStatusSchema>;
+export type UpdateRequestStatusInput = z.infer<
+  typeof updateRequestStatusSchema
+>;
 
 /**
  * Schema for assigning a request

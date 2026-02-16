@@ -1,0 +1,48 @@
+<!-- Header -->
+    <div
+      style="background-color: #e53e3e; background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%); padding: 40px 20px; text-align: center;">
+      <div
+        style="background-color: rgba(255,255,255,0.2); width: 50px; height: 50px; border-radius: 25px; margin: 0 auto 15px; line-height: 50px;">
+        <span style="color: #ffffff; font-size: 22px;">&#10007;</span>
+      </div>
+      <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 600;">Solicitud Cancelada</h1>
+      <p style="color: #fed7d7; margin: 8px 0 0 0; font-size: 14px;">Su solicitud de servicio ha sido cancelada</p>
+    </div>
+    <!-- Content -->
+    <div style="padding: 35px 30px;">
+      <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">
+        Estimado/a <strong>{{user.firstname}}</strong>,
+      </p>
+      <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 0 0 25px 0;">
+        Le informamos que su solicitud de servicio ha sido cancelada.
+      </p>
+      <!-- Cancelled Details -->
+      <div
+        style="background-color: #fff5f5; border: 1px solid #fed7d7; border-radius: 8px; padding: 20px; margin: 0 0 20px 0;">
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td style="color: #718096; padding: 6px 0; font-size: 14px; width: 120px;">Servicio:</td>
+            <td style="color: #2d3748; padding: 6px 0; font-size: 14px; font-weight: 600;">{{service.name}}</td>
+          </tr>
+          <tr>
+            <td style="color: #718096; padding: 6px 0; font-size: 14px;">ID Solicitud:</td>
+            <td style="color: #2d3748; padding: 6px 0; font-size: 14px; font-family: monospace;">{{request.id}}</td>
+          </tr>
+        </table>
+      </div>
+      <!-- Warning Box -->
+      <div
+        style="background-color: #fffaf0; border: 1px solid #fbd38d; border-radius: 8px; padding: 16px; margin: 0 0 25px 0;">
+        <p style="color: #c05621; font-size: 14px; margin: 0; line-height: 1.5;">
+          Si no solicit&oacute; esta cancelaci&oacute;n o tiene alguna pregunta, por favor cont&aacute;ctenos de
+          inmediato.
+        </p>
+      </div>
+      <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 0 0 10px 0;">
+        Puede enviar una nueva solicitud en cualquier momento.
+      </p>
+      <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 20px 0 0 0;">
+        Saludos cordiales,<br>
+        <strong>Equipo Alkitu</strong>
+      </p>
+    </div>

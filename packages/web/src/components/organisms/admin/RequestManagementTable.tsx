@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Plus, Search } from 'lucide-react';
 import { toast } from 'sonner';
+import { handleApiError } from '@/lib/trpc-error-handler';
 import { trpc } from '@/lib/trpc';
 import { RequestStatus } from '@alkitu/shared';
 
@@ -11,6 +12,7 @@ import { RequestStatus } from '@alkitu/shared';
 import { UserStatsCard } from '@/components/atoms-alianza/UserStatsCard';
 import { Button } from '@/components/molecules-alianza/Button';
 import { InputGroup } from '@/components/molecules-alianza/InputGroup';
+import { Combobox } from '@/components/molecules-alianza/Combobox';
 import { RequestFilterButtons } from '@/components/molecules-alianza/RequestFilterButtons';
 import { RequestsTableAlianza } from '@/components/organisms-alianza/RequestsTableAlianza';
 import { RequestsTableSkeleton } from '@/components/organisms-alianza/RequestsTableSkeleton';
@@ -48,10 +50,14 @@ export const RequestManagementTable: React.FC<RequestManagementTableProps> = ({
   onRequestCompleted,
 }) => {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   // State management
-  const [activeFilter, setActiveFilter] = useState<RequestFilterType>('all');
+  const [activeFilter, setActiveFilter] = useState<RequestFilterType>('pending');
   const [searchValue, setSearchValue] = useState('');
+  const [selectedServiceId, setSelectedServiceId] = useState<string>(
+    searchParams.get('serviceId') || '',
+  );
   const [filters, setFilters] = useState<RequestFilters>({
     search: '',
     status: undefined,
@@ -79,6 +85,27 @@ export const RequestManagementTable: React.FC<RequestManagementTableProps> = ({
 
     return () => clearTimeout(timer);
   }, [searchValue]);
+
+  // Fetch all services for the filter combobox
+  const { data: servicesData } = trpc.service.getAllServices.useQuery({
+    page: 1,
+    limit: 100,
+    sortBy: 'name',
+    sortOrder: 'asc',
+    statusFilter: 'all',
+  });
+
+  const serviceOptions = useMemo(() => {
+    if (!servicesData?.items) return [];
+    return servicesData.items.map((s: any) => ({
+      id: s.id,
+      label: s.name,
+      value: s.id,
+      badge: s.deletedAt
+        ? { text: 'Inactivo', variant: 'outline' as const }
+        : undefined,
+    }));
+  }, [servicesData]);
 
   // Build query parameters based on active filter
   const queryParams = useMemo(() => {
@@ -108,8 +135,13 @@ export const RequestManagementTable: React.FC<RequestManagementTableProps> = ({
         break;
     }
 
+    // Service filter
+    if (selectedServiceId) {
+      params.serviceId = selectedServiceId;
+    }
+
     return params;
-  }, [debouncedFilters, activeFilter]);
+  }, [debouncedFilters, activeFilter, selectedServiceId]);
 
   // Fetch requests using tRPC
   const {
@@ -149,6 +181,12 @@ export const RequestManagementTable: React.FC<RequestManagementTableProps> = ({
     setSearchValue(e.target.value);
   };
 
+  const handleServiceFilterChange = (value: string | string[]) => {
+    const serviceId = typeof value === 'string' ? value : '';
+    setSelectedServiceId(serviceId);
+    setDebouncedFilters((prev) => ({ ...prev, page: 1 }));
+  };
+
   const handleAddRequest = () => {
     router.push(`/${lang}/admin/requests/create`);
   };
@@ -170,25 +208,11 @@ export const RequestManagementTable: React.FC<RequestManagementTableProps> = ({
       await refetch();
       setIsAssignModalOpen(false);
       onRequestUpdated?.();
-    } catch (error: any) {
-      toast.error(error?.message || 'Error al asignar empleado');
+    } catch (error) {
+      handleApiError(error);
     } finally {
       setActionLoading(false);
     }
-  };
-
-  const handleCompleteRequest = (requestId: string) => {
-    toast.info('Función de completar en desarrollo');
-    onRequestCompleted?.();
-  };
-
-  const handleCancelRequest = (requestId: string) => {
-    toast.info('Función de cancelar en desarrollo');
-    onRequestCancelled?.();
-  };
-
-  const handleEditRequest = (requestId: string) => {
-    router.push(`/${lang}/admin/requests/${requestId}/edit`);
   };
 
   const handlePageChange = (newPage: number) => {
@@ -221,6 +245,7 @@ export const RequestManagementTable: React.FC<RequestManagementTableProps> = ({
         assignedTo: req.assignedTo
           ? `${req.assignedTo.firstname || ''} ${req.assignedTo.lastname || ''}`.trim()
           : undefined,
+        serviceThumbnail: req.service?.thumbnail,
         executionTime,
         locationCity: req.location?.city,
         locationState: req.location?.state,
@@ -278,8 +303,18 @@ export const RequestManagementTable: React.FC<RequestManagementTableProps> = ({
           onFilterChange={handleFilterChange}
         />
 
-        {/* Search + Create Button */}
+        {/* Service Filter + Search + Create Button */}
         <div className="flex items-center gap-3">
+          <Combobox
+            options={serviceOptions}
+            value={selectedServiceId}
+            onChange={handleServiceFilterChange}
+            placeholder="Filtrar por servicio..."
+            searchPlaceholder="Buscar servicio..."
+            emptyMessage="No se encontraron servicios."
+            clearable
+            className="w-[220px]"
+          />
           <InputGroup
             placeholder="Buscar solicitudes..."
             value={searchValue}
@@ -307,9 +342,6 @@ export const RequestManagementTable: React.FC<RequestManagementTableProps> = ({
             lang={lang}
             onViewRequest={handleViewRequest}
             onAssignRequest={handleAssignRequest}
-            onCompleteRequest={handleCompleteRequest}
-            onCancelRequest={handleCancelRequest}
-            onEditRequest={handleEditRequest}
           />
         )}
       </div>

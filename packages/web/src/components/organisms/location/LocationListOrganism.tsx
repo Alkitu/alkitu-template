@@ -6,7 +6,7 @@ import { Plus, MapPin } from 'lucide-react';
 import { LocationCardMolecule } from '@/components/molecules/location';
 import { LocationFormOrganism } from './LocationFormOrganism';
 import { FormError } from '@/components/primitives/ui/form-error';
-import type { WorkLocation } from '@alkitu/shared';
+import type { WorkLocation, WorkLocationWithRequestCount } from '@alkitu/shared';
 import type { LocationListOrganismProps } from './LocationListOrganism.types';
 
 /**
@@ -38,7 +38,7 @@ export const LocationListOrganism: React.FC<LocationListOrganismProps> = ({
   showAddButton = true,
   onLocationChange,
 }) => {
-  const [locations, setLocations] = useState<WorkLocation[]>([]);
+  const [locations, setLocations] = useState<(WorkLocation & { _count?: { requests: number } })[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [showForm, setShowForm] = useState(false);
@@ -210,18 +210,23 @@ export const LocationListOrganism: React.FC<LocationListOrganismProps> = ({
             {locations.length} {locations.length === 1 ? 'Location' : 'Locations'}
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-            {locations.map((location) => (
-              <LocationCardMolecule
-                key={location.id}
-                location={location}
-                showEdit
-                showDelete
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-                isDeleting={deletingId === location.id}
-              />
-            ))}
+          <div className="flex flex-col gap-4">
+            {locations.map((location) => {
+              const requestCount = location._count?.requests ?? 0;
+              const hasRequests = requestCount > 0;
+              return (
+                <LocationCardMolecule
+                  key={location.id}
+                  location={location}
+                  showEdit={!hasRequests}
+                  showDelete={!hasRequests}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                  isDeleting={deletingId === location.id}
+                  requestCount={requestCount}
+                />
+              );
+            })}
           </div>
         </div>
       )}

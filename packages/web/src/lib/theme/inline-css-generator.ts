@@ -60,10 +60,10 @@ function generateColorCSS(colors: ThemeColors, mode: 'light' | 'dark'): string {
  * ```tsx
  * // In layout.tsx (Server Component)
  * import { generateInlineThemeCSS } from '@/lib/theme/inline-css-generator';
- * import { getDefaultTheme } from '@/lib/server-trpc';
+ * import { getGlobalActiveTheme } from '@/lib/server-trpc';
  *
  * export default async function RootLayout({ children }: { children: React.ReactNode }) {
- *   const theme = await getDefaultTheme('6733c2fd80b7b58d4c36d966');
+ *   const theme = await getGlobalActiveTheme();
  *   const themeCSS = theme ? generateInlineThemeCSS(theme) : '';
  *
  *   return (

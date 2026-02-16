@@ -7,7 +7,7 @@ import {
 import { PrismaService } from '../prisma.service';
 import { CreateLocationDto } from './dto/create-location.dto';
 import { UpdateLocationDto } from './dto/update-location.dto';
-import { WorkLocation, UserRole as PrismaUserRole, AccessLevel } from '@prisma/client';
+import { WorkLocation, AccessLevel } from '@prisma/client';
 import { UserRole } from '@alkitu/shared/enums/user-role.enum';
 import { AccessControlService } from '../access-control/access-control.service';
 
@@ -42,6 +42,14 @@ export class LocationsService {
         throw new NotFoundException(`User with ID ${userId} not found`);
       }
 
+      // If setting as default, unset others for this user
+      if (createLocationDto.isDefault) {
+        await this.prisma.workLocation.updateMany({
+          where: { userId, isDefault: true },
+          data: { isDefault: false },
+        });
+      }
+
       // Create the location
       const location = await this.prisma.workLocation.create({
         data: {
@@ -66,11 +74,12 @@ export class LocationsService {
    * @param userId - The ID of the user
    * @returns Array of locations
    */
-  async findAllByUser(userId: string): Promise<WorkLocation[]> {
+  async findAllByUser(userId: string) {
     try {
       const locations = await this.prisma.workLocation.findMany({
         where: { userId },
         orderBy: { createdAt: 'desc' },
+        include: { _count: { select: { requests: true } } },
       });
 
       return locations;
@@ -164,8 +173,50 @@ export class LocationsService {
     userRole?: UserRole,
   ): Promise<WorkLocation> {
     try {
+      // Resolve role if not provided
+      let role = userRole;
+      if (!role) {
+        const user = await this.prisma.user.findUnique({
+          where: { id: userId },
+          select: { role: true },
+        });
+        if (!user) {
+          throw new NotFoundException(`User with ID ${userId} not found`);
+        }
+        role = user.role as UserRole;
+      }
+
+      // EMPLOYEE cannot edit any client location
+      if (role === UserRole.EMPLOYEE) {
+        throw new ForbiddenException(
+          'Employees cannot edit client locations',
+        );
+      }
+
+      // CLIENT can only edit locations with zero associated requests
+      if (role === UserRole.CLIENT) {
+        const requestCount = await this.prisma.request.count({
+          where: { locationId: id },
+        });
+        if (requestCount > 0) {
+          throw new ForbiddenException(
+            'This location cannot be edited because it has associated service requests',
+          );
+        }
+      }
+
+      // ADMIN: no restriction on editing
+
       // Verify location exists and user owns it (includes access control check)
-      const existingLocation = await this.findOne(id, userId, userRole);
+      const existingLocation = await this.findOne(id, userId, role);
+
+      // If setting as default, unset others for this user
+      if (updateLocationDto.isDefault) {
+        await this.prisma.workLocation.updateMany({
+          where: { userId, isDefault: true, id: { not: id } },
+          data: { isDefault: false },
+        });
+      }
 
       // Update the location
       const updatedLocation = await this.prisma.workLocation.update({
@@ -196,10 +247,44 @@ export class LocationsService {
    * @throws NotFoundException if location doesn't exist
    * @throws ForbiddenException if user doesn't own the location
    */
-  async remove(id: string, userId: string, userRole?: UserRole): Promise<WorkLocation> {
+  async remove(
+    id: string,
+    userId: string,
+    userRole?: UserRole,
+  ): Promise<WorkLocation> {
     try {
+      // Resolve role if not provided
+      let role = userRole;
+      if (!role) {
+        const user = await this.prisma.user.findUnique({
+          where: { id: userId },
+          select: { role: true },
+        });
+        if (!user) {
+          throw new NotFoundException(`User with ID ${userId} not found`);
+        }
+        role = user.role as UserRole;
+      }
+
+      // EMPLOYEE cannot delete any client location
+      if (role === UserRole.EMPLOYEE) {
+        throw new ForbiddenException(
+          'Employees cannot delete client locations',
+        );
+      }
+
+      // CLIENT and ADMIN cannot delete locations with associated requests
+      const requestCount = await this.prisma.request.count({
+        where: { locationId: id },
+      });
+      if (requestCount > 0) {
+        throw new ForbiddenException(
+          'This location cannot be deleted because it has associated service requests',
+        );
+      }
+
       // Verify location exists and user owns it (includes access control check)
-      const existingLocation = await this.findOne(id, userId, userRole);
+      const existingLocation = await this.findOne(id, userId, role);
 
       // Delete the location
       const deletedLocation = await this.prisma.workLocation.delete({

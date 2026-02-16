@@ -5,6 +5,7 @@ import {
   MinLength,
   MaxLength,
   Matches,
+  IsBoolean,
 } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { PartialType } from '@nestjs/swagger';
@@ -122,4 +123,28 @@ export class UpdateLocationDto extends PartialType(CreateLocationDto) {
   @IsString()
   @Matches(/^[A-Z]{2}$/)
   state?: string;
+
+  @ApiPropertyOptional({
+    description: 'Icon name (Lucide icon or Emoji)',
+    example: 'MapPin',
+  })
+  @IsOptional()
+  @IsString()
+  icon?: string;
+
+  @ApiPropertyOptional({
+    description: 'Icon color (hex code or CSS color name)',
+    example: '#FF0000',
+  })
+  @IsOptional()
+  @IsString()
+  iconColor?: string;
+
+  @ApiPropertyOptional({
+    description: 'Set as default location',
+    default: false,
+  })
+  @IsOptional()
+  @IsBoolean()
+  isDefault?: boolean;
 }

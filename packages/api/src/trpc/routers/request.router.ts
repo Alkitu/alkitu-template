@@ -1,6 +1,12 @@
 import { z } from 'zod';
 import { t, protectedProcedure } from '../trpc';
-import { PrismaClient, RequestStatus, UserRole, AccessLevel } from '@prisma/client';
+import {
+  Prisma,
+  PrismaClient,
+  RequestStatus,
+  UserRole,
+  AccessLevel,
+} from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import {
   updateRequestSchema,
@@ -22,9 +28,14 @@ import { PrismaService } from '../../prisma.service';
 
 const prisma = new PrismaClient();
 const prismaService = new PrismaService();
-const pushNotificationService = new PushNotificationService();
-const notificationService = new NotificationService(prismaService, pushNotificationService);
-const requestStatusChangedHook = new RequestStatusChangedHook(notificationService);
+const pushNotificationService = new PushNotificationService(prismaService);
+const notificationService = new NotificationService(
+  prismaService,
+  pushNotificationService,
+);
+const requestStatusChangedHook = new RequestStatusChangedHook(
+  notificationService,
+);
 
 /**
  * Request tRPC Router
@@ -59,7 +70,7 @@ export function createRequestRouter() {
         } = input;
 
         // Build where clause based on role
-        const where: any = {};
+        const where: Prisma.RequestWhereInput = {};
         if (status) where.status = status;
         if (serviceId) where.serviceId = serviceId;
 
@@ -67,19 +78,23 @@ export function createRequestRouter() {
         if (ctx.user.role === UserRole.CLIENT) {
           // Clients only see their own requests
           where.userId = ctx.user.id;
-        } else if (ctx.user.role === UserRole.EMPLOYEE || ctx.user.role === UserRole.LEAD) {
+        } else if (
+          ctx.user.role === UserRole.EMPLOYEE ||
+          ctx.user.role === UserRole.LEAD
+        ) {
           // Employees see assigned requests + own requests
-          where.OR = [
+          const orConditions: Prisma.RequestWhereInput[] = [
             { userId: ctx.user.id },
             { assignedToId: ctx.user.id },
           ];
           // If userId filter is provided, respect it (within their scope)
           if (userId) {
-            where.OR.push({ userId });
+            orConditions.push({ userId });
           }
           if (assignedToId) {
-            where.OR.push({ assignedToId });
+            orConditions.push({ assignedToId });
           }
+          where.OR = orConditions;
         } else if (ctx.user.role === UserRole.ADMIN) {
           // Admins see everything, respect all filters
           if (userId) where.userId = userId;
@@ -94,20 +109,23 @@ export function createRequestRouter() {
           where,
           skip: (page - 1) * limit,
           take: limit,
-          orderBy: { [sortBy]: sortOrder },
+          orderBy: {
+            [sortBy || 'createdAt']: sortOrder || 'desc',
+          } as Prisma.RequestOrderByWithRelationInput,
           include: {
             user: {
               select: {
                 id: true,
-                email: true,
                 firstname: true,
                 lastname: true,
+                email: true,
               },
             },
             service: {
               select: {
                 id: true,
                 name: true,
+                thumbnail: true,
                 category: {
                   select: {
                     id: true,
@@ -119,18 +137,17 @@ export function createRequestRouter() {
             location: {
               select: {
                 id: true,
-                street: true,
+                building: true,
                 city: true,
                 state: true,
-                zip: true,
               },
             },
             assignedTo: {
               select: {
                 id: true,
-                email: true,
                 firstname: true,
                 lastname: true,
+                email: true,
               },
             },
           },
@@ -157,25 +174,34 @@ export function createRequestRouter() {
       .input(z.object({}).optional())
       .query(async ({ ctx }) => {
         // Build where clause based on role
-        let where: any = {};
+        const where: Record<string, unknown> = {};
 
         if (ctx.user.role === UserRole.CLIENT) {
           where.userId = ctx.user.id;
-        } else if (ctx.user.role === UserRole.EMPLOYEE || ctx.user.role === UserRole.LEAD) {
-          where.OR = [
-            { userId: ctx.user.id },
-            { assignedToId: ctx.user.id },
-          ];
+        } else if (
+          ctx.user.role === UserRole.EMPLOYEE ||
+          ctx.user.role === UserRole.LEAD
+        ) {
+          where.OR = [{ userId: ctx.user.id }, { assignedToId: ctx.user.id }];
         }
         // ADMIN: no filter (sees all)
 
-        const [total, pending, ongoing, completed, cancelled] = await Promise.all([
-          prisma.request.count({ where }),
-          prisma.request.count({ where: { ...where, status: RequestStatus.PENDING } }),
-          prisma.request.count({ where: { ...where, status: RequestStatus.ONGOING } }),
-          prisma.request.count({ where: { ...where, status: RequestStatus.COMPLETED } }),
-          prisma.request.count({ where: { ...where, status: RequestStatus.CANCELLED } }),
-        ]);
+        const [total, pending, ongoing, completed, cancelled] =
+          await Promise.all([
+            prisma.request.count({ where }),
+            prisma.request.count({
+              where: { ...where, status: RequestStatus.PENDING },
+            }),
+            prisma.request.count({
+              where: { ...where, status: RequestStatus.ONGOING },
+            }),
+            prisma.request.count({
+              where: { ...where, status: RequestStatus.COMPLETED },
+            }),
+            prisma.request.count({
+              where: { ...where, status: RequestStatus.CANCELLED },
+            }),
+          ]);
 
         return {
           total,
@@ -242,17 +268,23 @@ export function createRequestRouter() {
         }
 
         // Extract title from templateResponses or use default
-        const title = (input.templateResponses as any)?.title || 'Nueva Solicitud';
+        const responses = input.templateResponses as
+          | Record<string, unknown>
+          | null
+          | undefined;
+        const title = (responses?.title as string) || 'Nueva Solicitud';
 
         return await prisma.request.create({
           data: {
             userId: input.userId,
             serviceId: input.serviceId,
             locationId: input.locationId,
-            title, // Save title as direct field
+            title,
             executionDateTime: new Date(input.executionDateTime),
-            templateResponses: input.templateResponses,
-            note: input.note,
+            templateResponses: input.templateResponses as
+              | Prisma.InputJsonValue
+              | undefined,
+            note: input.note as string | undefined,
             status: RequestStatus.PENDING,
             createdBy: input.userId,
           },
@@ -273,15 +305,17 @@ export function createRequestRouter() {
         }),
       )
       .mutation(async ({ input }) => {
-        const {
-          id,
-          serviceId,
-          executionDateTime,
-          locationId,
-          locationData,
-          templateResponses,
-          note,
-        } = input;
+        const id = input.id;
+        const serviceId = input.serviceId;
+        const executionDateTime = input.executionDateTime;
+        const locationId = input.locationId;
+        const locationData = input.locationData as
+          | Record<string, string | undefined>
+          | undefined;
+        const templateResponses = input.templateResponses as
+          | Record<string, unknown>
+          | undefined;
+        const note = input.note as string | undefined;
 
         // Verify request exists
         const existingRequest = await prisma.request.findUnique({
@@ -316,15 +350,20 @@ export function createRequestRouter() {
         }
 
         // Update request
+        const updateData: Record<string, unknown> = {
+          serviceId,
+          executionDateTime: new Date(executionDateTime),
+          locationId: finalLocationId,
+        };
+        if (templateResponses !== undefined) {
+          updateData.templateResponses = templateResponses;
+        }
+        if (note !== undefined) {
+          updateData.note = note;
+        }
         const updatedRequest = await prisma.request.update({
           where: { id },
-          data: {
-            serviceId,
-            executionDateTime: new Date(executionDateTime),
-            locationId: finalLocationId,
-            ...(templateResponses !== undefined && { templateResponses }),
-            ...(note !== undefined && { note }),
-          },
+          data: updateData,
           include: {
             service: { include: { category: true } },
             location: true,
@@ -364,7 +403,7 @@ export function createRequestRouter() {
           });
         }
 
-        const updateData: any = { status: input.status };
+        const updateData: Record<string, unknown> = { status: input.status };
 
         if (input.status === RequestStatus.COMPLETED) {
           updateData.completedAt = new Date();

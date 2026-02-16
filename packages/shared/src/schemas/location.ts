@@ -50,6 +50,9 @@ export const CreateLocationSchema = z.object({
   city: z.string().min(1, 'City is required').max(100, 'City name too long'),
   zip: ZipCodeSchema,
   state: StateCodeSchema,
+  icon: z.string().optional(),
+  iconColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid hex color").optional(),
+  isDefault: z.boolean().optional(),
 });
 
 /**
@@ -66,6 +69,9 @@ export const UpdateLocationSchema = z
     city: z.string().min(1).max(100).optional(),
     zip: ZipCodeSchema.optional(),
     state: StateCodeSchema.optional(),
+    icon: z.string().optional(),
+    iconColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid hex color").optional(),
+    isDefault: z.boolean().optional(),
   })
   .partial();
 

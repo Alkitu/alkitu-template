@@ -22,6 +22,16 @@ export interface ServiceFilterOption {
 /**
  * Props for the ServiceFilterButtons component
  */
+/**
+ * Translated labels for service filter
+ */
+export interface ServiceFilterLabels {
+  all: string;
+  active: string;
+  inactive: string;
+  placeholder?: string;
+}
+
 export interface ServiceFilterButtonsProps {
   /**
    * Currently active filter
@@ -37,6 +47,11 @@ export interface ServiceFilterButtonsProps {
    * Custom filter options (overrides default)
    */
   filterOptions?: ServiceFilterOption[];
+
+  /**
+   * Translated labels (optional, defaults to Spanish)
+   */
+  labels?: Partial<ServiceFilterLabels>;
 
   /**
    * Show count badges on filters

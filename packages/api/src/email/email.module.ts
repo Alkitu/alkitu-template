@@ -2,6 +2,7 @@ import { Module, OnModuleInit } from '@nestjs/common';
 import { EmailService } from './email.service';
 import { EmailController } from './email.controller';
 import { EmailChannelRegistryService } from './services/email-channel-registry.service';
+import { EmailRendererService } from './services/email-renderer.service';
 import {
   WelcomeEmailChannel,
   PasswordResetEmailChannel,
@@ -9,6 +10,7 @@ import {
   NotificationEmailChannel,
   MarketingEmailChannel,
 } from './channels';
+import { PrismaService } from '../prisma.service';
 
 /**
  * Email Module - OCP Compliant
@@ -24,7 +26,9 @@ import {
 @Module({
   controllers: [EmailController],
   providers: [
+    PrismaService,
     EmailService,
+    EmailRendererService,
     EmailChannelRegistryService,
 
     // Email Channel Implementations
@@ -37,7 +41,7 @@ import {
     // Extended Channels (OCP Extensions)
     MarketingEmailChannel,
   ],
-  exports: [EmailService, EmailChannelRegistryService],
+  exports: [EmailService, EmailChannelRegistryService, EmailRendererService],
 })
 export class EmailModule implements OnModuleInit {
   constructor(

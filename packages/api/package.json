@@ -44,12 +44,13 @@
     "prisma:studio": "prisma studio",
     "prisma:seed": "tsx prisma/seed.ts",
     "docker:db": "docker-compose -f docker-compose.dev.yml up -d",
-    "docker:db:down": "docker-compose -f docker-compose.dev.yml down"
+    "docker:db:down": "docker-compose -f docker-compose.dev.yml down",
+    "migrate:clean": "ts-node -r tsconfig-paths/register src/scripts/migrate-to-form-templates.ts"
   },
   "dependencies": {
     "@alkitu/shared": "file:../shared",
-    "@nestjs/common": "^11.0.1",
     "@nestjs/cli": "^11.0.14",
+    "@nestjs/common": "^11.0.1",
     "@nestjs/core": "^11.0.1",
     "@nestjs/jwt": "^11.0.0",
     "@nestjs/passport": "^11.0.5",
@@ -59,6 +60,8 @@
     "@nestjs/throttler": "^6.4.0",
     "@nestjs/websockets": "^11.1.3",
     "@prisma/client": "^6.10.1",
+    "@react-email/components": "^1.0.7",
+    "@react-email/render": "^2.0.4",
     "@trpc/server": "^11.4.3",
     "@types/bcryptjs": "^2.4.6",
     "@types/passport-jwt": "^4.0.1",
@@ -75,6 +78,7 @@
     "reflect-metadata": "^0.2.2",
     "resend": "^4.6.0",
     "rxjs": "^7.8.1",
+    "sharp": "^0.34.5",
     "socket.io": "^4.8.1",
     "swagger-ui-express": "^5.0.1",
     "web-push": "^3.6.7",

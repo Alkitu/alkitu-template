@@ -21,6 +21,9 @@ export interface LocationFormOrganismProps {
 
   /** Show cancel button */
   showCancel?: boolean;
+
+  /** Optional userId to create location on behalf of another user (admin use) */
+  userId?: string;
 }
 
 /**
@@ -36,4 +39,6 @@ export interface LocationFormData extends CreateLocationInput {
   city: string;
   zip: string;
   state: string;
+  icon?: string;
+  isDefault?: boolean;
 }

@@ -325,6 +325,7 @@
       "settingsGeneral": "General",
       "settingsChatbot": "Chatbot",
       "settingsThemes": "Themes",
+      "settingsEmailTemplates": "Email Templates",
       "billing": "Billing",
       "analytics": "Analytics",
       "reports": "Reports",
@@ -342,7 +343,20 @@
       "catalog": "Catalog",
       "categories": "Categories",
       "services": "Services",
-      "teamChat": "Team Chat"
+      "teamChat": "Team Chat",
+      "newRequest": "New Request",
+      "myRequests": "My Requests",
+      "allRequests": "All Requests",
+      "activeRequests": "Active Requests",
+      "completedRequests": "Completed Requests",
+      "assignedRequests": "Assigned Requests",
+      "inProgress": "In Progress",
+      "pending": "Pending",
+      "locations": "Locations",
+      "clientDashboard": "Client Dashboard",
+      "employeeDashboard": "Employee Dashboard",
+      "analyticsOverview": "Overview",
+      "analyticsReports": "Reports"
     },
     "projects": {
       "alkitu": "Alkitu Platform"
@@ -458,6 +472,182 @@
       "admin": "Admin",
       "users": "Users",
       "dashboard": "Dashboard"
+    },
+    "requests": {
+      "title": "Service Requests",
+      "description": "Manage and monitor all service requests",
+      "breadcrumbs": {
+        "dashboard": "Dashboard",
+        "requests": "Requests"
+      },
+      "create": {
+        "title": "New Service Request",
+        "back": "Back",
+        "steps": {
+          "client": "Client",
+          "location": "Location",
+          "service": "Service",
+          "details": "Details",
+          "dateTime": "Date/Time"
+        },
+        "step1": {
+          "title": "Select Client",
+          "description": "Choose the client for whom the request will be created",
+          "label": "Client *",
+          "placeholder": "Select client",
+          "loading": "Loading...",
+          "selected": "Selected client:",
+          "next": "Next: Select Location",
+          "required": "Please select a client"
+        },
+        "step2": {
+          "title": "Select Location",
+          "description": "Choose where the service will be performed",
+          "label": "Location *",
+          "placeholder": "Select location",
+          "loading": "Loading locations...",
+          "selected": "Selected location:",
+          "next": "Next: Select Service",
+          "required": "Please select a location",
+          "noLocations": "No locations found for this client",
+          "addLocation": "Add New Location",
+          "addLocationSuccess": "Location created successfully"
+        },
+        "step3": {
+          "title": "Select Service",
+          "description": "Choose the service to request",
+          "searchPlaceholder": "Search services...",
+          "noResults": "No services match your search",
+          "empty": "No services available",
+          "selected": "Selected service:",
+          "fieldsInForm": "fields in form",
+          "services": "services",
+          "next": "Next: Service Details",
+          "required": "Please select a service"
+        },
+        "step4": {
+          "title": "Service Details",
+          "description": "Complete the required information for",
+          "noCustomFields": "This service has no custom fields configured.",
+          "nextDateTime": "Next: Date and Time",
+          "submitText": "Next: Date and Time",
+          "cancelText": "Back"
+        },
+        "step5": {
+          "title": "Execution Date and Time",
+          "description": "Schedule when the service should be performed",
+          "summary": "Summary:",
+          "fieldsCompleted": "Fields completed:",
+          "dateLabel": "Execution Date *",
+          "timeLabel": "Execution Time *",
+          "dateTimeRequired": "Please select execution date and time",
+          "futureRequired": "Execution date must be in the future",
+          "creating": "Creating...",
+          "submit": "Create Request"
+        },
+        "success": "Request created successfully",
+        "labels": {
+          "client": "Client:",
+          "location": "Location:",
+          "service": "Service:"
+        }
+      }
+    },
+    "catalog": {
+      "services": {
+        "title": "Services",
+        "description": "Manage your organization's service catalog",
+        "breadcrumbs": {
+          "dashboard": "Dashboard",
+          "catalog": "Catalog",
+          "services": "Services"
+        },
+        "actions": {
+          "createService": "Create New Service",
+          "search": "Search services..."
+        },
+        "stats": {
+          "services": "Services",
+          "categories": "Categories"
+        },
+        "filters": {
+          "all": "All",
+          "active": "Active",
+          "inactive": "Inactive",
+          "placeholder": "Filter by status"
+        },
+        "table": {
+          "service": "Service",
+          "category": "Category",
+          "status": "Status",
+          "questions": "Questions",
+          "requests": "Requests",
+          "actions": "Actions",
+          "edit": "Edit",
+          "delete": "Delete",
+          "active": "Active",
+          "inactive": "Inactive",
+          "noCategory": "No category"
+        },
+        "requestLink": {
+          "noRequests": "No requests",
+          "request": "request",
+          "requests": "requests",
+          "pending": "pending",
+          "pendingPlural": "pending",
+          "pendingTitle": "Pending",
+          "ongoingTitle": "In progress",
+          "viewRequests": "View {count} requests for {name}"
+        },
+        "loading": "Loading services...",
+        "messages": {
+          "deleteConfirm": "Are you sure? If the service has associated requests, it will be deactivated instead of deleted.",
+          "deleteSuccess": "Service permanently deleted",
+          "deactivated": "Service deactivated. It has associated requests and cannot be permanently deleted."
+        },
+        "create": {
+          "title": "Create New Service",
+          "description": "Add a new service to the catalog with a custom form.",
+          "backToServices": "Back to Services",
+          "steps": {
+            "basicInfo": "Basic Information",
+            "designForm": "Design Form"
+          },
+          "basicCard": {
+            "title": "Service Information",
+            "description": "Basic details for the service that will appear in the catalog."
+          },
+          "form": {
+            "serviceIcon": "Service Icon",
+            "serviceName": "Service Name *",
+            "serviceNamePlaceholder": "e.g. Office Cleaning",
+            "category": "Category *",
+            "categoryPlaceholder": "Select category",
+            "categoryLoading": "Loading...",
+            "active": "Active",
+            "inactive": "Inactive",
+            "activeDescription": "Service will be visible in the catalog",
+            "inactiveDescription": "Service will be hidden from the catalog"
+          },
+          "buttons": {
+            "next": "Next: Design Form",
+            "cancel": "Cancel",
+            "back": "Back to Basic Info",
+            "create": "Create Service",
+            "creating": "Creating..."
+          },
+          "summary": {
+            "service": "Service",
+            "category": "Category"
+          },
+          "fieldsConfigured": "field(s) configured",
+          "validation": {
+            "requiredFields": "Please fill in all required fields",
+            "atLeastOneField": "Please add at least one field to the form"
+          },
+          "success": "Service created successfully"
+        }
+      }
     }
   },
   "navigation": {
@@ -701,7 +891,13 @@
     "pagination": {
       "previous": "Previous",
       "next": "Next",
-      "morePages": "More pages"
+      "morePages": "More pages",
+      "showing": "Showing",
+      "to": "to",
+      "of": "of",
+      "results": "results",
+      "rowsPerPage": "Rows per page",
+      "page": "Page"
     },
     "general": {
       "loading": "Loading...",
@@ -1192,6 +1388,18 @@
       "back": "Back",
       "confirm": "Cancel Request",
       "canceling": "Canceling..."
+    }
+  },
+  "locations": {
+    "badges": {
+      "inUse": "In use",
+      "requestCount_one": "{{count}} request",
+      "requestCount_other": "{{count}} requests"
+    },
+    "errors": {
+      "cannotEditHasRequests": "This location cannot be edited because it has associated service requests.",
+      "cannotDeleteHasRequests": "This location cannot be deleted because it has associated service requests.",
+      "employeeCannotEdit": "Employees cannot modify client locations."
     }
   }
 }

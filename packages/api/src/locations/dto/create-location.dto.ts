@@ -6,6 +6,7 @@ import {
   MinLength,
   MaxLength,
   Matches,
+  IsBoolean,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
@@ -131,4 +132,28 @@ export class CreateLocationDto {
     message: 'State must be a 2-letter uppercase code (e.g., NY, CA)',
   })
   state!: string;
+
+  @ApiPropertyOptional({
+    description: 'Icon name (Lucide icon or Emoji)',
+    example: 'MapPin',
+  })
+  @IsOptional()
+  @IsString()
+  icon?: string;
+
+  @ApiPropertyOptional({
+    description: 'Set as default location',
+    default: false,
+  })
+  @IsString()
+  @IsOptional()
+  iconColor?: string;
+
+  @ApiPropertyOptional({
+    description: 'Set as default location',
+    default: false,
+  })
+  @IsOptional()
+  @IsBoolean()
+  isDefault?: boolean;
 }

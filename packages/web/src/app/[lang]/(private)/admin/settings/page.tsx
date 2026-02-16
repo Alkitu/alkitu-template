@@ -31,6 +31,13 @@ const settingsOptions = [
     href: 'chatbot',
     icon: 'Bot',
   },
+  {
+    title: 'Email Templates',
+    description: 'Customize email templates for all platform communications',
+    href: 'email-templates',
+    icon: 'Mail',
+    badge: 'New',
+  },
 ];
 
 export default function SettingsPage() {

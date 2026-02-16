@@ -22,7 +22,7 @@ test.describe.serial('ALI-119: Request Title Display Verification', () => {
     const clientPage = authenticatedClientPage;
     test.setTimeout(30000);
 
-    await clientPage.goto('http://localhost:3000/es/locations');
+    await clientPage.goto('http://localhost:3000/es/client/locations');
     await clientPage.waitForLoadState('networkidle');
 
     // Check if at least one location exists

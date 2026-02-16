@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { fn } from '@storybook/test';
+
 import { User, Mail, Phone, MapPin } from 'lucide-react';
 import { Select } from './Select';
 import type { SelectOption, SelectGroupOption } from './Select.types';
@@ -50,7 +50,7 @@ const meta = {
     },
   },
   args: {
-    onValueChange: fn(),
+    onValueChange: () => {},
   },
 } satisfies Meta<typeof Select>;
 

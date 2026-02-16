@@ -42,13 +42,13 @@ export default function AdminRequestsPage() {
     <div className="flex flex-col gap-[36px] p-6">
       {/* Page Header with Breadcrumbs */}
       <AdminPageHeader
-        title={t('title') || 'Solicitudes de Servicio'}
-        description="Gestiona y monitorea todas las solicitudes de servicio"
+        title={t('title')}
+        description={t('description')}
         breadcrumbs={
           <BreadcrumbNavigation
             items={[
-              { label: 'Dashboard', href: `/${lang}/admin` },
-              { label: 'Solicitudes', current: true },
+              { label: t('breadcrumbs.dashboard'), href: `/${lang}/admin` },
+              { label: t('breadcrumbs.requests'), current: true },
             ]}
             separator="chevron"
             size="sm"

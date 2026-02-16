@@ -78,7 +78,9 @@ export function createFeatureFlagsRouter(
       .use(requireRoles(UserRole.ADMIN))
       .input(featureFlagsSchemas.getHistory)
       .query(async ({ input }) => {
-        return await featureFlagsService.getFeatureHistory(input.key);
+        return (await featureFlagsService.getFeatureHistory(
+          input.key,
+        )) as Record<string, unknown>[];
       }),
   });
 }

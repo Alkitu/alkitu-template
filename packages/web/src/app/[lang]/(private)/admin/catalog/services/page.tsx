@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Plus, Search } from 'lucide-react';
 import { toast } from 'sonner';
+import { handleApiError } from '@/lib/trpc-error-handler';
+import { useTranslations } from '@/context/TranslationsContext';
 
 // Alianza Components (Atomic Design)
-import { Heading } from '@/components/atoms-alianza/Typography';
 import { ServiceStatsCard } from '@/components/atoms-alianza/ServiceStatsCard';
 import { Button } from '@/components/molecules-alianza/Button';
 import { InputGroup } from '@/components/molecules-alianza/InputGroup';
@@ -16,58 +17,83 @@ import { AdminPageHeader } from '@/components/molecules-alianza/AdminPageHeader'
 import { BreadcrumbNavigation } from '@/components/molecules-alianza/Breadcrumb';
 
 import { useRouter, useParams } from 'next/navigation';
+import { trpc } from '@/lib/trpc';
 
 const ServicesPage = () => {
   const router = useRouter();
   const params = useParams();
   const lang = params.lang as string;
-  
+  const t = useTranslations();
+
   // State
-  const [activeFilter, setActiveFilter] = useState<ServiceFilterType>('all');
+  const [activeFilter, setActiveFilter] = useState<ServiceFilterType>('active');
   const [searchValue, setSearchValue] = useState('');
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
   });
 
-  // Mock Data
-  const stats = {
-    services: 24,
-    categories: 3,
-  };
-
-  // Generate more mock data for pagination testing
-  const generateMockServices = (count: number): ServiceTableItem[] => {
-    return Array.from({ length: count }).map((_, i) => ({
-      id: `${i + 1}`,
-      name: i % 2 === 0 ? `Limpieza de Oficina ${i + 1}` : `Mantenimiento ${i + 1}`,
-      category: i % 2 === 0 ? 'Limpieza' : 'Mantenimiento',
-      status: i % 3 === 0 ? 'INACTIVE' : 'ACTIVE',
-      questionsCount: Math.floor(Math.random() * 10) + 1,
-    }));
-  };
-
-  const allServices: ServiceTableItem[] = React.useMemo(() => generateMockServices(24), []);
-
-  // Filter Logic
-  const filteredServices = allServices.filter(service => {
-    // Filter by Status
-    if (activeFilter === 'active' && service.status !== 'ACTIVE') return false;
-    if (activeFilter === 'inactive' && service.status !== 'INACTIVE') return false;
-    
-    // Filter by Search
-    if (searchValue && !service.name.toLowerCase().includes(searchValue.toLowerCase())) return false;
-
-    return true;
+  // tRPC queries - fetch services with server-side status filter
+  const { data: servicesData, isLoading, refetch } = trpc.service.getAllServices.useQuery({
+    page: pagination.page,
+    limit: pagination.limit,
+    sortBy: 'name',
+    sortOrder: 'asc',
+    statusFilter: activeFilter,
   });
 
-  // Pagination Logic
-  const totalItems = filteredServices.length;
-  const totalPages = Math.ceil(totalItems / pagination.limit);
-  const paginatedServices = filteredServices.slice(
-    (pagination.page - 1) * pagination.limit,
-    pagination.page * pagination.limit
-  );
+  // Fetch categories count
+  const { data: categories } = trpc.category.getAllCategories.useQuery();
+
+  // Delete mutation
+  const deleteServiceMutation = trpc.service.deleteService.useMutation({
+    onSuccess: (data) => {
+      if (data?.action === 'deleted') {
+        toast.success(t('admin.catalog.services.messages.deleteSuccess'));
+      } else {
+        toast.info(t('admin.catalog.services.messages.deactivated'));
+      }
+      refetch();
+    },
+    onError: (error) => handleApiError(error),
+  });
+
+  // Map API response to ServiceTableItem format
+  const allServices: ServiceTableItem[] = useMemo(() => {
+    if (!servicesData?.items) return [];
+    return servicesData.items.map((service: any) => ({
+      id: service.id,
+      name: service.name,
+      category: service.category?.name || t('admin.catalog.services.table.noCategory'),
+      status: (service.deletedAt ? 'INACTIVE' : 'ACTIVE') as 'ACTIVE' | 'INACTIVE',
+      questionsCount: service.fieldCount || 0,
+      thumbnail: service.thumbnail,
+      iconColor: service.iconColor,
+      requestStats: {
+        total: service.requestCount || 0,
+        pending: 0,
+        ongoing: 0,
+      },
+    }));
+  }, [servicesData, t]);
+
+  // Client-side search filter (status is handled server-side via statusFilter)
+  const filteredServices = useMemo(() => {
+    if (!searchValue) return allServices;
+    return allServices.filter(service =>
+      service.name.toLowerCase().includes(searchValue.toLowerCase())
+    );
+  }, [allServices, searchValue]);
+
+  // Pagination from API response
+  const totalItems = servicesData?.pagination?.total || 0;
+  const totalPages = servicesData?.pagination?.totalPages || 1;
+
+  // Stats from real data
+  const stats = {
+    services: totalItems,
+    categories: categories?.length || 0,
+  };
 
   // Handlers
   const handleFilterChange = (filter: ServiceFilterType) => {
@@ -97,24 +123,69 @@ const ServicesPage = () => {
   };
 
   const handleDeleteService = (id: string) => {
-    if(confirm('Are you sure you want to delete this service?')) {
-        toast.info(`Eliminar servicio ${id} (Mock Action)`);
-        // In real app, call mutation here
+    if(confirm(t('admin.catalog.services.messages.deleteConfirm'))) {
+      deleteServiceMutation.mutate({ id });
     }
+  };
+
+  // Translated labels for table
+  const tableLabels = {
+    service: t('admin.catalog.services.table.service'),
+    category: t('admin.catalog.services.table.category'),
+    status: t('admin.catalog.services.table.status'),
+    questions: t('admin.catalog.services.table.questions'),
+    requests: t('admin.catalog.services.table.requests'),
+    actions: t('admin.catalog.services.table.actions'),
+    edit: t('admin.catalog.services.table.edit'),
+    delete: t('admin.catalog.services.table.delete'),
+    active: t('admin.catalog.services.table.active'),
+    inactive: t('admin.catalog.services.table.inactive'),
+  };
+
+  // Translated labels for request links
+  const requestLinkLabels = {
+    noRequests: t('admin.catalog.services.requestLink.noRequests'),
+    request: t('admin.catalog.services.requestLink.request'),
+    requests: t('admin.catalog.services.requestLink.requests'),
+    pending: t('admin.catalog.services.requestLink.pending'),
+    pendingPlural: t('admin.catalog.services.requestLink.pendingPlural'),
+    pendingTitle: t('admin.catalog.services.requestLink.pendingTitle'),
+    ongoingTitle: t('admin.catalog.services.requestLink.ongoingTitle'),
+    viewRequests: t('admin.catalog.services.requestLink.viewRequests'),
+  };
+
+  // Translated labels for filter
+  const filterLabels = {
+    all: t('admin.catalog.services.filters.all'),
+    active: t('admin.catalog.services.filters.active'),
+    inactive: t('admin.catalog.services.filters.inactive'),
+    placeholder: t('admin.catalog.services.filters.placeholder'),
+  };
+
+  // Translated labels for pagination
+  const paginationLabels = {
+    showing: t('Common.pagination.showing'),
+    to: t('Common.pagination.to'),
+    of: t('Common.pagination.of'),
+    results: t('Common.pagination.results'),
+    rowsPerPage: t('Common.pagination.rowsPerPage'),
+    page: t('Common.pagination.page'),
+    previous: t('Common.pagination.previous'),
+    next: t('Common.pagination.next'),
   };
 
   return (
     <div className="flex flex-col gap-[36px] p-6">
       {/* Page Header with Breadcrumbs */}
       <AdminPageHeader
-        title="Servicios"
-        description="Gestiona el catálogo de servicios de tu organización"
+        title={t('admin.catalog.services.title')}
+        description={t('admin.catalog.services.description')}
         breadcrumbs={
           <BreadcrumbNavigation
             items={[
-              { label: 'Dashboard', href: `/${lang}/admin` },
-              { label: 'Catálogo', href: `/${lang}/admin/catalog` },
-              { label: 'Servicios', current: true },
+              { label: t('admin.catalog.services.breadcrumbs.dashboard'), href: `/${lang}/admin` },
+              { label: t('admin.catalog.services.breadcrumbs.catalog'), href: `/${lang}/admin/catalog` },
+              { label: t('admin.catalog.services.breadcrumbs.services'), current: true },
             ]}
             separator="chevron"
             size="sm"
@@ -126,20 +197,20 @@ const ServicesPage = () => {
             onClick={handleAddService}
             iconLeft={<Plus className="h-4 w-4" />}
           >
-            Crear Nuevo Servicio
+            {t('admin.catalog.services.actions.createService')}
           </Button>
         }
       />
 
       {/* Stats Cards */}
       <div className="flex gap-[42px] items-center overflow-x-auto pb-4 scrollbar-hide">
-        <ServiceStatsCard 
-          label="Servicios" 
-          value={stats.services} 
+        <ServiceStatsCard
+          label={t('admin.catalog.services.stats.services')}
+          value={stats.services}
         />
-        <ServiceStatsCard 
-          label="Categorías" 
-          value={stats.categories} 
+        <ServiceStatsCard
+          label={t('admin.catalog.services.stats.categories')}
+          value={stats.categories}
           variant="accent"
         />
       </div>
@@ -150,11 +221,12 @@ const ServicesPage = () => {
         <ServiceFilterButtons
           activeFilter={activeFilter}
           onFilterChange={handleFilterChange}
+          labels={filterLabels}
         />
 
         {/* Search Bar */}
         <InputGroup
-          placeholder="Buscar servicios..."
+          placeholder={t('admin.catalog.services.actions.search')}
           value={searchValue}
           onChange={handleSearchChange}
           iconLeft={<Search className="h-4 w-4 text-muted-foreground" />}
@@ -164,11 +236,21 @@ const ServicesPage = () => {
 
       {/* Services Table */}
       <div className="bg-secondary border border-secondary/20 rounded-[8px] overflow-hidden min-h-[400px]">
+        {isLoading ? (
+          <div className="flex items-center justify-center h-[400px]">
+            <p className="text-muted-foreground">{t('admin.catalog.services.loading')}</p>
+          </div>
+        ) : (
           <ServicesTableAlianza
-            services={paginatedServices}
+            services={filteredServices}
             onEdit={handleEditService}
             onDelete={handleDeleteService}
+            showRequestsColumn
+            lang={lang}
+            labels={tableLabels}
+            requestLinkLabels={requestLinkLabels}
           />
+        )}
       </div>
 
       {/* Pagination */}
@@ -179,6 +261,7 @@ const ServicesPage = () => {
         pageSize={pagination.limit}
         onPageChange={handlePageChange}
         onPageSizeChange={handlePageSizeChange}
+        labels={paginationLabels}
       />
     </div>
   );

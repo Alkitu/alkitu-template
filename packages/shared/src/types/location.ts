@@ -36,7 +36,21 @@ export interface WorkLocation {
   floor?: string;
   unit?: string;
 
+  
+  // NEW: UI enhancements
+  icon?: string;
+  iconColor?: string;
+  isDefault?: boolean;
+
   createdAt: Date;
+}
+
+/**
+ * Work Location with associated request count.
+ * Used by the frontend to determine edit/delete permissions.
+ */
+export interface WorkLocationWithRequestCount extends WorkLocation {
+  _count: { requests: number };
 }
 
 /**
@@ -51,6 +65,9 @@ export interface CreateLocationInput {
   city: string;
   zip: string;
   state: string;
+  icon?: string;
+  iconColor?: string;
+  isDefault?: boolean;
 }
 
 /**
@@ -65,6 +82,9 @@ export interface UpdateLocationInput {
   city?: string;
   zip?: string;
   state?: string;
+  icon?: string;
+  iconColor?: string;
+  isDefault?: boolean;
 }
 
 /**

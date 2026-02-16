@@ -21,6 +21,8 @@ import {
 import { Button } from '@/components/primitives/ui/button';
 import { Heading } from '@/components/atoms-alianza/Typography';
 import { ServiceRequestLink } from '@/components/molecules-alianza/ServiceRequestLink';
+import { ServiceIcon } from '@/components/atoms-alianza/ServiceIcon';
+import { getDynamicBackgroundColor } from '@/lib/utils/color';
 import type { ServicesTableAlianzaProps, ServiceTableItem } from './ServicesTableAlianza.types';
 
 const defaultLabels = {
@@ -60,6 +62,7 @@ export function ServicesTableAlianza({
   lang = 'es',
   requestsBaseHref = '/admin/requests',
   labels = defaultLabels,
+  requestLinkLabels,
   className,
 }: ServicesTableAlianzaProps) {
   // Merge default labels with custom labels
@@ -99,7 +102,20 @@ export function ServicesTableAlianza({
               className="group hover:bg-muted/50 border-b border-border/50 bg-background"
             >
               <TableCell className="py-4 px-[18px] font-semibold text-foreground">
-                {service.name}
+                <div className="flex items-center gap-3">
+                  <div
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
+                    style={{ backgroundColor: getDynamicBackgroundColor(service.iconColor || '#000000') }}
+                  >
+                    <ServiceIcon
+                      category={service.category}
+                      thumbnail={service.thumbnail}
+                      className="h-4 w-4"
+                      color={service.iconColor}
+                    />
+                  </div>
+                  {service.name}
+                </div>
               </TableCell>
               <TableCell className="py-4 px-[9px] text-muted-foreground">
                 {service.category}
@@ -120,6 +136,7 @@ export function ServicesTableAlianza({
                     ongoingCount={service.requestStats?.ongoing || 0}
                     baseHref={requestsBaseHref}
                     lang={lang}
+                    labels={requestLinkLabels}
                   />
                 </TableCell>
               )}

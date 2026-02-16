@@ -4,6 +4,17 @@
  * Type definitions for the UserPagination molecule component.
  */
 
+export interface PaginationLabels {
+  showing: string;
+  to: string;
+  of: string;
+  results: string;
+  rowsPerPage: string;
+  page: string;
+  previous: string;
+  next: string;
+}
+
 export interface UserPaginationProps {
   /** Current active page (1-indexed) */
   currentPage: number;
@@ -28,4 +39,7 @@ export interface UserPaginationProps {
 
   /** Available page size options for the select dropdown */
   pageSizeOptions?: number[];
+
+  /** Translated labels for pagination text */
+  labels?: Partial<PaginationLabels>;
 }

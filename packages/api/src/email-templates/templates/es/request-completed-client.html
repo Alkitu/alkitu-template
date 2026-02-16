@@ -1,0 +1,59 @@
+<!-- Header -->
+    <div
+      style="background-color: #48bb78; background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); padding: 40px 20px; text-align: center;">
+      <div
+        style="background-color: rgba(255,255,255,0.2); width: 50px; height: 50px; border-radius: 25px; margin: 0 auto 15px; line-height: 50px;">
+        <span style="color: #ffffff; font-size: 22px;">&#10004;</span>
+      </div>
+      <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 600;">Servicio Completado</h1>
+      <p style="color: #c6f6d5; margin: 8px 0 0 0; font-size: 14px;">Su solicitud ha sido finalizada exitosamente</p>
+    </div>
+    <!-- Content -->
+    <div style="padding: 35px 30px;">
+      <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">
+        Estimado/a <strong>{{user.firstname}}</strong>,
+      </p>
+      <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 0 0 25px 0;">
+        &iexcl;Su solicitud de servicio se ha completado exitosamente!
+      </p>
+      <!-- Completion Details -->
+      <div
+        style="background-color: #f0fff4; background: linear-gradient(135deg, #f0fff4 0%, #e6fffa 100%); border: 1px solid #9ae6b4; border-radius: 8px; padding: 20px; margin: 0 0 20px 0;">
+        <h3
+          style="color: #276749; margin: 0 0 12px 0; font-size: 15px; text-transform: uppercase; letter-spacing: 0.5px;">
+          Resumen</h3>
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td style="color: #718096; padding: 6px 0; font-size: 14px; width: 120px;">Servicio:</td>
+            <td style="color: #2d3748; padding: 6px 0; font-size: 14px; font-weight: 600;">{{service.name}}</td>
+          </tr>
+          <tr>
+            <td style="color: #718096; padding: 6px 0; font-size: 14px;">Completado:</td>
+            <td style="color: #2d3748; padding: 6px 0; font-size: 14px;">{{request.completedAt}}</td>
+          </tr>
+          <tr>
+            <td style="color: #718096; padding: 6px 0; font-size: 14px;">T&eacute;cnico:</td>
+            <td style="color: #2d3748; padding: 6px 0; font-size: 14px;">{{employee.firstname}} {{employee.lastname}}
+            </td>
+          </tr>
+        </table>
+      </div>
+      <!-- Request ID -->
+      <div
+        style="background-color: #edf2f7; border-radius: 6px; padding: 12px 16px; text-align: center; margin: 0 0 25px 0;">
+        <span style="color: #718096; font-size: 12px;">ID de Solicitud:</span>
+        <span style="color: #2d3748; font-size: 14px; font-weight: 600; font-family: monospace;">{{request.id}}</span>
+      </div>
+      <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 0 0 10px 0;">
+        Esperamos que est&eacute; satisfecho/a con nuestro servicio. No dude en solicitar otro servicio cuando lo
+        necesite.
+      </p>
+      <p
+        style="color: #38a169; font-size: 18px; line-height: 1.6; margin: 20px 0; font-weight: 600; text-align: center;">
+        &iexcl;Gracias por elegir Alkitu!
+      </p>
+      <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 0;">
+        Saludos cordiales,<br>
+        <strong>Equipo Alkitu</strong>
+      </p>
+    </div>

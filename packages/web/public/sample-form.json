@@ -1,0 +1,140 @@
+{
+  "title": "Contact Form Demo",
+  "description": "Please fill out this contact form and we'll get back to you as soon as possible.",
+  "fields": [
+    {
+      "id": "field-1",
+      "type": "text",
+      "label": "Full Name",
+      "placeholder": "Enter your full name",
+      "showTitle": true,
+      "showDescription": false,
+      "validation": {
+        "required": true,
+        "minLength": 2,
+        "maxLength": 100
+      }
+    },
+    {
+      "id": "field-2",
+      "type": "email",
+      "label": "Email Address",
+      "placeholder": "your.email@example.com",
+      "showTitle": true,
+      "showDescription": true,
+      "description": "We'll use this to contact you",
+      "validation": {
+        "required": true
+      },
+      "emailOptions": {
+        "showValidationIcon": true,
+        "validateOnBlur": true,
+        "allowMultiple": false
+      }
+    },
+    {
+      "id": "field-3",
+      "type": "phone",
+      "label": "Phone Number",
+      "placeholder": "+1 (555) 123-4567",
+      "showTitle": true,
+      "showDescription": false,
+      "validation": {
+        "required": false
+      },
+      "phoneOptions": {
+        "mask": "+1 (###) ###-####"
+      }
+    },
+    {
+      "id": "field-4",
+      "type": "select",
+      "label": "How can we help you?",
+      "placeholder": "Select a topic",
+      "showTitle": true,
+      "showDescription": false,
+      "validation": {
+        "required": true
+      },
+      "selectOptions": {
+        "placeholder": "Choose an option",
+        "allowClear": true,
+        "items": [
+          {
+            "id": "opt-1",
+            "label": "General Inquiry",
+            "value": "general",
+            "disabled": false
+          },
+          {
+            "id": "opt-2",
+            "label": "Technical Support",
+            "value": "support",
+            "disabled": false
+          },
+          {
+            "id": "opt-3",
+            "label": "Sales Question",
+            "value": "sales",
+            "disabled": false
+          },
+          {
+            "id": "opt-4",
+            "label": "Partnership Opportunity",
+            "value": "partnership",
+            "disabled": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "field-5",
+      "type": "textarea",
+      "label": "Message",
+      "placeholder": "Tell us more about your inquiry...",
+      "showTitle": true,
+      "showDescription": true,
+      "description": "Please provide as much detail as possible",
+      "validation": {
+        "required": true,
+        "minLength": 10,
+        "maxLength": 500
+      },
+      "textareaOptions": {
+        "rows": 5,
+        "autoGrow": true,
+        "maxRows": 10,
+        "showCharacterCount": true,
+        "resize": "vertical"
+      }
+    },
+    {
+      "id": "field-6",
+      "type": "toggle",
+      "label": "Subscribe to newsletter",
+      "showTitle": false,
+      "showDescription": true,
+      "description": "Get updates about our products and services",
+      "validation": {
+        "required": false
+      },
+      "toggleOptions": {
+        "style": "toggle",
+        "defaultChecked": false,
+        "checkedValue": true,
+        "uncheckedValue": false
+      }
+    }
+  ],
+  "submitButtonText": "Send Message",
+  "supportedLocales": ["en", "es"],
+  "defaultLocale": "en",
+  "showStepNumbers": true,
+  "i18n": {
+    "es": {
+      "title": "Formulario de Contacto Demo",
+      "description": "Por favor complete este formulario de contacto y nos pondremos en contacto con usted lo antes posible.",
+      "submitButtonText": "Enviar Mensaje"
+    }
+  }
+}

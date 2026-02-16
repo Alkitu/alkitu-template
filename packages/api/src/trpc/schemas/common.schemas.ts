@@ -99,12 +99,12 @@ export type PaginatedSortingInput = z.infer<typeof paginatedSortingSchema>;
  * Provides clients with all information needed to build pagination UI.
  */
 export interface PaginationMeta {
-  page: number;          // Current page number (1-indexed)
-  limit: number;         // Items per page
-  total: number;         // Total number of items across all pages
-  totalPages: number;    // Total number of pages
-  hasNext: boolean;      // Whether there's a next page
-  hasPrev: boolean;      // Whether there's a previous page
+  page: number; // Current page number (1-indexed)
+  limit: number; // Items per page
+  total: number; // Total number of items across all pages
+  totalPages: number; // Total number of pages
+  hasNext: boolean; // Whether there's a next page
+  hasPrev: boolean; // Whether there's a previous page
 }
 
 /**

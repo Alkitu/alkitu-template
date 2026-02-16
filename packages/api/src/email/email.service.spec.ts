@@ -189,7 +189,7 @@ describe('EmailService', () => {
       expect(mockResend.emails.send).toHaveBeenCalledWith({
         from: 'test@example.com',
         to: 'juan@example.com',
-        subject: '¡Bienvenido a Alkitu, Juan Pérez!',
+        subject: '¡Bienvenido a Alianza Consulting Corp, Juan Pérez!',
         html: expect.stringContaining('Juan Pérez'),
       });
 
@@ -248,7 +248,7 @@ describe('EmailService', () => {
       expect(mockResend.emails.send).toHaveBeenCalledWith({
         from: 'test@example.com',
         to: 'juan@example.com',
-        subject: 'Restablecer tu contraseña de Alkitu',
+        subject: 'Restablecer tu contraseña - Alianza Consulting Corp',
         html: expect.stringContaining('Juan Pérez'),
       });
 
@@ -276,7 +276,7 @@ describe('EmailService', () => {
       expect(mockResend.emails.send).toHaveBeenCalledWith({
         from: 'test@example.com',
         to: 'juan@example.com',
-        subject: 'Verifica tu email en Alkitu',
+        subject: 'Verifica tu email - Alianza Consulting Corp',
         html: expect.stringContaining('Juan Pérez'),
       });
 
@@ -407,7 +407,7 @@ describe('EmailService', () => {
       expect(mockResend.emails.send).toHaveBeenCalledWith({
         from: 'test@example.com',
         to: 'test@resend.dev',
-        subject: 'Test de configuración - Alkitu',
+        subject: 'Test de configuración - Alianza Consulting Corp',
         html: expect.stringContaining('Test exitoso'),
       });
 

@@ -1,0 +1,86 @@
+<!-- Header -->
+    <div
+      style="background-color: #ed8936; background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%); padding: 40px 20px; text-align: center;">
+      <div
+        style="background-color: rgba(255,255,255,0.2); width: 50px; height: 50px; border-radius: 25px; margin: 0 auto 15px; line-height: 50px;">
+        <span style="color: #ffffff; font-size: 22px;">&#128221;</span>
+      </div>
+      <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 600;">Nueva Asignaci&oacute;n</h1>
+      <p style="color: #fefcbf; margin: 8px 0 0 0; font-size: 14px;">Se te ha asignado un nuevo servicio</p>
+    </div>
+    <!-- Content -->
+    <div style="padding: 35px 30px;">
+      <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">
+        Hola <strong>{{employee.firstname}}</strong>,
+      </p>
+      <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 0 0 25px 0;">
+        Se te ha asignado una nueva solicitud de servicio. Revisa los detalles a continuaci&oacute;n:
+      </p>
+      <!-- Client Card -->
+      <div
+        style="background-color: #fffaf0; background: linear-gradient(135deg, #fffaf0 0%, #fefcbf 100%); border: 1px solid #fbd38d; border-radius: 8px; padding: 20px; margin: 0 0 20px 0;">
+        <h3
+          style="color: #c05621; margin: 0 0 12px 0; font-size: 15px; text-transform: uppercase; letter-spacing: 0.5px;">
+          Datos del Cliente</h3>
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td style="color: #718096; padding: 6px 0; font-size: 14px; width: 100px;">Nombre:</td>
+            <td style="color: #2d3748; padding: 6px 0; font-size: 14px; font-weight: 600;">{{user.firstname}}
+              {{user.lastname}}</td>
+          </tr>
+          <tr>
+            <td style="color: #718096; padding: 6px 0; font-size: 14px;">Tel&eacute;fono:</td>
+            <td style="color: #2d3748; padding: 6px 0; font-size: 14px;">{{user.phone}}</td>
+          </tr>
+          <tr>
+            <td style="color: #718096; padding: 6px 0; font-size: 14px;">Email:</td>
+            <td style="color: #2d3748; padding: 6px 0; font-size: 14px;">{{user.email}}</td>
+          </tr>
+        </table>
+      </div>
+      <!-- Service Details Box -->
+      <div
+        style="background-color: #f7fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin: 0 0 20px 0;">
+        <h3
+          style="color: #2d3748; margin: 0 0 12px 0; font-size: 15px; text-transform: uppercase; letter-spacing: 0.5px;">
+          Detalles del Servicio</h3>
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td style="color: #718096; padding: 6px 0; font-size: 14px; width: 140px;">Servicio:</td>
+            <td style="color: #2d3748; padding: 6px 0; font-size: 14px; font-weight: 600;">{{service.name}}</td>
+          </tr>
+          <tr>
+            <td style="color: #718096; padding: 6px 0; font-size: 14px;">Categor&iacute;a:</td>
+            <td style="color: #2d3748; padding: 6px 0; font-size: 14px;">{{service.category}}</td>
+          </tr>
+          <tr>
+            <td style="color: #718096; padding: 6px 0; font-size: 14px;">Fecha Programada:</td>
+            <td style="color: #2d3748; padding: 6px 0; font-size: 14px;">{{request.executionDateTime}}</td>
+          </tr>
+        </table>
+      </div>
+      <!-- Location Box -->
+      <div
+        style="background-color: #f7fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin: 0 0 20px 0;">
+        <h3
+          style="color: #2d3748; margin: 0 0 12px 0; font-size: 15px; text-transform: uppercase; letter-spacing: 0.5px;">
+          Ubicaci&oacute;n</h3>
+        <p style="color: #4a5568; margin: 0; font-size: 14px; line-height: 1.5;">
+          {{location.street}}<br>
+          {{location.city}}, {{location.state}} {{location.zipCode}}
+        </p>
+      </div>
+      <!-- Request ID -->
+      <div
+        style="background-color: #edf2f7; border-radius: 6px; padding: 12px 16px; text-align: center; margin: 0 0 25px 0;">
+        <span style="color: #718096; font-size: 12px;">ID de Solicitud:</span>
+        <span style="color: #2d3748; font-size: 14px; font-weight: 600; font-family: monospace;">{{request.id}}</span>
+      </div>
+      <p style="color: #c05621; font-size: 15px; line-height: 1.6; margin: 0 0 10px 0; font-weight: 600;">
+        Por favor, contacta al cliente para confirmar la cita.
+      </p>
+      <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 20px 0 0 0;">
+        Saludos,<br>
+        <strong>Equipo Alkitu</strong>
+      </p>
+    </div>

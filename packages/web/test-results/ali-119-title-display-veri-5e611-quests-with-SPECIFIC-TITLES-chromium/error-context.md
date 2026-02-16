@@ -24,7 +24,7 @@
                   - img [ref=e26]
               - listitem [ref=e28]:
                 - link "dashboard.nav.locations" [ref=e29] [cursor=pointer]:
-                  - /url: /locations
+                  - /url: /client/locations
                   - img [ref=e30]
                   - generic: dashboard.nav.locations
           - generic [ref=e33]:

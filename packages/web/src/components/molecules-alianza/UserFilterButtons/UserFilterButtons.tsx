@@ -1,22 +1,27 @@
 'use client';
 
 import React from 'react';
-import { Chip } from '@/components/atoms-alianza/Chip';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/primitives/ui/select';
 import { cn } from '@/lib/utils';
 import type { UserFilterButtonsProps, UserFilterType } from './UserFilterButtons.types';
 
 const defaultLabels = {
   all: 'Todos',
   admin: 'Administradores',
-  employee: 'Employee',
+  employee: 'Empleados',
   client: 'Clientes',
 };
 
 /**
  * UserFilterButtons - Molecule for filtering users by role
  *
- * Uses Chip atoms to create a filter button group.
- * Active filter uses solid variant, others use outline.
+ * Select dropdown for user role filtering.
  *
  * @example
  * ```tsx
@@ -40,26 +45,25 @@ export function UserFilterButtons({
   ];
 
   return (
-    <div
-      className={cn("flex flex-wrap gap-[13px]", className)}
-      data-testid="user-filter-buttons"
-      role="group"
-      aria-label="User role filters"
+    <Select
+      value={activeFilter}
+      onValueChange={(val) => onFilterChange(val as UserFilterType)}
     >
-      {filters.map(({ key, label }) => (
-        <Chip
-          key={key}
-          variant={activeFilter === key ? 'solid' : 'outline'}
-          onClick={() => onFilterChange(key)}
-          className="cursor-pointer hover:opacity-80 transition-opacity"
-          data-testid={`filter-${key}`}
-          aria-pressed={activeFilter === key}
-          role="button"
-        >
-          {label}
-        </Chip>
-      ))}
-    </div>
+      <SelectTrigger
+        className={cn('w-[200px]', className)}
+        data-testid="user-filter-select"
+        aria-label="User role filters"
+      >
+        <SelectValue placeholder="Filtrar por rol" />
+      </SelectTrigger>
+      <SelectContent>
+        {filters.map(({ key, label }) => (
+          <SelectItem key={key} value={key}>
+            {label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }
 

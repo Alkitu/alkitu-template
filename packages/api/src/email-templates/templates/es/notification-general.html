@@ -1,0 +1,30 @@
+<!-- Header -->
+    <div style="background-color: #667eea; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 20px; text-align: center;">
+      <div style="background-color: rgba(255,255,255,0.2); width: 50px; height: 50px; border-radius: 25px; margin: 0 auto 15px; line-height: 50px;">
+        <span style="color: #ffffff; font-size: 22px;">&#128276;</span>
+      </div>
+      <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 600;">{{notification.title}}</h1>
+      <p style="color: #e2e8f0; margin: 8px 0 0 0; font-size: 14px;">Tienes una nueva notificaci&oacute;n</p>
+    </div>
+    <!-- Content -->
+    <div style="padding: 40px 30px;">
+      <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">
+        Hola <strong>{{user.firstname}}</strong>,
+      </p>
+      <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 0 0 25px 0;">
+        {{notification.message}}
+      </p>
+      <!-- CTA Button (optional, shown when actionUrl is provided) -->
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="{{notification.actionUrl}}"
+           style="background-color: #667eea; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                  color: #ffffff; text-decoration: none; padding: 12px 30px; border-radius: 6px;
+                  font-weight: 600; font-size: 16px; display: inline-block;">
+          {{notification.actionText}}
+        </a>
+      </div>
+      <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 20px 0 0 0;">
+        Saludos,<br>
+        <strong>El equipo de Alkitu</strong>
+      </p>
+    </div>

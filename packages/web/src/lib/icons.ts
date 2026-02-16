@@ -1,154 +1,32 @@
-import {
-  ChevronDown,
-  Code,
-  Play,
-  Image,
-  Music,
-  File,
-  Frame,
-  Video,
-  Square,
-  Type,
-  Minus,
-  ArrowUpDown,
-  FileText,
-  FolderGit2,
-  Grid,
-  LayoutGrid,
-  PanelLeftClose,
-  LayoutPanelTop,
-  Lock,
-  Plus,
-  Search,
-  Ban,
-  Star,
-  Heart,
-  ArrowRight,
-  ArrowLeft,
-  ArrowUp,
-  ArrowDown,
-  Check,
-  X,
-  Mail,
-  Phone,
-  MapPin,
-  Calendar,
-  Clock,
-  Settings,
-  User,
-  Users,
-  Bell,
-  Home,
-  Folder,
-  Download,
-  Upload,
-  ExternalLink,
-  Link,
-  Bookmark,
-  Save,
-  Trash,
-  Pencil,
-  Edit,
-  Share,
-  Info,
-  AlertCircle,
-  AlertTriangle,
-  CheckCircle,
-  XCircle,
-  Hash,
-  List,
-  ListChecks,
-  CheckSquare,
-  Circle,
-  AlignLeft,
-  TextIcon,
-  ShapesIcon as Form,
-  CalendarDays,
-  ListOrdered,
-  Radio,
-  TextIcon as TextArea,
-  MessageCircle,
-} from "lucide-react";
-
+import * as LucideIcons from 'lucide-react';
 import {
   FaGoogle,
   FaFacebookF,
   FaLinkedinIn,
   FaInstagram,
   FaWhatsapp,
-} from "react-icons/fa";
+} from 'react-icons/fa';
+import { FaXTwitter } from 'react-icons/fa6';
 
-import { FaXTwitter } from "react-icons/fa6";
+// Alias adjustments for compatibility with existing categories and cleanup
+const {
+  ShapesIcon,
+  TextIcon,
+  createLucideIcon,
+  icons,
+  Icon: LucideIcon,
+  default: LucideDefault,
+  ...RestLucide
+} = LucideIcons as any;
 
 export const Icons = {
-  ChevronDown,
-  Code,
-  Play,
-  Image,
-  Music,
-  File,
-  Frame,
-  Video,
-  Square,
-  Type,
-  Minus,
-  ArrowUpDown,
-  FileText,
-  FolderGit2,
-  Grid,
-  LayoutGrid,
-  PanelLeftClose,
-  LayoutPanelTop,
-  Lock,
-  Plus,
-  Search,
-  Ban,
-  Star,
-  Heart,
-  ArrowRight,
-  ArrowLeft,
-  ArrowUp,
-  ArrowDown,
-  Check,
-  X,
-  Mail,
-  Phone,
-  MapPin,
-  Calendar,
-  Clock,
-  Settings,
-  User,
-  Users,
-  Bell,
-  Home,
-  Folder,
-  Download,
-  Upload,
-  ExternalLink,
-  Link,
-  Bookmark,
-  Save,
-  Trash,
-  Pencil,
-  Edit,
-  Share,
-  Info,
-  AlertCircle,
-  AlertTriangle,
-  CheckCircle,
-  XCircle,
-  Hash,
-  List,
-  ListChecks,
-  CheckSquare,
-  Circle,
-  AlignLeft,
-  Form,
+  ...RestLucide,
+  // Restore Aliases
+  Form: ShapesIcon,
+  TextArea: TextIcon,
+  // Explicit overrides or additions if needed
+  ShapesIcon,
   TextIcon,
-  CalendarDays,
-  ListOrdered,
-  Radio,
-  TextArea,
   // Social Media Icons
   Facebook: FaFacebookF,
   Linkedin: FaLinkedinIn,
@@ -156,12 +34,54 @@ export const Icons = {
   Twitter: FaXTwitter,
   Instagram: FaInstagram,
   WhatsApp: FaWhatsapp,
-  MessageCircle,
 } as const;
 
 export type Icon = keyof typeof Icons;
 
-// Icon categories for the block picker
+// Helper to get all icons for the selector
+export const allIcons = Object.keys(Icons)
+  .filter((key) => key !== 'lucide-react' && key !== 'default' && /^[A-Z]/.test(key))
+  .map((key) => ({ name: key, icon: key }));
+
+// Social Media Icons List
+const socialIconsList = [
+  'Facebook',
+  'Linkedin',
+  'Google',
+  'Twitter',
+  'Instagram',
+  'WhatsApp',
+];
+
+export const iconLibraries = {
+  Lucide: Object.keys(RestLucide)
+    .filter((key) => {
+      // Basic filtering
+      if (
+        key === 'lucide-react' ||
+        key === 'default' ||
+        !/^[A-Z]/.test(key) ||
+        socialIconsList.includes(key)
+      ) {
+        return false;
+      }
+
+      // Filter out "Icon" suffix duplicates
+      // If "ActivityIcon" exists, check if "Activity" also exists.
+      // If both exist, we keep "Activity" and skip "ActivityIcon".
+      if (key.endsWith('Icon')) {
+        const baseName = key.slice(0, -4);
+        if (Object.prototype.hasOwnProperty.call(RestLucide, baseName)) {
+          return false;
+        }
+      }
+
+      return true;
+    })
+    .map((key) => ({ name: key, icon: key })),
+  Social: socialIconsList.map((key) => ({ name: key, icon: key })),
+};
+
 export const iconCategories = {
   Formulario: [
     { name: "Form", icon: "Form" },

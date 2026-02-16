@@ -7,7 +7,7 @@ import { Save, Heart, Check, ChevronDown, Copy } from 'lucide-react';
 import { ThemeData } from '../../../core/types/theme.types';
 import { SaveThemeDialog } from './SaveThemeDialog';
 import { useThemeEditor } from '../../../core/context/ThemeEditorContext';
-import { toast } from '@/components/primitives/ui/use-toast';
+import { toast } from 'sonner';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -70,21 +70,11 @@ export function SaveButton({
       setJustSaved(true);
       setTimeout(() => setJustSaved(false), 2000);
 
-      // Show success toast
-      toast({
-        variant: 'default',
-        title: '✅ Tema guardado',
-        description: `El tema "${theme.name}" se ha actualizado correctamente.`,
-      });
+      toast.success(`El tema "${theme.name}" se ha actualizado correctamente.`);
     } catch (error) {
       console.error('❌ [SaveButton] quickSave failed:', error);
 
-      // Show error toast
-      toast({
-        variant: 'destructive',
-        title: '❌ Error al guardar',
-        description: error instanceof Error ? error.message : 'No se pudo guardar el tema. Por favor, intenta de nuevo.',
-      });
+      toast.error(error instanceof Error ? error.message : 'No se pudo guardar el tema. Por favor, intenta de nuevo.');
     } finally {
       setIsSaving(false);
     }
@@ -113,22 +103,12 @@ export function SaveButton({
       setJustSaved(true);
       setTimeout(() => setJustSaved(false), 2000);
 
-      // Show success toast
       const actionText = mode === 'create' ? 'creado' : 'actualizado';
-      toast({
-        variant: 'default',
-        title: '✅ Tema guardado',
-        description: `El tema "${updatedTheme.name}" se ha ${actionText} correctamente.`,
-      });
+      toast.success(`El tema "${updatedTheme.name}" se ha ${actionText} correctamente.`);
     } catch (error) {
       console.error('❌ [SaveButton] handleSaveThemeFromDialog failed:', error);
 
-      // Show error toast
-      toast({
-        variant: 'destructive',
-        title: '❌ Error al guardar',
-        description: error instanceof Error ? error.message : 'No se pudo guardar el tema. Por favor, intenta de nuevo.',
-      });
+      toast.error(error instanceof Error ? error.message : 'No se pudo guardar el tema. Por favor, intenta de nuevo.');
     } finally {
       setIsSaving(false);
     }

@@ -40,19 +40,36 @@ export default function BreadcrumbNavigation({
   const t = useTranslations();
 
   const getTranslation = (segment: string, locale: string) => {
-    if (segment === 'admin') return t('admin.routes.admin');
-    if (segment === 'users') return t('admin.routes.users');
-    if (segment === 'dashboard') return t('admin.routes.dashboard');
-    if (segment === 'create') return t('Common.actions.create');
-    if (segment === 'edit') return t('Common.actions.edit');
-    if (segment === 'delete') return t('Common.actions.delete');
-    if (segment === 'auth') return t('auth.routes.auth');
-    if (segment === 'login') return t('auth.login.title');
-    if (segment === 'register') return t('auth.register.title');
-    if (segment === 'reset-password') return t('auth.routes.resetPassword');
-    if (segment === 'new-password') return t('auth.routes.newPassword');
-    if (segment === 'new-verification') return t('auth.routes.newVerification');
-    if (segment === 'verify-request') return t('auth.routes.verifyRequest');
+    const segmentMap: Record<string, string> = {
+      // Admin & auth routes
+      'admin': 'admin.routes.admin',
+      'users': 'admin.routes.users',
+      'dashboard': 'admin.routes.dashboard',
+      'create': 'Common.actions.create',
+      'edit': 'Common.actions.edit',
+      'delete': 'Common.actions.delete',
+      'auth': 'auth.routes.auth',
+      'login': 'auth.login.title',
+      'register': 'auth.register.title',
+      'reset-password': 'auth.routes.resetPassword',
+      'new-password': 'auth.routes.newPassword',
+      'new-verification': 'auth.routes.newVerification',
+      'verify-request': 'auth.routes.verifyRequest',
+      // Shared routes (client, employee, admin)
+      'notifications': 'dashboard.nav.notifications',
+      'requests': 'dashboard.nav.requests',
+      'locations': 'dashboard.nav.locations',
+      'profile': 'dashboard.nav.profile',
+      'services': 'dashboard.nav.services',
+      'categories': 'dashboard.nav.categories',
+      'catalog': 'dashboard.nav.catalog',
+      'settings': 'dashboard.nav.settings',
+      'analytics': 'dashboard.nav.analytics',
+      'preferences': 'dashboard.nav.preferences',
+      'new': 'dashboard.nav.newRequest',
+    };
+    const key = segmentMap[segment];
+    if (key) return t(key);
     return segment;
   };
 

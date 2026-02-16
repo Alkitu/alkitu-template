@@ -1,0 +1,75 @@
+<!-- Header -->
+    <div
+      style="background-color: #4299e1; background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%); padding: 40px 20px; text-align: center;">
+      <div
+        style="background-color: rgba(255,255,255,0.2); width: 50px; height: 50px; border-radius: 25px; margin: 0 auto 15px; line-height: 50px;">
+        <span style="color: #ffffff; font-size: 22px;">&#128736;</span>
+      </div>
+      <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 600;">Technician Assigned</h1>
+      <p style="color: #bee3f8; margin: 8px 0 0 0; font-size: 14px;">Your request is now in progress</p>
+    </div>
+    <!-- Content -->
+    <div style="padding: 35px 30px;">
+      <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">
+        Dear <strong>{{user.firstname}}</strong>,
+      </p>
+      <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 0 0 25px 0;">
+        Great news! A technician has been assigned to your service request.
+      </p>
+      <!-- Technician Card -->
+      <div
+        style="background-color: #ebf8ff; background: linear-gradient(135deg, #ebf8ff 0%, #e6fffa 100%); border: 1px solid #bee3f8; border-radius: 8px; padding: 20px; margin: 0 0 20px 0;">
+        <h3
+          style="color: #2b6cb0; margin: 0 0 12px 0; font-size: 15px; text-transform: uppercase; letter-spacing: 0.5px;">
+          Assigned Technician</h3>
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td style="color: #718096; padding: 6px 0; font-size: 14px; width: 100px;">Name:</td>
+            <td style="color: #2d3748; padding: 6px 0; font-size: 14px; font-weight: 600;">{{employee.firstname}}
+              {{employee.lastname}}</td>
+          </tr>
+          <tr>
+            <td style="color: #718096; padding: 6px 0; font-size: 14px;">Phone:</td>
+            <td style="color: #2d3748; padding: 6px 0; font-size: 14px;">{{employee.phone}}</td>
+          </tr>
+          <tr>
+            <td style="color: #718096; padding: 6px 0; font-size: 14px;">Email:</td>
+            <td style="color: #2d3748; padding: 6px 0; font-size: 14px;">{{employee.email}}</td>
+          </tr>
+        </table>
+      </div>
+      <!-- Service Details Box -->
+      <div
+        style="background-color: #f7fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin: 0 0 20px 0;">
+        <h3
+          style="color: #2d3748; margin: 0 0 12px 0; font-size: 15px; text-transform: uppercase; letter-spacing: 0.5px;">
+          Details</h3>
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td style="color: #718096; padding: 6px 0; font-size: 14px; width: 140px;">Service:</td>
+            <td style="color: #2d3748; padding: 6px 0; font-size: 14px; font-weight: 600;">{{service.name}}</td>
+          </tr>
+          <tr>
+            <td style="color: #718096; padding: 6px 0; font-size: 14px;">Scheduled Date:</td>
+            <td style="color: #2d3748; padding: 6px 0; font-size: 14px;">{{request.executionDateTime}}</td>
+          </tr>
+          <tr>
+            <td style="color: #718096; padding: 6px 0; font-size: 14px;">Location:</td>
+            <td style="color: #2d3748; padding: 6px 0; font-size: 14px;">{{location.street}}, {{location.city}}</td>
+          </tr>
+        </table>
+      </div>
+      <!-- Request ID -->
+      <div
+        style="background-color: #edf2f7; border-radius: 6px; padding: 12px 16px; text-align: center; margin: 0 0 25px 0;">
+        <span style="color: #718096; font-size: 12px;">Request ID:</span>
+        <span style="color: #2d3748; font-size: 14px; font-weight: 600; font-family: monospace;">{{request.id}}</span>
+      </div>
+      <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 0 0 10px 0;">
+        Your technician will reach out to you shortly.
+      </p>
+      <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 20px 0 0 0;">
+        Thank you,<br>
+        <strong>Alkitu Team</strong>
+      </p>
+    </div>

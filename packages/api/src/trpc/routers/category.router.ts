@@ -102,16 +102,27 @@ export function createCategoryRouter() {
               requestStats: {
                 total: requests.length,
                 byStatus: {
-                  PENDING: requests.filter((r) => r.status === RequestStatus.PENDING).length,
-                  ONGOING: requests.filter((r) => r.status === RequestStatus.ONGOING).length,
-                  COMPLETED: requests.filter((r) => r.status === RequestStatus.COMPLETED).length,
-                  CANCELLED: requests.filter((r) => r.status === RequestStatus.CANCELLED).length,
+                  PENDING: requests.filter(
+                    (r) => r.status === RequestStatus.PENDING,
+                  ).length,
+                  ONGOING: requests.filter(
+                    (r) => r.status === RequestStatus.ONGOING,
+                  ).length,
+                  COMPLETED: requests.filter(
+                    (r) => r.status === RequestStatus.COMPLETED,
+                  ).length,
+                  CANCELLED: requests.filter(
+                    (r) => r.status === RequestStatus.CANCELLED,
+                  ).length,
                 },
               },
             };
           });
 
-          const totalRequests = services.reduce((sum, s) => sum + s.requestStats.total, 0);
+          const totalRequests = services.reduce(
+            (sum, s) => sum + s.requestStats.total,
+            0,
+          );
 
           return {
             id: category.id,

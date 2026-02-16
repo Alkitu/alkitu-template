@@ -234,6 +234,7 @@ export const UserManagementTable = React.forwardRef<
         <UserFilterButtons
           activeFilter={activeFilter}
           onFilterChange={handleFilterChange}
+          labels={labels.filters}
         />
 
         {/* Search + Create Button */}
@@ -282,6 +283,7 @@ export const UserManagementTable = React.forwardRef<
           onPageSizeChange={(size) =>
             setDebouncedFilters((prev) => ({ ...prev, limit: size, page: 1 }))
           }
+          labels={labels.pagination}
         />
       )}
     </div>

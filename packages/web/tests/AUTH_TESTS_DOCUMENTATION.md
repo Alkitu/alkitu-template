@@ -36,8 +36,8 @@ When `SKIP_AUTH="true"`, the following tests will be automatically skipped:
 
 ### 3. ALI-117 Test #10: "Should require authentication"
 - **File**: `tests/e2e/ali-117-locations.spec.ts:328`
-- **What it tests**: Accessing `/locations` after logout should redirect to `/auth/login`
-- **Protected route**: `/locations` (requires ADMIN, EMPLOYEE, CLIENT, or LEAD role)
+- **What it tests**: Accessing `/client/locations` after logout should redirect to `/auth/login`
+- **Protected route**: `/client/locations` (requires ADMIN, EMPLOYEE, CLIENT, or LEAD role)
 - **Skip condition**: `test.skip(process.env.SKIP_AUTH === 'true', ...)`
 
 ## How to Run Authentication Tests
@@ -110,7 +110,7 @@ Total E2E tests: 61
   - Defines which routes require authentication and which roles can access them
   - Line 19-21: `/requests` protection
   - Line 23-25: `/requests/new` protection
-  - Line 15-17: `/locations` protection
+  - Line 15-17: `/client/locations` protection
 
 ### Environment Files
 - **`packages/web/.env`**: Current environment configuration (with SKIP_AUTH documentation)

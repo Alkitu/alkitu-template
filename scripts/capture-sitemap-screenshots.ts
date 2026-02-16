@@ -119,7 +119,10 @@ const ROUTES = {
     ],
     onboarding: [
       { path: '/es/client/onboarding', name: 'index.png' }
-    ]
+    ],
+    locations: [
+      { path: '/es/client/locations', name: 'list.png' }
+    ],
   },
   employee: {
     dashboard: [
@@ -138,9 +141,6 @@ const ROUTES = {
     ],
     profile: [
       { path: '/es/profile', name: 'index.png' }
-    ],
-    locations: [
-      { path: '/es/locations', name: 'list.png' }
     ],
     requests: [
       { path: '/es/requests', name: 'list.png' },
@@ -181,7 +181,7 @@ function ensureDirectories() {
     'employee/notifications',
     'shared/dashboard',
     'shared/profile',
-    'shared/locations',
+    'client/locations',
     'shared/requests',
     'shared/onboarding'
   ];

@@ -624,6 +624,11 @@ model WorkLocation {
   floor     String?
   unit      String?
 
+  // NEW: UI enhancements (ALI-Refinement)
+  icon      String?   @default("MapPin") // Lucide icon name or Emoji char
+  iconColor String?   @default("#000000") // Hex color code for the icon
+  isDefault Boolean   @default(false)
+
   createdAt DateTime  @default(now())
 
   // Relations
@@ -659,7 +664,11 @@ model Service {
   category        Category  @relation("CategoryServices", fields: [categoryId], references: [id], onDelete: Cascade)
   categoryId      String    @db.ObjectId
   thumbnail       String?
-  requestTemplate Json      // Dynamic form schema (see ALI-118-request-template-schema.md)
+  iconColor       String?   @default("#000000") // Hex color for service icon
+
+  // FormTemplate relation (replaces old requestTemplate JSON field)
+  formTemplateIds String[]       @db.ObjectId
+  formTemplates   FormTemplate[] @relation("ServiceFormTemplates", fields: [formTemplateIds], references: [id])
 
   // Soft delete
   deletedAt       DateTime?
@@ -751,16 +760,34 @@ model Request {
 enum TemplateTrigger {
   ON_REQUEST_CREATED    // Triggered when a new request is created
   ON_STATUS_CHANGED     // Triggered when request status changes
+  ON_AUTH_EVENT         // Triggered on auth events (welcome, verification, password reset)
+  ON_NOTIFICATION       // Triggered for general notifications
+  ON_MANUAL             // Triggered manually (marketing, custom)
 }
 
-/// ALI-121: Email Templates for automated notifications
+/// Template categories for grouping email templates
+enum TemplateCategory {
+  REQUEST       // Request lifecycle emails
+  AUTH          // Authentication emails (welcome, verification, password reset)
+  NOTIFICATION  // General notification emails
+  MARKETING     // Marketing and promotional emails
+}
+
+/// Localized email content (composite type for MongoDB)
+type LocalizedEmailContent {
+  locale  String
+  subject String
+  body    String
+}
+
+/// ALI-121: Email Templates for automated notifications (unified system)
 model EmailTemplate {
   id        String          @id @default(auto()) @map("_id") @db.ObjectId
 
   // Template identification
   name      String          @unique  // Internal identifier (e.g., "request_created_notification")
 
-  // Email content
+  // Email content (default locale)
   subject   String                   // Email subject line (supports placeholders)
   body      String                   // Email body content (supports placeholders, HTML allowed)
 
@@ -771,6 +798,17 @@ model EmailTemplate {
   // Metadata
   active    Boolean         @default(true)  // Enable/disable template without deleting
 
+  // --- Unified system fields ---
+  category        TemplateCategory        @default(REQUEST)
+  slug            String?                 @unique   // URL-friendly identifier (e.g., "welcome", "password_reset")
+  description     String?                           // Human-readable description
+  localizations   LocalizedEmailContent[]           // Multi-language support
+  defaultLocale   String                  @default("es")
+  variables       String[]                @default([])  // Available placeholder variables
+  isDefault       Boolean                 @default(false) // Whether this is a system default template
+  defaultBody     String?                           // Original default body for "Reset to Default"
+  defaultSubject  String?                           // Original default subject for "Reset to Default"
+
   // Timestamps
   createdAt DateTime        @default(now())
   updatedAt DateTime        @updatedAt
@@ -779,6 +817,8 @@ model EmailTemplate {
   @@index([trigger])                 // Filter templates by trigger type
   @@index([trigger, status])         // Filter by trigger + specific status
   @@index([active])                  // Only fetch active templates
+  @@index([category])                // Filter by category
+  // Note: slug already has @unique which creates an implicit index
 
   @@map("email_templates")
 }
@@ -861,4 +901,49 @@ model AuditLog {
   @@index([action])
   @@index([timestamp])
   @@map("audit_logs")
+}
+
+/// FormTemplate - Reusable dynamic form templates (Advanced Form Builder)
+/// Replaces embedded Service.requestTemplate with standalone, versionable templates
+model FormTemplate {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+
+  // Metadata
+  name        String   // "Customer Intake Form", "Equipment Inspection Form"
+  description String?
+  version     String   @default("1.0.0")  // Semantic versioning
+  category    String?  // "intake", "service", "survey", "inspection"
+
+  // Form configuration (JSON from fork-of-block-editor)
+  // Contains: FormSettings with fields[], validation rules, i18n, etc.
+  formSettings Json
+
+  // Status
+  isActive    Boolean  @default(true)   // Enable/disable without deleting
+  isPublic    Boolean  @default(false)  // Public templates can be shared/reused
+
+  // Relations - Many-to-Many with Service
+  serviceIds  String[] @db.ObjectId
+  services    Service[] @relation("ServiceFormTemplates", fields: [serviceIds], references: [id])
+
+  // Versioning support
+  parentId    String?  @db.ObjectId
+  parent      FormTemplate?  @relation("TemplateVersions", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  versions    FormTemplate[] @relation("TemplateVersions")
+
+  // Soft delete
+  deletedAt   DateTime?
+
+  // Audit logging
+  createdBy   String?  @db.ObjectId
+  updatedBy   String?  @db.ObjectId
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isActive])
+  @@index([category])
+  @@index([parentId])
+  @@index([createdAt])
+  @@map("form_templates")
 }

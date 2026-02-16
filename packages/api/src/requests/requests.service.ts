@@ -405,7 +405,6 @@ export class RequestsService {
               id: true,
               name: true,
               categoryId: true,
-              requestTemplate: true,
               category: {
                 select: {
                   id: true,

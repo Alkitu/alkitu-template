@@ -103,7 +103,7 @@ export default function ClientDashboardPage() {
       icon: MapPin,
       label: 'de Trabajo',
       subtitle: 'Ubicaciones',
-      href: '/locations',
+      href: '/client/locations',
       customIconColor: 'text-green-600 dark:text-green-400',
     },
     {

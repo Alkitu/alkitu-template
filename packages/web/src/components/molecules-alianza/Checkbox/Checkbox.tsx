@@ -1,4 +1,3 @@
-import { Icon } from '../../atoms-alianza/Icon';
 import type { CheckboxProps } from './Checkbox.types';
 
 const CHECK_PATH = "M10.665 1.56249L3.79 8.43749L0.665 5.31249";
@@ -36,13 +35,20 @@ export function Checkbox({ checked = false, onCheckedChange, className }: Checkb
       data-name="Checkbox"
       data-testid="checkbox"
     >
-      <Icon
-        paths={[CHECK_PATH]}
+      <svg
         viewBox="0 0 11.33 10"
-        color="white"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
         className={checked ? 'opacity-100 size-[var(--icon-size-xs)]' : 'opacity-0 size-[var(--icon-size-xs)]'}
-        strokeWidth="1.33"
-      />
+      >
+        <path
+          d={CHECK_PATH}
+          stroke="white"
+          strokeWidth="1.33"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
     </button>
   );
 }

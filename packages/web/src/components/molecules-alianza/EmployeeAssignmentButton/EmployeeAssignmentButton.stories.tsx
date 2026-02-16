@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { fn } from '@storybook/test';
+
 import { EmployeeAssignmentButton } from './EmployeeAssignmentButton';
 import type { Employee } from './EmployeeAssignmentButton.types';
 
@@ -54,7 +54,7 @@ const meta = {
     },
   },
   args: {
-    onAssign: fn(),
+    onAssign: () => {},
   },
 } satisfies Meta<typeof EmployeeAssignmentButton>;
 

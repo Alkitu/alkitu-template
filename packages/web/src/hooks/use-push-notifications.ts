@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
+import { handleApiError } from '@/lib/trpc-error-handler';
 
 interface UsePushNotificationsProps {
   userId: string;
@@ -198,7 +199,7 @@ export function usePushNotifications({
           ? error.message
           : 'Failed to subscribe to push notifications',
       );
-      toast.error('Failed to enable push notifications');
+      handleApiError(error);
     } finally {
       setIsLoading(false);
     }
@@ -234,7 +235,7 @@ export function usePushNotifications({
       setError(
         error instanceof Error ? error.message : 'Failed to unsubscribe',
       );
-      toast.error('Failed to disable push notifications');
+      handleApiError(error);
     } finally {
       setIsLoading(false);
     }
@@ -263,7 +264,7 @@ export function usePushNotifications({
       toast.success('Test notification sent!');
     } catch (error) {
       console.error('Error sending test notification:', error);
-      toast.error('Failed to send test notification');
+      handleApiError(error);
     }
   }, [isSubscribed, userId]);
 

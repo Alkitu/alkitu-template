@@ -1,19 +1,20 @@
 /**
- * Service Types (ALI-118)
+ * Service Types (ALI-118 + Form Template Migration)
  */
 
-import { RequestTemplate } from './request-template';
 import { Category } from './category';
+import { FormTemplate } from './form-template.types';
 
 /**
- * Service with dynamic request template
+ * Service with FormTemplate relation
  */
 export interface Service {
   id: string;
   name: string;
   categoryId: string;
   thumbnail?: string | null;
-  requestTemplate: RequestTemplate;
+  iconColor?: string | null;
+  formTemplateIds: string[];
   createdAt: Date | string;
   updatedAt: Date | string;
 }
@@ -26,6 +27,24 @@ export interface ServiceWithCategory extends Service {
     id: string;
     name: string;
   };
+}
+
+/**
+ * Service with FormTemplates populated
+ */
+export interface ServiceWithFormTemplates extends Service {
+  formTemplates: FormTemplate[];
+}
+
+/**
+ * Service with both category and form templates populated
+ */
+export interface ServiceWithRelations extends Service {
+  category: {
+    id: string;
+    name: string;
+  };
+  formTemplates: FormTemplate[];
 }
 
 /**
@@ -42,7 +61,8 @@ export interface CreateServiceInput {
   name: string;
   categoryId: string;
   thumbnail?: string;
-  requestTemplate: RequestTemplate;
+  iconColor?: string;
+  formTemplateIds: string[];
 }
 
 /**
@@ -52,7 +72,8 @@ export interface UpdateServiceInput {
   name?: string;
   categoryId?: string;
   thumbnail?: string | null;
-  requestTemplate?: RequestTemplate;
+  iconColor?: string | null;
+  formTemplateIds?: string[];
 }
 
 /**
@@ -63,6 +84,7 @@ export interface ServiceListItem {
   name: string;
   categoryId: string;
   thumbnail?: string | null;
+  iconColor?: string | null;
   category?: {
     id: string;
     name: string;

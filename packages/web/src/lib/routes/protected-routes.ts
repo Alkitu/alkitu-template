@@ -12,10 +12,6 @@ export const PROTECTED_ROUTES: ProtectedRoute[] = [
     roles: [UserRole.ADMIN, UserRole.EMPLOYEE, UserRole.CLIENT, UserRole.LEAD],
   },
   {
-    path: '/locations',
-    roles: [UserRole.ADMIN, UserRole.EMPLOYEE, UserRole.CLIENT, UserRole.LEAD],
-  },
-  {
     path: '/requests',
     roles: [UserRole.ADMIN, UserRole.EMPLOYEE, UserRole.CLIENT, UserRole.LEAD],
   },
@@ -54,6 +50,10 @@ export const PROTECTED_ROUTES: ProtectedRoute[] = [
   },
   {
     path: '/client',
+    roles: [UserRole.CLIENT],
+  },
+  {
+    path: '/client/locations',
     roles: [UserRole.CLIENT],
   },
   // Employee routes

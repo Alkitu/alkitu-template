@@ -1,6 +1,6 @@
 import React from 'react';
 import { RequestsTableAlianzaProps, RequestTableItem } from './RequestsTableAlianza.types';
-import { Eye, UserPlus, CheckCircle, XCircle, Clock, MapPin, Pencil, UserCog } from 'lucide-react';
+import { Eye, UserPlus, Clock, MapPin, UserCog } from 'lucide-react';
 import { ServiceIcon } from '@/components/atoms-alianza/ServiceIcon';
 
 /**
@@ -100,6 +100,7 @@ export const RequestsTableAlianza: React.FC<RequestsTableAlianzaProps> = ({
                   <div className="shrink-0 mt-0.5">
                     <ServiceIcon
                       category={request.categoryName}
+                      thumbnail={request.serviceThumbnail}
                       className="h-5 w-5 text-primary"
                     />
                   </div>
@@ -202,17 +203,6 @@ export const RequestsTableAlianza: React.FC<RequestsTableAlianzaProps> = ({
                     <Eye className="h-4 w-4 text-foreground" />
                   </button>
 
-                  {/* Edit (for admins) */}
-                  {onEditRequest && (
-                    <button
-                      onClick={() => onEditRequest(request.id)}
-                      className="p-2 hover:bg-secondary rounded-[4px] transition-colors"
-                      title="Editar solicitud"
-                    >
-                      <Pencil className="h-4 w-4 text-foreground" />
-                    </button>
-                  )}
-
                   {/* Assign (only for PENDING status) */}
                   {request.status === 'PENDING' && onAssignRequest && (
                     <button
@@ -223,29 +213,6 @@ export const RequestsTableAlianza: React.FC<RequestsTableAlianzaProps> = ({
                       <UserPlus className="h-4 w-4 text-blue-600" />
                     </button>
                   )}
-
-                  {/* Complete (only for ONGOING status) */}
-                  {request.status === 'ONGOING' && onCompleteRequest && (
-                    <button
-                      onClick={() => onCompleteRequest(request.id)}
-                      className="p-2 hover:bg-green-100 rounded-[4px] transition-colors"
-                      title="Completar"
-                    >
-                      <CheckCircle className="h-4 w-4 text-green-600" />
-                    </button>
-                  )}
-
-                  {/* Cancel (for PENDING and ONGOING) */}
-                  {(request.status === 'PENDING' || request.status === 'ONGOING') &&
-                    onCancelRequest && (
-                      <button
-                        onClick={() => onCancelRequest(request.id)}
-                        className="p-2 hover:bg-red-100 rounded-[4px] transition-colors"
-                        title="Cancelar"
-                      >
-                        <XCircle className="h-4 w-4 text-red-600" />
-                      </button>
-                    )}
                 </div>
               </td>
             </tr>

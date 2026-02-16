@@ -41,6 +41,17 @@ import {
 import { cn } from "@/lib/utils";
 import type { UserPaginationProps } from './UserPagination.types';
 
+const defaultLabels = {
+  showing: 'Mostrando',
+  to: 'a',
+  of: 'de',
+  results: 'resultados',
+  rowsPerPage: 'Filas por página',
+  page: 'Página',
+  previous: 'Anterior',
+  next: 'Siguiente',
+};
+
 export function UserPagination({
   currentPage,
   totalPages,
@@ -50,22 +61,24 @@ export function UserPagination({
   onPageSizeChange,
   className,
   pageSizeOptions = [10, 20, 50, 100],
+  labels: labelsProp,
 }: UserPaginationProps) {
+  const l = { ...defaultLabels, ...labelsProp };
   const startParam = (currentPage - 1) * pageSize + 1;
   const endParam = Math.min(currentPage * pageSize, totalItems);
 
   return (
     <div className={cn("flex flex-col sm:flex-row items-center justify-between gap-4 py-4", className)}>
       <div className="text-sm text-muted-foreground order-2 sm:order-1">
-        Mostrando <span className="font-medium">{Math.max(0, startParam)}</span> a{" "}
-        <span className="font-medium">{endParam}</span> de{" "}
-        <span className="font-medium">{totalItems}</span> resultados
+        {l.showing} <span className="font-medium">{Math.max(0, startParam)}</span> {l.to}{" "}
+        <span className="font-medium">{endParam}</span> {l.of}{" "}
+        <span className="font-medium">{totalItems}</span> {l.results}
       </div>
 
       <div className="flex items-center gap-6 order-1 sm:order-2">
         <div className="flex items-center gap-2">
           <span className="text-sm text-muted-foreground whitespace-nowrap">
-            Filas por página
+            {l.rowsPerPage}
           </span>
           <Select
             value={pageSize.toString()}
@@ -86,7 +99,7 @@ export function UserPagination({
 
         <div className="flex items-center gap-2">
           <div className="text-sm text-muted-foreground w-[100px] text-right mr-2">
-            Página {currentPage} de {totalPages}
+            {l.page} {currentPage} {l.of} {totalPages}
           </div>
           <Button
             variant="outline"
@@ -96,7 +109,7 @@ export function UserPagination({
             onClick={() => onPageChange(currentPage - 1)}
           >
             <ChevronLeft className="h-4 w-4" />
-            <span className="sr-only">Anterior</span>
+            <span className="sr-only">{l.previous}</span>
           </Button>
           <Button
             variant="outline"
@@ -106,7 +119,7 @@ export function UserPagination({
             onClick={() => onPageChange(currentPage + 1)}
           >
             <ChevronRight className="h-4 w-4" />
-            <span className="sr-only">Siguiente</span>
+            <span className="sr-only">{l.next}</span>
           </Button>
         </div>
       </div>

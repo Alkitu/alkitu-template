@@ -39,6 +39,7 @@ import {
 } from '@/components/primitives/Dialog';
 import { useParams, useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { handleApiError } from '@/lib/trpc-error-handler';
 import {
   User,
   Mail,
@@ -166,7 +167,7 @@ const UserDetailPage = ({
       setEditMode(false);
       refetch();
     } catch (error) {
-      toast.error('Failed to update profile');
+      handleApiError(error, router);
     }
   }, [formData, user, updateProfileMutation, refetch]);
 
@@ -186,7 +187,7 @@ const UserDetailPage = ({
       setShowPasswordDialog(false);
       setNewPassword('');
     } catch (error) {
-      toast.error('Failed to update password');
+      handleApiError(error, router);
     }
   }, [newPassword, user, adminChangePasswordMutation]);
 
@@ -199,7 +200,7 @@ const UserDetailPage = ({
       });
       toast.success('Password reset email sent');
     } catch (error) {
-      toast.error('Failed to send reset email');
+      handleApiError(error, router);
     }
   }, [user, resetPasswordMutation]);
 
@@ -214,7 +215,7 @@ const UserDetailPage = ({
       setShowMessageDialog(false);
       setMessageText('');
     } catch (error) {
-      toast.error('Failed to send message');
+      handleApiError(error, router);
     }
   }, [messageText, user, sendMessageMutation]);
 
@@ -229,7 +230,7 @@ const UserDetailPage = ({
       toast.success('Impersonating user...');
       router.push(`/${lang}/dashboard`);
     } catch (error) {
-      toast.error('Failed to impersonate user');
+      handleApiError(error, router);
     }
   }, [user, createImpersonationTokenMutation, router, lang]);
 
@@ -245,7 +246,7 @@ const UserDetailPage = ({
       setShowSuspendDialog(false);
       refetch();
     } catch (error) {
-      toast.error(user.status === 'SUSPENDED' ? 'Failed to activate user' : 'Failed to suspend user');
+      handleApiError(error, router);
     }
   }, [user, bulkUpdateStatusMutation, refetch]);
 
@@ -259,7 +260,7 @@ const UserDetailPage = ({
       setShowAnonymizeDialog(false);
       refetch();
     } catch (error) {
-      toast.error('Failed to anonymize user');
+      handleApiError(error, router);
     }
   }, [user, anonymizeUserMutation, refetch]);
 
@@ -272,7 +273,7 @@ const UserDetailPage = ({
       toast.success('User deleted successfully');
       router.push(`/${lang}/admin/users`);
     } catch (error) {
-      toast.error('Failed to delete user');
+      handleApiError(error, router);
     }
   }, [user, bulkDeleteUsersMutation, router, lang]);
 

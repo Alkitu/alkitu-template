@@ -24,7 +24,7 @@ import {
 } from '@/components/primitives/ui/alert-dialog';
 // Removed Select imports to avoid Radix UI ref composition issues
 import { Checkbox } from '@/components/primitives/ui/checkbox';
-import { toast } from '@/components/primitives/ui/use-toast';
+import { toast } from 'sonner';
 import { Trash2, CheckCheck, Eye, BarChart3, Filter, X } from 'lucide-react';
 import { trpc } from '@/lib/trpc';
 
@@ -75,17 +75,10 @@ export function BulkActions({
     setIsLoading(true);
     try {
       const result = await markAllAsReadMutation.mutateAsync({ userId });
-      toast({
-        title: 'Success',
-        description: `Marked ${result.count} notifications as read`,
-      });
+      toast.success(`Marked ${result.count} notifications as read`);
       onNotificationsUpdate();
     } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Failed to mark all notifications as read',
-        variant: 'destructive',
-      });
+      toast.error('Failed to mark all notifications as read');
     } finally {
       setIsLoading(false);
     }
@@ -95,18 +88,11 @@ export function BulkActions({
     setIsLoading(true);
     try {
       const result = await deleteAllMutation.mutateAsync({ userId });
-      toast({
-        title: 'Success',
-        description: `Deleted ${result.count} notifications`,
-      });
+      toast.success(`Deleted ${result.count} notifications`);
       onNotificationsUpdate();
       onSelectionChange([]);
     } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Failed to delete all notifications',
-        variant: 'destructive',
-      });
+      toast.error('Failed to delete all notifications');
     } finally {
       setIsLoading(false);
     }
@@ -116,18 +102,11 @@ export function BulkActions({
     setIsLoading(true);
     try {
       const result = await deleteReadMutation.mutateAsync({ userId });
-      toast({
-        title: 'Success',
-        description: `Deleted ${result.count} read notifications`,
-      });
+      toast.success(`Deleted ${result.count} read notifications`);
       onNotificationsUpdate();
       onSelectionChange([]);
     } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Failed to delete read notifications',
-        variant: 'destructive',
-      });
+      toast.error('Failed to delete read notifications');
     } finally {
       setIsLoading(false);
     }
@@ -141,18 +120,11 @@ export function BulkActions({
       const result = await bulkMarkAsReadMutation.mutateAsync({
         notificationIds: selectedNotifications,
       });
-      toast({
-        title: 'Success',
-        description: `Marked ${result.count} notifications as read`,
-      });
+      toast.success(`Marked ${result.count} notifications as read`);
       onNotificationsUpdate();
       onSelectionChange([]);
     } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Failed to mark selected notifications as read',
-        variant: 'destructive',
-      });
+      toast.error('Failed to mark selected notifications as read');
     } finally {
       setIsLoading(false);
     }
@@ -166,18 +138,11 @@ export function BulkActions({
       const result = await bulkDeleteMutation.mutateAsync({
         notificationIds: selectedNotifications,
       });
-      toast({
-        title: 'Success',
-        description: `Deleted ${result.count} notifications`,
-      });
+      toast.success(`Deleted ${result.count} notifications`);
       onNotificationsUpdate();
       onSelectionChange([]);
     } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Failed to delete selected notifications',
-        variant: 'destructive',
-      });
+      toast.error('Failed to delete selected notifications');
     } finally {
       setIsLoading(false);
     }
@@ -187,18 +152,11 @@ export function BulkActions({
     setIsLoading(true);
     try {
       const result = await deleteByTypeMutation.mutateAsync({ userId, type });
-      toast({
-        title: 'Success',
-        description: `Deleted ${result.count} ${type} notifications`,
-      });
+      toast.success(`Deleted ${result.count} ${type} notifications`);
       onNotificationsUpdate();
       onSelectionChange([]);
     } catch (error) {
-      toast({
-        title: 'Error',
-        description: `Failed to delete ${type} notifications`,
-        variant: 'destructive',
-      });
+      toast.error(`Failed to delete ${type} notifications`);
     } finally {
       setIsLoading(false);
     }

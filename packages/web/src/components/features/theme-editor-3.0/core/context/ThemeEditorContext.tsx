@@ -440,16 +440,13 @@ export function ThemeEditorProvider({ children, companyId: propCompanyId, initia
   const isClient = typeof window !== 'undefined';
 
   // Always fetch from database to detect theme updates (favorite/default changes)
-  const { data: dbThemes, refetch: refetchThemes } = trpc.theme.getCompanyThemes.useQuery(
-    {
-      companyId,
-      activeOnly: false,
-    },
+  const { data: dbThemes, refetch: refetchThemes } = trpc.theme.listAllThemes.useQuery(
+    undefined,
     {
       refetchOnMount: true,
       refetchOnWindowFocus: false,
       staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
-      enabled: !!companyId && isClient, // Only fetch if we have an ID AND we're on client side
+      enabled: isClient, // Only fetch on client side
     }
   );
 

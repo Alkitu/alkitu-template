@@ -1,0 +1,70 @@
+<!-- Header -->
+    <div
+      style="background-color: #667eea; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 20px; text-align: center;">
+      <div
+        style="background-color: rgba(255,255,255,0.2); width: 50px; height: 50px; border-radius: 25px; margin: 0 auto 15px; line-height: 50px;">
+        <span style="color: #ffffff; font-size: 22px;">&#10003;</span>
+      </div>
+      <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 600;">Request Received</h1>
+      <p style="color: #e2e8f0; margin: 8px 0 0 0; font-size: 14px;">We have successfully registered your request</p>
+    </div>
+    <!-- Content -->
+    <div style="padding: 35px 30px;">
+      <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">
+        Dear <strong>{{user.firstname}} {{user.lastname}}</strong>,
+      </p>
+      <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 0 0 25px 0;">
+        We have received your service request. Please find the details below:
+      </p>
+      <!-- Service Details Box -->
+      <div
+        style="background-color: #f7fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin: 0 0 20px 0;">
+        <h3
+          style="color: #2d3748; margin: 0 0 12px 0; font-size: 15px; text-transform: uppercase; letter-spacing: 0.5px;">
+          Service Details</h3>
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td style="color: #718096; padding: 6px 0; font-size: 14px; width: 140px;">Service:</td>
+            <td style="color: #2d3748; padding: 6px 0; font-size: 14px; font-weight: 600;">{{service.name}}</td>
+          </tr>
+          <tr>
+            <td style="color: #718096; padding: 6px 0; font-size: 14px;">Category:</td>
+            <td style="color: #2d3748; padding: 6px 0; font-size: 14px;">{{service.category}}</td>
+          </tr>
+          <tr>
+            <td style="color: #718096; padding: 6px 0; font-size: 14px;">Scheduled Date:</td>
+            <td style="color: #2d3748; padding: 6px 0; font-size: 14px;">{{request.executionDateTime}}</td>
+          </tr>
+          <tr>
+            <td style="color: #718096; padding: 6px 0; font-size: 14px;">Status:</td>
+            <td style="padding: 6px 0; font-size: 14px;"><span
+                style="background-color: #ebf4ff; color: #4299e1; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;">{{request.status}}</span>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <!-- Location Box -->
+      <div
+        style="background-color: #f7fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin: 0 0 20px 0;">
+        <h3
+          style="color: #2d3748; margin: 0 0 12px 0; font-size: 15px; text-transform: uppercase; letter-spacing: 0.5px;">
+          Location</h3>
+        <p style="color: #4a5568; margin: 0; font-size: 14px; line-height: 1.5;">
+          {{location.street}}<br>
+          {{location.city}}, {{location.state}} {{location.zipCode}}
+        </p>
+      </div>
+      <!-- Request ID -->
+      <div
+        style="background-color: #edf2f7; border-radius: 6px; padding: 12px 16px; text-align: center; margin: 0 0 25px 0;">
+        <span style="color: #718096; font-size: 12px;">Request ID:</span>
+        <span style="color: #2d3748; font-size: 14px; font-weight: 600; font-family: monospace;">{{request.id}}</span>
+      </div>
+      <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 0 0 10px 0;">
+        We will review your request and assign a technician shortly.
+      </p>
+      <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 20px 0 0 0;">
+        Kind regards,<br>
+        <strong>Alkitu Team</strong>
+      </p>
+    </div>

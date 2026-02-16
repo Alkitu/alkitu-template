@@ -21,6 +21,7 @@ import {
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { LocationsService } from './locations.service';
 import { CreateLocationDto, UpdateLocationDto } from './dto';
+import { UserRole } from '@alkitu/shared/enums/user-role.enum';
 
 interface AuthenticatedRequest {
   user: {
@@ -135,7 +136,7 @@ export class LocationsController {
     @Body() updateLocationDto: UpdateLocationDto,
     @Req() req: AuthenticatedRequest,
   ) {
-    return this.locationsService.update(id, req.user.userId, updateLocationDto);
+    return this.locationsService.update(id, req.user.userId, updateLocationDto, req.user.role as UserRole);
   }
 
   /**
@@ -161,6 +162,6 @@ export class LocationsController {
   })
   @ApiResponse({ status: 404, description: 'Location not found' })
   async remove(@Param('id') id: string, @Req() req: AuthenticatedRequest) {
-    return this.locationsService.remove(id, req.user.userId);
+    return this.locationsService.remove(id, req.user.userId, req.user.role as UserRole);
   }
 }

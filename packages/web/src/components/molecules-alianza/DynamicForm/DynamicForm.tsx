@@ -39,6 +39,22 @@ export const DynamicForm = forwardRef<HTMLDivElement, DynamicFormProps>(
     const errorMessage = error?.message as string | undefined;
 
     /**
+     * Normalize options to handle both legacy (string[]) and current (FieldOption[]) formats
+     */
+    const normalizedOptions = React.useMemo(() => {
+      if (!field.options) return [];
+
+      return field.options.map((option) => {
+        // If option is a string (legacy format), convert to object
+        if (typeof option === 'string') {
+          return { value: option, label: option };
+        }
+        // If option is already an object, use as-is
+        return option;
+      });
+    }, [field.options]);
+
+    /**
      * Render field based on type
      */
     const renderField = () => {
@@ -157,7 +173,7 @@ export const DynamicForm = forwardRef<HTMLDivElement, DynamicFormProps>(
               <option value="">
                 {field.placeholder || `Select ${field.label}`}
               </option>
-              {field.options?.map((option) => (
+              {normalizedOptions.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
@@ -168,7 +184,7 @@ export const DynamicForm = forwardRef<HTMLDivElement, DynamicFormProps>(
         case 'radio':
           return (
             <div className="space-y-2" data-testid={`dynamic-form-field-${field.id}`}>
-              {field.options?.map((option) => (
+              {normalizedOptions.map((option) => (
                 <div key={option.value} className="flex items-center">
                   <input
                     id={`${field.id}-${option.value}`}
@@ -215,7 +231,7 @@ export const DynamicForm = forwardRef<HTMLDivElement, DynamicFormProps>(
         case 'checkboxGroup':
           return (
             <div className="space-y-2" data-testid={`dynamic-form-field-${field.id}`}>
-              {field.options?.map((option) => (
+              {normalizedOptions.map((option) => (
                 <div key={option.value} className="flex items-center">
                   <input
                     id={`${field.id}-${option.value}`}

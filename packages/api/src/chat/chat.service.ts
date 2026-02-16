@@ -9,6 +9,7 @@ import {
   Conversation,
   ChatMessage,
   ContactInfo,
+  User,
 } from '@prisma/client';
 import { ConversationResult, MessageResult } from './interfaces/chat.interface';
 import {
@@ -20,6 +21,7 @@ import {
   ReplyToMessageDto,
   AddInternalNoteDto,
   MarkAsReadDto,
+  MarkAsDeliveredDto,
 } from './dto/chat.dto';
 import { ConversationRepository } from './repositories/conversation.repository';
 import { MessageRepository } from './repositories/message.repository';
@@ -55,12 +57,15 @@ export class ChatService {
     return contactInfo;
   }
 
-  private sanitizeMessage(message: any): any {
+  private sanitizeMessage(
+    message: ChatMessage & { senderUser?: User | null },
+  ): any {
     if (message.senderUser) {
-      message.senderName =
+      const msg = message as any;
+      msg.senderName =
         `${message.senderUser.firstname} ${message.senderUser.lastname}`.trim() ||
         'Support';
-      message.senderRole = message.senderUser.role;
+      msg.senderRole = message.senderUser.role;
     }
     return message;
   }
@@ -73,7 +78,7 @@ export class ChatService {
     const phone = data.phone?.trim() || undefined;
     const userId = data.userId?.trim() || undefined;
 
-    let contactInfo = null;
+    let contactInfo: ContactInfo | null = null;
 
     // 1. If userId is provided, try to find contact info for this user
     if (userId) {
@@ -364,7 +369,7 @@ export class ChatService {
     // Mark messages as read based on who is doing the reading
     // If visitor is reading, mark messages FROM support as read
     // If admin is reading, mark messages FROM visitor as read
-    await (this.prisma.chatMessage as any).updateMany({
+    await this.prisma.chatMessage.updateMany({
       where: {
         conversationId: data.conversationId,
         isFromVisitor: data.isVisitor ? false : true,
@@ -377,11 +382,9 @@ export class ChatService {
     });
   }
 
-  async markAsDelivered(
-    data: MarkAsReadDto & { isVisitor?: boolean },
-  ): Promise<void> {
+  async markAsDelivered(data: MarkAsDeliveredDto): Promise<void> {
     // Mark messages as delivered when they are received by the client
-    await (this.prisma.chatMessage as any).updateMany({
+    await this.prisma.chatMessage.updateMany({
       where: {
         conversationId: data.conversationId,
         isFromVisitor: data.isVisitor ? false : true,
@@ -464,7 +467,9 @@ export class ChatService {
    * Get or create a conversation for a specific request
    * Enables internal team communication about a request
    */
-  async getOrCreateRequestConversation(requestId: string): Promise<any> {
+  async getOrCreateRequestConversation(
+    requestId: string,
+  ): Promise<Conversation> {
     // 1. Check if request already has a conversation
     const existingRequest = await this.prisma.request.findUnique({
       where: { id: requestId },
@@ -483,7 +488,10 @@ export class ChatService {
     }
 
     // If conversation already exists, return it
-    if (existingRequest.conversations && existingRequest.conversations.length > 0) {
+    if (
+      existingRequest.conversations &&
+      existingRequest.conversations.length > 0
+    ) {
       return existingRequest.conversations[0];
     }
 

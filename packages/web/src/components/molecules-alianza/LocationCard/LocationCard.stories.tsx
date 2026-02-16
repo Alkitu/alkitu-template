@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { fn } from '@storybook/test';
+
 import { LocationCard } from './LocationCard';
 import type { LocationData } from './LocationCard.types';
 
@@ -60,11 +60,11 @@ const meta: Meta<typeof LocationCard> = {
     },
   },
   args: {
-    onClick: fn(),
-    onGetDirections: fn(),
-    onCall: fn(),
-    onEmail: fn(),
-    onToggleFavorite: fn(),
+    onClick: () => {},
+    onGetDirections: () => {},
+    onCall: () => {},
+    onEmail: () => {},
+    onToggleFavorite: () => {},
   },
   decorators: [
     (Story) => (

@@ -147,7 +147,11 @@ export type BulkDeleteUsersInput = z.infer<typeof bulkDeleteUsersSchema>;
 export type BulkUpdateRoleInput = z.infer<typeof bulkUpdateRoleSchema>;
 export type BulkUpdateStatusInput = z.infer<typeof bulkUpdateStatusSchema>;
 export type ResetUserPasswordInput = z.infer<typeof resetUserPasswordSchema>;
-export type AdminChangePasswordInput = z.infer<typeof adminChangePasswordSchema>;
+export type AdminChangePasswordInput = z.infer<
+  typeof adminChangePasswordSchema
+>;
 export type SendMessageToUserInput = z.infer<typeof sendMessageToUserSchema>;
 export type AnonymizeUserInput = z.infer<typeof anonymizeUserSchema>;
-export type CreateImpersonationTokenInput = z.infer<typeof createImpersonationTokenSchema>;
+export type CreateImpersonationTokenInput = z.infer<
+  typeof createImpersonationTokenSchema
+>;

@@ -78,6 +78,20 @@ export interface ActionLabels {
 }
 
 /**
+ * Translated labels for pagination
+ */
+export interface PaginationLabels {
+  showing: string;
+  to: string;
+  of: string;
+  results: string;
+  rowsPerPage: string;
+  page: string;
+  previous: string;
+  next: string;
+}
+
+/**
  * All translated labels required by the organism
  */
 export interface UserManagementLabels {
@@ -86,6 +100,7 @@ export interface UserManagementLabels {
   filters: FilterLabels;
   stats: StatsLabels;
   actions: ActionLabels;
+  pagination?: Partial<PaginationLabels>;
   deleteConfirm: string;
   deleteSuccess: string;
   deleteError: string;

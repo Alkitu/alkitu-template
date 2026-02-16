@@ -18,6 +18,19 @@ vi.mock('@/lib/trpc', () => ({
       updateRequestStatus: {
         useMutation: vi.fn(),
       },
+      updateRequest: {
+        useMutation: vi.fn(),
+      },
+    },
+    service: {
+      getAllServices: {
+        useQuery: vi.fn(),
+      },
+    },
+    location: {
+      getAllLocations: {
+        useQuery: vi.fn(),
+      },
     },
     user: {
       getFilteredUsers: {
@@ -27,10 +40,11 @@ vi.mock('@/lib/trpc', () => ({
   },
 }));
 
-// Mock toast hook
-vi.mock('@/components/primitives/ui/use-toast', () => ({
-  useToast: () => ({
-    toast: vi.fn(),
+// Mock Sonner toast
+vi.mock('sonner', () => ({
+  toast: Object.assign(vi.fn(), {
+    success: vi.fn(),
+    error: vi.fn(),
   }),
 }));
 
@@ -88,6 +102,20 @@ describe('RequestDetailOrganism', () => {
       isError: false,
       data: [],
       error: null,
+    });
+
+    // Default mocks for inline edit hook dependencies
+    (trpc.service.getAllServices.useQuery as any).mockReturnValue({
+      data: null,
+      isLoading: false,
+    });
+    (trpc.location.getAllLocations.useQuery as any).mockReturnValue({
+      data: null,
+      isLoading: false,
+    });
+    (trpc.request.updateRequest.useMutation as any).mockReturnValue({
+      mutateAsync: vi.fn(),
+      isPending: false,
     });
   });
 
@@ -413,9 +441,7 @@ describe('RequestDetailOrganism', () => {
     expect(smithElements.length).toBeGreaterThan(0);
   });
 
-  it('should render edit button when onEdit provided and user is not CLIENT', () => {
-    const onEdit = vi.fn();
-
+  it('should render edit button for non-CLIENT users with editable status', () => {
     (trpc.request.getRequestById.useQuery as any).mockReturnValue({
       isLoading: false,
       isError: false,
@@ -431,7 +457,7 @@ describe('RequestDetailOrganism', () => {
       mutateAsync: vi.fn(),
     });
 
-    renderWithProviders(<RequestDetailOrganism {...defaultProps} onEdit={onEdit} userRole="EMPLOYEE" />);
+    renderWithProviders(<RequestDetailOrganism {...defaultProps} userRole="EMPLOYEE" />);
 
     expect(screen.getByText(/editar/i)).toBeInTheDocument();
   });

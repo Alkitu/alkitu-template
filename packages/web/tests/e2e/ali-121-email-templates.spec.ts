@@ -109,7 +109,7 @@ test.describe.serial('ALI-121: Email Templates & Automation', () => {
       const clientPage = authenticatedClientPage;
 
       // Navigate to locations page
-      await clientPage.goto('http://localhost:3000/en/locations');
+      await clientPage.goto('http://localhost:3000/en/client/locations');
       await clientPage.waitForLoadState('networkidle');
 
       // Create test location
@@ -471,7 +471,7 @@ test.describe.serial('ALI-121: Email Templates & Automation', () => {
 
       // Delete test location
       if (!clientPage.isClosed()) {
-        await clientPage.goto('http://localhost:3000/en/locations');
+        await clientPage.goto('http://localhost:3000/en/client/locations');
         await clientPage.waitForLoadState('networkidle');
 
         const locationCard = clientPage.locator('[data-testid="location-card"]')

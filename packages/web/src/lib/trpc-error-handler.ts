@@ -70,6 +70,10 @@ export function handleTRPCError(
       toast.error(getMessage('TOO_MANY_REQUESTS', 'Too many requests. Please slow down and try again later.'));
       break;
 
+    case 'PRECONDITION_FAILED':
+      toast.error(getMessage('PRECONDITION_FAILED', 'This action cannot be completed. A precondition was not met.'));
+      break;
+
     case 'INTERNAL_SERVER_ERROR':
       toast.error(getMessage('INTERNAL_SERVER_ERROR', 'An unexpected error occurred. Please try again later.'));
       break;
@@ -207,6 +211,46 @@ export const ERROR_MESSAGES = {
     FORBIDDEN: 'You do not have permission to view this',
   },
 } as const;
+
+/**
+ * Convenience error handler for try/catch blocks and onError callbacks.
+ *
+ * Checks if the error is a TRPCClientError and delegates to handleTRPCError,
+ * otherwise shows a generic toast. This eliminates `error as any` casts in pages.
+ *
+ * @param error - Any caught error (unknown type from catch blocks)
+ * @param router - Next.js router instance (optional, for redirects)
+ *
+ * @example
+ * ```typescript
+ * try {
+ *   await mutation.mutateAsync(data);
+ * } catch (error) {
+ *   handleApiError(error, router);
+ * }
+ * ```
+ *
+ * @example
+ * ```typescript
+ * const mutation = trpc.service.delete.useMutation({
+ *   onError: (error) => handleApiError(error, router),
+ * });
+ * ```
+ */
+export function handleApiError(
+  error: unknown,
+  router?: AppRouterInstance,
+) {
+  if (error instanceof TRPCClientError) {
+    handleTRPCError(error, router);
+  } else {
+    toast.error(
+      error instanceof Error
+        ? error.message
+        : 'An unexpected error occurred. Please try again.',
+    );
+  }
+}
 
 /**
  * Get operation-specific error message

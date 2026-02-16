@@ -17,6 +17,7 @@ import { createServiceRouter } from './routers/service.router';
 import { createCategoryRouter } from './routers/category.router';
 import { createLocationRouter } from './routers/location.router';
 import { createFeatureFlagsRouter } from './routers/feature-flags.router';
+import { createFormTemplateRouter } from './routers/form-template.router';
 import { t } from './trpc';
 import { ChatbotConfigService } from '../chatbot-config/chatbot-config.service';
 import { ThemeService } from '../theme/theme.service';
@@ -58,6 +59,7 @@ export class TrpcRouter {
       category: createCategoryRouter(), // Category catalog router with stats
       location: createLocationRouter(), // Work location router
       featureFlags: createFeatureFlagsRouter(this.featureFlagsService), // Feature flags router
+      formTemplate: createFormTemplateRouter(), // Form template router (Advanced Form Builder)
     });
   }
 }

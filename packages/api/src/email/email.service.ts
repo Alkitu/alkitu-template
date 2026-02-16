@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Optional, Inject } from '@nestjs/common';
 import { Resend } from 'resend';
 import {
   EmailTemplates,
@@ -6,6 +6,22 @@ import {
   PasswordResetEmailData,
   EmailVerificationData,
 } from './email-templates';
+import { PrismaService } from '../prisma.service';
+import { EmailRendererService } from './services/email-renderer.service';
+import type { LocalizedEmailContent } from '@alkitu/shared';
+
+/**
+ * Escape HTML special characters to prevent XSS in email templates.
+ * Applied to all user-provided values before inserting into HTML.
+ */
+export function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
 
 export interface SendEmailOptions {
   to: string | string[];
@@ -20,7 +36,10 @@ export class EmailService {
   private readonly resend: Resend;
   private readonly defaultFrom: string;
 
-  constructor() {
+  constructor(
+    @Optional() @Inject(PrismaService) private readonly prisma?: PrismaService,
+    @Optional() private readonly emailRendererService?: EmailRendererService,
+  ) {
     const apiKey = process.env.RESEND_API_KEY;
 
     if (!apiKey) {
@@ -37,52 +56,166 @@ export class EmailService {
   }
 
   /**
-   * Envía un email genérico
+   * Look up a template by slug from DB, render with variables, and return HTML+subject.
+   * Returns null if no template found or DB unavailable (caller should fallback).
    */
-  async sendEmail(
-    options: SendEmailOptions,
-  ): Promise<{ success: boolean; messageId?: string; error?: string }> {
-    try {
-      this.logger.log(
-        `Enviando email a: ${Array.isArray(options.to) ? options.to.join(', ') : options.to}`,
-      );
+  private async renderTemplateFromDB(
+    slug: string,
+    variables: Record<string, string>,
+    locale?: string,
+  ): Promise<{ subject: string; html: string } | null> {
+    if (!this.prisma) return null;
 
-      const result = await this.resend.emails.send({
-        from: options.from || this.defaultFrom,
-        to: options.to,
-        subject: options.subject,
-        html: options.html,
+    try {
+      const template = await this.prisma.emailTemplate.findUnique({
+        where: { slug },
       });
 
-      if (result.error) {
-        this.logger.error(`Error al enviar email: ${result.error.message}`);
-        return { success: false, error: result.error.message };
+      if (!template || !template.active) return null;
+
+      let subject = template.subject;
+      let body = template.body;
+
+      // Check for localized content
+      if (locale && locale !== template.defaultLocale && template.localizations) {
+        const localized = (template.localizations as LocalizedEmailContent[]).find(
+          (l) => l.locale === locale,
+        );
+        if (localized) {
+          subject = localized.subject;
+          body = localized.body;
+        }
       }
 
-      this.logger.log(`Email enviado exitosamente. ID: ${result.data?.id}`);
-      return { success: true, messageId: result.data?.id };
+      // Replace all {{key}} placeholders (escape values to prevent XSS)
+      for (const [key, value] of Object.entries(variables)) {
+        const regex = new RegExp(
+          `\\{\\{${key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\}\\}`,
+          'g',
+        );
+        const safeValue = escapeHtml(value);
+        subject = subject.replace(regex, safeValue);
+        body = body.replace(regex, safeValue);
+      }
+
+      // Wrap with React Email layout if renderer is available
+      if (this.emailRendererService) {
+        body = await this.emailRendererService.renderWithLayout(body, locale);
+      }
+
+      return { subject, html: body };
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`Error inesperado al enviar email: ${errorMessage}`);
-      return { success: false, error: errorMessage };
+      this.logger.warn(`DB template lookup failed for slug="${slug}": ${error instanceof Error ? error.message : 'unknown'}`);
+      return null;
     }
   }
 
   /**
+   * Envía un email con retry logic y soporte para idempotency keys.
+   * Retries up to 3 times with exponential backoff for transient errors.
+   * Validation errors are not retried.
+   */
+  async sendEmail(
+    options: SendEmailOptions,
+    idempotencyKey?: string,
+  ): Promise<{ success: boolean; messageId?: string; error?: string }> {
+    const maxRetries = 3;
+    const recipient = Array.isArray(options.to) ? options.to.join(', ') : options.to;
+
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        if (attempt > 0) {
+          this.logger.warn(`Retry attempt ${attempt}/${maxRetries} for email to: ${recipient}`);
+        } else {
+          this.logger.log(`Enviando email a: ${recipient}`);
+        }
+
+        const { data, error } = await this.resend.emails.send(
+          {
+            from: options.from || this.defaultFrom,
+            to: options.to,
+            subject: options.subject,
+            html: options.html,
+          },
+          idempotencyKey ? { idempotencyKey } : undefined,
+        );
+
+        if (!error) {
+          this.logger.log(`Email enviado exitosamente. ID: ${data?.id}`);
+          return { success: true, messageId: data?.id };
+        }
+
+        // Don't retry validation errors or idempotency conflicts
+        if (error.name === 'validation_error' || error.name === 'invalid_idempotent_request') {
+          this.logger.error(`Non-retryable email error: ${error.message}`);
+          return { success: false, error: error.message };
+        }
+
+        // Retry transient errors
+        if (attempt < maxRetries) {
+          const delay = Math.pow(2, attempt) * 1000 + Math.random() * 500;
+          this.logger.warn(`Transient email error (${error.message}), retrying in ${Math.round(delay)}ms...`);
+          await new Promise(r => setTimeout(r, delay));
+          continue;
+        }
+
+        this.logger.error(`Email failed after ${maxRetries} retries: ${error.message}`);
+        return { success: false, error: error.message };
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+
+        if (attempt < maxRetries) {
+          const delay = Math.pow(2, attempt) * 1000 + Math.random() * 500;
+          this.logger.warn(`Unexpected email error (${errorMessage}), retrying in ${Math.round(delay)}ms...`);
+          await new Promise(r => setTimeout(r, delay));
+          continue;
+        }
+
+        this.logger.error(`Email failed after ${maxRetries} retries: ${errorMessage}`);
+        return { success: false, error: errorMessage };
+      }
+    }
+
+    return { success: false, error: 'Max retries exceeded' };
+  }
+
+  /**
    * Envía email de bienvenida a nuevos usuarios
+   * DB-first: tries to load template from DB, falls back to hard-coded HTML
    */
   async sendWelcomeEmail(
     userData: WelcomeEmailData,
+    locale?: string,
   ): Promise<{ success: boolean; messageId?: string; error?: string }> {
     try {
-      const { html, subject } = EmailTemplates.getWelcomeEmail(userData);
+      // Try DB template first
+      const dbResult = await this.renderTemplateFromDB(
+        'welcome',
+        {
+          'user.name': userData.userName,
+          'user.email': userData.userEmail,
+          'login.url': userData.loginUrl,
+        },
+        locale,
+      );
 
+      const idempotencyKey = `welcome-${userData.userEmail}`;
+
+      if (dbResult) {
+        return await this.sendEmail({
+          to: userData.userEmail,
+          subject: dbResult.subject,
+          html: dbResult.html,
+        }, idempotencyKey);
+      }
+
+      // Fallback to hard-coded template
+      const { html, subject } = EmailTemplates.getWelcomeEmail(userData);
       return await this.sendEmail({
         to: userData.userEmail,
         subject,
         html,
-      });
+      }, idempotencyKey);
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
@@ -95,18 +228,40 @@ export class EmailService {
 
   /**
    * Envía email para restablecer contraseña
+   * DB-first: tries to load template from DB, falls back to hard-coded HTML
    */
   async sendPasswordResetEmail(
     userData: PasswordResetEmailData & { userEmail: string },
+    locale?: string,
   ): Promise<{ success: boolean; messageId?: string; error?: string }> {
     try {
-      const { html, subject } = EmailTemplates.getPasswordResetEmail(userData);
+      // Try DB template first
+      const dbResult = await this.renderTemplateFromDB(
+        'password_reset',
+        {
+          'user.name': userData.userName,
+          'reset.url': userData.resetUrl,
+        },
+        locale,
+      );
 
+      const idempotencyKey = `password-reset-${userData.userEmail}-${Date.now()}`;
+
+      if (dbResult) {
+        return await this.sendEmail({
+          to: userData.userEmail,
+          subject: dbResult.subject,
+          html: dbResult.html,
+        }, idempotencyKey);
+      }
+
+      // Fallback to hard-coded template
+      const { html, subject } = EmailTemplates.getPasswordResetEmail(userData);
       return await this.sendEmail({
         to: userData.userEmail,
         subject,
         html,
-      });
+      }, idempotencyKey);
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
@@ -119,19 +274,41 @@ export class EmailService {
 
   /**
    * Envía email de verificación de cuenta
+   * DB-first: tries to load template from DB, falls back to hard-coded HTML
    */
   async sendEmailVerification(
     userData: EmailVerificationData & { userEmail: string },
+    locale?: string,
   ): Promise<{ success: boolean; messageId?: string; error?: string }> {
     try {
+      // Try DB template first
+      const dbResult = await this.renderTemplateFromDB(
+        'email_verification',
+        {
+          'user.name': userData.userName,
+          'verification.url': userData.verificationUrl,
+        },
+        locale,
+      );
+
+      const idempotencyKey = `email-verification-${userData.userEmail}`;
+
+      if (dbResult) {
+        return await this.sendEmail({
+          to: userData.userEmail,
+          subject: dbResult.subject,
+          html: dbResult.html,
+        }, idempotencyKey);
+      }
+
+      // Fallback to hard-coded template
       const { html, subject } =
         EmailTemplates.getEmailVerificationTemplate(userData);
-
       return await this.sendEmail({
         to: userData.userEmail,
         subject,
         html,
-      });
+      }, idempotencyKey);
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
@@ -144,6 +321,7 @@ export class EmailService {
 
   /**
    * Envía notificación general
+   * DB-first: tries to load template from DB, falls back to hard-coded HTML
    */
   async sendNotification(
     userEmail: string,
@@ -152,8 +330,32 @@ export class EmailService {
     message: string,
     buttonText?: string,
     buttonUrl?: string,
+    locale?: string,
   ): Promise<{ success: boolean; messageId?: string; error?: string }> {
     try {
+      // Try DB template first
+      const dbResult = await this.renderTemplateFromDB(
+        'notification_general',
+        {
+          'user.name': userName,
+          message: message,
+          'action.url': buttonUrl || '#',
+          'action.text': buttonText || 'Ver',
+        },
+        locale,
+      );
+
+      const idempotencyKey = `notification-${userEmail}-${Date.now()}`;
+
+      if (dbResult) {
+        return await this.sendEmail({
+          to: userEmail,
+          subject: title || dbResult.subject,
+          html: dbResult.html,
+        }, idempotencyKey);
+      }
+
+      // Fallback to hard-coded template
       const { html, subject } = EmailTemplates.getNotificationEmail(
         title,
         message,
@@ -166,7 +368,7 @@ export class EmailService {
         to: userEmail,
         subject,
         html,
-      });
+      }, idempotencyKey);
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
@@ -239,7 +441,7 @@ export class EmailService {
       // Intenta enviar un email de prueba a una dirección válida
       const testResult = await this.sendEmail({
         to: 'test@resend.dev', // Email de prueba de Resend
-        subject: 'Test de configuración - Alkitu',
+        subject: 'Test de configuración - Alianza Consulting Corp',
         html: '<h1>Test exitoso</h1><p>La configuración de Resend está funcionando correctamente.</p>',
       });
 

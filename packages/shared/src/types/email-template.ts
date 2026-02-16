@@ -1,8 +1,21 @@
-/// ALI-121: Email Templates & Automation - TypeScript Types
+/// ALI-121: Email Templates & Automation - TypeScript Types (Unified System)
 
 import type { RequestStatus } from './request';
 
-export type TemplateTrigger = 'ON_REQUEST_CREATED' | 'ON_STATUS_CHANGED';
+export type TemplateTrigger =
+  | 'ON_REQUEST_CREATED'
+  | 'ON_STATUS_CHANGED'
+  | 'ON_AUTH_EVENT'
+  | 'ON_NOTIFICATION'
+  | 'ON_MANUAL';
+
+export type TemplateCategory = 'REQUEST' | 'AUTH' | 'NOTIFICATION' | 'MARKETING';
+
+export interface LocalizedEmailContent {
+  locale: string;
+  subject: string;
+  body: string;
+}
 
 export interface EmailTemplate {
   id: string;
@@ -12,6 +25,16 @@ export interface EmailTemplate {
   trigger: TemplateTrigger;
   status?: RequestStatus | null;
   active: boolean;
+  // Unified system fields
+  category: TemplateCategory;
+  slug?: string | null;
+  description?: string | null;
+  localizations: LocalizedEmailContent[];
+  defaultLocale: string;
+  variables: string[];
+  isDefault: boolean;
+  defaultBody?: string | null;
+  defaultSubject?: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -128,3 +151,47 @@ export const AVAILABLE_PLACEHOLDERS: AvailablePlaceholders = {
     '{{templateResponses.*}}', // Dynamic based on service template
   ],
 };
+
+/** Placeholders available for AUTH category templates */
+export const AUTH_PLACEHOLDERS: string[] = [
+  '{{user.name}}',
+  '{{user.email}}',
+  '{{login.url}}',
+  '{{verification.url}}',
+  '{{reset.url}}',
+  '{{support.url}}',
+];
+
+/** Placeholders available for NOTIFICATION category templates */
+export const NOTIFICATION_PLACEHOLDERS: string[] = [
+  '{{user.name}}',
+  '{{message}}',
+  '{{action.url}}',
+  '{{action.text}}',
+];
+
+/** Map of category to available placeholders */
+export const PLACEHOLDERS_BY_CATEGORY: Record<TemplateCategory, string[]> = {
+  REQUEST: [
+    ...AVAILABLE_PLACEHOLDERS.request,
+    ...AVAILABLE_PLACEHOLDERS.user,
+    ...AVAILABLE_PLACEHOLDERS.service,
+    ...AVAILABLE_PLACEHOLDERS.location,
+    ...AVAILABLE_PLACEHOLDERS.employee,
+  ],
+  AUTH: AUTH_PLACEHOLDERS,
+  NOTIFICATION: NOTIFICATION_PLACEHOLDERS,
+  MARKETING: [
+    '{{user.name}}',
+    '{{user.email}}',
+    '{{action.url}}',
+    '{{action.text}}',
+  ],
+};
+
+/** Grouped templates response type */
+export interface GroupedEmailTemplates {
+  category: TemplateCategory;
+  label: string;
+  templates: EmailTemplate[];
+}

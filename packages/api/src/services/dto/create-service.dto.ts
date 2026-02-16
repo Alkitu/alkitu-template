@@ -5,6 +5,7 @@ import {
   MaxLength,
   MinLength,
   IsObject,
+  Matches,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -53,6 +54,21 @@ export class CreateServiceDto {
   @IsString()
   @IsOptional()
   thumbnail?: string;
+
+  /**
+   * Service icon color
+   * @example "#000000"
+   */
+  @ApiProperty({
+    description: 'Hex color code for the service icon',
+    example: '#ff0000',
+    required: false,
+    default: '#000000',
+  })
+  @IsString()
+  @IsOptional()
+  @Matches(/^#[0-9a-fA-F]{6}$/, { message: 'Invalid hex color' })
+  iconColor?: string;
 
   /**
    * Dynamic request template (JSON schema for form fields)

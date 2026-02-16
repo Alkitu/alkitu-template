@@ -29,6 +29,10 @@ async function main() {
     const deletedAllServices = await prisma.service.deleteMany({});
     console.log(`   ✓ Eliminados ${deletedAllServices.count} servicios`);
 
+    // Borrar form templates existentes
+    const deletedAllFormTemplates = await prisma.formTemplate.deleteMany({});
+    console.log(`   ✓ Eliminados ${deletedAllFormTemplates.count} form templates`);
+
     // Borrar categorías existentes
     const deletedAllCategories = await prisma.category.deleteMany({});
     console.log(`   ✓ Eliminadas ${deletedAllCategories.count} categorías`);
@@ -107,99 +111,141 @@ async function main() {
     // ========================================
     console.log('\n📋 PASO 4: Creando nuevos servicios...');
 
-    // Servicio 1: Reparación de Aires Acondicionados
-    const service1 = await prisma.service.create({
+    // FormTemplate 1: Reparación de Aires Acondicionados
+    const formTemplate1 = await prisma.formTemplate.create({
       data: {
-        name: 'Reparación de Aires Acondicionados',
-        categoryId: category1.id,
-        requestTemplate: {
-          version: '1.0',
+        name: 'Reparación de Aires Acondicionados Form',
+        description: 'Template para solicitudes de reparación de aires acondicionados',
+        category: 'service',
+        version: '1.0.0',
+        isActive: true,
+        formSettings: {
+          title: 'Reparación de Aires Acondicionados Request Form',
           fields: [
             {
               id: 'title',
               type: 'text',
               label: 'Título de la Solicitud',
-              required: true,
               placeholder: 'Ej: Aire roto oficina principal',
+              validation: { required: true },
             },
             {
               id: 'description',
               type: 'textarea',
               label: 'Descripción del Problema',
-              required: true,
               placeholder: 'Describe el problema con el aire acondicionado',
+              validation: { required: true },
             },
             {
               id: 'urgency',
               type: 'select',
               label: 'Urgencia',
-              required: true,
-              options: ['Baja', 'Media', 'Alta'],
+              validation: { required: true },
+              selectOptions: {
+                items: [
+                  { id: 'opt_baja', label: 'Baja', value: 'baja' },
+                  { id: 'opt_media', label: 'Media', value: 'media' },
+                  { id: 'opt_alta', label: 'Alta', value: 'alta' },
+                ],
+              },
             },
           ],
+          submitButtonText: 'Submit Request',
         },
+      },
+    });
+
+    const service1 = await prisma.service.create({
+      data: {
+        name: 'Reparación de Aires Acondicionados',
+        categoryId: category1.id,
+        formTemplateIds: [formTemplate1.id],
       },
     });
     console.log(`   ✓ Servicio creado: ${service1.name}`);
 
-    // Servicio 2: Limpieza Profunda de Oficinas
-    const service2 = await prisma.service.create({
+    // FormTemplate 2: Limpieza Profunda de Oficinas
+    const formTemplate2 = await prisma.formTemplate.create({
       data: {
-        name: 'Limpieza Profunda de Oficinas',
-        categoryId: category2.id,
-        requestTemplate: {
-          version: '1.0',
+        name: 'Limpieza Profunda de Oficinas Form',
+        description: 'Template para solicitudes de limpieza profunda',
+        category: 'service',
+        version: '1.0.0',
+        isActive: true,
+        formSettings: {
+          title: 'Limpieza Profunda de Oficinas Request Form',
           fields: [
             {
               id: 'title',
               type: 'text',
               label: 'Título de la Solicitud',
-              required: true,
               placeholder: 'Ej: Limpieza urgente sala de juntas',
+              validation: { required: true },
             },
             {
               id: 'description',
               type: 'textarea',
               label: 'Detalles de la Limpieza',
-              required: true,
               placeholder: 'Indica qué áreas necesitan limpieza',
+              validation: { required: true },
             },
             {
               id: 'area_size',
               type: 'text',
               label: 'Tamaño del Área (m²)',
-              required: false,
+              validation: { required: false },
             },
           ],
+          submitButtonText: 'Submit Request',
         },
+      },
+    });
+
+    const service2 = await prisma.service.create({
+      data: {
+        name: 'Limpieza Profunda de Oficinas',
+        categoryId: category2.id,
+        formTemplateIds: [formTemplate2.id],
       },
     });
     console.log(`   ✓ Servicio creado: ${service2.name}`);
 
-    // Servicio 3: Reparación de Plomería
-    const service3 = await prisma.service.create({
+    // FormTemplate 3: Reparación de Plomería
+    const formTemplate3 = await prisma.formTemplate.create({
       data: {
-        name: 'Reparación de Plomería',
-        categoryId: category3.id,
-        requestTemplate: {
-          version: '1.0',
+        name: 'Reparación de Plomería Form',
+        description: 'Template para solicitudes de reparación de plomería',
+        category: 'service',
+        version: '1.0.0',
+        isActive: true,
+        formSettings: {
+          title: 'Reparación de Plomería Request Form',
           fields: [
             {
               id: 'title',
               type: 'text',
               label: 'Título de la Solicitud',
-              required: true,
               placeholder: 'Ej: Fuga de agua en baño principal',
+              validation: { required: true },
             },
             {
               id: 'description',
               type: 'textarea',
               label: 'Descripción del Problema',
-              required: true,
               placeholder: 'Describe el problema de plomería',
+              validation: { required: true },
             },
           ],
+          submitButtonText: 'Submit Request',
         },
+      },
+    });
+
+    const service3 = await prisma.service.create({
+      data: {
+        name: 'Reparación de Plomería',
+        categoryId: category3.id,
+        formTemplateIds: [formTemplate3.id],
       },
     });
     console.log(`   ✓ Servicio creado: ${service3.name}`);

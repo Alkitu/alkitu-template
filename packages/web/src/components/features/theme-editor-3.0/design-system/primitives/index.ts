@@ -35,10 +35,8 @@ export * from './dropdown-menu-local';
 export * from './context-menu-local';
 export * from './command-local';
 
-// Toast system
-export * from './toast-local';
-export * from './toaster-local';
-export * from './sonner-local';
+// Toast system (Sonner only)
+export * from './sonner';
 
 // Color pickers
 export * from './enhanced-color-picker-local';

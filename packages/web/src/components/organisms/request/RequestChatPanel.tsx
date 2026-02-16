@@ -7,6 +7,7 @@ import { Button } from '@/components/primitives/ui/button';
 import { MessageSquare, Send, Loader2 } from 'lucide-react';
 import { Textarea } from '@/components/primitives/ui/textarea';
 import { toast } from 'sonner';
+import { handleApiError } from '@/lib/trpc-error-handler';
 import { ScrollArea } from '@/components/primitives/ui/scroll-area';
 import { Avatar } from '@/components/primitives/ui/avatar';
 
@@ -25,9 +26,7 @@ export function RequestChatPanel({ requestId }: RequestChatPanelProps) {
       onSuccess: (conversation) => {
         setConversationId(conversation.id);
       },
-      onError: (error) => {
-        toast.error(error?.message || 'Failed to load conversation');
-      },
+      onError: (error) => handleApiError(error),
     });
 
   // Get messages for the conversation
@@ -47,9 +46,7 @@ export function RequestChatPanel({ requestId }: RequestChatPanelProps) {
       refetchMessages();
       toast.success('Message sent');
     },
-    onError: (error) => {
-      toast.error(error?.message || 'Failed to send message');
-    },
+    onError: (error) => handleApiError(error),
   });
 
   const handleOpenChat = async () => {

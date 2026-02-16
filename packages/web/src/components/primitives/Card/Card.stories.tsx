@@ -9,7 +9,7 @@ import {
 } from './Card';
 
 const meta = {
-  title: 'Molecules/Card',
+  title: 'Primitives/Card',
   component: Card,
   parameters: {
     layout: 'centered',

@@ -24,6 +24,9 @@ export interface Service {
 
   /** Service thumbnail/image URL */
   thumbnail?: string | null;
+  
+  /** Service icon color (hex) */
+  iconColor?: string | null;
 
   /** Service price */
   price?: number | null;

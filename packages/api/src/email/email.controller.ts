@@ -133,7 +133,7 @@ export class EmailController {
           userEmail: to,
           subject: 'Notificación de Prueba',
           message:
-            'Esta es una notificación de prueba del sistema de emails de Alkitu. Todo está funcionando correctamente.',
+            'Esta es una notificación de prueba del sistema de emails de Alianza Consulting Corp. Todo está funcionando correctamente.',
           actionText: 'Ir al Dashboard',
           actionUrl: baseUrls.dashboard,
           supportUrl: baseUrls.support,

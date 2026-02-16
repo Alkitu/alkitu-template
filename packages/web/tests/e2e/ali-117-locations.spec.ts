@@ -210,7 +210,7 @@ test.describe('ALI-117: Work Locations Management', () => {
 
   test('6. Should delete a location with confirmation', async ({ authenticatedClientPage }) => {
     const page = authenticatedClientPage;
-    await page.goto('http://localhost:3000/es/locations');
+    await page.goto('http://localhost:3000/es/client/locations');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
 
@@ -240,7 +240,7 @@ test.describe('ALI-117: Work Locations Management', () => {
 
   test('7. Should show validation errors for invalid data', async ({ authenticatedClientPage }) => {
     const page = authenticatedClientPage;
-    await page.goto('http://localhost:3000/es/locations');
+    await page.goto('http://localhost:3000/es/client/locations');
     await page.waitForLoadState('networkidle');
 
     // Click "Add Location" button
@@ -273,7 +273,7 @@ test.describe('ALI-117: Work Locations Management', () => {
 
   test('8. Should cancel location creation', async ({ authenticatedClientPage }) => {
     const page = authenticatedClientPage;
-    await page.goto('http://localhost:3000/es/locations');
+    await page.goto('http://localhost:3000/es/client/locations');
     await page.waitForLoadState('networkidle');
 
     // Click "Add Location" button
@@ -298,7 +298,7 @@ test.describe('ALI-117: Work Locations Management', () => {
 
   test('9. Should show all address fields in location card', async ({ authenticatedClientPage }) => {
     const page = authenticatedClientPage;
-    await page.goto('http://localhost:3000/es/locations');
+    await page.goto('http://localhost:3000/es/client/locations');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
 
@@ -334,7 +334,7 @@ test.describe('ALI-117: Work Locations Management', () => {
     await page.context().clearCookies();
 
     // Try to access locations page
-    await page.goto('http://localhost:3000/es/locations');
+    await page.goto('http://localhost:3000/es/client/locations');
     await page.waitForLoadState('networkidle');
 
     // Should redirect to login page or show auth error

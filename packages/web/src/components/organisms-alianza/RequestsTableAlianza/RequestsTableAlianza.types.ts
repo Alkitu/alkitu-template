@@ -7,6 +7,8 @@ export interface RequestTableItem {
   status: 'PENDING' | 'ONGOING' | 'COMPLETED' | 'CANCELLED';
   executionDateTime: string;
   assignedTo?: string;
+  /** Lucide icon name from the service thumbnail field */
+  serviceThumbnail?: string | null;
   // Enhanced fields for improved display
   executionTime?: string;      // "10:00 AM"
   locationCity?: string;        // "Escazú"

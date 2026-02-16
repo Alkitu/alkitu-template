@@ -1,0 +1,44 @@
+<!-- Header -->
+    <div style="background-color: #667eea; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 20px; text-align: center;">
+      <div style="background-color: #ffffff; width: 60px; height: 60px; border-radius: 30px; margin: 0 auto 20px; text-align: center; line-height: 60px;">
+        <span style="color: #667eea; font-size: 24px; font-weight: bold; vertical-align: middle;">A</span>
+      </div>
+      <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 600;">&iexcl;Bienvenido a Alkitu!</h1>
+      <p style="color: #e2e8f0; margin: 10px 0 0 0; font-size: 16px;">Tu cuenta ha sido creada exitosamente</p>
+    </div>
+    <!-- Content -->
+    <div style="padding: 40px 30px;">
+      <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">
+        Hola <strong>{{user.firstname}}</strong>,
+      </p>
+      <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">
+        &iexcl;Gracias por unirte a Alkitu! Tu cuenta ha sido configurada y ya puedes comenzar a disfrutar de todas nuestras funcionalidades.
+      </p>
+      <!-- Account Details -->
+      <div style="background-color: #f7fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin: 0 0 20px 0;">
+        <h3 style="color: #2d3748; margin: 0 0 15px 0; font-size: 18px;">Detalles de tu cuenta:</h3>
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td style="color: #718096; padding: 6px 0; font-size: 14px; width: 140px;">Email:</td>
+            <td style="color: #2d3748; padding: 6px 0; font-size: 14px; font-weight: 600;">{{user.email}}</td>
+          </tr>
+          <tr>
+            <td style="color: #718096; padding: 6px 0; font-size: 14px;">Fecha de registro:</td>
+            <td style="color: #2d3748; padding: 6px 0; font-size: 14px;">{{registrationDate}}</td>
+          </tr>
+        </table>
+      </div>
+      <!-- CTA Button -->
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="{{loginUrl}}"
+           style="background-color: #667eea; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                  color: #ffffff; text-decoration: none; padding: 12px 30px; border-radius: 6px;
+                  font-weight: 600; font-size: 16px; display: inline-block;">
+          Acceder a mi cuenta
+        </a>
+      </div>
+      <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 20px 0 0 0;">
+        Si tienes alguna pregunta, no dudes en contactarnos.<br>
+        <strong>El equipo de Alkitu</strong>
+      </p>
+    </div>

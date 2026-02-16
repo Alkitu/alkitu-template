@@ -27,7 +27,7 @@ export default function ClientProfilePage() {
             Para editar tu perfil completo, visita la página de perfil principal.
           </p>
 
-          <Link href="/profile">
+          <Link href="/client/profile">
             <Button>
               <User className="h-4 w-4 mr-2" />
               Ir a Mi Perfil

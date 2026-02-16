@@ -374,7 +374,10 @@ export const createNotificationRouter = (
           );
         } catch (error) {
           console.error('Error bulk marking as read (optimized):', error);
-          handlePrismaError(error, 'bulk mark notifications as read (optimized)');
+          handlePrismaError(
+            error,
+            'bulk mark notifications as read (optimized)',
+          );
         }
       }),
   });

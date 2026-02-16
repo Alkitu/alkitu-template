@@ -4,6 +4,8 @@ export interface ServiceTableItem {
   category: string;
   status: 'ACTIVE' | 'INACTIVE';
   questionsCount: number;
+  thumbnail?: string | null;
+  iconColor?: string;
   requestStats?: {
     total: number;
     pending: number;
@@ -41,6 +43,16 @@ export interface ServicesTableAlianzaProps {
     delete: string;
     active: string;
     inactive: string;
+  };
+  requestLinkLabels?: {
+    noRequests: string;
+    request: string;
+    requests: string;
+    pending: string;
+    pendingPlural: string;
+    pendingTitle: string;
+    ongoingTitle: string;
+    viewRequests: string;
   };
   className?: string;
 }

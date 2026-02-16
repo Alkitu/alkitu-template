@@ -4,12 +4,22 @@ import { z } from 'zod';
 import { t } from '../trpc';
 import { EmailTemplateService } from '../../email-templates/email-template.service';
 import { TRPCError } from '@trpc/server';
+import { TemplateTrigger, RequestStatus } from '@prisma/client';
 import {
   createEmailTemplateSchema,
   updateEmailTemplateSchema,
   templateTriggerSchema,
   requestStatusSchema,
+  resetToDefaultSchema,
+  updateLocalizationSchema,
+  getVariablesByCategorySchema,
 } from '@alkitu/shared';
+import type { PlaceholderData } from '@alkitu/shared';
+
+/** Extract error message safely from unknown error */
+function getErrorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : '';
+}
 
 /**
  * Create email template router with all CRUD operations and utilities
@@ -34,8 +44,13 @@ export const createEmailTemplateRouter = (
       )
       .query(async ({ input }) => {
         try {
-          return await emailTemplateService.findAll(input);
-        } catch (error) {
+          return await emailTemplateService.findAll({
+            trigger: input.trigger as TemplateTrigger | undefined,
+            status: input.status as RequestStatus | undefined,
+            active: input.active,
+            search: input.search,
+          });
+        } catch (error: unknown) {
           console.error('Error fetching email templates:', error);
           throw new TRPCError({
             code: 'INTERNAL_SERVER_ERROR',
@@ -52,8 +67,9 @@ export const createEmailTemplateRouter = (
       .query(async ({ input }) => {
         try {
           return await emailTemplateService.findOne(input.id);
-        } catch (error) {
-          if (error.message?.includes('not found')) {
+        } catch (error: unknown) {
+          const msg = error instanceof Error ? error.message : '';
+          if (msg.includes('not found')) {
             throw new TRPCError({
               code: 'NOT_FOUND',
               message: 'Email template not found',
@@ -80,8 +96,8 @@ export const createEmailTemplateRouter = (
       .query(async ({ input }) => {
         try {
           return await emailTemplateService.findByTrigger(
-            input.trigger,
-            input.status,
+            input.trigger as TemplateTrigger,
+            input.status as RequestStatus | undefined,
           );
         } catch (error) {
           console.error('Error fetching templates by trigger:', error);
@@ -95,7 +111,7 @@ export const createEmailTemplateRouter = (
     /**
      * Get available placeholders
      */
-    getAvailablePlaceholders: t.procedure.query(async () => {
+    getAvailablePlaceholders: t.procedure.query(() => {
       try {
         return emailTemplateService.getAvailablePlaceholders();
       } catch (error) {
@@ -115,20 +131,18 @@ export const createEmailTemplateRouter = (
       .mutation(async ({ input }) => {
         try {
           return await emailTemplateService.create(input);
-        } catch (error) {
-          if (error.message?.includes('already exists')) {
+        } catch (error: unknown) {
+          const msg = getErrorMessage(error);
+          if (msg.includes('already exists')) {
             throw new TRPCError({
               code: 'CONFLICT',
               message: 'Email template with this name already exists',
             });
           }
-          if (
-            error.message?.includes('required') ||
-            error.message?.includes('must be null')
-          ) {
+          if (msg.includes('required') || msg.includes('must be null')) {
             throw new TRPCError({
               code: 'BAD_REQUEST',
-              message: error.message,
+              message: msg,
             });
           }
           console.error('Error creating email template:', error);
@@ -152,14 +166,15 @@ export const createEmailTemplateRouter = (
       .mutation(async ({ input }) => {
         try {
           return await emailTemplateService.update(input.id, input.data);
-        } catch (error) {
-          if (error.message?.includes('not found')) {
+        } catch (error: unknown) {
+          const msg = getErrorMessage(error);
+          if (msg.includes('not found')) {
             throw new TRPCError({
               code: 'NOT_FOUND',
               message: 'Email template not found',
             });
           }
-          if (error.message?.includes('already exists')) {
+          if (msg.includes('already exists')) {
             throw new TRPCError({
               code: 'CONFLICT',
               message: 'Email template with this name already exists',
@@ -182,8 +197,9 @@ export const createEmailTemplateRouter = (
         try {
           await emailTemplateService.delete(input.id);
           return { success: true };
-        } catch (error) {
-          if (error.message?.includes('not found')) {
+        } catch (error: unknown) {
+          const msg = getErrorMessage(error);
+          if (msg.includes('not found')) {
             throw new TRPCError({
               code: 'NOT_FOUND',
               message: 'Email template not found',
@@ -240,7 +256,7 @@ export const createEmailTemplateRouter = (
               })
               .nullable()
               .optional(),
-            templateResponses: z.record(z.any()).nullable().optional(),
+            templateResponses: z.record(z.unknown()).nullable().optional(),
           }),
         }),
       )
@@ -248,10 +264,11 @@ export const createEmailTemplateRouter = (
         try {
           return await emailTemplateService.previewTemplate(
             input.templateId,
-            input.data as any,
+            input.data as PlaceholderData,
           );
-        } catch (error) {
-          if (error.message?.includes('not found')) {
+        } catch (error: unknown) {
+          const msg = getErrorMessage(error);
+          if (msg.includes('not found')) {
             throw new TRPCError({
               code: 'NOT_FOUND',
               message: 'Email template not found',
@@ -261,6 +278,114 @@ export const createEmailTemplateRouter = (
           throw new TRPCError({
             code: 'INTERNAL_SERVER_ERROR',
             message: 'Failed to preview template',
+          });
+        }
+      }),
+
+    /**
+     * Reset a template to its default content
+     */
+    resetToDefault: t.procedure
+      .input(resetToDefaultSchema)
+      .mutation(async ({ input }) => {
+        try {
+          return await emailTemplateService.resetToDefault(input.id);
+        } catch (error: unknown) {
+          const msg = getErrorMessage(error);
+          if (msg.includes('not found')) {
+            throw new TRPCError({
+              code: 'NOT_FOUND',
+              message: 'Email template not found',
+            });
+          }
+          if (msg.includes('does not have default')) {
+            throw new TRPCError({
+              code: 'BAD_REQUEST',
+              message: msg,
+            });
+          }
+          console.error('Error resetting template:', error);
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Failed to reset template to default',
+          });
+        }
+      }),
+
+    /**
+     * Get available variables/placeholders by category
+     */
+    getVariablesByCategory: t.procedure
+      .input(getVariablesByCategorySchema)
+      .query(({ input }) => {
+        try {
+          return emailTemplateService.getVariablesByCategory(input.category);
+        } catch (error) {
+          console.error('Error fetching variables by category:', error);
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Failed to fetch variables by category',
+          });
+        }
+      }),
+
+    /**
+     * Update or insert a localized version of a template
+     */
+    updateLocalization: t.procedure
+      .input(updateLocalizationSchema)
+      .mutation(async ({ input }) => {
+        try {
+          return await emailTemplateService.updateLocalization(
+            input.id,
+            input.locale,
+            input.subject,
+            input.body,
+          );
+        } catch (error: unknown) {
+          const msg = getErrorMessage(error);
+          if (msg.includes('not found')) {
+            throw new TRPCError({
+              code: 'NOT_FOUND',
+              message: 'Email template not found',
+            });
+          }
+          console.error('Error updating localization:', error);
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Failed to update localization',
+          });
+        }
+      }),
+
+    /**
+     * Get all templates grouped by category
+     */
+    getGroupedByCategory: t.procedure.query(async () => {
+      try {
+        return await emailTemplateService.findAllGroupedByCategory();
+      } catch (error) {
+        console.error('Error fetching grouped templates:', error);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to fetch grouped templates',
+        });
+      }
+    }),
+
+    /**
+     * Send all active templates as test emails to a recipient
+     */
+    sendAllTestEmails: t.procedure
+      .input(z.object({ recipient: z.string().email() }))
+      .mutation(async ({ input }) => {
+        try {
+          return await emailTemplateService.sendAllTestEmails(input.recipient);
+        } catch (error) {
+          console.error('Error sending test emails:', error);
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Failed to send test emails',
           });
         }
       }),

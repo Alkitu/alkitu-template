@@ -11,7 +11,9 @@ import type {
   ServiceFormOrganismProps,
   ServiceFormData,
 } from './ServiceFormOrganism.types';
-import type { Category } from '@/components/molecules-alianza/CategoryCard';
+import { Category } from '@/components/molecules-alianza/CategoryCard';
+import { LocationColorPicker } from '@/components/molecules/location/LocationColorPicker';
+import { getDynamicBackgroundColor } from '@/lib/utils/color';
 import { z } from 'zod';
 
 // Local schema override - accepts requestTemplate as object (Controller ensures it's always an object)
@@ -23,6 +25,7 @@ const LocalServiceSchema = z.object({
     .trim(),
   categoryId: z.string().min(1, 'Category is required'),
   thumbnail: z.string().url('Thumbnail must be a valid URL').optional().or(z.literal('')),
+  iconColor: z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Invalid hex color').default('#000000').optional(),
   requestTemplate: z.any(), // Accept any value - Controller ensures it's always a valid object
 });
 
@@ -150,12 +153,14 @@ export const ServiceFormOrganism: React.FC<ServiceFormOrganismProps> = ({
           name: initialData.name,
           categoryId: initialData.categoryId,
           thumbnail: initialData.thumbnail || '',
+          iconColor: initialData.iconColor || '#000000',
           requestTemplate: initialData.requestTemplate,
         }
       : {
           name: '',
           categoryId: '',
           thumbnail: '',
+          iconColor: '#000000',
           requestTemplate: defaultTemplate,
         },
   });
@@ -306,6 +311,38 @@ export const ServiceFormOrganism: React.FC<ServiceFormOrganismProps> = ({
             {errors.categoryId.message}
           </p>
         )}
+      </div>
+
+      {/* Service Icon Color */}
+      <div>
+        <div className="flex gap-4">
+            <div className="flex-1">
+                <Controller
+                name="iconColor"
+                control={control}
+                render={({ field }) => (
+                    <LocationColorPicker
+                    color={field.value || '#000000'}
+                    onChange={(color) => field.onChange(color)}
+                    label="Service Icon Color"
+                    />
+                )}
+                />
+            </div>
+            {/* Preview of Dynamic Color */}
+            <div className="flex items-end pb-2">
+                <div 
+                    className="flex h-10 w-10 items-center justify-center rounded-full transition-colors"
+                    style={{ backgroundColor: getDynamicBackgroundColor(watch('iconColor') || '#000000') }}
+                    title="Background Preview"
+                >
+                    <div 
+                        className="h-4 w-4 rounded-full" 
+                        style={{ backgroundColor: watch('iconColor') || '#000000' }} 
+                    />
+                </div>
+            </div>
+        </div>
       </div>
 
       {/* Thumbnail URL (Optional) */}

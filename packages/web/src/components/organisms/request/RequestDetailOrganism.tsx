@@ -17,6 +17,8 @@ import {
   Upload,
   UserPlus,
   RefreshCw,
+  Save,
+  X,
 } from 'lucide-react';
 import { RequestStatus } from '@alkitu/shared';
 import {
@@ -28,9 +30,14 @@ import {
 } from '@/components/molecules/request';
 import type { RequestDetailOrganismProps } from './RequestDetailOrganism.types';
 import { trpc } from '@/lib/trpc';
-import { useToast } from '@/components/primitives/ui/use-toast';
+import { toast } from 'sonner';
 import { RequestChatPanel } from './RequestChatPanel';
 import { useFeatureFlag } from '@/hooks/useFeatureFlag';
+import { useRequestInlineEdit } from '@/hooks/useRequestInlineEdit';
+import { FormInput } from '@/components/molecules-alianza/FormInput';
+import { FormTextarea } from '@/components/molecules-alianza/FormTextarea';
+import { Combobox } from '@/components/molecules-alianza/Combobox';
+import { FormSelect } from '@/components/molecules-alianza/FormSelect';
 
 /**
  * RequestDetailOrganism - Organism Component (ALI-119)
@@ -49,9 +56,8 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
   className = '',
   onUpdate,
   onBack,
-  onEdit,
 }) => {
-  const { toast } = useToast();
+  // Toast notifications via Sonner (imported at module level)
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
@@ -72,22 +78,27 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
   // Feature flags
   const { isEnabled: chatEnabled } = useFeatureFlag('request-collaboration');
 
+  // Inline editing
+  const editHook = useRequestInlineEdit({
+    requestId,
+    requestData: request,
+    onSuccess: () => {
+      refetch();
+      if (onUpdate) onUpdate();
+    },
+  });
+
+  const canEdit = userRole !== 'CLIENT' && request?.status !== 'CANCELLED' && request?.status !== 'COMPLETED';
+
   const handleAssign = async (reqId: string, employeeId: string) => {
     setActionLoading('assign');
     try {
       await assignMutation.mutateAsync({ id: reqId, assignedToId: employeeId });
-      toast({
-        title: 'Empleado asignado',
-        description: 'La solicitud ha sido asignada correctamente.',
-      });
+      toast.success('La solicitud ha sido asignada correctamente.');
       refetch();
       if (onUpdate) onUpdate();
     } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'No se pudo asignar el empleado.',
-        variant: 'destructive',
-      });
+      toast.error('No se pudo asignar el empleado.');
     } finally {
       setActionLoading(null);
     }
@@ -97,18 +108,11 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
     setActionLoading('status');
     try {
       await updateStatusMutation.mutateAsync({ id: reqId, status });
-      toast({
-        title: 'Estado actualizado',
-        description: 'El estado de la solicitud ha sido actualizado.',
-      });
+      toast.success('El estado de la solicitud ha sido actualizado.');
       refetch();
       if (onUpdate) onUpdate();
     } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'No se pudo actualizar el estado.',
-        variant: 'destructive',
-      });
+      toast.error('No se pudo actualizar el estado.');
     } finally {
       setActionLoading(null);
     }
@@ -145,6 +149,7 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
   }
 
   const executionDate = new Date(request.executionDateTime);
+  const requestNote: string = (request as any).note ?? '';
   const canAssign = userRole !== 'CLIENT' && request.status !== RequestStatus.CANCELLED && request.status !== RequestStatus.COMPLETED;
   const canChangeStatus = userRole !== 'CLIENT' && request.status !== RequestStatus.CANCELLED;
 
@@ -204,43 +209,85 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
         )}
         
         <div className="flex gap-3">
-          {canAssign && (
-            <Button 
-              onClick={() => setIsAssignModalOpen(true)}
-              className="bg-primary text-primary-foreground font-bold h-10 !px-6 rounded-lg uppercase tracking-wider text-xs shadow-md shadow-primary/20 hover:shadow-lg transition-all"
-            >
-              <UserPlus className="mr-2 h-4 w-4" />
-              {request.assignedToId ? 'Reasignar Empleado' : 'Asignar Empleado'}
-            </Button>
-          )}
-          {canChangeStatus && (
-            <Button 
-              variant="secondary"
-              onClick={() => setIsStatusModalOpen(true)}
-              className="font-bold h-10 !px-6 rounded-lg uppercase tracking-wider text-xs"
-            >
-              <RefreshCw className="mr-2 h-4 w-4" />
-              Cambiar Estado
-            </Button>
-          )}
-          {onEdit && userRole !== 'CLIENT' && (
-            <Button
-              variant="outline"
-              onClick={onEdit}
-              className="h-10 !px-6 border-primary text-primary hover:bg-primary/5 font-bold uppercase tracking-wider text-xs"
-            >
-              <Pencil className="mr-2 h-3 w-3" />
-              Editar
-            </Button>
+          {editHook.isEditing ? (
+            <>
+              <Button
+                variant="outline"
+                onClick={editHook.cancelEditMode}
+                disabled={editHook.isSaving}
+                className="h-10 !px-6 font-bold uppercase tracking-wider text-xs"
+              >
+                <X className="mr-2 h-4 w-4" />
+                Cancelar
+              </Button>
+              <Button
+                onClick={editHook.handleSave}
+                disabled={editHook.isSaving}
+                className="bg-primary text-primary-foreground font-bold h-10 !px-6 rounded-lg uppercase tracking-wider text-xs shadow-md shadow-primary/20 hover:shadow-lg transition-all"
+              >
+                {editHook.isSaving ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Save className="mr-2 h-4 w-4" />
+                )}
+                Guardar Cambios
+              </Button>
+            </>
+          ) : (
+            <>
+              {canAssign && (
+                <Button
+                  onClick={() => setIsAssignModalOpen(true)}
+                  className="bg-primary text-primary-foreground font-bold h-10 !px-6 rounded-lg uppercase tracking-wider text-xs shadow-md shadow-primary/20 hover:shadow-lg transition-all"
+                >
+                  <UserPlus className="mr-2 h-4 w-4" />
+                  {request.assignedToId ? 'Reasignar Empleado' : 'Asignar Empleado'}
+                </Button>
+              )}
+              {canChangeStatus && (
+                <Button
+                  variant="secondary"
+                  onClick={() => setIsStatusModalOpen(true)}
+                  className="font-bold h-10 !px-6 rounded-lg uppercase tracking-wider text-xs"
+                >
+                  <RefreshCw className="mr-2 h-4 w-4" />
+                  Cambiar Estado
+                </Button>
+              )}
+              {canEdit && (
+                <Button
+                  variant="outline"
+                  onClick={editHook.enterEditMode}
+                  className="h-10 !px-6 border-primary text-primary hover:bg-primary/5 font-bold uppercase tracking-wider text-xs"
+                >
+                  <Pencil className="mr-2 h-3 w-3" />
+                  Editar
+                </Button>
+              )}
+            </>
           )}
         </div>
       </div>
 
       {/* Main Service Title */}
       <div className="space-y-1">
-        <h1 className="text-3xl font-black text-foreground tracking-tight leading-none">
-          {request.service?.name?.toUpperCase() || 'NOMBRE DEL SERVICIO'}
-        </h1>
+        {editHook.isEditing ? (
+          <div className="max-w-md">
+            <Combobox
+              options={editHook.serviceOptions}
+              value={editHook.formData.serviceId}
+              onChange={(value) => editHook.updateField('serviceId', value as string)}
+              placeholder="Seleccionar servicio..."
+              searchPlaceholder="Buscar servicio..."
+              emptyMessage="No se encontraron servicios."
+              className="w-full"
+            />
+          </div>
+        ) : (
+          <h1 className="text-3xl font-black text-foreground tracking-tight leading-none">
+            {request.service?.name?.toUpperCase() || 'NOMBRE DEL SERVICIO'}
+          </h1>
+        )}
         <p className="text-sm font-bold text-primary tracking-widest">
           #REQ-{requestId.slice(-8).toUpperCase()}
         </p>
@@ -272,14 +319,81 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
                 <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center">
                   <MapPin className="h-5 w-5 text-primary" />
                 </div>
-                <div>
+                <div className="flex-1">
                   <h4 className="text-[10px] uppercase font-black text-muted-foreground/60 tracking-widest mb-1">Ubicación</h4>
-                  <p className="font-bold text-sm text-foreground">
-                    {request.location?.building || 'Casa Principal'}, {request.location?.city || 'Escazú'}
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {request.location?.street}
-                  </p>
+                  {editHook.isEditing ? (
+                    <div className="space-y-3">
+                      <FormSelect
+                        label="Ubicación"
+                        value={editHook.formData.useNewLocation ? 'new' : editHook.formData.locationId}
+                        onValueChange={editHook.handleLocationChange}
+                        options={editHook.locationOptions}
+                      />
+                      {(editHook.formData.useNewLocation || editHook.formData.locationId) && (
+                        <>
+                          <div className="grid grid-cols-2 gap-3">
+                            <FormInput
+                              label="Edificio"
+                              value={editHook.formData.locationBuilding}
+                              onChange={(e) => editHook.updateField('locationBuilding', e.target.value)}
+                            />
+                            <FormInput
+                              label="Torre"
+                              value={editHook.formData.locationTower}
+                              onChange={(e) => editHook.updateField('locationTower', e.target.value)}
+                            />
+                          </div>
+                          <div className="grid grid-cols-2 gap-3">
+                            <FormInput
+                              label="Piso"
+                              value={editHook.formData.locationFloor}
+                              onChange={(e) => editHook.updateField('locationFloor', e.target.value)}
+                            />
+                            <FormInput
+                              label="Unidad"
+                              value={editHook.formData.locationUnit}
+                              onChange={(e) => editHook.updateField('locationUnit', e.target.value)}
+                            />
+                          </div>
+                          <FormInput
+                            label="Calle"
+                            value={editHook.formData.locationStreet}
+                            onChange={(e) => editHook.updateField('locationStreet', e.target.value)}
+                            required
+                          />
+                          <div className="grid grid-cols-3 gap-3">
+                            <FormInput
+                              label="Ciudad"
+                              value={editHook.formData.locationCity}
+                              onChange={(e) => editHook.updateField('locationCity', e.target.value)}
+                              required
+                            />
+                            <FormInput
+                              label="Estado"
+                              value={editHook.formData.locationState}
+                              onChange={(e) => editHook.updateField('locationState', e.target.value)}
+                              required
+                            />
+                            <FormInput
+                              label="C.P."
+                              value={editHook.formData.locationZip}
+                              onChange={(e) => editHook.updateField('locationZip', e.target.value)}
+                              required
+                            />
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  ) : (
+                    <>
+                      <p className="font-bold text-sm text-foreground">
+                        {request.location?.building || 'Casa Principal'}, {request.location?.city || 'Escazú'}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {request.location?.street}
+                      </p>
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -291,7 +405,9 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
                 <div>
                   <h4 className="text-[10px] uppercase font-black text-muted-foreground/60 tracking-widest mb-1">Tipo de Servicio</h4>
                   <p className="font-bold text-sm text-foreground">
-                    {request.service?.name || 'Servicio de Limpieza'}
+                    {editHook.isEditing
+                      ? editHook.selectedServiceName || 'Seleccione un servicio'
+                      : request.service?.name || 'Servicio de Limpieza'}
                   </p>
                 </div>
               </div>
@@ -301,14 +417,26 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
                 <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center">
                   <Calendar className="h-5 w-5 text-primary" />
                 </div>
-                <div>
+                <div className="flex-1">
                   <h4 className="text-[10px] uppercase font-black text-muted-foreground/60 tracking-widest mb-1">Fecha y Hora</h4>
-                  <p className="font-bold text-sm text-foreground">
-                    {executionDate.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {executionDate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
-                  </p>
+                  {editHook.isEditing ? (
+                    <FormInput
+                      label=""
+                      type="datetime-local"
+                      value={editHook.formData.executionDateTime}
+                      onChange={(e) => editHook.updateField('executionDateTime', e.target.value)}
+                      required
+                    />
+                  ) : (
+                    <>
+                      <p className="font-bold text-sm text-foreground">
+                        {executionDate.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {executionDate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
+                      </p>
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -330,11 +458,21 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
                 <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center">
                   <FileText className="h-5 w-5 text-primary" />
                 </div>
-                <div>
+                <div className="flex-1">
                   <h4 className="text-[10px] uppercase font-black text-muted-foreground/60 tracking-widest mb-1">Notas</h4>
-                  <p className="text-xs text-foreground/80 leading-relaxed">
-                    {typeof request.note === 'string' ? request.note : 'Sin notas adicionales.'}
-                  </p>
+                  {editHook.isEditing ? (
+                    <FormTextarea
+                      label=""
+                      value={editHook.formData.note}
+                      onChange={(e) => editHook.updateField('note', e.target.value)}
+                      rows={3}
+                      placeholder="Agregar notas..."
+                    />
+                  ) : (
+                    <p className="text-xs text-foreground/80 leading-relaxed">
+                      {requestNote || 'Sin notas adicionales.'}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>

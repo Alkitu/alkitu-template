@@ -22,6 +22,8 @@ import {
 } from './drawer';
 import { Button } from './button';
 
+import { cn } from './utils';
+
 interface ResponsiveModalProps {
   children: React.ReactNode;
   open?: boolean;
@@ -29,6 +31,7 @@ interface ResponsiveModalProps {
   title?: string;
   description?: string;
   trigger?: React.ReactNode;
+  contentClassName?: string;
 }
 
 // Inlined useMediaQuery hook to avoid creating new files (disk space issue)
@@ -64,6 +67,7 @@ export function ResponsiveModal({
   title,
   description,
   trigger,
+  contentClassName,
 }: ResponsiveModalProps) {
   const isDesktop = useMediaQuery('(min-width: 768px)');
 
@@ -71,7 +75,7 @@ export function ResponsiveModal({
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
         {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className={cn("sm:max-w-[425px]", contentClassName)}>
           <DialogHeader>
             {title && <DialogTitle>{title}</DialogTitle>}
             {description && <DialogDescription>{description}</DialogDescription>}
@@ -85,7 +89,7 @@ export function ResponsiveModal({
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       {trigger && <DrawerTrigger asChild>{trigger}</DrawerTrigger>}
-      <DrawerContent>
+      <DrawerContent className={contentClassName}>
         <DrawerHeader className="text-left">
           {title && <DrawerTitle>{title}</DrawerTitle>}
           {description && <DrawerDescription>{description}</DrawerDescription>}

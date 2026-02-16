@@ -29,6 +29,7 @@ const FEATURE_GATED_ROUTES: Record<string, string> = {
   '/admin/channels': 'team-channels',
   '/admin/analytics': 'analytics',
   '/admin/notifications': 'notifications',
+  '/admin/settings/email-templates': 'email-templates',
   // REMOVED: '/admin/settings/addons' - Must always be accessible to admins
 };
 

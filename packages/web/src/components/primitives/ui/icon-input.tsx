@@ -5,6 +5,7 @@ import { Button } from '@/components/primitives/ui/button';
 import { IconSelector } from './icon-selector';
 import { Ban } from 'lucide-react';
 import { Icons } from '@/lib/icons';
+import { isEmoji, findEmojiByChar } from '@/lib/emojis';
 import {
   Tooltip,
   TooltipContent,
@@ -27,8 +28,30 @@ export function IconInput({
 }: IconInputProps) {
   const [showSelector, setShowSelector] = React.useState(false);
 
-  // Get icon component if it exists
-  const IconComponent = value ? Icons[value as keyof typeof Icons] : null;
+  // Determine if value is an emoji or a Lucide icon name
+  const valueIsEmoji = value ? isEmoji(value) : false;
+  const IconComponent = value && !valueIsEmoji ? Icons[value as keyof typeof Icons] : null;
+  const emojiInfo = value && valueIsEmoji ? findEmojiByChar(value) : null;
+
+  const renderSelectedValue = () => {
+    if (valueIsEmoji) {
+      return (
+        <>
+          <span className="text-lg leading-none">{value}</span>
+          <span className="truncate">{emojiInfo?.name || 'Emoji'}</span>
+        </>
+      );
+    }
+    if (IconComponent) {
+      return (
+        <>
+          <IconComponent className="h-4 w-4 shrink-0" />
+          <span className="truncate">{value}</span>
+        </>
+      );
+    }
+    return <span className="text-muted-foreground">Seleccionar icono</span>;
+  };
 
   return (
     <div className="space-y-2">
@@ -38,6 +61,7 @@ export function IconInput({
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
+                type="button"
                 variant="outline"
                 size="icon"
                 onClick={() => onChange('')}
@@ -52,18 +76,12 @@ export function IconInput({
         </TooltipProvider>
 
         <Button
+          type="button"
           variant="outline"
           className="flex-1 justify-start gap-2"
           onClick={() => setShowSelector(true)}
         >
-          {IconComponent ? (
-            <>
-              <IconComponent className="h-4 w-4" />
-              <span>{value}</span>
-            </>
-          ) : (
-            <span className="text-muted-foreground">Seleccionar icono</span>
-          )}
+          {renderSelectedValue()}
         </Button>
       </div>
 

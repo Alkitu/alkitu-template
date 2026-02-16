@@ -24,6 +24,17 @@ export interface FieldOption {
 }
 
 /**
+ * Legacy field option format (string array)
+ * Supported for backward compatibility but not recommended for new code
+ */
+export type LegacyFieldOption = string;
+
+/**
+ * Combined field option type (supports both current and legacy formats)
+ */
+export type FieldOptionType = FieldOption | LegacyFieldOption;
+
+/**
  * Validation rules for fields
  */
 export interface FieldValidation {
@@ -57,7 +68,7 @@ export interface DynamicField {
   required: boolean;
   placeholder?: string;
   helpText?: string;
-  options?: FieldOption[];
+  options?: FieldOptionType[]; // Supports both FieldOption and string (legacy)
   validation?: FieldValidation;
 }
 

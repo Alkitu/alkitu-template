@@ -139,7 +139,7 @@ test.describe.serial('ALI-120: Notification System', () => {
 
       // Delete test location - check if client page is still active
       if (!clientPage.isClosed()) {
-        await clientPage.goto('http://localhost:3000/es/locations');
+        await clientPage.goto('http://localhost:3000/es/client/locations');
       await clientPage.waitForLoadState('networkidle');
 
       const locationCard = clientPage
@@ -217,7 +217,7 @@ test.describe.serial('ALI-120: Notification System', () => {
       const clientPage = authenticatedClientPage;
 
       // Navigate to locations page (shared route, not under /client)
-      await clientPage.goto('http://localhost:3000/es/locations');
+      await clientPage.goto('http://localhost:3000/es/client/locations');
       await clientPage.waitForLoadState('networkidle');
 
       // Create test location
@@ -665,7 +665,7 @@ test.describe.serial('ALI-120: Notification System', () => {
 
       // Delete test location - check if client page is still active
       if (!clientPage.isClosed()) {
-        await clientPage.goto('http://localhost:3000/es/locations');
+        await clientPage.goto('http://localhost:3000/es/client/locations');
       await clientPage.waitForLoadState('networkidle');
 
       const locationCard = clientPage

@@ -1,4 +1,3 @@
-import { z } from 'zod';
 import { UsersService } from '../../users/users.service';
 import { EmailService } from '../../email/email.service';
 import { t, protectedProcedure } from '../trpc';
@@ -25,8 +24,6 @@ import {
   anonymizeUserSchema,
   createImpersonationTokenSchema,
 } from '../schemas/user.schemas';
-import { CreateUserDto } from '../../users/dto/create-user.dto';
-import { UpdateProfileDto } from '../../users/dto/update-profile.dto';
 import { FilterUsersDto } from '../../users/dto/filter-users.dto';
 import {
   BulkDeleteUsersDto,
@@ -276,7 +273,10 @@ export const createUserRouter = (
       .input(sendMessageToUserSchema)
       .mutation(async ({ input }) => {
         try {
-          return await usersService.sendMessageToUser(input.userId, input.message);
+          return await usersService.sendMessageToUser(
+            input.userId,
+            input.message,
+          );
         } catch (error) {
           handlePrismaError(error, 'send message to user');
         }

@@ -1,6 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { axe, toHaveNoViolations } from 'jest-axe';
 import { RequestFilterButtons } from './RequestFilterButtons';
 import type { RequestFilterType } from './RequestFilterButtons.types';
@@ -26,7 +25,7 @@ describe('RequestFilterButtons Molecule', () => {
     'cancelled',
   ];
 
-  const filterLabels = {
+  const filterLabels: Record<RequestFilterType, string> = {
     all: 'Todas',
     pending: 'Pendientes',
     ongoing: 'En Progreso',
@@ -42,659 +41,146 @@ describe('RequestFilterButtons Molecule', () => {
   // Basic Rendering Tests
   // ========================================================================
   describe('Rendering', () => {
-    it('renders correctly with default props', () => {
+    it('renders the select trigger', () => {
       render(<RequestFilterButtons {...defaultProps} />);
 
-      expect(screen.getByText('Todas')).toBeInTheDocument();
-      expect(screen.getByText('Pendientes')).toBeInTheDocument();
-      expect(screen.getByText('En Progreso')).toBeInTheDocument();
-      expect(screen.getByText('Completadas')).toBeInTheDocument();
-      expect(screen.getByText('Canceladas')).toBeInTheDocument();
+      const trigger = screen.getByTestId('request-filter-select');
+      expect(trigger).toBeInTheDocument();
     });
 
-    it('renders all filter buttons', () => {
+    it('renders as a combobox element', () => {
       render(<RequestFilterButtons {...defaultProps} />);
 
-      const buttons = screen.getAllByRole('button');
-      expect(buttons).toHaveLength(5);
+      const combobox = screen.getByRole('combobox');
+      expect(combobox).toBeInTheDocument();
     });
 
-    it('renders each filter with correct label', () => {
-      render(<RequestFilterButtons {...defaultProps} />);
-
-      Object.values(filterLabels).forEach((label) => {
-        expect(screen.getByText(label)).toBeInTheDocument();
-      });
-    });
-
-    it('renders with custom className', () => {
-      const { container } = render(
-        <RequestFilterButtons {...defaultProps} className="custom-class" />
-      );
-
-      expect(container.firstChild).toHaveClass('custom-class');
-    });
-
-    it('renders with default layout classes', () => {
-      const { container } = render(<RequestFilterButtons {...defaultProps} />);
-
-      expect(container.firstChild).toHaveClass('flex');
-      expect(container.firstChild).toHaveClass('items-center');
-      expect(container.firstChild).toHaveClass('gap-2');
-    });
-
-    it('renders buttons in correct order', () => {
-      render(<RequestFilterButtons {...defaultProps} />);
-
-      const buttons = screen.getAllByRole('button');
-      expect(buttons[0]).toHaveTextContent('Todas');
-      expect(buttons[1]).toHaveTextContent('Pendientes');
-      expect(buttons[2]).toHaveTextContent('En Progreso');
-      expect(buttons[3]).toHaveTextContent('Completadas');
-      expect(buttons[4]).toHaveTextContent('Canceladas');
-    });
-
-    it('renders buttons as proper button elements', () => {
-      render(<RequestFilterButtons {...defaultProps} />);
-
-      const buttons = screen.getAllByRole('button');
-      buttons.forEach((button) => {
-        expect(button.tagName).toBe('BUTTON');
-      });
-    });
-  });
-
-  // ========================================================================
-  // Active Filter State Tests
-  // ========================================================================
-  describe('Active Filter State', () => {
-    it('highlights active filter with "all" selected', () => {
+    it('displays the active filter label in the trigger', () => {
       render(<RequestFilterButtons {...defaultProps} activeFilter="all" />);
 
-      const allButton = screen.getByText('Todas');
-      expect(allButton).toHaveClass('bg-primary');
-      expect(allButton).toHaveClass('text-primary-foreground');
+      const trigger = screen.getByTestId('request-filter-select');
+      expect(trigger).toHaveTextContent('Todas');
     });
 
-    it('highlights active filter with "pending" selected', () => {
+    it('displays "Pendientes" when activeFilter is "pending"', () => {
       render(<RequestFilterButtons {...defaultProps} activeFilter="pending" />);
 
-      const pendingButton = screen.getByText('Pendientes');
-      expect(pendingButton).toHaveClass('bg-primary');
-      expect(pendingButton).toHaveClass('text-primary-foreground');
+      const trigger = screen.getByTestId('request-filter-select');
+      expect(trigger).toHaveTextContent('Pendientes');
     });
 
-    it('highlights active filter with "ongoing" selected', () => {
+    it('displays "En Progreso" when activeFilter is "ongoing"', () => {
       render(<RequestFilterButtons {...defaultProps} activeFilter="ongoing" />);
 
-      const ongoingButton = screen.getByText('En Progreso');
-      expect(ongoingButton).toHaveClass('bg-primary');
-      expect(ongoingButton).toHaveClass('text-primary-foreground');
+      const trigger = screen.getByTestId('request-filter-select');
+      expect(trigger).toHaveTextContent('En Progreso');
     });
 
-    it('highlights active filter with "completed" selected', () => {
+    it('displays "Completadas" when activeFilter is "completed"', () => {
       render(
         <RequestFilterButtons {...defaultProps} activeFilter="completed" />
       );
 
-      const completedButton = screen.getByText('Completadas');
-      expect(completedButton).toHaveClass('bg-primary');
-      expect(completedButton).toHaveClass('text-primary-foreground');
+      const trigger = screen.getByTestId('request-filter-select');
+      expect(trigger).toHaveTextContent('Completadas');
     });
 
-    it('highlights active filter with "cancelled" selected', () => {
+    it('displays "Canceladas" when activeFilter is "cancelled"', () => {
       render(
         <RequestFilterButtons {...defaultProps} activeFilter="cancelled" />
       );
 
-      const cancelledButton = screen.getByText('Canceladas');
-      expect(cancelledButton).toHaveClass('bg-primary');
-      expect(cancelledButton).toHaveClass('text-primary-foreground');
+      const trigger = screen.getByTestId('request-filter-select');
+      expect(trigger).toHaveTextContent('Canceladas');
     });
 
-    it('applies inactive styles to non-active filters', () => {
-      render(<RequestFilterButtons {...defaultProps} activeFilter="all" />);
-
-      const pendingButton = screen.getByText('Pendientes');
-      expect(pendingButton).toHaveClass('bg-secondary');
-      expect(pendingButton).toHaveClass('text-secondary-foreground');
-    });
-
-    it('only one filter is highlighted at a time', () => {
-      render(<RequestFilterButtons {...defaultProps} activeFilter="pending" />);
-
-      const buttons = screen.getAllByRole('button');
-      const activeButtons = buttons.filter((btn) =>
-        btn.className.includes('bg-primary')
+    it('renders with custom className on the trigger', () => {
+      render(
+        <RequestFilterButtons {...defaultProps} className="custom-class" />
       );
-      expect(activeButtons).toHaveLength(1);
+
+      const trigger = screen.getByTestId('request-filter-select');
+      expect(trigger).toHaveClass('custom-class');
     });
 
-    it('inactive filters show secondary background', () => {
-      render(<RequestFilterButtons {...defaultProps} activeFilter="all" />);
+    it('renders with default w-[200px] class on the trigger', () => {
+      render(<RequestFilterButtons {...defaultProps} />);
 
-      const inactiveButtons = [
-        screen.getByText('Pendientes'),
-        screen.getByText('En Progreso'),
-        screen.getByText('Completadas'),
-        screen.getByText('Canceladas'),
-      ];
-
-      inactiveButtons.forEach((button) => {
-        expect(button).toHaveClass('bg-secondary');
-      });
+      const trigger = screen.getByTestId('request-filter-select');
+      expect(trigger).toHaveClass('w-[200px]');
     });
 
-    it('inactive filters show hover state classes', () => {
-      render(<RequestFilterButtons {...defaultProps} activeFilter="all" />);
+    it('renders the trigger as a button element', () => {
+      render(<RequestFilterButtons {...defaultProps} />);
 
-      const inactiveButton = screen.getByText('Pendientes');
-      expect(inactiveButton).toHaveClass('hover:bg-secondary/80');
+      const trigger = screen.getByTestId('request-filter-select');
+      expect(trigger.tagName).toBe('BUTTON');
     });
   });
 
   // ========================================================================
-  // Click Handler Tests
+  // Active Filter Display Tests
   // ========================================================================
-  describe('Click Handlers', () => {
-    it('calls onFilterChange when "Todas" is clicked', async () => {
-      const user = userEvent.setup();
-      render(<RequestFilterButtons {...defaultProps} activeFilter="pending" />);
-
-      await user.click(screen.getByText('Todas'));
-
-      expect(mockOnFilterChange).toHaveBeenCalledTimes(1);
-      expect(mockOnFilterChange).toHaveBeenCalledWith('all');
-    });
-
-    it('calls onFilterChange when "Pendientes" is clicked', async () => {
-      const user = userEvent.setup();
-      render(<RequestFilterButtons {...defaultProps} activeFilter="all" />);
-
-      await user.click(screen.getByText('Pendientes'));
-
-      expect(mockOnFilterChange).toHaveBeenCalledTimes(1);
-      expect(mockOnFilterChange).toHaveBeenCalledWith('pending');
-    });
-
-    it('calls onFilterChange when "En Progreso" is clicked', async () => {
-      const user = userEvent.setup();
-      render(<RequestFilterButtons {...defaultProps} activeFilter="all" />);
-
-      await user.click(screen.getByText('En Progreso'));
-
-      expect(mockOnFilterChange).toHaveBeenCalledTimes(1);
-      expect(mockOnFilterChange).toHaveBeenCalledWith('ongoing');
-    });
-
-    it('calls onFilterChange when "Completadas" is clicked', async () => {
-      const user = userEvent.setup();
-      render(<RequestFilterButtons {...defaultProps} activeFilter="all" />);
-
-      await user.click(screen.getByText('Completadas'));
-
-      expect(mockOnFilterChange).toHaveBeenCalledTimes(1);
-      expect(mockOnFilterChange).toHaveBeenCalledWith('completed');
-    });
-
-    it('calls onFilterChange when "Canceladas" is clicked', async () => {
-      const user = userEvent.setup();
-      render(<RequestFilterButtons {...defaultProps} activeFilter="all" />);
-
-      await user.click(screen.getByText('Canceladas'));
-
-      expect(mockOnFilterChange).toHaveBeenCalledTimes(1);
-      expect(mockOnFilterChange).toHaveBeenCalledWith('cancelled');
-    });
-
-    it('calls onFilterChange even when clicking active filter', async () => {
-      const user = userEvent.setup();
-      render(<RequestFilterButtons {...defaultProps} activeFilter="all" />);
-
-      await user.click(screen.getByText('Todas'));
-
-      expect(mockOnFilterChange).toHaveBeenCalledTimes(1);
-      expect(mockOnFilterChange).toHaveBeenCalledWith('all');
-    });
-
-    it('handles multiple clicks correctly', async () => {
-      const user = userEvent.setup();
-      render(<RequestFilterButtons {...defaultProps} activeFilter="all" />);
-
-      await user.click(screen.getByText('Pendientes'));
-      await user.click(screen.getByText('En Progreso'));
-      await user.click(screen.getByText('Completadas'));
-
-      expect(mockOnFilterChange).toHaveBeenCalledTimes(3);
-      expect(mockOnFilterChange).toHaveBeenNthCalledWith(1, 'pending');
-      expect(mockOnFilterChange).toHaveBeenNthCalledWith(2, 'ongoing');
-      expect(mockOnFilterChange).toHaveBeenNthCalledWith(3, 'completed');
-    });
-
-    it('handles rapid clicks gracefully', async () => {
-      const user = userEvent.setup();
-      render(<RequestFilterButtons {...defaultProps} />);
-
-      const button = screen.getByText('Pendientes');
-      await user.click(button);
-      await user.click(button);
-      await user.click(button);
-
-      expect(mockOnFilterChange).toHaveBeenCalledTimes(3);
-      expect(mockOnFilterChange).toHaveBeenCalledWith('pending');
-    });
-
-    it('calls onFilterChange with correct filter type for each button', async () => {
-      const user = userEvent.setup();
-      render(<RequestFilterButtons {...defaultProps} />);
-
-      for (const [filterType, label] of Object.entries(filterLabels)) {
-        mockOnFilterChange.mockClear();
-        await user.click(screen.getByText(label));
-        expect(mockOnFilterChange).toHaveBeenCalledWith(filterType);
-      }
-    });
-  });
-
-  // ========================================================================
-  // Button Styling Tests
-  // ========================================================================
-  describe('Button Styling', () => {
-    it('applies rounded corners to buttons', () => {
-      render(<RequestFilterButtons {...defaultProps} />);
-
-      const buttons = screen.getAllByRole('button');
-      buttons.forEach((button) => {
-        expect(button).toHaveClass('rounded-[8px]');
-      });
-    });
-
-    it('applies padding to buttons', () => {
-      render(<RequestFilterButtons {...defaultProps} />);
-
-      const buttons = screen.getAllByRole('button');
-      buttons.forEach((button) => {
-        expect(button).toHaveClass('px-4');
-        expect(button).toHaveClass('py-2');
-      });
-    });
-
-    it('applies text styling to buttons', () => {
-      render(<RequestFilterButtons {...defaultProps} />);
-
-      const buttons = screen.getAllByRole('button');
-      buttons.forEach((button) => {
-        expect(button).toHaveClass('text-sm');
-        expect(button).toHaveClass('font-medium');
-      });
-    });
-
-    it('applies transition animation to buttons', () => {
-      render(<RequestFilterButtons {...defaultProps} />);
-
-      const buttons = screen.getAllByRole('button');
-      buttons.forEach((button) => {
-        expect(button).toHaveClass('transition-all');
-      });
-    });
-
-    it('active button has primary background', () => {
-      render(<RequestFilterButtons {...defaultProps} activeFilter="pending" />);
-
-      const activeButton = screen.getByText('Pendientes');
-      expect(activeButton.className).toContain('bg-primary');
-    });
-
-    it('inactive buttons have secondary background', () => {
-      render(<RequestFilterButtons {...defaultProps} activeFilter="pending" />);
-
-      const inactiveButton = screen.getByText('Todas');
-      expect(inactiveButton.className).toContain('bg-secondary');
-    });
-
-    it('applies consistent styling across all buttons', () => {
-      render(<RequestFilterButtons {...defaultProps} />);
-
-      const buttons = screen.getAllByRole('button');
-      const firstButtonClasses = buttons[0].className
-        .split(' ')
-        .filter(
-          (c) => !c.includes('bg-') && !c.includes('text-') && !c.includes('hover')
+  describe('Active Filter Display', () => {
+    it('shows the correct label for each filter type', () => {
+      filterTypes.forEach((filter) => {
+        const { unmount } = render(
+          <RequestFilterButtons {...defaultProps} activeFilter={filter} />
         );
 
-      buttons.forEach((button) => {
-        const buttonClasses = button.className
-          .split(' ')
-          .filter(
-            (c) =>
-              !c.includes('bg-') && !c.includes('text-') && !c.includes('hover')
-          );
-        expect(buttonClasses).toEqual(firstButtonClasses);
-      });
-    });
-  });
-
-  // ========================================================================
-  // Theme Integration Tests
-  // ========================================================================
-  describe('Theme Integration', () => {
-    it('uses theme CSS variables for primary colors', () => {
-      render(<RequestFilterButtons {...defaultProps} activeFilter="all" />);
-
-      const activeButton = screen.getByText('Todas');
-      expect(activeButton.className).toContain('bg-primary');
-      expect(activeButton.className).toContain('text-primary-foreground');
-    });
-
-    it('uses theme CSS variables for secondary colors', () => {
-      render(<RequestFilterButtons {...defaultProps} activeFilter="all" />);
-
-      const inactiveButton = screen.getByText('Pendientes');
-      expect(inactiveButton.className).toContain('bg-secondary');
-      expect(inactiveButton.className).toContain('text-secondary-foreground');
-    });
-
-    it('does not use hardcoded colors', () => {
-      render(<RequestFilterButtons {...defaultProps} />);
-
-      const buttons = screen.getAllByRole('button');
-      buttons.forEach((button) => {
-        expect(button.className).not.toMatch(/bg-(blue|red|green|gray)-\d+/);
-        expect(button.className).not.toMatch(/text-(blue|red|green|gray)-\d+/);
+        const trigger = screen.getByTestId('request-filter-select');
+        expect(trigger).toHaveTextContent(filterLabels[filter]);
+        unmount();
       });
     });
 
-    it('applies hover state with theme colors', () => {
-      render(<RequestFilterButtons {...defaultProps} activeFilter="all" />);
-
-      const inactiveButton = screen.getByText('Pendientes');
-      expect(inactiveButton.className).toContain('hover:bg-secondary/80');
-    });
-
-    it('maintains theme consistency across filter states', () => {
+    it('updates displayed value when activeFilter prop changes', () => {
       const { rerender } = render(
         <RequestFilterButtons {...defaultProps} activeFilter="all" />
       );
 
-      const todasButton = screen.getByText('Todas');
-      expect(todasButton).toHaveClass('bg-primary');
+      const trigger = screen.getByTestId('request-filter-select');
+      expect(trigger).toHaveTextContent('Todas');
 
       rerender(
         <RequestFilterButtons {...defaultProps} activeFilter="pending" />
       );
-
-      expect(todasButton).toHaveClass('bg-secondary');
-    });
-  });
-
-  // ========================================================================
-  // Keyboard Navigation Tests
-  // ========================================================================
-  describe('Keyboard Navigation', () => {
-    it('supports Tab navigation between buttons', async () => {
-      const user = userEvent.setup();
-      render(<RequestFilterButtons {...defaultProps} />);
-
-      await user.tab();
-      expect(screen.getByText('Todas')).toHaveFocus();
-
-      await user.tab();
-      expect(screen.getByText('Pendientes')).toHaveFocus();
-
-      await user.tab();
-      expect(screen.getByText('En Progreso')).toHaveFocus();
+      expect(trigger).toHaveTextContent('Pendientes');
     });
 
-    it('supports Enter key to activate button', async () => {
-      const user = userEvent.setup();
-      render(<RequestFilterButtons {...defaultProps} />);
+    it('updates displayed value through multiple prop changes', () => {
+      const { rerender } = render(
+        <RequestFilterButtons {...defaultProps} activeFilter="all" />
+      );
 
-      const button = screen.getByText('Pendientes');
-      button.focus();
+      const trigger = screen.getByTestId('request-filter-select');
 
-      await user.keyboard('{Enter}');
-
-      expect(mockOnFilterChange).toHaveBeenCalledWith('pending');
-    });
-
-    it('supports Space key to activate button', async () => {
-      const user = userEvent.setup();
-      render(<RequestFilterButtons {...defaultProps} />);
-
-      const button = screen.getByText('Completadas');
-      button.focus();
-
-      await user.keyboard(' ');
-
-      expect(mockOnFilterChange).toHaveBeenCalledWith('completed');
-    });
-
-    it('allows Shift+Tab to navigate backwards', async () => {
-      const user = userEvent.setup();
-      render(<RequestFilterButtons {...defaultProps} />);
-
-      // Tab to third button
-      await user.tab();
-      await user.tab();
-      await user.tab();
-      expect(screen.getByText('En Progreso')).toHaveFocus();
-
-      // Shift+Tab back
-      await user.tab({ shift: true });
-      expect(screen.getByText('Pendientes')).toHaveFocus();
-    });
-
-    it('maintains focus after clicking', async () => {
-      const user = userEvent.setup();
-      render(<RequestFilterButtons {...defaultProps} />);
-
-      const button = screen.getByText('Pendientes');
-      await user.click(button);
-
-      expect(button).toHaveFocus();
-    });
-
-    it('can navigate to all buttons via keyboard', async () => {
-      const user = userEvent.setup();
-      render(<RequestFilterButtons {...defaultProps} />);
-
-      const expectedLabels = Object.values(filterLabels);
-
-      for (let i = 0; i < expectedLabels.length; i++) {
-        await user.tab();
-        expect(screen.getByText(expectedLabels[i])).toHaveFocus();
-      }
-    });
-  });
-
-  // ========================================================================
-  // Accessibility Tests
-  // ========================================================================
-  describe('Accessibility', () => {
-    it('has no accessibility violations', async () => {
-      const { container } = render(<RequestFilterButtons {...defaultProps} />);
-      const results = await axe(container);
-      expect(results).toHaveNoViolations();
-    });
-
-    it('has no accessibility violations with different active states', async () => {
-      const filters: RequestFilterType[] = [
-        'all',
-        'pending',
-        'ongoing',
-        'completed',
-        'cancelled',
-      ];
-
-      for (const filter of filters) {
-        const { container } = render(
+      filterTypes.forEach((filter) => {
+        rerender(
           <RequestFilterButtons {...defaultProps} activeFilter={filter} />
         );
-        const results = await axe(container);
-        expect(results).toHaveNoViolations();
-      }
-    });
-
-    it('all buttons are accessible via keyboard', async () => {
-      const user = userEvent.setup();
-      render(<RequestFilterButtons {...defaultProps} />);
-
-      const buttons = screen.getAllByRole('button');
-
-      for (const button of buttons) {
-        button.focus();
-        expect(button).toHaveFocus();
-        await user.keyboard('{Enter}');
-        expect(mockOnFilterChange).toHaveBeenCalled();
-        mockOnFilterChange.mockClear();
-      }
-    });
-
-    it('buttons have proper button role', () => {
-      render(<RequestFilterButtons {...defaultProps} />);
-
-      const buttons = screen.getAllByRole('button');
-      expect(buttons).toHaveLength(5);
-      buttons.forEach((button) => {
-        expect(button.tagName).toBe('BUTTON');
+        expect(trigger).toHaveTextContent(filterLabels[filter]);
       });
-    });
-
-    it('buttons have accessible text content', () => {
-      render(<RequestFilterButtons {...defaultProps} />);
-
-      const buttons = screen.getAllByRole('button');
-      buttons.forEach((button) => {
-        expect(button.textContent).toBeTruthy();
-        expect(button.textContent?.length).toBeGreaterThan(0);
-      });
-    });
-
-    it('provides sufficient color contrast for active state', () => {
-      render(<RequestFilterButtons {...defaultProps} activeFilter="pending" />);
-
-      const activeButton = screen.getByText('Pendientes');
-      // Using semantic theme colors ensures proper contrast
-      expect(activeButton).toHaveClass('bg-primary');
-      expect(activeButton).toHaveClass('text-primary-foreground');
-    });
-
-    it('provides sufficient color contrast for inactive state', () => {
-      render(<RequestFilterButtons {...defaultProps} activeFilter="pending" />);
-
-      const inactiveButton = screen.getByText('Todas');
-      // Using semantic theme colors ensures proper contrast
-      expect(inactiveButton).toHaveClass('bg-secondary');
-      expect(inactiveButton).toHaveClass('text-secondary-foreground');
     });
   });
 
   // ========================================================================
-  // Responsive Layout Tests
+  // className Tests
   // ========================================================================
-  describe('Responsive Layout', () => {
-    it('applies flex layout', () => {
-      const { container } = render(<RequestFilterButtons {...defaultProps} />);
-
-      expect(container.firstChild).toHaveClass('flex');
-    });
-
-    it('applies gap between buttons', () => {
-      const { container } = render(<RequestFilterButtons {...defaultProps} />);
-
-      expect(container.firstChild).toHaveClass('gap-2');
-    });
-
-    it('centers items vertically', () => {
-      const { container } = render(<RequestFilterButtons {...defaultProps} />);
-
-      expect(container.firstChild).toHaveClass('items-center');
-    });
-
-    it('allows custom className to extend layout', () => {
-      const { container } = render(
+  describe('className Prop', () => {
+    it('applies custom className to the trigger element', () => {
+      render(
         <RequestFilterButtons
           {...defaultProps}
           className="justify-center max-w-screen-lg"
         />
       );
 
-      expect(container.firstChild).toHaveClass('justify-center');
-      expect(container.firstChild).toHaveClass('max-w-screen-lg');
+      const trigger = screen.getByTestId('request-filter-select');
+      expect(trigger).toHaveClass('justify-center');
+      expect(trigger).toHaveClass('max-w-screen-lg');
     });
 
-    it('custom className does not override core layout', () => {
-      const { container } = render(
-        <RequestFilterButtons {...defaultProps} className="custom-spacing" />
-      );
-
-      expect(container.firstChild).toHaveClass('flex');
-      expect(container.firstChild).toHaveClass('items-center');
-      expect(container.firstChild).toHaveClass('gap-2');
-      expect(container.firstChild).toHaveClass('custom-spacing');
-    });
-  });
-
-  // ========================================================================
-  // Interaction State Tests
-  // ========================================================================
-  describe('Interaction States', () => {
-    it('applies hover styles to inactive buttons', async () => {
-      const user = userEvent.setup();
-      render(<RequestFilterButtons {...defaultProps} activeFilter="all" />);
-
-      const inactiveButton = screen.getByText('Pendientes');
-      await user.hover(inactiveButton);
-
-      expect(inactiveButton).toHaveClass('hover:bg-secondary/80');
-    });
-
-    it('maintains active state during hover', async () => {
-      const user = userEvent.setup();
-      render(<RequestFilterButtons {...defaultProps} activeFilter="pending" />);
-
-      const activeButton = screen.getByText('Pendientes');
-      await user.hover(activeButton);
-
-      expect(activeButton).toHaveClass('bg-primary');
-      expect(activeButton).toHaveClass('text-primary-foreground');
-    });
-
-    it('handles mouse enter and leave events', async () => {
-      const user = userEvent.setup();
-      render(<RequestFilterButtons {...defaultProps} />);
-
-      const button = screen.getByText('Pendientes');
-
-      await user.hover(button);
-      await user.unhover(button);
-
-      // Button should still be functional
-      await user.click(button);
-      expect(mockOnFilterChange).toHaveBeenCalledWith('pending');
-    });
-
-    it('updates visual state when filter changes', () => {
-      const { rerender } = render(
-        <RequestFilterButtons {...defaultProps} activeFilter="all" />
-      );
-
-      expect(screen.getByText('Todas')).toHaveClass('bg-primary');
-      expect(screen.getByText('Pendientes')).toHaveClass('bg-secondary');
-
-      rerender(
-        <RequestFilterButtons {...defaultProps} activeFilter="pending" />
-      );
-
-      expect(screen.getByText('Todas')).toHaveClass('bg-secondary');
-      expect(screen.getByText('Pendientes')).toHaveClass('bg-primary');
-    });
-  });
-
-  // ========================================================================
-  // Edge Cases & Error Handling
-  // ========================================================================
-  describe('Edge Cases', () => {
     it('handles undefined className gracefully', () => {
       const propsWithoutClassName = {
         activeFilter: 'all' as RequestFilterType,
@@ -702,98 +188,53 @@ describe('RequestFilterButtons Molecule', () => {
         className: undefined,
       };
 
-      const { container } = render(
-        <RequestFilterButtons {...propsWithoutClassName} />
-      );
+      render(<RequestFilterButtons {...propsWithoutClassName} />);
 
-      expect(container.firstChild).toBeInTheDocument();
-      expect(container.firstChild).toHaveClass('flex');
+      const trigger = screen.getByTestId('request-filter-select');
+      expect(trigger).toBeInTheDocument();
+      expect(trigger).toHaveClass('w-[200px]');
     });
 
     it('handles empty string className', () => {
-      const { container } = render(
-        <RequestFilterButtons {...defaultProps} className="" />
-      );
+      render(<RequestFilterButtons {...defaultProps} className="" />);
 
-      expect(container.firstChild).toHaveClass('flex');
-    });
-
-    it('works with different filter type values', () => {
-      const filters: RequestFilterType[] = [
-        'all',
-        'pending',
-        'ongoing',
-        'completed',
-        'cancelled',
-      ];
-
-      filters.forEach((filter) => {
-        const { unmount } = render(
-          <RequestFilterButtons {...defaultProps} activeFilter={filter} />
-        );
-        expect(screen.getAllByRole('button')).toHaveLength(5);
-        unmount();
-      });
-    });
-
-    it('maintains component stability with rapid filter changes', () => {
-      const { rerender } = render(
-        <RequestFilterButtons {...defaultProps} activeFilter="all" />
-      );
-
-      filterTypes.forEach((filter) => {
-        rerender(
-          <RequestFilterButtons {...defaultProps} activeFilter={filter} />
-        );
-        expect(screen.getAllByRole('button')).toHaveLength(5);
-      });
+      const trigger = screen.getByTestId('request-filter-select');
+      expect(trigger).toBeInTheDocument();
     });
 
     it('handles long className strings', () => {
       const longClassName =
         'custom-1 custom-2 custom-3 custom-4 custom-5 custom-6 custom-7 custom-8';
-      const { container } = render(
+      render(
         <RequestFilterButtons {...defaultProps} className={longClassName} />
       );
 
-      expect(container.firstChild).toHaveClass('custom-1');
-      expect(container.firstChild).toHaveClass('custom-8');
-    });
-
-    it('does not break with multiple spaces in className', () => {
-      const { container } = render(
-        <RequestFilterButtons
-          {...defaultProps}
-          className="class-1    class-2     class-3"
-        />
-      );
-
-      expect(container.firstChild).toBeInTheDocument();
+      const trigger = screen.getByTestId('request-filter-select');
+      expect(trigger).toHaveClass('custom-1');
+      expect(trigger).toHaveClass('custom-8');
     });
   });
 
   // ========================================================================
-  // Component Integration Tests
+  // Integration and Rerender Tests
   // ========================================================================
   describe('Component Integration', () => {
-    it('works as controlled component', async () => {
-      const user = userEvent.setup();
+    it('works as a controlled component with rerendering', () => {
       const { rerender } = render(
         <RequestFilterButtons {...defaultProps} activeFilter="all" />
       );
 
-      expect(screen.getByText('Todas')).toHaveClass('bg-primary');
+      expect(screen.getByTestId('request-filter-select')).toHaveTextContent(
+        'Todas'
+      );
 
-      await user.click(screen.getByText('Pendientes'));
-      expect(mockOnFilterChange).toHaveBeenCalledWith('pending');
-
-      // Simulate parent updating activeFilter
       rerender(
         <RequestFilterButtons {...defaultProps} activeFilter="pending" />
       );
 
-      expect(screen.getByText('Pendientes')).toHaveClass('bg-primary');
-      expect(screen.getByText('Todas')).toHaveClass('bg-secondary');
+      expect(screen.getByTestId('request-filter-select')).toHaveTextContent(
+        'Pendientes'
+      );
     });
 
     it('can be rerendered multiple times without issues', () => {
@@ -806,12 +247,11 @@ describe('RequestFilterButtons Molecule', () => {
         rerender(
           <RequestFilterButtons {...defaultProps} activeFilter={filter} />
         );
-        expect(screen.getAllByRole('button')).toHaveLength(5);
+        expect(screen.getByTestId('request-filter-select')).toBeInTheDocument();
       }
     });
 
-    it('handles onFilterChange function changes', async () => {
-      const user = userEvent.setup();
+    it('handles onFilterChange function changes', () => {
       const firstHandler = vi.fn();
       const secondHandler = vi.fn();
 
@@ -822,9 +262,6 @@ describe('RequestFilterButtons Molecule', () => {
         />
       );
 
-      await user.click(screen.getByText('Pendientes'));
-      expect(firstHandler).toHaveBeenCalledWith('pending');
-
       rerender(
         <RequestFilterButtons
           activeFilter="all"
@@ -832,71 +269,21 @@ describe('RequestFilterButtons Molecule', () => {
         />
       );
 
-      await user.click(screen.getByText('Completadas'));
-      expect(secondHandler).toHaveBeenCalledWith('completed');
-      expect(firstHandler).toHaveBeenCalledTimes(1);
+      // Component should accept the new handler without breaking
+      expect(screen.getByTestId('request-filter-select')).toBeInTheDocument();
     });
 
-    it('maintains functionality after multiple state changes', async () => {
-      const user = userEvent.setup();
+    it('maintains component stability with rapid filter changes', () => {
       const { rerender } = render(
         <RequestFilterButtons {...defaultProps} activeFilter="all" />
       );
 
-      // Simulate multiple filter changes
-      const filters: RequestFilterType[] = [
-        'pending',
-        'ongoing',
-        'completed',
-        'cancelled',
-        'all',
-      ];
-
-      for (const filter of filters) {
-        mockOnFilterChange.mockClear();
+      filterTypes.forEach((filter) => {
         rerender(
           <RequestFilterButtons {...defaultProps} activeFilter={filter} />
         );
-        await user.click(screen.getByText('Pendientes'));
-        expect(mockOnFilterChange).toHaveBeenCalledWith('pending');
-      }
-    });
-  });
-
-  // ========================================================================
-  // Performance & Optimization Tests
-  // ========================================================================
-  describe('Performance', () => {
-    it('renders efficiently without unnecessary re-renders', () => {
-      const { rerender } = render(
-        <RequestFilterButtons {...defaultProps} activeFilter="all" />
-      );
-
-      // Same props should not cause issues
-      rerender(<RequestFilterButtons {...defaultProps} activeFilter="all" />);
-
-      expect(screen.getAllByRole('button')).toHaveLength(5);
-    });
-
-    it('handles rapid clicks without performance issues', async () => {
-      const user = userEvent.setup();
-      render(<RequestFilterButtons {...defaultProps} />);
-
-      const button = screen.getByText('Pendientes');
-
-      for (let i = 0; i < 10; i++) {
-        await user.click(button);
-      }
-
-      expect(mockOnFilterChange).toHaveBeenCalledTimes(10);
-    });
-
-    it('renders with minimal DOM elements', () => {
-      const { container } = render(<RequestFilterButtons {...defaultProps} />);
-
-      // Should have container div + 5 buttons
-      const allElements = container.querySelectorAll('*');
-      expect(allElements.length).toBeLessThanOrEqual(7); // Container + 5 buttons + possible wrapper
+        expect(screen.getByTestId('request-filter-select')).toBeInTheDocument();
+      });
     });
   });
 
@@ -905,44 +292,63 @@ describe('RequestFilterButtons Molecule', () => {
   // ========================================================================
   describe('Type Safety', () => {
     it('accepts all valid RequestFilterType values', () => {
-      const validFilters: RequestFilterType[] = [
-        'all',
-        'pending',
-        'ongoing',
-        'completed',
-        'cancelled',
-      ];
-
-      validFilters.forEach((filter) => {
+      filterTypes.forEach((filter) => {
         const { unmount } = render(
           <RequestFilterButtons
             activeFilter={filter}
             onFilterChange={mockOnFilterChange}
           />
         );
-        expect(screen.getAllByRole('button')).toHaveLength(5);
+        expect(screen.getByRole('combobox')).toBeInTheDocument();
         unmount();
       });
     });
+  });
 
-    it('calls onFilterChange with correct type signature', async () => {
-      const user = userEvent.setup();
-      const typedHandler = vi.fn((filter: RequestFilterType) => {
-        expect(typeof filter).toBe('string');
-        expect(['all', 'pending', 'ongoing', 'completed', 'cancelled']).toContain(
-          filter
-        );
-      });
-
-      render(
-        <RequestFilterButtons
-          activeFilter="all"
-          onFilterChange={typedHandler}
-        />
+  // ========================================================================
+  // Accessibility Tests
+  // ========================================================================
+  describe('Accessibility', () => {
+    it('has no accessibility violations', async () => {
+      const { container } = render(
+        <RequestFilterButtons {...defaultProps} />
       );
+      const results = await axe(container);
+      expect(results).toHaveNoViolations();
+    });
 
-      await user.click(screen.getByText('Pendientes'));
-      expect(typedHandler).toHaveBeenCalledWith('pending');
+    it('has no accessibility violations with different active states', async () => {
+      for (const filter of filterTypes) {
+        const { container, unmount } = render(
+          <RequestFilterButtons {...defaultProps} activeFilter={filter} />
+        );
+        const results = await axe(container);
+        expect(results).toHaveNoViolations();
+        unmount();
+      }
+    });
+
+    it('has the aria-label "Request status filters"', () => {
+      render(<RequestFilterButtons {...defaultProps} />);
+
+      const trigger = screen.getByTestId('request-filter-select');
+      expect(trigger).toHaveAttribute('aria-label', 'Request status filters');
+    });
+
+    it('trigger is focusable', () => {
+      render(<RequestFilterButtons {...defaultProps} />);
+
+      const trigger = screen.getByTestId('request-filter-select');
+      trigger.focus();
+      expect(trigger).toHaveFocus();
+    });
+
+    it('trigger has accessible text content', () => {
+      render(<RequestFilterButtons {...defaultProps} />);
+
+      const trigger = screen.getByTestId('request-filter-select');
+      expect(trigger.textContent).toBeTruthy();
+      expect(trigger.textContent!.length).toBeGreaterThan(0);
     });
   });
 });

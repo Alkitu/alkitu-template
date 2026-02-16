@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { t, protectedProcedure } from '../trpc';
-import { PrismaClient, UserRole } from '@prisma/client';
+import { Prisma, PrismaClient, UserRole } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { handlePrismaError } from '../utils/prisma-error-mapper';
 import {
@@ -44,7 +44,7 @@ export function createLocationRouter() {
 
           const { skip, take } = calculatePagination(page, limit);
 
-          const where: any = {};
+          const where: Prisma.WorkLocationWhereInput = {};
 
           // Role-based filtering
           if (ctx.user.role === UserRole.ADMIN) {
@@ -63,7 +63,10 @@ export function createLocationRouter() {
               where,
               skip,
               take,
-              orderBy: { [sortBy]: sortOrder },
+              orderBy: {
+                [sortBy]: sortOrder,
+              } as Prisma.WorkLocationOrderByWithRelationInput,
+              include: { _count: { select: { requests: true } } },
             }),
             prisma.workLocation.count({ where }),
           ]);
@@ -94,7 +97,10 @@ export function createLocationRouter() {
           }
 
           // Check ownership
-          if (ctx.user.role !== UserRole.ADMIN && location.userId !== ctx.user.id) {
+          if (
+            ctx.user.role !== UserRole.ADMIN &&
+            location.userId !== ctx.user.id
+          ) {
             throw new TRPCError({
               code: 'FORBIDDEN',
               message: 'Cannot access location of another user',
@@ -116,7 +122,10 @@ export function createLocationRouter() {
       .query(async ({ input, ctx }) => {
         try {
           // Check authorization
-          if (ctx.user.role !== UserRole.ADMIN && ctx.user.id !== input.userId) {
+          if (
+            ctx.user.role !== UserRole.ADMIN &&
+            ctx.user.id !== input.userId
+          ) {
             throw new TRPCError({
               code: 'FORBIDDEN',
               message: 'Cannot access locations of another user',
@@ -128,6 +137,7 @@ export function createLocationRouter() {
             orderBy: {
               createdAt: 'desc',
             },
+            include: { _count: { select: { requests: true } } },
           });
         } catch (error) {
           handlePrismaError(error, 'fetch user locations');

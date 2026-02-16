@@ -100,13 +100,13 @@ test.describe('Security: Resource Access Control', () => {
       await loginUser(page, { email, password: 'SecurePass123' });
 
       // Navigate to work locations page
-      await page.goto('http://localhost:3000/es/dashboard/locations');
+      await page.goto('http://localhost:3000/es/client/locations');
       await page.waitForLoadState('networkidle');
 
       // Should see own locations (or empty state)
       // Verify cannot access other users' locations
       const otherUserLocationId = 'mock-location-id-123';
-      await page.goto(`http://localhost:3000/es/dashboard/locations/${otherUserLocationId}`);
+      await page.goto(`http://localhost:3000/es/client/locations/${otherUserLocationId}`);
 
       await page.waitForTimeout(2000);
 
@@ -287,11 +287,11 @@ authTest.describe('Security: Resource Access Control (Authenticated)', () => {
       const page = authenticatedAdminPage;
 
       // Navigate to work locations page
-      await page.goto('http://localhost:3000/es/dashboard/locations');
+      await page.goto('http://localhost:3000/es/client/locations');
       await page.waitForLoadState('networkidle');
 
       // Should see all locations (not just own)
-      expect(page.url()).toContain('/dashboard/locations');
+      expect(page.url()).toContain('/client/locations');
 
       // No access denied errors
       const hasError = await page.getByText(/acceso denegado|access denied/i).isVisible().catch(() => false);

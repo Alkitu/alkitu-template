@@ -1,4 +1,4 @@
-import { RequestDetail, UserRole } from '@alkitu/shared';
+import { UserRole } from '@alkitu/shared';
 
 /**
  * Props for RequestDetailOrganism component
@@ -20,17 +20,12 @@ export interface RequestDetailOrganismProps {
   className?: string;
 
   /**
-   * Callback when request is updated
+   * Callback when request is updated (assign, status change, inline edit)
    */
-  onUpdate?: (request: RequestDetail) => void;
+  onUpdate?: () => void;
 
   /**
    * Callback when back button is clicked
    */
   onBack?: () => void;
-
-  /**
-   * Callback when edit button is clicked (admin-only)
-   */
-  onEdit?: () => void;
 }

@@ -1,0 +1,509 @@
+{
+  "title": "Complete Field Types Demo",
+  "description": "A comprehensive form demonstrating every available field type with sample configuration.",
+  "submitButtonText": "Send Message",
+  "showStepNumbers": true,
+  "showResponseSummary": true,
+  "supportedLocales": ["en", "es"],
+  "defaultLocale": "en",
+  "i18n": {
+    "es": {
+      "title": "Demo Completa de Campos",
+      "description": "Un formulario completo que demuestra todos los tipos de campos disponibles.",
+      "submitButtonText": "Enviar Mensaje"
+    }
+  },
+  "fields": [
+    {
+      "id": "group-contact-1",
+      "type": "group",
+      "label": "Contact Information",
+      "groupOptions": {
+        "title": "Contact Information",
+        "description": "Let's start with the basics.",
+        "showTitle": true,
+        "showDescription": true,
+        "showStepIndicator": true,
+        "navigation": "buttons",
+        "fields": [
+          {
+            "id": "field-fullname",
+            "type": "text",
+            "label": "Full Name",
+            "placeholder": "John Doe",
+            "showTitle": true,
+            "validation": {
+              "required": true,
+              "minLength": 2,
+              "maxLength": 100
+            },
+            "i18n": {
+              "es": {
+                "label": "Nombre Completo",
+                "placeholder": "Juan Pérez"
+              }
+            }
+          },
+          {
+            "id": "field-email",
+            "type": "email",
+            "label": "Business Email",
+            "placeholder": "you@company.com",
+            "showTitle": true,
+            "showDescription": true,
+            "description": "We'll use this to contact you",
+            "validation": {
+              "required": true
+            },
+            "emailOptions": {
+              "showValidationIcon": true,
+              "validateOnBlur": true
+            },
+            "i18n": {
+              "es": {
+                "label": "Correo Empresarial",
+                "placeholder": "tu@empresa.com",
+                "description": "Lo usaremos para contactarte"
+              }
+            }
+          },
+          {
+            "id": "field-phone",
+            "type": "phone",
+            "label": "Phone Number",
+            "placeholder": "(555) 000-0000",
+            "showTitle": true,
+            "phoneOptions": {
+              "format": "national",
+              "defaultCountry": "US",
+              "mask": "(###) ###-####",
+              "showCountryCode": false
+            },
+            "i18n": {
+              "es": {
+                "label": "Número de Teléfono",
+                "placeholder": "(555) 000-0000"
+              }
+            }
+          }
+        ]
+      },
+      "i18n": {
+        "es": {
+          "label": "Información de Contacto",
+          "groupTitle": "Información de Contacto",
+          "groupDescription": "Comencemos con lo básico."
+        }
+      }
+    },
+    {
+      "id": "group-project-2",
+      "type": "group",
+      "label": "Project Details",
+      "groupOptions": {
+        "title": "Project Details",
+        "description": "Tell us about what you want to build.",
+        "showTitle": true,
+        "showDescription": true,
+        "showStepIndicator": true,
+        "navigation": "buttons",
+        "fields": [
+          {
+            "id": "field-service-type",
+            "type": "select",
+            "label": "Type of Service",
+            "showTitle": true,
+            "validation": {
+              "required": true
+            },
+            "selectOptions": {
+              "items": [
+                { "id": "opt-web", "label": "Web Development", "value": "web" },
+                { "id": "opt-mobile", "label": "Mobile App", "value": "mobile" },
+                { "id": "opt-design", "label": "UI/UX Design", "value": "design" },
+                { "id": "opt-consulting", "label": "Consulting", "value": "consulting" }
+              ],
+              "placeholder": "Select a service..."
+            },
+            "i18n": {
+              "es": {
+                "label": "Tipo de Servicio",
+                "options": {
+                  "opt-web": "Desarrollo Web",
+                  "opt-mobile": "App Móvil",
+                  "opt-design": "Diseño UI/UX",
+                  "opt-consulting": "Consultoría"
+                }
+              }
+            }
+          },
+          {
+            "id": "field-techs",
+            "type": "multiselect",
+            "label": "Preferred Technologies",
+            "showTitle": true,
+            "multiSelectOptions": {
+              "items": [
+                { "id": "opt-react", "label": "React / Next.js", "value": "react" },
+                { "id": "opt-vue", "label": "Vue / Nuxt", "value": "vue" },
+                { "id": "opt-python", "label": "Python / Django", "value": "python" },
+                { "id": "opt-node", "label": "Node.js", "value": "node" },
+                { "id": "opt-go", "label": "Go", "value": "go" },
+                { "id": "opt-aws", "label": "AWS / Azure", "value": "cloud" }
+              ],
+              "layout": "horizontal",
+              "maxSelections": 3
+            },
+            "i18n": {
+              "es": {
+                "label": "Tecnologías Preferidas",
+                "options": {
+                  "opt-react": "React / Next.js",
+                  "opt-vue": "Vue / Nuxt",
+                  "opt-python": "Python / Django",
+                  "opt-node": "Node.js",
+                  "opt-go": "Go",
+                  "opt-aws": "AWS / Azure"
+                }
+              }
+            }
+          },
+          {
+            "id": "field-budget",
+            "type": "number",
+            "label": "Estimated Budget (USD)",
+            "placeholder": "5000",
+            "showTitle": true,
+            "validation": {
+              "required": true,
+              "min": 500,
+              "max": 1000000
+            },
+            "numberOptions": {
+              "step": 500,
+              "displayType": "currency",
+              "currencyCode": "USD",
+              "prefix": "$",
+              "thousandsSeparator": true
+            },
+            "i18n": {
+              "es": {
+                "label": "Presupuesto Estimado (USD)",
+                "placeholder": "5000"
+              }
+            }
+          },
+          {
+            "id": "field-nda",
+            "type": "toggle",
+            "label": "Is an NDA (Non-Disclosure Agreement) required?",
+            "showTitle": true,
+            "toggleOptions": {
+              "defaultChecked": false,
+              "style": "toggle",
+              "checkedValue": true,
+              "uncheckedValue": false
+            },
+            "i18n": {
+              "es": {
+                "label": "¿Se requiere un NDA (Acuerdo de Confidencialidad)?"
+              }
+            }
+          }
+        ]
+      },
+      "i18n": {
+        "es": {
+          "label": "Detalles del Proyecto",
+          "groupTitle": "Detalles del Proyecto",
+          "groupDescription": "Cuéntanos sobre lo que quieres construir."
+        }
+      }
+    },
+    {
+      "id": "group-scheduling-3",
+      "type": "group",
+      "label": "Scheduling",
+      "groupOptions": {
+        "title": "Scheduling & Timeline",
+        "description": "Help us plan the timeline.",
+        "showTitle": true,
+        "showDescription": true,
+        "showStepIndicator": true,
+        "navigation": "buttons",
+        "fields": [
+          {
+            "id": "field-start-date",
+            "type": "date",
+            "label": "Preferred Start Date",
+            "showTitle": true,
+            "validation": {
+              "required": true
+            },
+            "dateOptions": {
+              "mode": "date",
+              "disableWeekends": true
+            },
+            "i18n": {
+              "es": {
+                "label": "Fecha de Inicio Preferida"
+              }
+            }
+          },
+          {
+            "id": "field-meeting-time",
+            "type": "time",
+            "label": "Preferred Meeting Time",
+            "showTitle": true,
+            "timeOptions": {
+              "format24": false,
+              "businessHours": {
+                "enabled": true,
+                "start": "09:00",
+                "end": "17:00"
+              }
+            },
+            "i18n": {
+              "es": {
+                "label": "Hora de Reunión Preferida"
+              }
+            }
+          },
+          {
+            "id": "field-deadline",
+            "type": "datetime",
+            "label": "Project Deadline",
+            "showTitle": true,
+            "showDescription": true,
+            "description": "When do you need this completed?",
+            "dateOptions": {
+              "mode": "datetime",
+              "locale": "en",
+              "hourCycle": 24
+            },
+            "i18n": {
+              "es": {
+                "label": "Fecha Límite del Proyecto",
+                "description": "¿Cuándo necesitas que esté completo?"
+              }
+            }
+          },
+          {
+            "id": "field-priority",
+            "type": "radio",
+            "label": "Priority Level",
+            "showTitle": true,
+            "validation": {
+              "required": true
+            },
+            "radioOptions": {
+              "items": [
+                { "id": "opt-low", "label": "Low - No rush", "value": "low" },
+                { "id": "opt-medium", "label": "Medium - Standard timeline", "value": "medium" },
+                { "id": "opt-high", "label": "High - Urgent", "value": "high" }
+              ],
+              "layout": "vertical"
+            },
+            "i18n": {
+              "es": {
+                "label": "Nivel de Prioridad",
+                "options": {
+                  "opt-low": "Baja - Sin prisa",
+                  "opt-medium": "Media - Tiempo estándar",
+                  "opt-high": "Alta - Urgente"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "i18n": {
+        "es": {
+          "label": "Programación",
+          "groupTitle": "Programación y Cronograma",
+          "groupDescription": "Ayúdanos a planificar el cronograma."
+        }
+      }
+    },
+    {
+      "id": "group-media-4",
+      "type": "group",
+      "label": "Media & Files",
+      "groupOptions": {
+        "title": "Media & Attachments",
+        "description": "Share references, mockups, or documents.",
+        "showTitle": true,
+        "showDescription": true,
+        "showStepIndicator": true,
+        "navigation": "buttons",
+        "fields": [
+          {
+            "id": "field-design-style",
+            "type": "imageSelect",
+            "label": "Preferred Design Style",
+            "showTitle": true,
+            "validation": {
+              "required": true
+            },
+            "imageSelectOptions": {
+              "items": [
+                { "id": "opt-minimal", "label": "Minimalist", "value": "minimal", "images": [] },
+                { "id": "opt-modern", "label": "Modern", "value": "modern", "images": [] },
+                { "id": "opt-classic", "label": "Classic", "value": "classic", "images": [] },
+                { "id": "opt-bold", "label": "Bold & Colorful", "value": "bold", "images": [] }
+              ],
+              "layout": "grid",
+              "columns": 2,
+              "allowClear": true
+            },
+            "i18n": {
+              "es": {
+                "label": "Estilo de Diseño Preferido",
+                "options": {
+                  "opt-minimal": "Minimalista",
+                  "opt-modern": "Moderno",
+                  "opt-classic": "Clásico",
+                  "opt-bold": "Atrevido y Colorido"
+                }
+              }
+            }
+          },
+          {
+            "id": "field-color-palettes",
+            "type": "imageSelectMulti",
+            "label": "Color Palettes You Like",
+            "showTitle": true,
+            "showDescription": true,
+            "description": "Select up to 3 palettes",
+            "imageSelectMultiOptions": {
+              "items": [
+                { "id": "opt-earth", "label": "Earth Tones", "value": "earth", "images": [] },
+                { "id": "opt-ocean", "label": "Ocean Blues", "value": "ocean", "images": [] },
+                { "id": "opt-sunset", "label": "Sunset Warm", "value": "sunset", "images": [] },
+                { "id": "opt-forest", "label": "Forest Green", "value": "forest", "images": [] },
+                { "id": "opt-monochrome", "label": "Monochrome", "value": "mono", "images": [] },
+                { "id": "opt-neon", "label": "Neon Bright", "value": "neon", "images": [] }
+              ],
+              "layout": "grid",
+              "columns": 3,
+              "maxSelections": 3
+            },
+            "i18n": {
+              "es": {
+                "label": "Paletas de Colores que te Gustan",
+                "description": "Selecciona hasta 3 paletas",
+                "options": {
+                  "opt-earth": "Tonos Tierra",
+                  "opt-ocean": "Azules Océano",
+                  "opt-sunset": "Cálidos Atardecer",
+                  "opt-forest": "Verde Bosque",
+                  "opt-monochrome": "Monocromático",
+                  "opt-neon": "Neón Brillante"
+                }
+              }
+            }
+          },
+          {
+            "id": "field-attachments",
+            "type": "fileUpload",
+            "label": "Project Attachments",
+            "showTitle": true,
+            "showDescription": true,
+            "description": "Upload mockups, documents, or reference files",
+            "validation": {
+              "required": false
+            },
+            "fileUploadOptions": {
+              "accept": [".pdf", ".doc", ".docx", "image/*", ".zip"],
+              "maxSizeMB": 25,
+              "maxFiles": 5,
+              "displayStyle": "dropzone",
+              "showFileList": true,
+              "placeholder": "Drop files here or click to upload"
+            },
+            "i18n": {
+              "es": {
+                "label": "Archivos del Proyecto",
+                "description": "Sube mockups, documentos o archivos de referencia",
+                "placeholder": "Arrastra archivos aquí o haz clic para subir"
+              }
+            }
+          }
+        ]
+      },
+      "i18n": {
+        "es": {
+          "label": "Medios y Archivos",
+          "groupTitle": "Medios y Adjuntos",
+          "groupDescription": "Comparte referencias, mockups o documentos."
+        }
+      }
+    },
+    {
+      "id": "group-additional-5",
+      "type": "group",
+      "label": "Additional Information",
+      "groupOptions": {
+        "title": "Additional Information",
+        "description": "Anything else you'd like us to know.",
+        "showTitle": true,
+        "showDescription": true,
+        "showStepIndicator": true,
+        "navigation": "buttons",
+        "fields": [
+          {
+            "id": "field-message",
+            "type": "textarea",
+            "label": "Project Description",
+            "placeholder": "Tell us more about your project...",
+            "showTitle": true,
+            "validation": {
+              "required": true,
+              "minLength": 20,
+              "maxLength": 2000
+            },
+            "textareaOptions": {
+              "rows": 5,
+              "resize": "vertical",
+              "showCharacterCount": true,
+              "autoGrow": true
+            },
+            "i18n": {
+              "es": {
+                "label": "Descripción del Proyecto",
+                "placeholder": "Cuéntanos más sobre tu proyecto..."
+              }
+            }
+          },
+          {
+            "id": "field-newsletter",
+            "type": "toggle",
+            "label": "Subscribe to newsletter",
+            "showTitle": true,
+            "showDescription": true,
+            "description": "Get updates about our products and services",
+            "toggleOptions": {
+              "defaultChecked": false,
+              "style": "checkbox",
+              "checkedValue": "yes",
+              "uncheckedValue": "no"
+            },
+            "i18n": {
+              "es": {
+                "label": "Suscribirse al boletín",
+                "description": "Recibe actualizaciones sobre nuestros productos y servicios"
+              }
+            }
+          }
+        ]
+      },
+      "i18n": {
+        "es": {
+          "label": "Información Adicional",
+          "groupTitle": "Información Adicional",
+          "groupDescription": "Cualquier otra cosa que quieras que sepamos."
+        }
+      }
+    }
+  ]
+}

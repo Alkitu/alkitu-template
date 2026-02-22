@@ -79,35 +79,35 @@ export function UsersTableAlianza({
   };
 
   return (
-    <div className={cn("w-full relative max-h-[600px] overflow-auto", className)}>
+    <div className={cn("w-full relative max-h-[600px] overflow-auto rounded-lg border border-border", className)}>
       <table className="w-full caption-bottom text-sm">
         <TableHeader>
-          <TableRow className="bg-secondary hover:bg-secondary border-b border-secondary-foreground h-[46px] sticky top-0 z-20">
-            <TableHead className="text-card-foreground font-medium text-base px-[9px] w-[316px]">
+          <TableRow className="bg-muted/50 hover:bg-muted/50 border-b border-border h-[46px] sticky top-0 z-20">
+            <TableHead className="text-foreground font-semibold text-sm px-4 w-[316px]">
               {labels.user}
             </TableHead>
-            <TableHead className="text-card-foreground font-medium text-base px-[9px] w-[149px]">
+            <TableHead className="text-foreground font-semibold text-sm px-4 w-[149px]">
               {labels.role}
             </TableHead>
-            <TableHead className="text-card-foreground font-medium text-base px-[9px] w-[149px]">
+            <TableHead className="text-foreground font-semibold text-sm px-4 w-[149px]">
               {labels.phone}
             </TableHead>
-            <TableHead className="text-card-foreground font-medium text-base px-[9px] text-right w-[100px] sticky right-0 z-20 bg-secondary">
+            <TableHead className="text-foreground font-semibold text-sm px-4 text-right w-[100px] sticky right-0 z-20 bg-muted/50">
               {labels.actions}
             </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {users.map((user) => (
-            <TableRow 
-              key={user.id} 
-              className="group hover:bg-muted/50 border-b border-border/50"
+            <TableRow
+              key={user.id}
+              className="group bg-background hover:bg-muted/30 border-b border-border/50 transition-colors"
             >
               {/* User Column: Avatar + Name + Email */}
-              <TableCell className="py-4 bg-background group-hover:bg-muted/50 transition-colors">
+              <TableCell className="py-4 px-4">
                 <div className="flex items-center gap-4">
-                  <UserAvatar 
-                    name={user.name || user.email} 
+                  <UserAvatar
+                    name={user.name || user.email}
                     lastName={user.lastName || undefined}
                     size="md"
                   />
@@ -118,7 +118,7 @@ export function UsersTableAlianza({
                     >
                       {getDisplayName(user)}
                     </Link>
-                    <span className="body-xs text-muted-foreground-m">
+                    <span className="body-xs text-muted-foreground">
                       {user.email}
                     </span>
                   </div>
@@ -126,21 +126,21 @@ export function UsersTableAlianza({
               </TableCell>
 
               {/* Role Column */}
-              <TableCell className="body-sm text-muted-foreground py-4 bg-background group-hover:bg-muted/50 transition-colors">
+              <TableCell className="text-sm text-muted-foreground py-4 px-4">
                 {getRoleLabel(user.role)}
               </TableCell>
 
               {/* Phone Column */}
-              <TableCell className="body-sm text-muted-foreground py-4 bg-background group-hover:bg-muted/50 transition-colors">
+              <TableCell className="text-sm text-muted-foreground py-4 px-4">
                 {user.phone || '—'}
               </TableCell>
 
               {/* Actions Column */}
-              <TableCell className="text-right py-4 sticky right-0 z-10 bg-background group-hover:bg-muted/50 transition-colors">
+              <TableCell className="text-right py-4 px-4 sticky right-0 z-10 bg-background group-hover:bg-muted/30 transition-colors">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button 
-                      variant="ghost" 
+                    <Button
+                      variant="ghost"
                       size="sm"
                       className="h-8 w-8 p-0"
                     >

@@ -76,7 +76,7 @@ export const createUserRouter = (
             userName: `${user.firstname} ${user.lastname}`.trim() || 'Usuario',
             userEmail: user.email,
             registrationDate: new Date().toLocaleDateString('es-ES'),
-            loginUrl: `${frontendUrl}/login`,
+            loginUrl: `${frontendUrl}/auth/login`,
             unsubscribeUrl: `${frontendUrl}/unsubscribe`,
             supportUrl: `${frontendUrl}/support`,
           });

@@ -55,7 +55,7 @@ export const ResetPasswordFormOrganism = React.forwardRef<
     if (password !== confirmPassword) {
       setError(
         t('auth.resetPassword.passwordMismatch') ||
-          'Las contraseñas no coinciden',
+        'Las contraseñas no coinciden',
       );
       setIsLoading(false);
       return;
@@ -65,7 +65,7 @@ export const ResetPasswordFormOrganism = React.forwardRef<
     if (password.length < 6) {
       setError(
         t('auth.resetPassword.passwordTooShort') ||
-          'La contraseña debe tener al menos 6 caracteres',
+        'La contraseña debe tener al menos 6 caracteres',
       );
       setIsLoading(false);
       return;
@@ -91,7 +91,7 @@ export const ResetPasswordFormOrganism = React.forwardRef<
 
       setSuccess(
         data.message ||
-          'Contraseña actualizada exitosamente. Redirigiendo al login...',
+        'Contraseña actualizada exitosamente. Redirigiendo al login...',
       );
 
       // Redirect to login after 3 seconds
@@ -101,8 +101,8 @@ export const ResetPasswordFormOrganism = React.forwardRef<
     } catch (err: any) {
       setError(
         err.message ||
-          t('auth.resetPassword.error') ||
-          'Error actualizando la contraseña',
+        t('auth.resetPassword.error') ||
+        'Error actualizando la contraseña',
       );
     } finally {
       setIsLoading(false);
@@ -111,15 +111,6 @@ export const ResetPasswordFormOrganism = React.forwardRef<
 
   return (
     <div ref={ref} className={className || 'space-y-6'}>
-      <div className="space-y-2 text-center">
-        <h1 className="text-3xl font-bold">
-          {t('auth.resetPassword.title') || 'Restablecer contraseña'}
-        </h1>
-        <p className="text-muted-foreground">
-          {t('auth.resetPassword.description') || 'Ingresa tu nueva contraseña'}
-        </p>
-      </div>
-
       <form
         onSubmit={handleSubmit}
         className="space-y-4"

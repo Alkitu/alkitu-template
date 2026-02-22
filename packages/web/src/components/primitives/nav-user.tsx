@@ -37,6 +37,7 @@ import {
 import type { User } from '@/types';
 import { useTranslations } from '@/context/TranslationsContext';
 import { useTheme } from 'next-themes';
+import { useThemeEditor } from '@/components/features/theme-editor-3.0/core/context/ThemeEditorContext';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { useCallback } from 'react';
@@ -49,6 +50,7 @@ export function NavUser({ user }: { user: User }) {
   const { isMobile } = useSidebar();
   const t = useTranslations('userNav');
   const { setTheme } = useTheme();
+  const { setThemeMode } = useThemeEditor();
   const router = useRouter();
   const pathname = usePathname();
   const { count: unreadCount } = useNotificationCount({
@@ -183,15 +185,15 @@ export function NavUser({ user }: { user: User }) {
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem onClick={() => setTheme('light')}>
+              <DropdownMenuItem onClick={() => { setTheme('light'); setThemeMode('light'); }}>
                 <Sun className="mr-2 h-4 w-4" />
                 <span>Light</span>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setTheme('dark')}>
+              <DropdownMenuItem onClick={() => { setTheme('dark'); setThemeMode('dark'); }}>
                 <Moon className="mr-2 h-4 w-4" />
                 <span>Dark</span>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setTheme('system')}>
+              <DropdownMenuItem onClick={() => { setTheme('system'); setThemeMode('system' as any); }}>
                 <Laptop className="mr-2 h-4 w-4" />
                 <span>System</span>
               </DropdownMenuItem>

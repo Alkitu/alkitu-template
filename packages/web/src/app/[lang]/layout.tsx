@@ -93,7 +93,7 @@ export default async function RootLayout({ children, params }: LayoutProps) {
         >
           <main
             className={cn(
-              'min-h-screen bg-background font-sans antialiased w-full flex flex-col overflow-x-hidden',
+              'min-h-screen bg-background text-foreground font-sans antialiased w-full flex flex-col overflow-x-hidden',
               inter.className,
             )}
           >

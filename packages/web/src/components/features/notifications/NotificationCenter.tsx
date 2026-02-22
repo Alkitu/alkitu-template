@@ -42,9 +42,9 @@ export function NotificationCenter({ userId }: NotificationCenterProps) {
   const unreadCount = unreadList.length;
 
   const invalidateNotifications = () => {
-     queryClient.invalidateQueries({ queryKey: [['notification', 'getNotifications']] });
-     utils.notification.getNotifications.invalidate({ userId });
-     utils.notification.getUnreadCount.invalidate({ userId });
+    queryClient.invalidateQueries({ queryKey: [['notification', 'getNotifications']] });
+    utils.notification.getNotifications.invalidate({ userId });
+    utils.notification.getUnreadCount.invalidate({ userId });
   };
 
   const markAsReadMutation = trpc.notification.markAsRead.useMutation({ onSuccess: invalidateNotifications });
@@ -91,61 +91,61 @@ export function NotificationCenter({ userId }: NotificationCenterProps) {
     return (
       <div className="flex flex-col space-y-2 p-2">
         {list.map((notification: any) => {
-            const isUnread = !notification.read;
-            return (
-              <div
-                key={notification.id}
-                className={cn(
-                  "group relative flex items-start gap-3 p-3 rounded-[16px] transition-colors",
-                  isUnread 
-                    ? "bg-[#F9F8F6]" 
-                    : "bg-background shadow-sm border border-border/40"
-                )}
-              >
-                 {/* Icon Circle */}
-                <div className="h-9 w-9 rounded-full bg-[#FDE68A] flex items-center justify-center shrink-0 shadow-inner mt-0.5">
-                    {getIcon(notification)}
+          const isUnread = !notification.read;
+          return (
+            <div
+              key={notification.id}
+              className={cn(
+                "group relative flex items-start gap-3 p-3 rounded-[16px] transition-colors",
+                isUnread
+                  ? "bg-primary/5 border border-primary/10"
+                  : "bg-background shadow-sm border border-border/40"
+              )}
+            >
+              {/* Icon Circle */}
+              <div className="h-9 w-9 rounded-full bg-primary/20 flex items-center justify-center shrink-0 shadow-inner mt-0.5">
+                {getIcon(notification)}
+              </div>
+
+              <div className="flex-1 min-w-0 space-y-1 pr-6">
+                <div className="flex items-start justify-between gap-2">
+                  <Heading level={6} className="text-sm font-semibold text-foreground leading-tight">
+                    {notification.title || 'Notificación'}
+                  </Heading>
+                  <span className="text-[10px] text-muted-foreground whitespace-nowrap">
+                    {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true, locale: es })}
+                  </span>
                 </div>
 
-                <div className="flex-1 min-w-0 space-y-1 pr-6">
-                    <div className="flex items-start justify-between gap-2">
-                        <Heading level={6} className="text-sm font-semibold text-foreground leading-tight">
-                            {notification.title || 'Notificación'}
-                        </Heading>
-                        <span className="text-[10px] text-muted-foreground whitespace-nowrap">
-                           {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true, locale: es })}
-                        </span>
-                    </div>
-                    
-                    <div className="text-xs text-muted-foreground/90 line-clamp-2 leading-relaxed pb-6">
-                        {notification.message}
-                    </div>
-                </div>
-
-                {/* Read/Unread Toggle - Bottom Right */}
-                <div className="absolute bottom-3 right-3">
-                   {isUnread ? (
-                      <button
-                         className="flex items-center justify-center h-8 w-8 rounded-full text-foreground hover:text-primary hover:bg-primary/10 transition-colors focus:outline-none"
-                         onClick={(e) => handleMarkAsRead(notification.id, e)} 
-                         title="Marcar como leído"
-                         type="button"
-                      >
-                         <Mail className="h-5 w-5" />
-                      </button>
-                   ) : (
-                      <button
-                         className="flex items-center justify-center h-8 w-8 rounded-full text-muted-foreground/60 hover:text-foreground hover:bg-primary/10 transition-colors focus:outline-none"
-                         onClick={(e) => handleMarkAsUnread(notification.id, e)} 
-                         title="Marcar como no leído"
-                         type="button"
-                      >
-                         <MailOpen className="h-5 w-5" />
-                      </button>
-                   )}
+                <div className="text-xs text-muted-foreground/90 line-clamp-2 leading-relaxed pb-6">
+                  {notification.message}
                 </div>
               </div>
-            );
+
+              {/* Read/Unread Toggle - Bottom Right */}
+              <div className="absolute bottom-3 right-3">
+                {isUnread ? (
+                  <button
+                    className="flex items-center justify-center h-8 w-8 rounded-full text-foreground hover:text-primary hover:bg-primary/10 transition-colors focus:outline-none"
+                    onClick={(e) => handleMarkAsRead(notification.id, e)}
+                    title="Marcar como leído"
+                    type="button"
+                  >
+                    <Mail className="h-5 w-5" />
+                  </button>
+                ) : (
+                  <button
+                    className="flex items-center justify-center h-8 w-8 rounded-full text-muted-foreground/60 hover:text-foreground hover:bg-primary/10 transition-colors focus:outline-none"
+                    onClick={(e) => handleMarkAsUnread(notification.id, e)}
+                    title="Marcar como no leído"
+                    type="button"
+                  >
+                    <MailOpen className="h-5 w-5" />
+                  </button>
+                )}
+              </div>
+            </div>
+          );
         })}
       </div>
     );
@@ -157,32 +157,32 @@ export function NotificationCenter({ userId }: NotificationCenterProps) {
         <Button variant="ghost" iconOnly className="relative group w-12 h-12 rounded-full hover:bg-muted/50 p-0">
           <Bell className="h-7 w-7 text-muted-foreground group-hover:text-foreground transition-colors" />
           {unreadCount > 0 && (
-             <span className="absolute top-2.5 right-2.5 flex h-3 w-3">
-               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-               <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
-             </span>
+            <span className="absolute top-2.5 right-2.5 flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+            </span>
           )}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[400px] p-0 rounded-xl overflow-clip border-border shadow-lg" align="end">
-        
+
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b bg-background">
-            <Heading level={5} className="font-bold text-sm">Notificaciones</Heading>
-            {unreadCount > 0 && (
-                <button 
-                  onClick={handleMarkAllRead}
-                  className="flex items-center gap-1 text-xs text-[#F59E0B] hover:text-[#D97706] font-medium transition-colors"
-                >
-                  <CheckCheck className="w-3 h-3" />
-                  Marcar todas leídas
-                </button>
-            )}
+          <Heading level={5} className="font-bold text-sm">Notificaciones</Heading>
+          {unreadCount > 0 && (
+            <button
+              onClick={handleMarkAllRead}
+              className="flex items-center gap-1 text-xs text-[#F59E0B] hover:text-[#D97706] font-medium transition-colors"
+            >
+              <CheckCheck className="w-3 h-3" />
+              Marcar todas leídas
+            </button>
+          )}
         </div>
 
         <Tabs defaultValue="all" className="w-full">
           <div className="px-4 py-2 bg-muted/20 border-b">
-             <TabsList className="grid w-full grid-cols-3 h-8 bg-muted/50 p-0.5 rounded-lg">
+            <TabsList className="grid w-full grid-cols-3 h-8 bg-muted/50 p-0.5 rounded-lg">
               <TabsTrigger value="all" className="text-xs rounded-md data-[state=active]:bg-background data-[state=active]:shadow-sm">Todas</TabsTrigger>
               <TabsTrigger value="unread" className="text-xs rounded-md data-[state=active]:bg-background data-[state=active]:shadow-sm">
                 No leídas {unreadCount > 0 && <span className="ml-1 text-[10px] bg-destructive text-white px-1 rounded-full">{unreadCount}</span>}
@@ -198,7 +198,7 @@ export function NotificationCenter({ userId }: NotificationCenterProps) {
             <TabsContent value="unread" className="m-0 border-none outline-none">
               {renderNotificationList(unreadList)}
             </TabsContent>
-             <TabsContent value="read" className="m-0 border-none outline-none">
+            <TabsContent value="read" className="m-0 border-none outline-none">
               {renderNotificationList(readList)}
             </TabsContent>
           </ScrollArea>
@@ -206,17 +206,17 @@ export function NotificationCenter({ userId }: NotificationCenterProps) {
 
         {/* Footer Link */}
         <div className="p-2 border-t bg-muted/10 text-center">
-            <Button 
-                variant="ghost" 
-                size="sm" 
-                className="w-full text-xs h-8" 
-                onClick={() => {
-                    setOpen(false);
-                    router.push('/admin/notifications');
-                }}
-            >
-                Ver todas las notificaciones
-            </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-full text-xs h-8"
+            onClick={() => {
+              setOpen(false);
+              router.push('/admin/notifications');
+            }}
+          >
+            Ver todas las notificaciones
+          </Button>
         </div>
       </PopoverContent>
     </Popover>

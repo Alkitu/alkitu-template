@@ -22,7 +22,7 @@ export class AuthService {
     private jwtService: JwtService,
     private emailService: EmailService,
     private tokenService: TokenService,
-  ) {}
+  ) { }
 
   async validateUser(email: string, password: string): Promise<any> {
     const user = await this.usersService.findByEmail(email);
@@ -143,7 +143,7 @@ export class AuthService {
         userName: `${user.firstname} ${user.lastname}`.trim() || 'Usuario',
         userEmail: user.email,
         registrationDate: new Date().toLocaleDateString('es-ES'),
-        loginUrl: `${frontendUrl}/login`,
+        loginUrl: `${frontendUrl}/auth/login`,
         unsubscribeUrl: `${frontendUrl}/unsubscribe`,
         supportUrl: `${frontendUrl}/support`,
       });
@@ -223,7 +223,7 @@ export class AuthService {
         'Contraseña actualizada',
         'Tu contraseña ha sido actualizada exitosamente. Si no fuiste tú quien realizó este cambio, contacta inmediatamente a soporte.',
         'Ir a Login',
-        `${process.env.FRONTEND_URL || 'http://localhost:3000'}/login`,
+        `${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth/login`,
       );
     } catch (error: any) {
       console.log(

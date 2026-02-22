@@ -86,9 +86,9 @@ export default function BreadcrumbNavigation({
   const showDropdown = pathSegments.length > 3;
 
   return (
-    <Breadcrumb className="[&>*]:text-zinc-800 [&>*]:text-tiny">
-      <BreadcrumbList>
-        <BreadcrumbItem className="capitalize underline [&>*]:hover:text-zinc-400">
+    <Breadcrumb className="[&>*]:text-tiny">
+      <BreadcrumbList className="text-foreground/70">
+        <BreadcrumbItem className="capitalize underline [&>*]:hover:text-primary">
           <BreadcrumbLink href="/">{homeLabel}</BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator />
@@ -101,7 +101,7 @@ export default function BreadcrumbNavigation({
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 align="start"
-                className="capitalize underline [&>*]:hover:text-zinc-400"
+                className="capitalize underline [&>*]:hover:text-primary"
               >
                 {dropdownItems}
               </DropdownMenuContent>
@@ -109,8 +109,8 @@ export default function BreadcrumbNavigation({
           </BreadcrumbItem>
         )}
         {showDropdown && <BreadcrumbSeparator />}
-        <BreadcrumbItem className="hover:underline [&>*]:hover:text-zinc-400 pointer-events-none [&>*]:text-tiny">
-          <BreadcrumbPage>
+        <BreadcrumbItem className="hover:underline pointer-events-none [&>*]:text-tiny">
+          <BreadcrumbPage className="text-foreground font-medium">
             {getTranslation(pathSegments[pathSegments.length - 1], 'es')}
           </BreadcrumbPage>
         </BreadcrumbItem>

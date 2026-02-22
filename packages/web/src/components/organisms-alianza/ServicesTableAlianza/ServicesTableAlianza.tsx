@@ -44,8 +44,8 @@ const StatusBadge = ({ status, labels }: { status: ServiceTableItem['status'], l
     <span
       className={cn(
         "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium",
-        isActive 
-          ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400" 
+        isActive
+          ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400"
           : "bg-gray-100 text-gray-800 dark:bg-gray-800/30 dark:text-gray-400"
       )}
     >
@@ -69,37 +69,37 @@ export function ServicesTableAlianza({
   const mergedLabels = { ...defaultLabels, ...labels };
 
   return (
-    <div className={cn("w-full relative max-h-[600px] overflow-auto rounded-[8px] border border-secondary-foreground", className)}>
+    <div className={cn("w-full relative max-h-[600px] overflow-auto rounded-lg border border-border", className)}>
       <table className="w-full caption-bottom text-sm">
         <TableHeader>
-            <TableRow className="bg-secondary hover:bg-secondary border-b border-secondary-foreground h-[46px] sticky top-0 z-20">
-            <TableHead className={cn("text-card-foreground font-medium text-base px-[18px]", showRequestsColumn ? "w-[30%]" : "w-[35%]")}>
+          <TableRow className="bg-muted/50 hover:bg-muted/50 border-b border-border h-[46px] sticky top-0 z-20">
+            <TableHead className={cn("text-foreground font-semibold text-sm px-4", showRequestsColumn ? "w-[30%]" : "w-[35%]")}>
               {mergedLabels.service}
             </TableHead>
-            <TableHead className="text-card-foreground font-medium text-base px-[9px] w-[20%]">
+            <TableHead className="text-foreground font-semibold text-sm px-4 w-[20%]">
               {mergedLabels.category}
             </TableHead>
-            <TableHead className="text-card-foreground font-medium text-base px-[9px] w-[15%]">
+            <TableHead className="text-foreground font-semibold text-sm px-4 w-[15%]">
               {mergedLabels.status}
             </TableHead>
-            <TableHead className="text-card-foreground font-medium text-base px-[9px] w-[10%] text-center">
+            <TableHead className="text-foreground font-semibold text-sm px-4 w-[10%] text-center">
               {mergedLabels.questions}
             </TableHead>
             {showRequestsColumn && (
-              <TableHead className="text-card-foreground font-medium text-base px-[9px] w-[15%]">
+              <TableHead className="text-foreground font-semibold text-sm px-4 w-[15%]">
                 {mergedLabels.requests}
               </TableHead>
             )}
-            <TableHead className={cn("text-card-foreground font-medium text-base px-[18px] text-right sticky right-0 z-20 bg-secondary shadow-[-12px_0_15px_-4px_rgba(0,0,0,0.1)] clip-inset-left", showRequestsColumn ? "w-[10%]" : "w-[15%]")}>
+            <TableHead className={cn("text-foreground font-semibold text-sm px-4 text-right sticky right-0 z-20 bg-muted/50 shadow-[-12px_0_15px_-4px_rgba(0,0,0,0.1)] clip-inset-left", showRequestsColumn ? "w-[10%]" : "w-[15%]")}>
               {mergedLabels.actions}
             </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {services.map((service) => (
-            <TableRow 
-              key={service.id} 
-              className="group hover:bg-muted/50 border-b border-border/50 bg-background"
+            <TableRow
+              key={service.id}
+              className="group bg-background hover:bg-muted/30 border-b border-border/50 transition-colors"
             >
               <TableCell className="py-4 px-[18px] font-semibold text-foreground">
                 <div className="flex items-center gap-3">
@@ -124,7 +124,7 @@ export function ServicesTableAlianza({
                 <StatusBadge status={service.status} labels={mergedLabels} />
               </TableCell>
               <TableCell className="py-4 px-[9px] text-center text-muted-foreground">
-                  {service.questionsCount}
+                {service.questionsCount}
               </TableCell>
               {showRequestsColumn && (
                 <TableCell className="py-4 px-[9px]">
@@ -140,7 +140,7 @@ export function ServicesTableAlianza({
                   />
                 </TableCell>
               )}
-              <TableCell className="text-right py-4 px-[18px] sticky right-0 z-10 bg-background group-hover:bg-muted/50 transition-colors shadow-[-12px_0_15px_-4px_rgba(0,0,0,0.05)] clip-inset-left h-full">
+              <TableCell className="text-right py-4 px-4 sticky right-0 z-10 bg-background group-hover:bg-muted/30 transition-colors shadow-[-12px_0_15px_-4px_rgba(0,0,0,0.05)] clip-inset-left h-full">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="sm" className="h-8 w-8 p-0">

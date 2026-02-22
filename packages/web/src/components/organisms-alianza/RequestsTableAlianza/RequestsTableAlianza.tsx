@@ -1,5 +1,5 @@
 import React from 'react';
-import { RequestsTableAlianzaProps, RequestTableItem } from './RequestsTableAlianza.types';
+import { RequestsTableAlianzaProps } from './RequestsTableAlianza.types';
 import { Eye, UserPlus, Clock, MapPin, UserCog } from 'lucide-react';
 import { ServiceIcon } from '@/components/atoms-alianza/ServiceIcon';
 
@@ -7,7 +7,6 @@ import { ServiceIcon } from '@/components/atoms-alianza/ServiceIcon';
  * RequestsTableAlianza Component (Alianza Design System)
  *
  * Professional table for displaying service requests
- * Similar to UsersTableAlianza but for requests
  */
 export const RequestsTableAlianza: React.FC<RequestsTableAlianzaProps> = ({
   requests,
@@ -24,19 +23,19 @@ export const RequestsTableAlianza: React.FC<RequestsTableAlianzaProps> = ({
     const statusConfig: Record<string, { label: string; className: string }> = {
       PENDING: {
         label: 'Pendiente',
-        className: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+        className: 'bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-400 dark:border-yellow-800/30',
       },
       ONGOING: {
         label: 'En Progreso',
-        className: 'bg-blue-100 text-blue-800 border-blue-200',
+        className: 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800/30',
       },
       COMPLETED: {
         label: 'Completada',
-        className: 'bg-green-100 text-green-800 border-green-200',
+        className: 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800/30',
       },
       CANCELLED: {
         label: 'Cancelada',
-        className: 'bg-red-100 text-red-800 border-red-200',
+        className: 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800/30',
       },
     };
 
@@ -61,10 +60,10 @@ export const RequestsTableAlianza: React.FC<RequestsTableAlianzaProps> = ({
   };
 
   return (
-    <div className={`w-full ${className}`}>
+    <div className={`w-full overflow-auto rounded-lg border border-border ${className}`}>
       <table className="w-full">
         <thead>
-          <tr className="border-b border-secondary-foreground">
+          <tr className="border-b border-border bg-muted/50">
             <th className="text-left py-3 px-4 text-sm font-semibold text-foreground">
               Servicio
             </th>
@@ -90,18 +89,14 @@ export const RequestsTableAlianza: React.FC<RequestsTableAlianzaProps> = ({
           </tr>
         </thead>
         <tbody>
-          {requests.map((request, index) => (
+          {requests.map((request) => (
             <tr
               key={request.id}
-              className={`
-                border-b border-secondary-foreground/50 hover:bg-secondary/50 transition-colors
-                ${index % 2 === 0 ? 'bg-secondary/20' : 'bg-transparent'}
-              `}
+              className="border-b border-border/50 bg-background hover:bg-muted/30 transition-colors"
             >
               {/* Service Name */}
               <td className="py-3 px-4">
                 <div className="flex items-start gap-3">
-                  {/* Service Icon */}
                   <div className="shrink-0 mt-0.5">
                     <ServiceIcon
                       category={request.categoryName}
@@ -109,23 +104,16 @@ export const RequestsTableAlianza: React.FC<RequestsTableAlianzaProps> = ({
                       className="h-5 w-5 text-primary"
                     />
                   </div>
-
-                  {/* Service Details */}
                   <div className="flex flex-col gap-1">
-                    {/* Request Title (serviceName now contains the specific request title) */}
                     <span
                       className="text-sm font-medium text-foreground"
                       title={`Servicio: ${request.categoryName}`}
                     >
                       {request.serviceName}
                     </span>
-
-                    {/* Category Name */}
                     <span className="text-xs text-muted-foreground">
                       {request.categoryName}
                     </span>
-
-                    {/* Time and Location */}
                     {(request.executionTime || request.locationCity) && (
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
                         {request.executionTime && (
@@ -177,7 +165,6 @@ export const RequestsTableAlianza: React.FC<RequestsTableAlianzaProps> = ({
               {!hideColumns.includes('assignedTo') && (
                 <td className="py-3 px-4">
                   {request.assignedTo ? (
-                    // Only allow reassigning if not completed or cancelled
                     request.status !== 'COMPLETED' && request.status !== 'CANCELLED' && onAssignRequest ? (
                       <button
                         onClick={() => onAssignRequest(request.id)}
@@ -203,23 +190,20 @@ export const RequestsTableAlianza: React.FC<RequestsTableAlianzaProps> = ({
               {/* Actions */}
               <td className="py-3 px-4">
                 <div className="flex items-center justify-end gap-2">
-                  {/* View Details */}
                   <button
                     onClick={() => onViewRequest(request.id, request.clientEmail || '')}
-                    className="p-2 hover:bg-secondary rounded-[4px] transition-colors"
+                    className="p-2 hover:bg-muted rounded-[4px] transition-colors"
                     title="Ver detalles"
                   >
                     <Eye className="h-4 w-4 text-foreground" />
                   </button>
-
-                  {/* Assign (only for PENDING status) */}
                   {request.status === 'PENDING' && onAssignRequest && (
                     <button
                       onClick={() => onAssignRequest(request.id)}
-                      className="p-2 hover:bg-blue-100 rounded-[4px] transition-colors"
+                      className="p-2 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded-[4px] transition-colors"
                       title="Asignar"
                     >
-                      <UserPlus className="h-4 w-4 text-blue-600" />
+                      <UserPlus className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                     </button>
                   )}
                 </div>

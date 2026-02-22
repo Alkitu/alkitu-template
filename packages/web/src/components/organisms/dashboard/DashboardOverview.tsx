@@ -92,10 +92,10 @@ export const DashboardOverview = React.forwardRef<
             <Card className="p-12 text-center border-dashed border-2 border-muted-foreground/20">
               <div className="flex justify-center mb-6">
                 <div className="relative">
-                  <Construction className="h-16 w-16 text-orange-500" />
+                  <Construction className="h-16 w-16 text-primary" />
                   <div className="absolute -top-2 -right-2">
-                    <div className="h-6 w-6 bg-yellow-400 rounded-full flex items-center justify-center">
-                      <Wrench className="h-3 w-3 text-yellow-800" />
+                    <div className="h-6 w-6 bg-secondary rounded-full flex items-center justify-center">
+                      <Wrench className="h-3 w-3 text-secondary-foreground" />
                     </div>
                   </div>
                 </div>
@@ -119,8 +119,8 @@ export const DashboardOverview = React.forwardRef<
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
               <Card className="p-6 bg-muted/50">
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center">
-                    <div className="h-2 w-2 bg-blue-500 rounded-full animate-pulse"></div>
+                  <div className="h-10 w-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                    <div className="h-2 w-2 bg-primary rounded-full animate-pulse"></div>
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">
@@ -133,8 +133,8 @@ export const DashboardOverview = React.forwardRef<
 
               <Card className="p-6 bg-muted/50">
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 bg-green-100 dark:bg-green-900/20 rounded-lg flex items-center justify-center">
-                    <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <div className="h-10 w-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                    <div className="h-2 w-2 bg-primary rounded-full animate-pulse"></div>
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">
@@ -147,8 +147,8 @@ export const DashboardOverview = React.forwardRef<
 
               <Card className="p-6 bg-muted/50">
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 bg-purple-100 dark:bg-purple-900/20 rounded-lg flex items-center justify-center">
-                    <div className="h-2 w-2 bg-purple-500 rounded-full animate-pulse"></div>
+                  <div className="h-10 w-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                    <div className="h-2 w-2 bg-primary rounded-full animate-pulse"></div>
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">
@@ -183,21 +183,21 @@ export const DashboardOverview = React.forwardRef<
               label={statsLabels.pending}
               value={statsData.pending}
               icon={Construction}
-              iconColor="text-blue-500"
+              iconColor="text-primary"
               isLoading={isLoadingStats}
             />
             <StatCard
               label={statsLabels.active}
               value={statsData.active}
               icon={Settings}
-              iconColor="text-green-500"
+              iconColor="text-primary"
               isLoading={isLoadingStats}
             />
             <StatCard
               label={statsLabels.completed}
               value={statsData.completed}
               icon={Wrench}
-              iconColor="text-purple-500"
+              iconColor="text-primary"
               isLoading={isLoadingStats}
             />
           </div>

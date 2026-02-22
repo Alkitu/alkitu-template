@@ -14,17 +14,17 @@ import type { ServiceStatsCardProps } from './ServiceStatsCard.types';
  * <ServiceStatsCard label="Categorías" value={3} variant="accent" />
  * ```
  */
-export function ServiceStatsCard({ 
-  label, 
-  value, 
+export function ServiceStatsCard({
+  label,
+  value,
   variant = 'default',
-  className 
+  className
 }: ServiceStatsCardProps) {
   return (
-    <div 
+    <div
       className={cn(
         "flex flex-col gap-[5px] pl-[18px] pr-[5px] py-[15px]",
-        "border border-ring rounded-[14px]",
+        "border border-ring rounded-xl",
         "bg-card min-w-[200px]",
         className
       )}
@@ -32,7 +32,7 @@ export function ServiceStatsCard({
       <span className="body-xs text-muted-foreground-m font-light whitespace-nowrap">
         {label}
       </span>
-      <span 
+      <span
         className={cn(
           "text-heading-lg font-extrabold",
           variant === 'accent' ? "text-primary" : "text-foreground"

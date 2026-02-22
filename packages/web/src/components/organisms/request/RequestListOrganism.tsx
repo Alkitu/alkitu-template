@@ -195,7 +195,7 @@ export const RequestListOrganism: React.FC<RequestListOrganismProps> = ({
     <div className={`space-y-4 ${className}`}>
       {/* Header with Filters */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-2xl font-bold text-gray-900">Service Requests</h2>
+        <h2 className="text-2xl font-bold text-foreground">Service Requests</h2>
 
         <div className="flex items-center gap-2">
           {/* Refresh Button */}
@@ -221,7 +221,7 @@ export const RequestListOrganism: React.FC<RequestListOrganismProps> = ({
             <Filter className="h-4 w-4" />
             Filters
             {hasActiveFilters && (
-              <span className="ml-1 rounded-full bg-blue-600 px-2 py-0.5 text-xs text-white">
+              <span className="ml-1 rounded-full bg-primary px-2 py-0.5 text-xs text-primary-foreground">
                 {Object.keys(filters).length}
               </span>
             )}
@@ -231,15 +231,15 @@ export const RequestListOrganism: React.FC<RequestListOrganismProps> = ({
 
       {/* Filter Panel */}
       {showFilters && (
-        <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+        <div className="rounded-lg border border-border bg-muted/30 p-4">
           <div className="mb-3 flex items-center justify-between">
-            <h3 className="font-medium text-gray-900">Filters</h3>
+            <h3 className="font-medium text-foreground">Filters</h3>
             {hasActiveFilters && (
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={clearFilters}
-                className="h-auto p-0 text-sm text-gray-600 hover:text-gray-900"
+                className="h-auto p-0 text-sm text-muted-foreground hover:text-foreground"
               >
                 <X className="mr-1 h-3 w-3" />
                 Clear all
@@ -250,7 +250,7 @@ export const RequestListOrganism: React.FC<RequestListOrganismProps> = ({
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {/* Status Filter */}
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-gray-700">Status</label>
+              <label className="text-sm font-medium text-foreground/80">Status</label>
               <select
                 value={filters.status || ''}
                 onChange={(e) =>
@@ -259,7 +259,7 @@ export const RequestListOrganism: React.FC<RequestListOrganismProps> = ({
                     status: e.target.value as RequestStatus | undefined,
                   }))
                 }
-                className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
               >
                 <option value="">All Statuses</option>
                 <option value={RequestStatus.PENDING}>Pending</option>
@@ -274,12 +274,12 @@ export const RequestListOrganism: React.FC<RequestListOrganismProps> = ({
 
       {/* Error State */}
       {error && (
-        <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+        <div className="rounded-lg border border-destructive/20 bg-destructive/10 p-4">
           <div className="flex items-start gap-3">
-            <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-red-600" />
+            <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-destructive" />
             <div className="flex-1">
-              <h3 className="font-medium text-red-900">Error</h3>
-              <p className="mt-1 text-sm text-red-700">{error}</p>
+              <h3 className="font-medium text-destructive-foreground">Error</h3>
+              <p className="mt-1 text-sm text-destructive">{error}</p>
               <Button
                 variant="outline"
                 size="sm"
@@ -296,16 +296,16 @@ export const RequestListOrganism: React.FC<RequestListOrganismProps> = ({
       {/* Loading State */}
       {isLoading && (
         <div className="flex items-center justify-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
         </div>
       )}
 
       {/* Empty State */}
       {!isLoading && !error && requests.length === 0 && (
-        <div className="rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-12 text-center">
+        <div className="rounded-lg border-2 border-dashed border-border bg-muted/10 p-12 text-center">
           <div className="mx-auto max-w-md">
-            <h3 className="text-lg font-medium text-gray-900">No requests found</h3>
-            <p className="mt-2 text-sm text-gray-600">
+            <h3 className="text-lg font-medium text-foreground">No requests found</h3>
+            <p className="mt-2 text-sm text-muted-foreground">
               {hasActiveFilters
                 ? 'Try adjusting your filters to see more results.'
                 : 'Get started by creating your first service request.'}
@@ -343,7 +343,7 @@ export const RequestListOrganism: React.FC<RequestListOrganismProps> = ({
 
       {/* Results Count */}
       {!isLoading && !error && requests.length > 0 && (
-        <div className="text-center text-sm text-gray-600">
+        <div className="text-center text-sm text-muted-foreground">
           Showing {requests.length} request{requests.length !== 1 ? 's' : ''}
         </div>
       )}

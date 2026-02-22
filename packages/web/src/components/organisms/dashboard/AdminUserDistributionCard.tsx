@@ -43,8 +43,8 @@ export function AdminUserDistributionCard({
   return (
     <Card className="p-6">
       <div className="flex items-center gap-3 mb-4">
-        <div className="h-10 w-10 bg-indigo-100 dark:bg-indigo-900/20 rounded-xl flex items-center justify-center">
-          <Users className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+        <div className="h-10 w-10 bg-primary/10 rounded-xl flex items-center justify-center">
+          <Users className="h-5 w-5 text-primary" />
         </div>
         <div>
           <h3 className="font-semibold">{title}</h3>

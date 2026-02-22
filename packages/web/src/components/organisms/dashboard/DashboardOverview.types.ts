@@ -14,7 +14,7 @@ export interface QuickAction {
   href: string;
   icon: LucideIcon;
   variant?: 'default' | 'primary';
-  iconColor?: string;
+  iconColor?: 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info';
 }
 
 /**

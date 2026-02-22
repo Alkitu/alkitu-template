@@ -57,7 +57,7 @@ const JsonTextarea: React.FC<JsonTextareaProps> = ({ value, onChange, disabled, 
       <textarea
         id="requestTemplate"
         rows={8}
-        className={`mt-1 block w-full rounded-md border ${hasError || jsonError ? 'border-red-500' : 'border-gray-300'} px-3 py-2 font-mono text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500`}
+        className={`mt-1 block w-full rounded-md border ${hasError || jsonError ? 'border-destructive' : 'border-input'} bg-background px-3 py-2 font-mono text-sm shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary`}
         disabled={disabled}
         value={textValue}
         onChange={(e) => {
@@ -73,7 +73,7 @@ const JsonTextarea: React.FC<JsonTextareaProps> = ({ value, onChange, disabled, 
           }
         }}
       />
-      {jsonError && <p className="mt-1 text-sm text-red-600">{jsonError}</p>}
+      {jsonError && <p className="mt-1 text-sm text-destructive">{jsonError}</p>}
     </>
   );
 };
@@ -150,19 +150,19 @@ export const ServiceFormOrganism: React.FC<ServiceFormOrganismProps> = ({
     resolver: zodResolver(LocalServiceSchema),
     defaultValues: initialData
       ? {
-          name: initialData.name,
-          categoryId: initialData.categoryId,
-          thumbnail: initialData.thumbnail || '',
-          iconColor: initialData.iconColor || '#000000',
-          requestTemplate: initialData.requestTemplate,
-        }
+        name: initialData.name,
+        categoryId: initialData.categoryId,
+        thumbnail: initialData.thumbnail || '',
+        iconColor: initialData.iconColor || '#000000',
+        requestTemplate: initialData.requestTemplate,
+      }
       : {
-          name: '',
-          categoryId: '',
-          thumbnail: '',
-          iconColor: '#000000',
-          requestTemplate: defaultTemplate,
-        },
+        name: '',
+        categoryId: '',
+        thumbnail: '',
+        iconColor: '#000000',
+        requestTemplate: defaultTemplate,
+      },
   });
 
   /**
@@ -252,8 +252,8 @@ export const ServiceFormOrganism: React.FC<ServiceFormOrganismProps> = ({
   if (loadingCategories) {
     return (
       <div className="flex items-center justify-center py-8">
-        <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
-        <span className="ml-2 text-sm text-gray-600">Loading form...</span>
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+        <span className="ml-2 text-sm text-muted-foreground">Loading form...</span>
       </div>
     );
   }
@@ -268,20 +268,20 @@ export const ServiceFormOrganism: React.FC<ServiceFormOrganismProps> = ({
       <div>
         <label
           htmlFor="name"
-          className="block text-sm font-medium text-gray-700"
+          className="block text-sm font-medium text-foreground/80"
         >
-          Service Name <span className="text-red-500">*</span>
+          Service Name <span className="text-destructive">*</span>
         </label>
         <Input
           id="name"
           type="text"
           placeholder="e.g., Emergency Plumbing, AC Repair"
           {...register('name')}
-          className={`mt-1 ${errors.name ? 'border-red-500' : ''}`}
+          className={`mt-1 ${errors.name ? 'border-destructive' : ''}`}
           disabled={isLoading}
         />
         {errors.name && (
-          <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
+          <p className="mt-1 text-sm text-destructive">{errors.name.message}</p>
         )}
       </div>
 
@@ -289,14 +289,14 @@ export const ServiceFormOrganism: React.FC<ServiceFormOrganismProps> = ({
       <div>
         <label
           htmlFor="categoryId"
-          className="block text-sm font-medium text-gray-700"
+          className="block text-sm font-medium text-foreground/80"
         >
-          Category <span className="text-red-500">*</span>
+          Category <span className="text-destructive">*</span>
         </label>
         <select
           id="categoryId"
           {...register('categoryId')}
-          className={`mt-1 block w-full rounded-md border ${errors.categoryId ? 'border-red-500' : 'border-gray-300'} px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500`}
+          className={`mt-1 block w-full rounded-md border ${errors.categoryId ? 'border-destructive' : 'border-input'} bg-background px-3 py-2 shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary`}
           disabled={isLoading}
         >
           <option value="">Select a category</option>
@@ -307,7 +307,7 @@ export const ServiceFormOrganism: React.FC<ServiceFormOrganismProps> = ({
           ))}
         </select>
         {errors.categoryId && (
-          <p className="mt-1 text-sm text-red-600">
+          <p className="mt-1 text-sm text-destructive">
             {errors.categoryId.message}
           </p>
         )}
@@ -316,32 +316,32 @@ export const ServiceFormOrganism: React.FC<ServiceFormOrganismProps> = ({
       {/* Service Icon Color */}
       <div>
         <div className="flex gap-4">
-            <div className="flex-1">
-                <Controller
-                name="iconColor"
-                control={control}
-                render={({ field }) => (
-                    <LocationColorPicker
-                    color={field.value || '#000000'}
-                    onChange={(color) => field.onChange(color)}
-                    label="Service Icon Color"
-                    />
-                )}
+          <div className="flex-1">
+            <Controller
+              name="iconColor"
+              control={control}
+              render={({ field }) => (
+                <LocationColorPicker
+                  color={field.value || '#000000'}
+                  onChange={(color) => field.onChange(color)}
+                  label="Service Icon Color"
                 />
+              )}
+            />
+          </div>
+          {/* Preview of Dynamic Color */}
+          <div className="flex items-end pb-2">
+            <div
+              className="flex h-10 w-10 items-center justify-center rounded-full transition-colors"
+              style={{ backgroundColor: getDynamicBackgroundColor(watch('iconColor') || '#000000') }}
+              title="Background Preview"
+            >
+              <div
+                className="h-4 w-4 rounded-full"
+                style={{ backgroundColor: watch('iconColor') || '#000000' }}
+              />
             </div>
-            {/* Preview of Dynamic Color */}
-            <div className="flex items-end pb-2">
-                <div 
-                    className="flex h-10 w-10 items-center justify-center rounded-full transition-colors"
-                    style={{ backgroundColor: getDynamicBackgroundColor(watch('iconColor') || '#000000') }}
-                    title="Background Preview"
-                >
-                    <div 
-                        className="h-4 w-4 rounded-full" 
-                        style={{ backgroundColor: watch('iconColor') || '#000000' }} 
-                    />
-                </div>
-            </div>
+          </div>
         </div>
       </div>
 
@@ -349,7 +349,7 @@ export const ServiceFormOrganism: React.FC<ServiceFormOrganismProps> = ({
       <div>
         <label
           htmlFor="thumbnail"
-          className="block text-sm font-medium text-gray-700"
+          className="block text-sm font-medium text-foreground/80"
         >
           Thumbnail URL (Optional)
         </label>
@@ -361,7 +361,7 @@ export const ServiceFormOrganism: React.FC<ServiceFormOrganismProps> = ({
           className="mt-1"
           disabled={isLoading}
         />
-        <p className="mt-1 text-xs text-gray-500">
+        <p className="mt-1 text-xs text-muted-foreground">
           URL to an image representing this service
         </p>
       </div>
@@ -370,11 +370,11 @@ export const ServiceFormOrganism: React.FC<ServiceFormOrganismProps> = ({
       <div>
         <label
           htmlFor="requestTemplate"
-          className="block text-sm font-medium text-gray-700"
+          className="block text-sm font-medium text-foreground/80"
         >
-          Request Form Template <span className="text-red-500">*</span>
+          Request Form Template <span className="text-destructive">*</span>
         </label>
-        <p className="mt-1 text-xs text-gray-500">
+        <p className="mt-1 text-xs text-muted-foreground">
           JSON template for the service request form (Phase 8 will have visual
           builder)
         </p>
@@ -391,7 +391,7 @@ export const ServiceFormOrganism: React.FC<ServiceFormOrganismProps> = ({
           )}
         />
         {errors.requestTemplate && (
-          <p className="mt-1 text-sm text-red-600">
+          <p className="mt-1 text-sm text-destructive">
             {errors.requestTemplate.message as string}
           </p>
         )}

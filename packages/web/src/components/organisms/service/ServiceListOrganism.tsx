@@ -192,8 +192,8 @@ export const ServiceListOrganism: React.FC<ServiceListOrganismProps> = ({
         data-testid="service-list-loading"
       >
         <div className="text-center">
-          <Loader2 className="mx-auto h-8 w-8 animate-spin text-gray-400" />
-          <p className="mt-2 text-sm text-gray-600">Loading services...</p>
+          <Loader2 className="mx-auto h-8 w-8 animate-spin text-muted-foreground" />
+          <p className="mt-2 text-sm text-muted-foreground">Loading services...</p>
         </div>
       </div>
     );
@@ -203,14 +203,14 @@ export const ServiceListOrganism: React.FC<ServiceListOrganismProps> = ({
   if (state.error) {
     return (
       <div
-        className={`rounded-lg border border-red-200 bg-red-50 p-4 ${className}`}
+        className={`rounded-lg border border-destructive/20 bg-destructive/10 p-4 ${className}`}
         data-testid="service-list-error"
       >
-        <div className="flex items-center gap-2 text-red-800">
+        <div className="flex items-center gap-2 text-destructive-foreground">
           <AlertCircle className="h-5 w-5" />
           <p className="font-medium">Error loading services</p>
         </div>
-        <p className="mt-1 text-sm text-red-600">{state.error}</p>
+        <p className="mt-1 text-sm text-destructive">{state.error}</p>
         <Button
           variant="outline"
           size="sm"
@@ -237,8 +237,8 @@ export const ServiceListOrganism: React.FC<ServiceListOrganismProps> = ({
 
       {/* Add New Service Form */}
       {state.showForm && (
-        <div className="mb-6 rounded-lg border border-gray-200 bg-gray-50 p-4">
-          <h3 className="mb-4 font-medium text-gray-900">Add New Service</h3>
+        <div className="mb-6 rounded-lg border border-border bg-muted/30 p-4">
+          <h3 className="mb-4 font-medium text-foreground">Add New Service</h3>
           <ServiceFormOrganism
             onSuccess={handleSuccess}
             onError={(error) => alert(error)}
@@ -252,9 +252,9 @@ export const ServiceListOrganism: React.FC<ServiceListOrganismProps> = ({
       {state.editingService && (
         <div
           data-testid="service-edit-form"
-          className="mb-6 rounded-lg border border-gray-200 bg-gray-50 p-4"
+          className="mb-6 rounded-lg border border-border bg-muted/30 p-4"
         >
-          <h3 className="mb-4 font-medium text-gray-900">Edit Service</h3>
+          <h3 className="mb-4 font-medium text-foreground">Edit Service</h3>
           <ServiceFormOrganism
             initialData={state.editingService}
             onSuccess={handleSuccess}
@@ -282,12 +282,12 @@ export const ServiceListOrganism: React.FC<ServiceListOrganismProps> = ({
         </div>
       ) : (
         /* Empty State */
-        <div className="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-12 text-center">
-          <Wrench className="mx-auto h-12 w-12 text-gray-400" />
-          <h3 className="mt-4 text-lg font-medium text-gray-900">
+        <div className="rounded-lg border border-dashed border-border bg-muted/10 p-12 text-center">
+          <Wrench className="mx-auto h-12 w-12 text-muted-foreground" />
+          <h3 className="mt-4 text-lg font-medium text-foreground">
             {categoryId ? 'No services in this category' : 'No services yet'}
           </h3>
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="mt-2 text-sm text-muted-foreground">
             {categoryId
               ? 'Get started by creating your first service for this category.'
               : 'Get started by creating your first service.'}

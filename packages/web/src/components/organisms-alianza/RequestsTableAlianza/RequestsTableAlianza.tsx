@@ -43,7 +43,7 @@ export const RequestsTableAlianza: React.FC<RequestsTableAlianzaProps> = ({
 
     return (
       <span
-        className={`px-2 py-1 rounded-[4px] text-xs font-medium border ${config.className}`}
+        className={`px-2 py-1 rounded text-xs font-medium border ${config.className}`}
       >
         {config.label}
       </span>
@@ -192,7 +192,7 @@ export const RequestsTableAlianza: React.FC<RequestsTableAlianzaProps> = ({
                 <div className="flex items-center justify-end gap-2">
                   <button
                     onClick={() => onViewRequest(request.id, request.clientEmail || '')}
-                    className="p-2 hover:bg-muted rounded-[4px] transition-colors"
+                    className="p-2 hover:bg-muted rounded-md transition-colors"
                     title="Ver detalles"
                   >
                     <Eye className="h-4 w-4 text-foreground" />
@@ -200,10 +200,10 @@ export const RequestsTableAlianza: React.FC<RequestsTableAlianzaProps> = ({
                   {request.status === 'PENDING' && onAssignRequest && (
                     <button
                       onClick={() => onAssignRequest(request.id)}
-                      className="p-2 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded-[4px] transition-colors"
+                      className="p-2 hover:bg-primary/20 rounded-md transition-colors"
                       title="Asignar"
                     >
-                      <UserPlus className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                      <UserPlus className="h-4 w-4 text-primary" />
                     </button>
                   )}
                 </div>

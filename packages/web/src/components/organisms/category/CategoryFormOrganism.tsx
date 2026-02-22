@@ -64,11 +64,11 @@ export const CategoryFormOrganism: React.FC<CategoryFormOrganismProps> = ({
     resolver: zodResolver(CreateCategorySchema),
     defaultValues: initialData
       ? {
-          name: initialData.name,
-        }
+        name: initialData.name,
+      }
       : {
-          name: '',
-        },
+        name: '',
+      },
   });
 
   /**
@@ -122,22 +122,22 @@ export const CategoryFormOrganism: React.FC<CategoryFormOrganismProps> = ({
       <div>
         <label
           htmlFor="name"
-          className="block text-sm font-medium text-gray-700"
+          className="block text-sm font-medium text-foreground/80"
         >
-          Category Name <span className="text-red-500">*</span>
+          Category Name <span className="text-destructive">*</span>
         </label>
         <Input
           id="name"
           type="text"
           placeholder="e.g., Plumbing, Electrical, HVAC"
           {...register('name')}
-          className={`mt-1 ${errors.name ? 'border-red-500' : ''}`}
+          className={`mt-1 ${errors.name ? 'border-destructive' : ''}`}
           disabled={isLoading}
           aria-invalid={!!errors.name}
           aria-describedby={errors.name ? 'name-error' : undefined}
         />
         {errors.name && (
-          <p id="name-error" className="mt-1 text-sm text-red-600">
+          <p id="name-error" className="mt-1 text-sm text-destructive">
             {errors.name.message}
           </p>
         )}

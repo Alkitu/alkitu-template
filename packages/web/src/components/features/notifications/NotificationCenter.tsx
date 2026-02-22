@@ -73,9 +73,9 @@ export function NotificationCenter({ userId }: NotificationCenterProps) {
 
   // Helper to get icon (Consistent with page.tsx)
   const getIcon = (n: any) => {
-    if (n.title?.toLowerCase().includes('servicio')) return <Check className="w-4 h-4 text-[#8B6D36]" />;
-    if (n.title?.toLowerCase().includes('recordatorio')) return <Calendar className="w-4 h-4 text-[#8B6D36]" />;
-    return <Info className="w-4 h-4 text-[#8B6D36]" />;
+    if (n.title?.toLowerCase().includes('servicio')) return <Check className="w-4 h-4 text-primary" />;
+    if (n.title?.toLowerCase().includes('recordatorio')) return <Calendar className="w-4 h-4 text-primary" />;
+    return <Info className="w-4 h-4 text-primary" />;
   };
 
   const renderNotificationList = (list: any[]) => {
@@ -96,7 +96,7 @@ export function NotificationCenter({ userId }: NotificationCenterProps) {
             <div
               key={notification.id}
               className={cn(
-                "group relative flex items-start gap-3 p-3 rounded-[16px] transition-colors",
+                "group relative flex items-start gap-3 p-3 rounded-2xl transition-colors",
                 isUnread
                   ? "bg-primary/5 border border-primary/10"
                   : "bg-background shadow-sm border border-border/40"
@@ -158,8 +158,8 @@ export function NotificationCenter({ userId }: NotificationCenterProps) {
           <Bell className="h-5 w-5 text-muted-foreground group-hover:text-foreground transition-colors" />
           {unreadCount > 0 && (
             <span className="absolute top-1.5 right-1.5 flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-destructive/70 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-destructive"></span>
             </span>
           )}
         </Button>
@@ -173,7 +173,7 @@ export function NotificationCenter({ userId }: NotificationCenterProps) {
           {unreadCount > 0 && (
             <button
               onClick={handleMarkAllRead}
-              className="flex items-center gap-1 text-xs text-[#F59E0B] hover:text-[#D97706] font-medium transition-colors"
+              className="flex items-center gap-1 text-xs text-primary hover:text-primary/80 font-medium transition-colors"
             >
               <CheckCheck className="w-3 h-3" />
               Marcar todas leídas

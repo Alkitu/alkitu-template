@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Card, CardHeader, CardContent, CardFooter } from '@/components/molecules-alianza/Card';
-import { Logo } from '@/components/atoms-alianza/Logo.tsx';
+import { Logo } from '@/components/atoms-alianza/Logo';
 import { Icon } from '@/components/atoms-alianza/Icon';
 import { Typography } from '@/components/atoms-alianza/Typography';
 import { Spinner } from '@/components/atoms-alianza/Spinner';
@@ -202,15 +202,15 @@ export const AuthCardWrapper = React.forwardRef<HTMLDivElement, AuthCardWrapperP
             className={cn(
               'w-full max-w-[520px] flex flex-col items-center gap-6 relative',
               disableResponsive
-                ? 'bg-card rounded-[20px] shadow-sm border border-border p-[42px]'
-                : 'md:bg-card md:rounded-[20px] md:shadow-sm md:border md:border-border p-6 md:p-[42px]',
+                ? 'bg-card rounded-2xl shadow-sm border border-border p-[42px]'
+                : 'md:bg-card md:rounded-2xl md:shadow-sm md:border md:border-border p-6 md:p-[42px]',
               cardClassName,
             )}
           >
             {/* Loading Overlay */}
             {isLoading && (
               <div
-                className="absolute inset-0 bg-background/80 rounded-[20px] flex items-center justify-center z-10"
+                className="absolute inset-0 bg-background/80 rounded-2xl flex items-center justify-center z-10"
                 data-testid="loading-overlay"
               >
                 <Spinner size="lg" />

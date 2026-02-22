@@ -146,7 +146,7 @@ export const LocationListOrganism: React.FC<LocationListOrganismProps> = ({
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold">Work Locations</h2>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-muted-foreground">
             Manage your work locations for service requests
           </p>
         </div>
@@ -164,7 +164,7 @@ export const LocationListOrganism: React.FC<LocationListOrganismProps> = ({
 
       {/* Add/Edit Form */}
       {showForm && (
-        <div className="rounded-lg border border-gray-200 bg-gray-50 p-6">
+        <div className="rounded-lg border border-border bg-muted/30 p-6">
           <LocationFormOrganism
             initialData={editingLocation || undefined}
             onSuccess={handleFormSuccess}
@@ -179,22 +179,22 @@ export const LocationListOrganism: React.FC<LocationListOrganismProps> = ({
       {isLoading && (
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
-            <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-gray-200 border-t-blue-600" />
-            <p className="mt-4 text-sm text-gray-600">Loading locations...</p>
+            <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-muted border-t-primary" />
+            <p className="mt-4 text-sm text-muted-foreground">Loading locations...</p>
           </div>
         </div>
       )}
 
       {/* Empty State */}
       {!isLoading && locations.length === 0 && !showForm && (
-        <div className="rounded-lg border-2 border-dashed border-gray-300 p-12 text-center">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
-            <MapPin className="h-8 w-8 text-gray-400" />
+        <div className="rounded-lg border-2 border-dashed border-border p-12 text-center">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-muted/50">
+            <MapPin className="h-8 w-8 text-muted-foreground" />
           </div>
-          <h3 className="mt-4 text-lg font-semibold text-gray-900">
+          <h3 className="mt-4 text-lg font-semibold text-foreground">
             No locations yet
           </h3>
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="mt-2 text-sm text-muted-foreground">
             Get started by adding your first work location.
           </p>
           {showAddButton && (
@@ -209,7 +209,7 @@ export const LocationListOrganism: React.FC<LocationListOrganismProps> = ({
       {/* Locations List */}
       {!isLoading && locations.length > 0 && (
         <div className="space-y-4">
-          <div className="text-sm font-medium text-gray-700">
+          <div className="text-sm font-medium text-foreground/80">
             {locations.length} {locations.length === 1 ? 'Location' : 'Locations'}
           </div>
 

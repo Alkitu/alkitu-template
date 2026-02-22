@@ -212,7 +212,7 @@ export const RequestFormOrganism: React.FC<RequestFormOrganismProps> = ({
   if (isLoadingData) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     );
   }
@@ -221,12 +221,12 @@ export const RequestFormOrganism: React.FC<RequestFormOrganismProps> = ({
     <form onSubmit={handleSubmit} className={`space-y-6 ${className}`}>
       {/* Error Alert */}
       {error && (
-        <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+        <div className="rounded-lg border border-destructive/20 bg-destructive/10 p-4">
           <div className="flex items-start gap-3">
-            <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-red-600" />
+            <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-destructive" />
             <div className="flex-1">
-              <h3 className="font-medium text-red-900">Error</h3>
-              <p className="mt-1 text-sm text-red-700">{error}</p>
+              <h3 className="font-medium text-destructive-foreground">Error</h3>
+              <p className="mt-1 text-sm text-destructive">{error}</p>
             </div>
           </div>
         </div>
@@ -243,7 +243,7 @@ export const RequestFormOrganism: React.FC<RequestFormOrganismProps> = ({
           value={formData.serviceId}
           onChange={(e) => handleServiceChange(e.target.value)}
           disabled={isEditMode || isLoading}
-          className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-50"
+          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:cursor-not-allowed disabled:bg-muted/30"
           required
         >
           <option value="">Select a service...</option>
@@ -254,7 +254,7 @@ export const RequestFormOrganism: React.FC<RequestFormOrganismProps> = ({
           ))}
         </select>
         {fieldErrors.serviceId && (
-          <p className="text-sm text-red-600">{fieldErrors.serviceId}</p>
+          <p className="text-sm text-destructive">{fieldErrors.serviceId}</p>
         )}
       </div>
 
@@ -271,7 +271,7 @@ export const RequestFormOrganism: React.FC<RequestFormOrganismProps> = ({
             setFormData((prev) => ({ ...prev, locationId: e.target.value }))
           }
           disabled={isLoading}
-          className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-50"
+          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:cursor-not-allowed disabled:bg-muted/30"
           required
         >
           <option value="">Select a location...</option>
@@ -282,7 +282,7 @@ export const RequestFormOrganism: React.FC<RequestFormOrganismProps> = ({
           ))}
         </select>
         {fieldErrors.locationId && (
-          <p className="text-sm text-red-600">{fieldErrors.locationId}</p>
+          <p className="text-sm text-destructive">{fieldErrors.locationId}</p>
         )}
       </div>
 
@@ -304,20 +304,20 @@ export const RequestFormOrganism: React.FC<RequestFormOrganismProps> = ({
           required
         />
         {fieldErrors.executionDateTime && (
-          <p className="text-sm text-red-600">{fieldErrors.executionDateTime}</p>
+          <p className="text-sm text-destructive">{fieldErrors.executionDateTime}</p>
         )}
       </div>
 
       {/* Dynamic Template Fields */}
       {selectedService?.requestTemplate?.fields && (
-        <div className="space-y-4 rounded-lg border border-gray-200 bg-gray-50 p-4">
-          <h3 className="font-medium text-gray-900">Service Details</h3>
+        <div className="space-y-4 rounded-lg border border-border bg-muted/30 p-4">
+          <h3 className="font-medium text-foreground">Service Details</h3>
 
           {selectedService.requestTemplate.fields.map((field: any) => (
             <div key={field.id} className="space-y-2">
               <Label htmlFor={field.id}>
                 {field.label}
-                {field.required && <span className="text-red-500"> *</span>}
+                {field.required && <span className="text-destructive"> *</span>}
               </Label>
 
               {field.type === 'textarea' ? (
@@ -337,7 +337,7 @@ export const RequestFormOrganism: React.FC<RequestFormOrganismProps> = ({
                   onChange={(e) => handleTemplateFieldChange(field.id, e.target.value)}
                   disabled={isLoading}
                   required={field.required}
-                  className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-50"
+                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:cursor-not-allowed disabled:bg-muted/30"
                 >
                   <option value="">Select...</option>
                   {field.options?.map((option: any) => (
@@ -359,11 +359,11 @@ export const RequestFormOrganism: React.FC<RequestFormOrganismProps> = ({
               )}
 
               {field.helpText && (
-                <p className="text-sm text-gray-500">{field.helpText}</p>
+                <p className="text-sm text-muted-foreground">{field.helpText}</p>
               )}
 
               {fieldErrors[field.id] && (
-                <p className="text-sm text-red-600">{fieldErrors[field.id]}</p>
+                <p className="text-sm text-destructive">{fieldErrors[field.id]}</p>
               )}
             </div>
           ))}
@@ -371,7 +371,7 @@ export const RequestFormOrganism: React.FC<RequestFormOrganismProps> = ({
       )}
 
       {/* Action Buttons */}
-      <div className="flex gap-3 border-t border-gray-200 pt-6">
+      <div className="flex gap-3 border-t border-border pt-6">
         <Button
           type="submit"
           disabled={isLoading}

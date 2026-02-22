@@ -20,17 +20,17 @@ export interface UserStatsCardProps {
  * <UserStatsCard label="Administradores" value={3} variant="accent" />
  * ```
  */
-export function UserStatsCard({ 
-  label, 
-  value, 
+export function UserStatsCard({
+  label,
+  value,
   variant = 'default',
-  className 
+  className
 }: UserStatsCardProps) {
   return (
-    <div 
+    <div
       className={cn(
         "flex flex-col gap-[5px] pl-[18px] pr-[5px] py-[15px]",
-        "border border-ring rounded-[14px]",
+        "border border-ring rounded-[var(--radius-card)]",
         "bg-card min-w-[200px]",
         className
       )}
@@ -38,7 +38,7 @@ export function UserStatsCard({
       <span className="body-xs text-muted-foreground-m font-light whitespace-nowrap">
         {label}
       </span>
-      <span 
+      <span
         className={cn(
           "text-heading-lg font-extrabold",
           variant === 'accent' ? "text-primary" : "text-foreground"

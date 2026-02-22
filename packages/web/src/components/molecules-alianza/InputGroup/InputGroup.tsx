@@ -144,7 +144,7 @@ export const InputGroup = forwardRef<HTMLInputElement, InputGroupProps>(
                 ref={ref}
                 id={inputId}
                 className={cn(
-                  'h-input py-[10px] text-body-sm font-light rounded-input',
+                  'h-input py-[10px] text-body-sm font-light rounded-md',
                   iconLeft && 'pl-[36px]',
                   iconRight && 'pr-[36px]',
                   borderClass,
@@ -173,11 +173,11 @@ export const InputGroup = forwardRef<HTMLInputElement, InputGroupProps>(
                   onKeyDown={
                     onIconRightClick
                       ? (e) => {
-                          if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            onIconRightClick();
-                          }
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          onIconRightClick();
                         }
+                      }
                       : undefined
                   }
                 >
@@ -195,7 +195,7 @@ export const InputGroup = forwardRef<HTMLInputElement, InputGroupProps>(
                 minRows={3}
                 className={cn(
                   'flex w-full border bg-muted px-3 py-2 shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50',
-                  'resize-y text-body-sm font-light rounded-input',
+                  'resize-y text-body-sm font-light rounded-md',
                   borderClass,
                   disabled && 'opacity-50',
                 )}
@@ -215,7 +215,7 @@ export const InputGroup = forwardRef<HTMLInputElement, InputGroupProps>(
               <SelectTrigger
                 id={inputId}
                 className={cn(
-                  'h-input bg-muted border-input text-body-sm font-light rounded-input',
+                  'h-input bg-muted border-input text-body-sm font-light rounded-md',
                   borderClass,
                 )}
                 aria-invalid={variant === 'error'}

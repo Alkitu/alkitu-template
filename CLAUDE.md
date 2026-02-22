@@ -254,7 +254,8 @@ Test SOLID compliance with: `npm run test:solid`
 ### Frontend Development
 
 - **Component Structure**: Atomic design pattern in Base Web Architecture
-- **Theme System**: Dynamic themes with OKLCH color space
+- **Theme System**: Dynamic themes with OKLCH color space managed by Theme Editor 3.0.
+  - *Note on Border Radius*: `css-variables.ts` contains a fallback (`0.625rem`) to prevent UI breakage if the database `themeData.borders.radius` is `null`/`undefined`. Over time, this should be properly migrated and saved directly within the Theme Editor's DB state to avoid relying on hardcoded fallbacks.
 - **State Management**: Zustand for client state, React Query for server state
 - **Forms**: React Hook Form + Zod validation
 - **Charts**: Recharts integration

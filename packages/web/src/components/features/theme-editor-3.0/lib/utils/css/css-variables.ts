@@ -19,16 +19,16 @@ export function parseOklchString(value: string): OklchColor | null {
   // Match oklch(l c h) - no alpha support
   const match = value.match(/oklch\(([^)]+)\)/);
   if (!match) return null;
-  
+
   const parts = match[1].split(/\s+/);
   if (parts.length < 3) return null;
-  
+
   const l = parseFloat(parts[0]);
   const c = parseFloat(parts[1]);
   const h = parseFloat(parts[2]);
-  
+
   if (isNaN(l) || isNaN(c) || isNaN(h)) return null;
-  
+
   return { l, c, h };
 }
 
@@ -46,7 +46,7 @@ export function applyThemeColorsToRoot(colors: ThemeColors): void {
  */
 export function applyModeSpecificColors(colors: ThemeColors): void {
   const root = document.documentElement;
-  
+
   Object.entries(colors).forEach(([colorKey, colorToken]) => {
     const cssVariable = CSS_VARIABLE_MAP[colorKey as keyof ThemeColors];
     if (cssVariable) {
@@ -65,20 +65,20 @@ export function applyModeSpecificColors(colors: ThemeColors): void {
  */
 export function applyThemeToRoot(theme: ThemeData, mode: 'light' | 'dark' = 'light'): void {
   const root = document.documentElement;
-  
+
   // Apply mode-specific colors
   const colors = mode === 'dark' ? theme.darkColors : theme.lightColors;
   applyModeSpecificColors(colors);
-  
+
   // Apply typography
   root.style.setProperty('--font-sans', theme.typography.fontFamilies.sans);
   root.style.setProperty('--font-serif', theme.typography.fontFamilies.serif);
   root.style.setProperty('--font-mono', theme.typography.fontFamilies.mono);
   root.style.setProperty('--tracking-normal', theme.typography.trackingNormal);
-  
+
   // Apply borders
   root.style.setProperty('--radius', theme.borders.radius);
-  
+
   // Apply specific border radius variables if available
   if (theme.borders.radiusButton) {
     root.style.setProperty('--radius-button', theme.borders.radiusButton);
@@ -98,10 +98,10 @@ export function applyThemeToRoot(theme: ThemeData, mode: 'light' | 'dark' = 'lig
   if (theme.borders.radiusCheckboxInner) {
     root.style.setProperty('--radius-checkbox-inner', theme.borders.radiusCheckboxInner);
   }
-  
+
   // Apply spacing
   root.style.setProperty('--spacing', theme.spacing.spacing);
-  
+
   // Apply shadows
   Object.entries({
     '--shadow-2xs': theme.shadows.shadow2xs,
@@ -115,7 +115,7 @@ export function applyThemeToRoot(theme: ThemeData, mode: 'light' | 'dark' = 'lig
   }).forEach(([property, value]) => {
     root.style.setProperty(property, value);
   });
-  
+
   // Apply scroll settings
   applyScrollElements(theme.scroll);
 }
@@ -125,11 +125,11 @@ export function applyThemeToRoot(theme: ThemeData, mode: 'light' | 'dark' = 'lig
  */
 export function applyTypographyElements(typography: TypographyElements): void {
   const root = document.documentElement;
-  
+
   // Apply each typography element as CSS variables
   Object.entries(typography).forEach(([elementKey, element]) => {
     const prefix = `--typography-${elementKey}`;
-    
+
     root.style.setProperty(`${prefix}-font-family`, element.fontFamily);
     root.style.setProperty(`${prefix}-font-size`, element.fontSize);
     root.style.setProperty(`${prefix}-font-weight`, element.fontWeight);
@@ -146,40 +146,56 @@ export function applyTypographyElements(typography: TypographyElements): void {
  */
 export function applyBorderElements(borders: ThemeBorders): void {
   const root = document.documentElement;
-  
+
+  // Create a safe borders object with fallbacks to prevent "undefined" CSS variable values
+  // which break tailwind rendering leading to 0px radii (sharp corners).
+  const safeBorders = {
+    radius: borders?.radius || '0.625rem',
+    radiusSm: borders?.radiusSm,
+    radiusMd: borders?.radiusMd,
+    radiusLg: borders?.radiusLg,
+    radiusXl: borders?.radiusXl,
+    radiusButton: borders?.radiusButton,
+    radiusCard: borders?.radiusCard,
+    radiusCheckbox: borders?.radiusCheckbox,
+    radiusButtonInner: borders?.radiusButtonInner,
+    radiusCardInner: borders?.radiusCardInner,
+    radiusCheckboxInner: borders?.radiusCheckboxInner,
+  };
+
   // Apply main radius
-  root.style.setProperty('--radius', borders.radius);
-  
+  root.style.setProperty('--radius', safeBorders.radius);
+
   // Apply specific border radius variables
-  if (borders.radiusButton) {
-    root.style.setProperty('--radius-button', borders.radiusButton);
+  if (safeBorders.radiusButton) {
+    root.style.setProperty('--radius-button', safeBorders.radiusButton);
   }
-  if (borders.radiusCard) {
-    root.style.setProperty('--radius-card', borders.radiusCard);
+  if (safeBorders.radiusCard) {
+    root.style.setProperty('--radius-card', safeBorders.radiusCard);
   }
-  if (borders.radiusCheckbox) {
-    root.style.setProperty('--radius-checkbox', borders.radiusCheckbox);
+  if (safeBorders.radiusCheckbox) {
+    root.style.setProperty('--radius-checkbox', safeBorders.radiusCheckbox);
   }
-  if (borders.radiusButtonInner) {
-    root.style.setProperty('--radius-button-inner', borders.radiusButtonInner);
+  if (safeBorders.radiusButtonInner) {
+    root.style.setProperty('--radius-button-inner', safeBorders.radiusButtonInner);
   }
-  if (borders.radiusCardInner) {
-    root.style.setProperty('--radius-card-inner', borders.radiusCardInner);
+  if (safeBorders.radiusCardInner) {
+    root.style.setProperty('--radius-card-inner', safeBorders.radiusCardInner);
   }
-  if (borders.radiusCheckboxInner) {
-    root.style.setProperty('--radius-checkbox-inner', borders.radiusCheckboxInner);
+  if (safeBorders.radiusCheckboxInner) {
+    root.style.setProperty('--radius-checkbox-inner', safeBorders.radiusCheckboxInner);
   }
-  if (borders.radiusSm) {
-    root.style.setProperty('--radius-sm', borders.radiusSm);
+  if (safeBorders.radiusSm) {
+    root.style.setProperty('--radius-sm', safeBorders.radiusSm);
   }
-  if (borders.radiusMd) {
-    root.style.setProperty('--radius-md', borders.radiusMd);
+  if (safeBorders.radiusMd) {
+    root.style.setProperty('--radius-md', safeBorders.radiusMd);
   }
-  if (borders.radiusLg) {
-    root.style.setProperty('--radius-lg', borders.radiusLg);
+  if (safeBorders.radiusLg) {
+    root.style.setProperty('--radius-lg', safeBorders.radiusLg);
   }
-  if (borders.radiusXl) {
-    root.style.setProperty('--radius-xl', borders.radiusXl);
+  if (safeBorders.radiusXl) {
+    root.style.setProperty('--radius-xl', safeBorders.radiusXl);
   }
 }
 
@@ -188,7 +204,7 @@ export function applyBorderElements(borders: ThemeBorders): void {
  */
 export function applySpacingElements(spacing: Record<string, string>): void {
   const root = document.documentElement;
-  
+
   // Apply each spacing value as CSS variables
   Object.entries(spacing).forEach(([spacingKey, value]) => {
     root.style.setProperty(`--spacing-${spacingKey}`, value);
@@ -200,11 +216,11 @@ export function applySpacingElements(spacing: Record<string, string>): void {
  */
 export function applyShadowElements(shadows: Record<string, string>): void {
   const root = document.documentElement;
-  
+
   // Map shadow keys to CSS variable names
   const shadowMap = {
     'shadow2xs': '--shadow-2xs',
-    'shadowXs': '--shadow-xs', 
+    'shadowXs': '--shadow-xs',
     'shadowSm': '--shadow-sm',
     'shadow': '--shadow',
     'shadowMd': '--shadow-md',
@@ -212,7 +228,7 @@ export function applyShadowElements(shadows: Record<string, string>): void {
     'shadowXl': '--shadow-xl',
     'shadow2xl': '--shadow-2xl'
   };
-  
+
   // Apply each shadow value as CSS variables
   Object.entries(shadows).forEach(([shadowKey, value]) => {
     const cssVar = shadowMap[shadowKey];
@@ -228,15 +244,15 @@ export function applyShadowElements(shadows: Record<string, string>): void {
  */
 export function applyScrollElements(scroll: { width: string; behavior: 'auto' | 'smooth' | 'instant'; smooth: boolean; hide: boolean; trackRadius?: string; thumbRadius?: string; }): void {
   const root = document.documentElement;
-  
+
   // Apply scroll behavior to html element
   root.style.setProperty('scroll-behavior', scroll.behavior);
-  
+
   // Apply scrollbar style variables for reference
   root.style.setProperty('--scrollbar-width', scroll.width);
   root.style.setProperty('--scrollbar-track-radius', scroll.trackRadius || '0px');
   root.style.setProperty('--scrollbar-thumb-radius', scroll.thumbRadius || '4px');
-  
+
   // DEBUG: Log current scrollbar settings to verify they exist
   console.log('🎨 SCROLLBAR DEBUG CHECK:', {
     trackColor: getComputedStyle(root).getPropertyValue('--scrollbar-track').trim(),
@@ -245,21 +261,21 @@ export function applyScrollElements(scroll: { width: string; behavior: 'auto' | 
     trackRadius: scroll.trackRadius || '0px',
     thumbRadius: scroll.thumbRadius || '4px'
   });
-  
+
   console.log('📏 SCROLLBAR WIDTH APPLYING:', {
     widthValue: scroll.width,
     cssRule: `*::-webkit-scrollbar { width: ${scroll.width} !important; height: ${scroll.width} !important; }`
   });
-  
+
   // Track radius logging for debugging
   console.log('🔴 TRACK RADIUS VALUE:', scroll.trackRadius || '0px');
-  
+
   // REMOVE OLD STYLE ELEMENTS FIRST to prevent conflicts
   const oldStaticStyles = document.getElementById('theme-scrollbar-styles');
   if (oldStaticStyles) {
     oldStaticStyles.remove();
   }
-  
+
   // Apply scrollbar visibility and styling
   if (scroll.hide) {
     // Hide scrollbars completely
@@ -275,7 +291,7 @@ export function applyScrollElements(scroll: { width: string; behavior: 'auto' | 
         height: 0px !important;
       }
     `;
-    
+
     // Apply hidden scrollbar styles
     let scrollbarStyleElement = document.getElementById('unified-scrollbar-styles');
     if (!scrollbarStyleElement) {
@@ -339,7 +355,7 @@ export function applyScrollElements(scroll: { width: string; behavior: 'auto' | 
         height: ${scroll.width} !important;
       }
     `;
-    
+
     // Apply custom scrollbar styles
     let scrollbarStyleElement = document.getElementById('unified-scrollbar-styles');
     if (!scrollbarStyleElement) {
@@ -348,7 +364,7 @@ export function applyScrollElements(scroll: { width: string; behavior: 'auto' | 
       document.head.appendChild(scrollbarStyleElement);
     }
     scrollbarStyleElement.textContent = style;
-    
+
     // DEBUG: Log the actual CSS being applied
     console.log('💉 CSS INJECTED:', {
       elementId: 'unified-scrollbar-styles',
@@ -381,13 +397,13 @@ export function updateCSSVariable(variableName: string, value: string): void {
  */
 export function applyScrollbarColors(colors: import('../types/theme.types').ThemeColors): void {
   const root = document.documentElement;
-  
+
   if (colors.scrollbarTrack) {
     const trackValue = colors.scrollbarTrack.oklchString || colors.scrollbarTrack.value;
     root.style.setProperty('--scrollbar-track', trackValue);
     console.log('🎯 Applied scrollbar-track:', trackValue);
   }
-  
+
   if (colors.scrollbarThumb) {
     const thumbValue = colors.scrollbarThumb.oklchString || colors.scrollbarThumb.value;
     root.style.setProperty('--scrollbar-thumb', thumbValue);
@@ -401,7 +417,7 @@ export function applyScrollbarColors(colors: import('../types/theme.types').Them
  */
 export function applyScrollbarUtilityClass(scroll: { width: string; behavior: 'auto' | 'smooth' | 'instant'; smooth: boolean; hide: boolean; trackRadius?: string; thumbRadius?: string; }, colors: { scrollbarTrack?: { value: string }; scrollbarThumb?: { value: string } }): void {
   const root = document.documentElement;
-  
+
   console.log('🎯 SOLUTION 1 - APPLYING UTILITY CLASS METHOD:', {
     width: scroll.width,
     trackRadius: scroll.trackRadius || '0px',
@@ -409,20 +425,20 @@ export function applyScrollbarUtilityClass(scroll: { width: string; behavior: 'a
     trackColor: colors.scrollbarTrack?.value || '#ffffff',
     thumbColor: colors.scrollbarThumb?.value || '#cdcdcd'
   });
-  
+
   // Step 1: Add the utility class to body/html
   if (!document.body.classList.contains('dynamic-scrollbar')) {
     document.body.classList.add('dynamic-scrollbar');
     console.log('✅ Added dynamic-scrollbar class to body');
   }
-  
+
   // Step 2: Update CSS custom properties
   root.style.setProperty('--dynamic-scrollbar-width', scroll.width);
   root.style.setProperty('--dynamic-scrollbar-track-radius', scroll.trackRadius || '0px');
   root.style.setProperty('--dynamic-scrollbar-thumb-radius', scroll.thumbRadius || '4px');
   root.style.setProperty('--dynamic-scrollbar-track-color', colors.scrollbarTrack?.value || '#ffffff');
   root.style.setProperty('--dynamic-scrollbar-thumb-color', colors.scrollbarThumb?.value || '#cdcdcd');
-  
+
   console.log('✅ CSS Variables Updated:', {
     '--dynamic-scrollbar-width': scroll.width,
     '--dynamic-scrollbar-track-radius': scroll.trackRadius || '0px',
@@ -430,10 +446,10 @@ export function applyScrollbarUtilityClass(scroll: { width: string; behavior: 'a
     '--dynamic-scrollbar-track-color': colors.scrollbarTrack?.value || '#ffffff',
     '--dynamic-scrollbar-thumb-color': colors.scrollbarThumb?.value || '#cdcdcd'
   });
-  
+
   // Step 3: Apply scroll behavior
   root.style.setProperty('scroll-behavior', scroll.behavior);
-  
+
   // Step 4: Handle hide/show
   if (scroll.hide) {
     document.body.classList.add('scrollbar-hidden');
@@ -451,12 +467,12 @@ export function applyScrollbarUtilityClass(scroll: { width: string; behavior: 'a
  */
 export function resetThemeVariables(): void {
   const root = document.documentElement;
-  
+
   // Remove all color variables
   Object.values(CSS_VARIABLE_MAP).forEach(variable => {
     root.style.removeProperty(variable);
   });
-  
+
   // Remove other theme variables
   const themeVariables = [
     '--font-sans', '--font-serif', '--font-mono', '--tracking-normal',
@@ -465,20 +481,20 @@ export function resetThemeVariables(): void {
     '--shadow-md', '--shadow-lg', '--shadow-xl', '--shadow-2xl',
     '--scrollbar-width', '--scrollbar-track-radius', '--scrollbar-thumb-radius'
   ];
-  
+
   themeVariables.forEach(variable => {
     root.style.removeProperty(variable);
   });
-  
+
   // Remove scroll behavior and scrollbar styles
   root.style.removeProperty('scroll-behavior');
-  
+
   // Remove both old and new scrollbar style elements
   const oldScrollbarStyleElement = document.getElementById('theme-scrollbar-styles');
   if (oldScrollbarStyleElement) {
     oldScrollbarStyleElement.remove();
   }
-  
+
   const unifiedScrollbarStyleElement = document.getElementById('unified-scrollbar-styles');
   if (unifiedScrollbarStyleElement) {
     unifiedScrollbarStyleElement.remove();
@@ -490,10 +506,10 @@ export function resetThemeVariables(): void {
  */
 export function generateThemeCSS(theme: ThemeData, includeLight = true, includeDark = true): string {
   let css = '';
-  
+
   if (includeLight) {
     css += `:root {\n`;
-    
+
     // Light mode colors
     Object.entries(theme.lightColors).forEach(([colorKey, colorToken]) => {
       const cssVariable = CSS_VARIABLE_MAP[colorKey as keyof ThemeColors];
@@ -502,19 +518,19 @@ export function generateThemeCSS(theme: ThemeData, includeLight = true, includeD
         css += `  ${cssVariable}: ${colorToken.value}; /* ${hexValue} */\n`;
       }
     });
-    
+
     // Typography
     css += `  --font-sans: ${theme.typography.fontFamilies.sans};\n`;
     css += `  --font-serif: ${theme.typography.fontFamilies.serif};\n`;
     css += `  --font-mono: ${theme.typography.fontFamilies.mono};\n`;
     css += `  --tracking-normal: ${theme.typography.trackingNormal};\n`;
-    
+
     // Borders
     css += `  --radius: ${theme.borders.radius};\n`;
-    
+
     // Spacing
     css += `  --spacing: ${theme.spacing.spacing};\n`;
-    
+
     // Shadows
     css += `  --shadow-2xs: ${theme.shadows.shadow2xs};\n`;
     css += `  --shadow-xs: ${theme.shadows.shadowXs};\n`;
@@ -524,19 +540,19 @@ export function generateThemeCSS(theme: ThemeData, includeLight = true, includeD
     css += `  --shadow-lg: ${theme.shadows.shadowLg};\n`;
     css += `  --shadow-xl: ${theme.shadows.shadowXl};\n`;
     css += `  --shadow-2xl: ${theme.shadows.shadow2xl};\n`;
-    
+
     // Scroll settings
     css += `  --scrollbar-width: ${theme.scroll.width};\n`;
     css += `  --scrollbar-track-radius: ${theme.scroll.trackRadius || '0px'};\n`;
     css += `  --scrollbar-thumb-radius: ${theme.scroll.thumbRadius || '4px'};\n`;
     css += `  scroll-behavior: ${theme.scroll.behavior};\n`;
-    
+
     css += `}\n\n`;
   }
-  
+
   if (includeDark) {
     css += `.dark {\n`;
-    
+
     // Dark mode colors
     Object.entries(theme.darkColors).forEach(([colorKey, colorToken]) => {
       const cssVariable = CSS_VARIABLE_MAP[colorKey as keyof ThemeColors];
@@ -545,10 +561,10 @@ export function generateThemeCSS(theme: ThemeData, includeLight = true, includeD
         css += `  ${cssVariable}: ${colorToken.value}; /* ${hexValue} */\n`;
       }
     });
-    
+
     css += `}\n\n`;
   }
-  
+
   return css;
 }
 
@@ -557,7 +573,7 @@ export function generateThemeCSS(theme: ThemeData, includeLight = true, includeD
  */
 export function applyThemeMode(mode: 'light' | 'dark'): void {
   const html = document.documentElement;
-  
+
   if (mode === 'dark') {
     html.classList.add('dark');
   } else {

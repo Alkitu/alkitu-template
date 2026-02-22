@@ -154,15 +154,16 @@ export function NotificationCenter({ userId }: NotificationCenterProps) {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="ghost" iconOnly className="relative group w-12 h-12 rounded-full hover:bg-muted/50 p-0">
-          <Bell className="h-7 w-7 text-muted-foreground group-hover:text-foreground transition-colors" />
+        <Button variant="ghost" iconOnly className="relative group h-9 w-9 rounded-md hover:bg-muted/50 p-0">
+          <Bell className="h-5 w-5 text-muted-foreground group-hover:text-foreground transition-colors" />
           {unreadCount > 0 && (
-            <span className="absolute top-2.5 right-2.5 flex h-3 w-3">
+            <span className="absolute top-1.5 right-1.5 flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
             </span>
           )}
         </Button>
+
       </PopoverTrigger>
       <PopoverContent className="w-[400px] p-0 rounded-xl overflow-clip border-border shadow-lg" align="end">
 

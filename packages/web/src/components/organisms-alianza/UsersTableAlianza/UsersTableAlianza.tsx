@@ -82,7 +82,7 @@ export function UsersTableAlianza({
     <div className={cn("w-full relative max-h-[600px] overflow-auto rounded-lg border border-border", className)}>
       <table className="w-full caption-bottom text-sm">
         <TableHeader>
-          <TableRow className="bg-muted/50 hover:bg-muted/50 border-b border-border h-[46px] sticky top-0 z-20">
+          <TableRow className="bg-muted hover:bg-muted border-b border-border h-[46px] sticky top-0 z-20">
             <TableHead className="text-foreground font-semibold text-sm px-4 w-[316px]">
               {labels.user}
             </TableHead>
@@ -92,7 +92,7 @@ export function UsersTableAlianza({
             <TableHead className="text-foreground font-semibold text-sm px-4 w-[149px]">
               {labels.phone}
             </TableHead>
-            <TableHead className="text-foreground font-semibold text-sm px-4 text-right w-[100px] sticky right-0 z-20 bg-muted/50">
+            <TableHead className="text-foreground font-semibold text-sm px-4 text-right w-[100px] sticky right-0 z-20 bg-muted">
               {labels.actions}
             </TableHead>
           </TableRow>

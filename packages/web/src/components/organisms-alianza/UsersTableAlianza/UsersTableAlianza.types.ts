@@ -20,6 +20,6 @@ export interface UsersTableAlianzaProps {
     edit: string;
     delete: string;
   };
-  roleLabels?: Record<string, string>;
+  roleLabels?: Record<string, string | undefined>;
   className?: string;
 }

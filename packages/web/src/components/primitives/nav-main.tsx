@@ -16,6 +16,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
+  useSidebar,
 } from '@/components/primitives/ui/sidebar';
 import type { NavItem } from '@/types';
 import { useCallback, useState } from 'react';
@@ -26,13 +27,30 @@ export function NavMain({ items }: { items: NavItem[] }) {
   // Estado para tracking de qué menús están abiertos
   const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
 
+  // Acceso al estado del sidebar (expanded/collapsed)
+  const { state, setOpen } = useSidebar();
+
   // Callback para manejar el clic en un elemento desplegable
-  const handleCollapsibleClick = useCallback((title: string) => {
-    setOpenItems((prev) => ({
-      ...prev,
-      [title]: !prev[title],
-    }));
-  }, []);
+  const handleCollapsibleClick = useCallback(
+    (title: string) => {
+      // Si el sidebar está colapsado, expandirlo primero y abrir el dropdown
+      if (state === 'collapsed') {
+        setOpen(true);
+        // Marcar este item como abierto (después de expandir)
+        setOpenItems((prev) => ({
+          ...prev,
+          [title]: true,
+        }));
+      } else {
+        // Comportamiento normal: toggle
+        setOpenItems((prev) => ({
+          ...prev,
+          [title]: !prev[title],
+        }));
+      }
+    },
+    [state, setOpen],
+  );
 
   // Agrupar items por sección
   const groupedItems = items.reduce(
@@ -82,14 +100,20 @@ export function NavMain({ items }: { items: NavItem[] }) {
               }
 
               // Otherwise render a collapsible dropdown
-              const isOpen = openItems[item.title] || item.isActive;
+              const isOpen = openItems[item.title] ?? item.isActive ?? false;
 
               return (
                 <Collapsible
                   key={item.title}
                   asChild
                   open={isOpen}
-                  onOpenChange={() => handleCollapsibleClick(item.title)}
+                  onOpenChange={() => {
+                    // Solo se activa cuando el sidebar está expandido
+                    // (cuando está colapsado, el onClick del botón lo maneja)
+                    if (state !== 'collapsed') {
+                      handleCollapsibleClick(item.title);
+                    }
+                  }}
                   className="group/collapsible"
                 >
                   <SidebarMenuItem>
@@ -98,6 +122,15 @@ export function NavMain({ items }: { items: NavItem[] }) {
                         tooltip={item.title}
                         data-collapsible-trigger="true"
                         className="android-click-fix touch-target"
+                        onClick={(e) => {
+                          // Cuando está colapsado: expandir sidebar y abrir este dropdown
+                          if (state === 'collapsed') {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleCollapsibleClick(item.title);
+                          }
+                          // Cuando está expandido: Collapsible onOpenChange lo maneja
+                        }}
                       >
                         {item.icon && <item.icon />}
                         <span>{item.title}</span>

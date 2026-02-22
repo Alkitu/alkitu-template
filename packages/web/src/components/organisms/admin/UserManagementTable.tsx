@@ -257,7 +257,7 @@ export const UserManagementTable = React.forwardRef<
       </div>
 
       {/* Users Table */}
-      <div className="bg-secondary border border-secondary-foreground rounded-[8px] overflow-hidden">
+      <div className="overflow-hidden rounded-lg">
         {isLoading ? (
           <UsersTableSkeleton rowCount={debouncedFilters.limit} />
         ) : (

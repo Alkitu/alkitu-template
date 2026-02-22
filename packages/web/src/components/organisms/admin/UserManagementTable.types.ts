@@ -43,6 +43,7 @@ export interface TableLabels {
  * Translated labels for role names
  */
 export interface RoleLabels {
+  [key: string]: string | undefined;
   ADMIN: string;
   EMPLOYEE: string;
   CLIENT: string;

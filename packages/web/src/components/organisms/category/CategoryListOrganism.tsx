@@ -189,8 +189,8 @@ export const CategoryListOrganism: React.FC<CategoryListOrganismProps> = ({
         data-testid="category-list-loading"
       >
         <div className="text-center">
-          <Loader2 className="mx-auto h-8 w-8 animate-spin text-gray-400" />
-          <p className="mt-2 text-sm text-gray-600">Loading categories...</p>
+          <Loader2 className="mx-auto h-8 w-8 animate-spin text-muted-foreground" />
+          <p className="mt-2 text-sm text-muted-foreground">Loading categories...</p>
         </div>
       </div>
     );
@@ -200,14 +200,14 @@ export const CategoryListOrganism: React.FC<CategoryListOrganismProps> = ({
   if (state.error) {
     return (
       <div
-        className={`rounded-lg border border-red-200 bg-red-50 p-4 ${className}`}
+        className={`rounded-lg border border-destructive/30 bg-destructive/10 p-4 ${className}`}
         data-testid="category-list-error"
       >
-        <div className="flex items-center gap-2 text-red-800">
+        <div className="flex items-center gap-2 text-destructive">
           <AlertCircle className="h-5 w-5" />
           <p className="font-medium">Error loading categories</p>
         </div>
-        <p className="mt-1 text-sm text-red-600">{state.error}</p>
+        <p className="mt-1 text-sm text-destructive/80">{state.error}</p>
         <Button
           variant="outline"
           size="sm"
@@ -234,8 +234,8 @@ export const CategoryListOrganism: React.FC<CategoryListOrganismProps> = ({
 
       {/* Add New Category Form */}
       {state.showForm && (
-        <div className="mb-6 rounded-lg border border-gray-200 bg-gray-50 p-4">
-          <h3 className="mb-4 font-medium text-gray-900">
+        <div className="mb-6 rounded-lg border border-border bg-muted/50 p-4">
+          <h3 className="mb-4 font-medium text-foreground">
             Add New Service Category
           </h3>
           <CategoryFormOrganism
@@ -251,9 +251,9 @@ export const CategoryListOrganism: React.FC<CategoryListOrganismProps> = ({
       {state.editingCategory && (
         <div
           data-testid="category-edit-form"
-          className="mb-6 rounded-lg border border-gray-200 bg-gray-50 p-4"
+          className="mb-6 rounded-lg border border-border bg-muted/50 p-4"
         >
-          <h3 className="mb-4 font-medium text-gray-900">Edit Category</h3>
+          <h3 className="mb-4 font-medium text-foreground">Edit Category</h3>
           <CategoryFormOrganism
             initialData={state.editingCategory}
             onSuccess={handleSuccess}
@@ -281,12 +281,12 @@ export const CategoryListOrganism: React.FC<CategoryListOrganismProps> = ({
         </div>
       ) : (
         /* Empty State */
-        <div className="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-12 text-center">
-          <FolderPlus className="mx-auto h-12 w-12 text-gray-400" />
-          <h3 className="mt-4 text-lg font-medium text-gray-900">
+        <div className="rounded-lg border border-dashed border-border bg-muted/30 p-12 text-center">
+          <FolderPlus className="mx-auto h-12 w-12 text-muted-foreground/50" />
+          <h3 className="mt-4 text-lg font-medium text-foreground">
             No categories yet
           </h3>
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="mt-2 text-sm text-muted-foreground">
             Get started by creating your first service category.
           </p>
           {showAddButton && !state.showForm && (

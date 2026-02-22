@@ -123,7 +123,7 @@ const ServicesPage = () => {
   };
 
   const handleDeleteService = (id: string) => {
-    if(confirm(t('admin.catalog.services.messages.deleteConfirm'))) {
+    if (confirm(t('admin.catalog.services.messages.deleteConfirm'))) {
       deleteServiceMutation.mutate({ id });
     }
   };
@@ -230,12 +230,12 @@ const ServicesPage = () => {
           value={searchValue}
           onChange={handleSearchChange}
           iconLeft={<Search className="h-4 w-4 text-muted-foreground" />}
-          className="w-[200px] md:w-[250px]"
+          className="w-full sm:w-[200px] md:w-[250px]"
         />
       </div>
 
       {/* Services Table */}
-      <div className="bg-secondary border border-secondary/20 rounded-[8px] overflow-hidden min-h-[400px]">
+      <div className="bg-background border border-border rounded-lg overflow-hidden min-h-[400px]">
         {isLoading ? (
           <div className="flex items-center justify-center h-[400px]">
             <p className="text-muted-foreground">{t('admin.catalog.services.loading')}</p>

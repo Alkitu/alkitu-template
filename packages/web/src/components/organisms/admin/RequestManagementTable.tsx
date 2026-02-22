@@ -298,15 +298,17 @@ export const RequestManagementTable: React.FC<RequestManagementTableProps> = ({
       </div>
 
       {/* Filter Bar */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         {/* Filter Buttons */}
-        <RequestFilterButtons
-          activeFilter={activeFilter}
-          onFilterChange={handleFilterChange}
-        />
+        <div className="w-full lg:w-auto">
+          <RequestFilterButtons
+            activeFilter={activeFilter}
+            onFilterChange={handleFilterChange}
+          />
+        </div>
 
         {/* Service Filter + Search + Create Button */}
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
           {!isClient && (
             <Combobox
               options={serviceOptions}
@@ -316,7 +318,7 @@ export const RequestManagementTable: React.FC<RequestManagementTableProps> = ({
               searchPlaceholder="Buscar servicio..."
               emptyMessage="No se encontraron servicios."
               clearable
-              className="w-[220px]"
+              className="w-full sm:w-[220px]"
             />
           )}
           <InputGroup
@@ -324,12 +326,13 @@ export const RequestManagementTable: React.FC<RequestManagementTableProps> = ({
             value={searchValue}
             onChange={handleSearchChange}
             iconLeft={<Search className="h-4 w-4 text-muted-foreground" />}
-            className="w-[200px] md:w-[250px]"
+            className="w-full sm:w-[200px] md:w-[250px]"
           />
           <Button
             variant="active"
             onClick={handleAddRequest}
             iconLeft={<Plus className="h-4 w-4" />}
+            className="w-full sm:w-auto"
           >
             Nueva Solicitud
           </Button>

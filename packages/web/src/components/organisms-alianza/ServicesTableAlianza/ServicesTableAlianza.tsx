@@ -45,8 +45,8 @@ const StatusBadge = ({ status, labels }: { status: ServiceTableItem['status'], l
       className={cn(
         "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium",
         isActive
-          ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400"
-          : "bg-gray-100 text-gray-800 dark:bg-gray-800/30 dark:text-gray-400"
+          ? "bg-success/15 text-success"
+          : "bg-muted text-muted-foreground"
       )}
     >
       {isActive ? labels.active : labels.inactive}
@@ -90,7 +90,7 @@ export function ServicesTableAlianza({
                 {mergedLabels.requests}
               </TableHead>
             )}
-            <TableHead className={cn("text-foreground font-semibold text-sm px-4 text-right sticky right-0 z-20 bg-muted/50 shadow-[-12px_0_15px_-4px_rgba(0,0,0,0.1)] clip-inset-left", showRequestsColumn ? "w-[10%]" : "w-[15%]")}>
+            <TableHead className={cn("text-foreground font-semibold text-sm px-4 text-right sticky right-0 z-20 bg-muted shadow-[-12px_0_15px_-4px_rgba(0,0,0,0.05)] clip-inset-left", showRequestsColumn ? "w-[10%]" : "w-[15%]")}>
               {mergedLabels.actions}
             </TableHead>
           </TableRow>
@@ -140,7 +140,7 @@ export function ServicesTableAlianza({
                   />
                 </TableCell>
               )}
-              <TableCell className="text-right py-4 px-4 sticky right-0 z-10 bg-background group-hover:bg-muted/30 transition-colors shadow-[-12px_0_15px_-4px_rgba(0,0,0,0.05)] clip-inset-left h-full">
+              <TableCell className="text-right py-4 px-4 sticky right-0 z-10 bg-background group-hover:bg-muted/30 transition-colors shadow-[-12px_0_15px_-4px_rgba(0,0,0,0.03)] clip-inset-left">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="sm" className="h-8 w-8 p-0">

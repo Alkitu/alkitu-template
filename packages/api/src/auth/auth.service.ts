@@ -14,6 +14,7 @@ import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { OnboardingDto } from '../users/dto/onboarding.dto';
 import * as bcrypt from 'bcryptjs';
+import { BCRYPT_SALT_ROUNDS } from '@alkitu/shared';
 
 @Injectable()
 export class AuthService {
@@ -209,7 +210,7 @@ export class AuthService {
     }
 
     // Actualizar contraseña
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const hashedPassword = await bcrypt.hash(newPassword, BCRYPT_SALT_ROUNDS);
     await this.usersService.updatePassword(user.id, hashedPassword);
 
     // Consumir token

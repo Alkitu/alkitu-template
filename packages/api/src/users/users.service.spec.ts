@@ -12,6 +12,7 @@ import { EmailService } from '../email/email.service';
 import { AuditService } from '../audit/audit.service';
 import { UserStatus, UserRole } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
+import { BCRYPT_SALT_ROUNDS } from '@alkitu/shared';
 import { NotificationType } from '../notification/dto/create-notification.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 
@@ -1075,7 +1076,7 @@ describe('UsersService - Real Business Logic Tests', () => {
           'oldPassword',
           'hashedOldPassword',
         );
-        expect(bcrypt.hash).toHaveBeenCalledWith('newPassword123', 10);
+        expect(bcrypt.hash).toHaveBeenCalledWith('newPassword123', BCRYPT_SALT_ROUNDS);
         expect(prismaService.user.update).toHaveBeenCalledWith({
           where: { id: mockUser.id },
           data: { password: 'hashedNewPassword' },
@@ -1177,7 +1178,7 @@ describe('UsersService - Real Business Logic Tests', () => {
           newPassword,
         );
 
-        expect(bcrypt.hash).toHaveBeenCalledWith(newPassword, 10);
+        expect(bcrypt.hash).toHaveBeenCalledWith(newPassword, BCRYPT_SALT_ROUNDS);
         expect(prismaService.user.update).toHaveBeenCalledWith({
           where: { id: mockUser.id },
           data: { password: 'hashedNewPassword' },

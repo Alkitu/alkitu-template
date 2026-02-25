@@ -22,6 +22,9 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      // Resolve @alkitu/shared subpath imports that aren't in the package's exports field
+      "@alkitu/shared/enums/user-role.enum": path.resolve(__dirname, "../shared/src/enums/user-role.enum.ts"),
+      "@alkitu/shared/rbac/role-hierarchy": path.resolve(__dirname, "../shared/src/rbac/role-hierarchy.ts"),
     },
   },
 });

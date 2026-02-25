@@ -188,7 +188,7 @@ packages/
 
 - **SOLID Principles**: Strictly enforced with dedicated test utilities
 - **API Types**: REST + tRPC + GraphQL + WebSocket (comprehensive API layer)
-- **Authentication**: JWT + Passport (local & JWT strategies)
+- **Authentication**: JWT + Passport (local & JWT strategies). Password hashing uses `BCRYPT_SALT_ROUNDS` from `@alkitu/shared`
 - **Database**: MongoDB with Prisma ORM, replica set configuration
 - **Validation**: Zod schemas with nestjs-zod integration
 - **Real-time**: Socket.IO for WebSocket connections
@@ -205,6 +205,7 @@ packages/
 - **Styling**: Tailwind CSS v4 with CSS variables, OKLCH color space
 - **Theme System**: Dynamic theming with Culori color library
 - **Internationalization**: useTranslations() hook pattern for multi-language support
+- **Auth Middleware**: JWT verification via `jose` (Edge Runtime compatible), fail-closed design. See `docs/00-conventions/authentication-security-patterns.md`
 - **Testing**: Vitest + React Testing Library + Storybook
 
 ### Shared Package (packages/shared/)
@@ -212,6 +213,7 @@ packages/
 - **Types**: Common TypeScript interfaces and types
 - **Schemas**: Zod validation schemas shared between API and frontend
 - **Utilities**: Helper functions and constants
+- **Security Constants**: `BCRYPT_SALT_ROUNDS` and other shared security values
 - **Export Strategy**: Modular exports for clean imports
 
 ## Development Patterns
@@ -283,6 +285,7 @@ RESEND_API_KEY=your-resend-key
 # Web (packages/web/.env.local)
 NEXT_PUBLIC_API_URL=http://localhost:3001
 NEXT_PUBLIC_APP_URL=http://localhost:3000
+JWT_SECRET=your-jwt-secret  # Must match API — server-side only, NOT NEXT_PUBLIC_
 ```
 
 ### Development Setup
@@ -348,6 +351,7 @@ Refer to `docs/03-ai-agents/` for agent-specific protocols and workflows.
   - `atomic-design-architecture.md` - Component structure rules
   - `component-structure-and-testing.md` - Component file structure and testing conventions
   - `testing-strategy-and-frameworks.md` - Which framework to use when
+  - `authentication-security-patterns.md` - JWT verification, cookie standards, logging rules, bcrypt
 - `docs/02-components/` - Component templates for creation (used by frontend-component-builder agent)
   - `component-atom-template.md` - Atom component template (buttons, inputs, icons)
   - `component-molecule-template.md` - Molecule component template (form fields, cards)

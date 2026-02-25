@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { User } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
+import { BCRYPT_SALT_ROUNDS } from '@alkitu/shared';
 import { LoginUserDto } from '../dto/login-user.dto';
 import { ChangePasswordDto } from '../dto/change-password.dto';
 import {
@@ -111,8 +112,7 @@ export class UserAuthenticationService implements IUserAuthentication {
   }
 
   async hashPassword(password: string): Promise<string> {
-    const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS || '12', 10);
-    return bcrypt.hash(password, saltRounds);
+    return bcrypt.hash(password, BCRYPT_SALT_ROUNDS);
   }
 
   async generatePasswordResetToken(userId: string): Promise<string> {

@@ -24,7 +24,6 @@ import {
 import { trpc } from '@/lib/trpc';
 import Link from 'next/link';
 import { useWebSocket } from '@/hooks/use-websocket';
-import { getUserIdFromToken } from '@/lib/auth/decode-jwt';
 
 /**
  * Notifications Center - EMPLOYEE Role

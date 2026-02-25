@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
+import {
+  AUTH_TOKEN_COOKIE,
+  REFRESH_TOKEN_COOKIE,
+  AUTH_COOKIE_OPTIONS,
+} from '@/lib/auth/constants';
 
 export async function POST(request: NextRequest) {
   try {
     // Obtener el token de autenticación de las cookies
-    const authToken = request.cookies.get('auth-token')?.value;
+    const authToken = request.cookies.get(AUTH_TOKEN_COOKIE)?.value;
 
     // Si hay token, intentar hacer logout en el backend
     if (authToken) {
@@ -17,9 +23,9 @@ export async function POST(request: NextRequest) {
           },
         });
         // No importa si falla el backend, continuamos limpiando las cookies locales
-      } catch (backendError) {
-        console.warn('Backend logout failed:', backendError);
-        // Continuar con la limpieza local de cookies
+      } catch (backendError: unknown) {
+        const message = backendError instanceof Error ? backendError.message : 'Unknown error';
+        logger.warn('Backend logout failed', { error: message });
       }
     }
 
@@ -30,30 +36,25 @@ export async function POST(request: NextRequest) {
     );
 
     // Eliminar cookies de tokens
-    response.cookies.set('auth-token', '', {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+    response.cookies.set(AUTH_TOKEN_COOKIE, '', {
+      ...AUTH_COOKIE_OPTIONS,
       maxAge: 0,
-      path: '/'
     });
 
-    response.cookies.set('refresh-token', '', {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+    response.cookies.set(REFRESH_TOKEN_COOKIE, '', {
+      ...AUTH_COOKIE_OPTIONS,
       maxAge: 0,
-      path: '/'
     });
 
     return response;
-  } catch (error: any) {
-    console.error('Logout API error:', error);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    logger.error('Logout API error', { error: message });
 
     return NextResponse.json(
       {
         message: 'Internal server error',
-        details: error.message,
+        details: message,
       },
       { status: 500 }
     );

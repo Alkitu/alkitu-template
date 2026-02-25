@@ -19,6 +19,7 @@ import {
   AdminResetPasswordDto,
 } from './dto/bulk-users.dto';
 import * as bcrypt from 'bcryptjs';
+import { BCRYPT_SALT_ROUNDS } from '@alkitu/shared';
 import { NotificationService } from '../notification/notification.service';
 import { NotificationType } from '../notification/dto/create-notification.dto';
 import { UserRole, UserStatus } from '@prisma/client';
@@ -53,7 +54,7 @@ export class UsersService {
     }
 
     // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, BCRYPT_SALT_ROUNDS);
 
     // Create user (ALI-115: profileComplete defaults to false)
     const user = await this.prisma.user.create({
@@ -490,7 +491,7 @@ export class UsersService {
       throw new BadRequestException('Invalid current password');
     }
 
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const hashedPassword = await bcrypt.hash(newPassword, BCRYPT_SALT_ROUNDS);
 
     await this.prisma.user.update({
       where: { id },
@@ -691,7 +692,7 @@ export class UsersService {
 
     // Generate temporary password
     const tempPassword = Math.random().toString(36).slice(-8);
-    const hashedPassword = await bcrypt.hash(tempPassword, 10);
+    const hashedPassword = await bcrypt.hash(tempPassword, BCRYPT_SALT_ROUNDS);
 
     // Update user password
     await this.prisma.user.update({
@@ -768,7 +769,7 @@ export class UsersService {
 
   // Admin-specific methods
   async adminChangePassword(userId: string, newPassword: string) {
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const hashedPassword = await bcrypt.hash(newPassword, BCRYPT_SALT_ROUNDS);
 
     await this.prisma.user.update({
       where: { id: userId },

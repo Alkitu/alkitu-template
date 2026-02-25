@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { UserRole, UserStatus } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
+import { BCRYPT_SALT_ROUNDS } from '@alkitu/shared';
 
 // Define proper user data type
 export interface UserData {
@@ -132,8 +133,7 @@ export abstract class BaseAuthenticationService
 
   // ✅ LSP: Standard password hashing implementation
   async hashPassword(password: string): Promise<string> {
-    const saltRounds = 12;
-    return await bcrypt.hash(password, saltRounds);
+    return await bcrypt.hash(password, BCRYPT_SALT_ROUNDS);
   }
 
   // ✅ LSP: Standard password comparison implementation

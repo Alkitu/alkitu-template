@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,7 +16,6 @@ export async function POST(request: NextRequest) {
     // Forward the request to the NestJS backend
     const backendUrl =
       process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-    console.log(`Forwarding refresh request to: ${backendUrl}/auth/refresh`);
 
     try {
       const response = await fetch(`${backendUrl}/auth/refresh`, {
@@ -26,12 +26,10 @@ export async function POST(request: NextRequest) {
         body: JSON.stringify({ refreshToken }),
       });
 
-      console.log(`Backend refresh response status: ${response.status}`);
-
       // Check if the response is JSON
       const contentType = response.headers.get('content-type');
       if (!contentType || !contentType.includes('application/json')) {
-        console.error('Backend did not return JSON response for refresh');
+        logger.error('Backend did not return JSON response for refresh');
         return NextResponse.json(
           { message: 'Backend service error' },
           { status: 503 },
@@ -40,15 +38,14 @@ export async function POST(request: NextRequest) {
 
       const data = await response.json();
 
-      console.log('Backend refresh response data:', data);
-
       // Return the response from the backend
       return NextResponse.json(data, { status: response.status });
-    } catch (fetchError: any) {
-      console.error(
-        'Backend connection error for refresh:',
-        fetchError.message,
-      );
+    } catch (fetchError: unknown) {
+      const message =
+        fetchError instanceof Error ? fetchError.message : 'Unknown error';
+      logger.error('Backend connection error for refresh', {
+        error: message,
+      });
 
       return NextResponse.json(
         {
@@ -59,13 +56,15 @@ export async function POST(request: NextRequest) {
         { status: 503 },
       );
     }
-  } catch (error: any) {
-    console.error('Refresh API error:', error);
+  } catch (error: unknown) {
+    const message =
+      error instanceof Error ? error.message : 'Unknown error';
+    logger.error('Refresh API error', { error: message });
 
     return NextResponse.json(
       {
         message: 'Internal server error',
-        details: error.message,
+        details: message,
       },
       { status: 500 },
     );

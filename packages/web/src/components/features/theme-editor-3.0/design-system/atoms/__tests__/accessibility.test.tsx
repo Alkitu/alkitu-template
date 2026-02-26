@@ -131,8 +131,8 @@ describe('Accessibility Enhancements - Critical Components', () => {
       const select = React.createElement(Select, {
         options: mockOptions,
         disabled: true,
-        'aria-disabled': 'true'
-      });
+        'aria-disabled': 'true',
+      } as any);
 
       expect(select.props.disabled).toBe(true);
     });

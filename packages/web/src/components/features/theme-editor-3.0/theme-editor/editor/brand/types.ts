@@ -1,41 +1,15 @@
 // Tipos específicos para el Brand Editor
-export interface LogoColorVariants {
-  original: string;
-  white: string;
-  black: string;
-  gray: string;
-}
-
-export interface LogoModeConfig {
-  variants: LogoColorVariants;
-  monoColor: string;
-  isLinkedToPrimary: boolean;
-}
-
-export interface LogoVariant {
-  id: string;
-  name: string;
-  type: 'icon' | 'horizontal' | 'vertical';
-  aspectRatio: string;
-  svgContent: string;
-  detectedColors: string[];
-  // Configuraciones separadas para light y dark mode - ÚNICA FUENTE DE VERDAD
-  lightMode: LogoModeConfig;
-  darkMode: LogoModeConfig;
-  metadata: {
-    fileName: string;
-    fileSize: string;
-    dimensions: string;
-    viewBox: string;
-    colorCount: number;
-    hasGradients: boolean;
-  };
-}
+// Re-export canonical types from theme.types
+export type {
+  LogoColorVariants,
+  LogoModeConfig,
+  LogoVariant,
+} from '../../../core/types/theme.types';
 
 export interface BrandAssets {
-  icon: LogoVariant | null;
-  horizontal: LogoVariant | null;
-  vertical: LogoVariant | null;
+  icon: import('../../../core/types/theme.types').LogoVariant | null;
+  horizontal: import('../../../core/types/theme.types').LogoVariant | null;
+  vertical: import('../../../core/types/theme.types').LogoVariant | null;
 }
 
 export interface ColorPickerData {
@@ -46,6 +20,12 @@ export interface ColorPickerData {
 }
 
 export const LOGO_SIZE_MAP = {
+  xs: 16,
+  sm: 24,
+  md: 48,
+  lg: 80,
+  xl: 120,
+  // Legacy aliases
   s: 16,
   m: 64,
   l: 100

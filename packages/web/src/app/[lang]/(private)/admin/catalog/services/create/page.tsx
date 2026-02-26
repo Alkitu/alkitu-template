@@ -39,6 +39,7 @@ interface BasicServiceData {
   isActive: boolean;
   thumbnail: string;
   iconColor: string;
+  code: string;
 }
 
 const defaultFormSettings: FormSettings = {
@@ -62,6 +63,7 @@ export default function CreateServicePage() {
     isActive: true,
     thumbnail: '',
     iconColor: '#000000',
+    code: '',
   });
   const [formSettings, setFormSettings] = useState<FormSettings>(defaultFormSettings);
   const [isSaving, setIsSaving] = useState(false);
@@ -111,6 +113,7 @@ export default function CreateServicePage() {
         isActive: basicData.isActive,
         thumbnail: basicData.thumbnail || undefined,
         iconColor: basicData.iconColor || '#000000',
+        code: basicData.code || undefined,
       });
 
       toast.success(t('admin.catalog.services.create.success'));
@@ -255,6 +258,19 @@ export default function CreateServicePage() {
                 placeholder={loadingCategories ? t('admin.catalog.services.create.form.categoryLoading') : t('admin.catalog.services.create.form.categoryPlaceholder')}
                 disabled={loadingCategories}
               />
+
+              <div>
+                <FormInput
+                  label={t('admin.catalog.services.create.form.serviceCode') || 'Service Code'}
+                  id="code"
+                  value={basicData.code}
+                  onChange={(e) => setBasicData({ ...basicData, code: e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6) })}
+                  placeholder="LIMP"
+                />
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {t('admin.catalog.services.create.form.serviceCodeDescription') || '3-6 uppercase alphanumeric characters. Used for request IDs (e.g., REQ-LIMP-202602-0001)'}
+                </p>
+              </div>
 
               {/* Active/Inactive Toggle */}
               <div className="flex items-center justify-between p-3 rounded-lg border bg-muted/30">

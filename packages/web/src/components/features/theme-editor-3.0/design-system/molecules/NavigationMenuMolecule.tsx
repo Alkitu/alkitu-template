@@ -21,7 +21,7 @@ export interface NavigationItem {
   external?: boolean;
   badge?: {
     text: string;
-    variant?: 'default' | 'secondary' | 'outline' | 'destructive';
+    variant?: 'default' | 'secondary' | 'outline' | 'error';
   };
   children?: NavigationItem[];
   description?: string;
@@ -87,7 +87,7 @@ export function NavigationMenuMolecule({
   });
 
   const getContentStyles = () => ({
-    background: colors?.popover?.value || 'var(--color-popover)',
+    background: `${colors?.popover?.value || 'var(--color-popover)'}f8`,
     borderTop: `1px solid ${colors?.border?.value || 'var(--color-border)'}`,
     borderRight: `1px solid ${colors?.border?.value || 'var(--color-border)'}`,
     borderLeft: `1px solid ${colors?.border?.value || 'var(--color-border)'}`,
@@ -97,7 +97,6 @@ export function NavigationMenuMolecule({
     minWidth: variant === 'featured' ? 'min(640px, calc(100vw - 40px))' : 'min(420px, calc(100vw - 40px))',
     maxWidth: 'calc(100vw - 20px)',
     backdropFilter: 'blur(8px)',
-    background: `${colors?.popover?.value || 'var(--color-popover)'}f8`,
     animation: 'slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
     transformOrigin: 'var(--radix-navigation-menu-content-transform-origin)'
   });
@@ -194,14 +193,13 @@ export function NavigationMenuMolecule({
             )}
             
             {item.external && (
-              <ExternalLink 
-                className="h-3 w-3" 
+              <ExternalLink
+                className="h-3 w-3 group-hover:opacity-80 group-hover:scale-110"
                 style={{
                   opacity: 0.6,
                   transition: 'all 0.3s ease',
                   flexShrink: 0
-                }} 
-                className="group-hover:opacity-80 group-hover:scale-110" 
+                }}
               />
             )}
           </NavigationMenuLink>
@@ -265,14 +263,13 @@ export function NavigationMenuMolecule({
             </Badge>
           )}
           
-          <ChevronDown 
-            className="h-3 w-3" 
+          <ChevronDown
+            className="h-3 w-3 group-data-[state=open]:rotate-180 group-hover:opacity-90"
             style={{
               transition: 'transform 0.3s ease',
               flexShrink: 0,
               opacity: 0.7
             }}
-            className="group-data-[state=open]:rotate-180 group-hover:opacity-90"
           />
         </NavigationMenuTrigger>
         
@@ -367,14 +364,13 @@ export function NavigationMenuMolecule({
                           </Badge>
                         )}
                         {child.external && (
-                          <ExternalLink 
-                            className="h-3 w-3" 
+                          <ExternalLink
+                            className="h-3 w-3 group-hover:opacity-80 group-hover:scale-110"
                             style={{
                               opacity: 0.6,
                               transition: 'all 0.3s ease',
                               flexShrink: 0
                             }}
-                            className="group-hover:opacity-80 group-hover:scale-110"
                           />
                         )}
                       </div>
@@ -392,7 +388,6 @@ export function NavigationMenuMolecule({
               <div>
                 <h4 style={{
                   fontFamily: 'var(--typography-h4-font-family)',
-                  fontSize: '16px',
                   fontWeight: 600,
                   color: colors?.mutedForeground?.value || 'var(--color-muted-foreground)',
                   marginBottom: '12px',
@@ -467,14 +462,13 @@ export function NavigationMenuMolecule({
                         </Badge>
                       )}
                       {child.external && (
-                        <ExternalLink 
-                          className="h-3 w-3" 
+                        <ExternalLink
+                          className="h-3 w-3 group-hover:opacity-70 group-hover:scale-110"
                           style={{
                             opacity: 0.5,
                             transition: 'all 0.3s ease',
                             flexShrink: 0
                           }}
-                          className="group-hover:opacity-70 group-hover:scale-110"
                         />
                       )}
                     </div>

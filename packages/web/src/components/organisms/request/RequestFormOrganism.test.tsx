@@ -351,7 +351,7 @@ describe('RequestFormOrganism', () => {
       templateResponses: {
         description: 'Existing description',
       },
-    };
+    } as any;
 
     render(<RequestFormOrganism initialData={initialData} />);
 

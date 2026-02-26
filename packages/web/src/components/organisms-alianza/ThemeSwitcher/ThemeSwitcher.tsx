@@ -51,19 +51,20 @@ export function ThemeSwitcher({
   className,
   onThemeChange,
 }: ThemeSwitcherProps) {
-  const {
-    currentTheme,
-    savedThemes,
-    loadTheme,
-    isLoading,
-  } = useGlobalTheme();
+  const { state, setTheme } = useGlobalTheme();
+  const currentTheme = state.currentTheme;
+  const savedThemes = state.availableThemes;
+  const isLoading = state.isLoading;
 
   const handleThemeChange = React.useCallback(
     (themeId: string) => {
-      loadTheme(themeId);
+      const theme = savedThemes.find((t: any) => t.id === themeId);
+      if (theme) {
+        setTheme(theme);
+      }
       onThemeChange?.(themeId);
     },
-    [loadTheme, onThemeChange],
+    [savedThemes, setTheme, onThemeChange],
   );
 
   // Dropdown mode
@@ -87,7 +88,7 @@ export function ThemeSwitcher({
               No themes available
             </DropdownMenuItem>
           ) : (
-            savedThemes.map((theme) => (
+            savedThemes.map((theme: any) => (
               <DropdownMenuItem
                 key={theme.id}
                 onClick={() => handleThemeChange(theme.id)}
@@ -124,7 +125,7 @@ export function ThemeSwitcher({
       {savedThemes.length === 0 ? (
         <p className="text-muted-foreground text-sm">No themes available</p>
       ) : (
-        savedThemes.map((theme) => (
+        savedThemes.map((theme: any) => (
           <Button
             key={theme.id}
             variant={currentTheme?.id === theme.id ? 'default' : 'outline'}

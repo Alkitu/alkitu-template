@@ -37,7 +37,7 @@ describe('LocationFormOrganism', () => {
       city: 'New York',
       state: 'NY',
       zip: '10001',
-    };
+    } as any;
 
     render(<LocationFormOrganism initialData={initialData} />);
 
@@ -212,7 +212,7 @@ describe('LocationFormOrganism', () => {
       city: 'New York',
       state: 'NY',
       zip: '10001',
-    };
+    } as any;
     const mockResponse = {
       ok: true,
       json: () => Promise.resolve({ id: 'loc-1' }),
@@ -434,7 +434,7 @@ describe('LocationFormOrganism', () => {
       city: 'New York',
       state: 'NY',
       zip: '10001',
-    };
+    } as any;
 
     const { rerender } = render(<LocationFormOrganism initialData={initialData1} />);
 
@@ -446,7 +446,7 @@ describe('LocationFormOrganism', () => {
       city: 'Los Angeles',
       state: 'CA',
       zip: '90001',
-    };
+    } as any;
 
     rerender(<LocationFormOrganism initialData={initialData2} />);
 

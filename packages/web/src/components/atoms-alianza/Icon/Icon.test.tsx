@@ -203,7 +203,7 @@ describe('Icon - Atom', () => {
       const { container } = render(
         <Icon name="heart" themeOverride={themeOverride} />
       );
-      const icon = container.querySelector('svg') as HTMLElement;
+      const icon = container.querySelector('svg') as unknown as HTMLElement;
       expect(icon.style.opacity).toBe('0.5');
     });
 
@@ -232,7 +232,7 @@ describe('Icon - Atom', () => {
       const { container } = render(
         <Icon name="heart" themeOverride={themeOverride} />
       );
-      const icon = container.querySelector('svg') as HTMLElement;
+      const icon = container.querySelector('svg') as unknown as HTMLElement;
       expect(icon.style.opacity).toBe('0.8');
       expect(icon.style.transform).toBe('rotate(45deg)');
     });

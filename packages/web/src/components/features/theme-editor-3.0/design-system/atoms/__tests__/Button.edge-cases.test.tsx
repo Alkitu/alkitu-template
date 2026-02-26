@@ -209,7 +209,7 @@ describe('Button Component - Edge Cases & Comprehensive Testing', () => {
       });
 
       Object.entries(accessibilityProps).forEach(([key, value]) => {
-        expect(button.props[key]).toBe(value);
+        expect((button.props as any)[key]).toBe(value);
       });
     });
 
@@ -263,7 +263,7 @@ describe('Button Component - Edge Cases & Comprehensive Testing', () => {
       });
 
       expect(button.props.children).toBe(longText);
-      expect(button.props.children.length).toBe(100);
+      expect((button.props.children as string).length).toBe(100);
     });
 
     it('should handle special characters in content', () => {
@@ -337,7 +337,7 @@ describe('Button Component - Edge Cases & Comprehensive Testing', () => {
       });
 
       Object.entries(formProps).forEach(([key, value]) => {
-        expect(button.props[key]).toBe(value);
+        expect((button.props as any)[key]).toBe(value);
       });
     });
 
@@ -387,7 +387,7 @@ describe('Button Component - Edge Cases & Comprehensive Testing', () => {
       });
 
       Object.entries(complexProps).forEach(([key, value]) => {
-        expect(button.props[key]).toEqual(value);
+        expect((button.props as any)[key]).toEqual(value);
       });
     });
   });

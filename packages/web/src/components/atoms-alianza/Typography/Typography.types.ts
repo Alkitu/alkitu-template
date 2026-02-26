@@ -11,7 +11,9 @@ export type TypographyVariant =
   | 'caption'
   | 'overline'
   | 'lead'
-  | 'blockquote';
+  | 'blockquote'
+  | 'body'
+  | 'body2';
 
 export type TypographySize =
   | 'xs'
@@ -86,7 +88,7 @@ export interface TypographyProps extends React.HTMLAttributes<HTMLElement> {
   /**
    * Custom HTML element to use (overrides variant default)
    */
-  as?: keyof JSX.IntrinsicElements;
+  as?: keyof React.JSX.IntrinsicElements;
 
   /**
    * Theme variable overrides for custom styling

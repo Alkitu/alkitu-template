@@ -79,7 +79,7 @@ export const ServiceCard = React.forwardRef<HTMLDivElement, ServiceCardProps>(
         >
           <CardContent>
             <div className="flex gap-3">
-              {showImage && <div className="h-16 w-16 rounded-lg bg-muted" />}
+              {showImage && <div className="h-16 w-16 rounded-[var(--radius-card)] bg-muted" />}
               <div className="flex-1 space-y-2">
                 <div className="h-4 w-3/4 rounded bg-muted" />
                 <div className="h-3 w-1/2 rounded bg-muted" />
@@ -159,7 +159,7 @@ export const ServiceCard = React.forwardRef<HTMLDivElement, ServiceCardProps>(
             {showImage && (
               <div className="flex-shrink-0">
                 {service.thumbnail ? (
-                  <div className="h-12 w-12 overflow-hidden rounded-lg border border-border">
+                  <div className="h-12 w-12 overflow-hidden rounded-[var(--radius-card)] border border-border">
                     <img
                       src={service.thumbnail}
                       alt={service.name}
@@ -182,7 +182,7 @@ export const ServiceCard = React.forwardRef<HTMLDivElement, ServiceCardProps>(
                     </div>
                   </div>
                 ) : (
-                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-muted">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-[var(--radius-card)] bg-muted">
                     <ServiceIcon category={service.category.name} className="h-6 w-6" />
                   </div>
                 )}
@@ -275,7 +275,7 @@ export const ServiceCard = React.forwardRef<HTMLDivElement, ServiceCardProps>(
             {showImage && (
               <div className="flex-shrink-0">
                 {service.thumbnail ? (
-                  <div className="h-16 w-16 overflow-hidden rounded-lg border border-border">
+                  <div className="h-16 w-16 overflow-hidden rounded-[var(--radius-card)] border border-border">
                     <img
                       src={service.thumbnail}
                       alt={service.name}
@@ -305,7 +305,7 @@ export const ServiceCard = React.forwardRef<HTMLDivElement, ServiceCardProps>(
                   </div>
                 ) : (
                   <div 
-                    className="flex h-16 w-16 items-center justify-center rounded-lg transition-colors"
+                    className="flex h-16 w-16 items-center justify-center rounded-[var(--radius-card)] transition-colors"
                     style={{ backgroundColor: getDynamicBackgroundColor(service.iconColor || '#000000') }}
                   >
                     <ServiceIcon 
@@ -339,7 +339,7 @@ export const ServiceCard = React.forwardRef<HTMLDivElement, ServiceCardProps>(
               {/* Category and Price */}
               <div className="mt-2 flex flex-wrap items-center gap-2">
                 {showCategory && (
-                  <Chip variant="secondary" size="sm" data-testid="service-category">
+                  <Chip {...({ variant: "secondary", size: "sm", "data-testid": "service-category" } as any)}>
                     {service.category.name}
                   </Chip>
                 )}

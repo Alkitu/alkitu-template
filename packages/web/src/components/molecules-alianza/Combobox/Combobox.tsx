@@ -184,7 +184,7 @@ export const Combobox = React.forwardRef<HTMLDivElement, ComboboxProps>(
           onSelect={() => handleSelect(option.value)}
           disabled={option.disabled}
           className={cn(
-            'flex cursor-pointer items-center gap-3 rounded-md px-3 py-2.5',
+            'flex cursor-pointer items-center gap-3 rounded-[var(--radius-select)] px-3 py-2.5',
             'transition-all duration-200',
             'hover:bg-accent/60 focus:bg-accent/80',
             'focus:outline-none focus:ring-2 focus:ring-ring',

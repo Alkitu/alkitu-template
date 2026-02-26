@@ -4,9 +4,3 @@ export {
   AvatarImage,
   AvatarFallback,
 } from '@/components/primitives/ui/avatar';
-
-export type {
-  AvatarProps,
-  AvatarImageProps,
-  AvatarFallbackProps,
-} from '@/components/primitives/ui/avatar';

@@ -4,7 +4,7 @@ import React, { useRef, useEffect, useCallback } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../design-system/primitives/tabs';
 import { Badge } from '../design-system/primitives/badge';
 import { Card } from '../design-system/primitives/card';
-import { Button } from '../design-system/primitives/button';
+import { Button } from '../design-system/primitives/Button';
 import { useThemeEditor } from '../core/context/ThemeEditorContext';
 import { PreviewSection } from '../core/types';
 import { VIEWPORT_CONFIGS } from '../core/types/viewport.types';
@@ -169,10 +169,10 @@ export function Preview() {
             </span>
           </div>
           <span className="text-xs text-muted-foreground">
-            {currentViewport === 'desktop' ? 'Native View' : `${Math.round(dimensions.scale * 100)}% Scale`}
+            {currentViewport === 'desktop' ? 'Native View' : `${Math.round((dimensions.scale ?? 1) * 100)}% Scale`}
             {currentViewport === 'tv' && (
               <span className="ml-2 text-xs text-muted-foreground">
-                (Fit: {Math.round((viewportConfig.width * dimensions.scale))}×{Math.round((viewportConfig.height * dimensions.scale))})
+                (Fit: {Math.round((viewportConfig.width * (dimensions.scale ?? 1)))}x{Math.round((viewportConfig.height * (dimensions.scale ?? 1)))})
               </span>
             )}
           </span>

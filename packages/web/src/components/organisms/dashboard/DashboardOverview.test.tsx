@@ -183,7 +183,7 @@ describe('DashboardOverview', () => {
         icon: ClipboardList,
         iconColor: 'text-blue-500',
       },
-    ];
+    ] as any[];
 
     it('should render quick action buttons', () => {
       render(<DashboardOverview {...defaultProps} actions={actions} />);

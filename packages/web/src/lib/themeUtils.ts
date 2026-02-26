@@ -1,4 +1,12 @@
-import { ThemeRule } from '../context/providers/DynamicThemeProvider';
+/**
+ * ThemeRule type - previously imported from DynamicThemeProvider (removed)
+ */
+export interface ThemeRule {
+  id: string;
+  selector?: string;
+  specificity: string;
+  properties: Record<string, string>;
+}
 
 /**
  * Converts a hexadecimal color string to an RGB object.

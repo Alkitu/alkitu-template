@@ -109,13 +109,18 @@ export function EmailTemplateFormOrganism({
         // Update existing template
         const result = await updateMutation.mutateAsync({
           id: initialData.id,
-          ...data,
+          data: {
+            name: data.name,
+            subject: data.subject,
+            body: data.body,
+            active: data.active,
+          },
         });
-        onSuccess?.(result);
+        onSuccess?.(result as any);
       } else {
         // Create new template
         const result = await createMutation.mutateAsync(data);
-        onSuccess?.(result);
+        onSuccess?.(result as any);
       }
     } catch (error) {
       onError?.(error as Error);

@@ -5,7 +5,8 @@ import { useParams } from 'next/navigation';
 import { ConversationDetail } from '@/components/features/chat/ConversationDetail';
 import { ReplyForm } from '@/components/features/chat/ReplyForm';
 import { useEffect } from 'react';
-import { io } from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
+import { logger } from '@/lib/logger';
 import { AssignmentSelect } from '@/components/features/chat/AssignmentSelect';
 import { StatusSelect } from '@/components/features/chat/StatusSelect';
 import { InternalNotes } from '@/components/features/chat/InternalNotes';
@@ -76,15 +77,27 @@ export default function ConversationDetailPage() {
 
   useEffect(() => {
     if (conversationId) {
-      const socket = io(); // Replace with your socket server URL
+      const chatUrl =
+        process.env.NODE_ENV === 'production'
+          ? '/chat'
+          : 'http://localhost:3001/chat';
 
-      socket.on('newMessage', (message) => {
-        if (message.conversationId === conversationId) {
-          utils.chat.getMessages.invalidate({ conversationId });
-        }
+      const socket: Socket = io(chatUrl, {
+        withCredentials: true,
+        transports: ['websocket', 'polling'],
+      });
+
+      socket.on('connect', () => {
+        logger.debug('Admin chat WebSocket connected');
+        socket.emit('chat:join', { conversationId });
+      });
+
+      socket.on('chat:newMessage', () => {
+        utils.chat.getMessages.invalidate({ conversationId });
       });
 
       return () => {
+        socket.emit('chat:leave', { conversationId });
         socket.disconnect();
       };
     }
@@ -109,7 +122,7 @@ export default function ConversationDetailPage() {
               onAssign={(assignedToId) => assignMutation.mutate({ conversationId, assignedToId })}
             />
             <StatusSelect
-              currentStatus={conversation.status}
+              currentStatus={conversation.status as any}
               onStatusChange={(status) => updateStatusMutation.mutate({ conversationId, status })}
             />
           </>

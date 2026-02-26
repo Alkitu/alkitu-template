@@ -8,7 +8,7 @@ const createRadioField = (overrides?: Partial<FormField>): FormField => ({
   id: 'field-1',
   type: 'radio',
   label: 'Favorite Color',
-  required: false,
+  validation: { required: false },
   radioOptions: {
     items: [
       { id: 'opt-1', label: 'Red', value: 'red' },
@@ -230,7 +230,7 @@ describe('RadioFieldEditor', () => {
       expect(mockOnChange).toHaveBeenCalled();
       const lastCall = mockOnChange.mock.calls[mockOnChange.mock.calls.length - 1][0];
       expect(lastCall.radioOptions?.items).toHaveLength(2);
-      expect(lastCall.radioOptions?.items.find((opt) => opt.label === 'Red')).toBeUndefined();
+      expect(lastCall.radioOptions?.items.find((opt: any) => opt.label === 'Red')).toBeUndefined();
     });
 
     it('should duplicate an option when duplicate button is clicked', async () => {

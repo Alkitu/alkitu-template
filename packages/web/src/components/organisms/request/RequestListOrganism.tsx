@@ -202,7 +202,7 @@ export const RequestListOrganism: React.FC<RequestListOrganismProps> = ({
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => void fetchRequests()}
+            onClick={() => void refetch()}
             disabled={isLoading}
             className="gap-2"
             title="Refresh requests"
@@ -279,11 +279,11 @@ export const RequestListOrganism: React.FC<RequestListOrganismProps> = ({
             <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-destructive" />
             <div className="flex-1">
               <h3 className="font-medium text-destructive-foreground">Error</h3>
-              <p className="mt-1 text-sm text-destructive">{error}</p>
+              <p className="mt-1 text-sm text-destructive">{error?.message}</p>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => void fetchRequests()}
+                onClick={() => void refetch()}
                 className="mt-3"
               >
                 Try Again
@@ -326,12 +326,12 @@ export const RequestListOrganism: React.FC<RequestListOrganismProps> = ({
           {requests.map((request) => (
             <RequestCardMolecule
               key={request.id}
-              request={request}
+              request={request as any}
               showViewDetails
               showCancel={userRole !== 'CLIENT' || request.status === RequestStatus.PENDING}
               showAssign={userRole !== 'CLIENT' && request.status === RequestStatus.PENDING}
               showComplete={userRole !== 'CLIENT' && request.status === RequestStatus.ONGOING}
-              onViewDetails={onRequestClick}
+              onViewDetails={onRequestClick as any}
               onAssign={handleAssign}
               onComplete={handleComplete}
               onCancel={handleCancel}

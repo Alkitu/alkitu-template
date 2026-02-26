@@ -596,9 +596,9 @@ function FormFieldItem({
                 {field.type}
               </Badge>
               {field.required && (
-                <Badge 
-                  size="sm" 
-                  variant="destructive"
+                <Badge
+                  size="sm"
+                  variant="error"
                   style={{
                     background: colors?.destructive?.value || 'var(--color-destructive)',
                     color: colors?.destructiveForeground?.value || 'var(--color-destructive-foreground)'
@@ -1392,24 +1392,13 @@ function InteractiveFormField({ field, value, onChange }: InteractiveFormFieldPr
               appearance: 'none',
               width: '48px',
               height: '26px',
-              background: value 
+              background: value
                 ? colors?.primary?.value || 'var(--color-primary)'
                 : colors?.muted?.value || 'var(--color-muted)',
               borderRadius: '13px',
               position: 'relative',
               cursor: 'pointer',
               transition: 'background 0.2s',
-              '::after': {
-                content: '""',
-                position: 'absolute',
-                width: '20px',
-                height: '20px',
-                borderRadius: '50%',
-                background: 'white',
-                top: '3px',
-                left: value ? '25px' : '3px',
-                transition: 'left 0.2s'
-              }
             }}
           />
           <label style={labelStyle}>

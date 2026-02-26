@@ -294,8 +294,8 @@ export function ChipMolecule({
 
       {/* Start Icon */}
       {StartIcon && (
-        <Icon 
-          icon={StartIcon} 
+        <Icon
+          icon={StartIcon as import('lucide-react').LucideIcon}
           size={iconSize}
           style={{ color: 'currentColor' }}
         />
@@ -308,8 +308,8 @@ export function ChipMolecule({
 
       {/* End Icon */}
       {EndIcon && (
-        <Icon 
-          icon={EndIcon} 
+        <Icon
+          icon={EndIcon as import('lucide-react').LucideIcon}
           size={iconSize}
           style={{ color: 'currentColor' }}
         />

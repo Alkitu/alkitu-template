@@ -57,7 +57,7 @@ function createDragEvent(files: File[]): Partial<DragEvent> {
         getAsFile: () => file,
       })) as any,
       types: ['Files'],
-    } as DataTransfer,
+    } as unknown as DataTransfer,
     preventDefault: vi.fn(),
     stopPropagation: vi.fn(),
   };

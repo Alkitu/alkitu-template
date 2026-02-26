@@ -185,7 +185,7 @@ export const DatePicker = React.forwardRef<HTMLDivElement, DatePickerProps>(
         onChange?.(selected);
         // Keep popover open until range is complete
         const range = selected as DateRange;
-        if (range.from && range.to && variant !== 'inline') {
+        if (range.from && range.to && (variant as string) !== 'inline') {
           setIsOpen(false);
         }
       } else {
@@ -285,7 +285,7 @@ export const DatePicker = React.forwardRef<HTMLDivElement, DatePickerProps>(
       const minutesId = `${id}-minutes`;
 
       return (
-        <div className="flex items-center justify-center gap-3 mt-4 p-3 bg-accent/40 border border-border/60 rounded-md">
+        <div className="flex items-center justify-center gap-3 mt-4 p-3 bg-accent/40 border border-border/60 rounded-[var(--radius)]">
           <Clock className="h-4 w-4 text-muted-foreground" />
 
           <div className="flex flex-col items-center gap-1">
@@ -303,7 +303,7 @@ export const DatePicker = React.forwardRef<HTMLDivElement, DatePickerProps>(
               value={time.hours}
               onChange={(e) => handleTimeChange('hours', e.target.value)}
               className={cn(
-                'w-12 h-9 px-2 border border-input rounded-md',
+                'w-12 h-9 px-2 border border-input rounded-[var(--radius)]',
                 'bg-background text-foreground text-sm font-medium text-center',
                 'focus:border-primary focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:outline-none',
                 'transition-all',
@@ -328,7 +328,7 @@ export const DatePicker = React.forwardRef<HTMLDivElement, DatePickerProps>(
               value={time.minutes}
               onChange={(e) => handleTimeChange('minutes', e.target.value)}
               className={cn(
-                'w-12 h-9 px-2 border border-input rounded-md',
+                'w-12 h-9 px-2 border border-input rounded-[var(--radius)]',
                 'bg-background text-foreground text-sm font-medium text-center',
                 'focus:border-primary focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:outline-none',
                 'transition-all',
@@ -348,7 +348,7 @@ export const DatePicker = React.forwardRef<HTMLDivElement, DatePickerProps>(
               type="button"
               onClick={handleToday}
               className={cn(
-                'px-3 py-1.5 text-sm font-medium rounded-md',
+                'px-3 py-1.5 text-sm font-medium rounded-[var(--radius)]',
                 'bg-primary/10 border border-primary/40 text-primary',
                 'hover:bg-primary/20 hover:scale-105 active:scale-95',
                 'transition-all',
@@ -363,7 +363,7 @@ export const DatePicker = React.forwardRef<HTMLDivElement, DatePickerProps>(
               type="button"
               onClick={handleClear}
               className={cn(
-                'px-3 py-1.5 text-sm font-medium rounded-md',
+                'px-3 py-1.5 text-sm font-medium rounded-[var(--radius)]',
                 'text-muted-foreground',
                 'hover:bg-destructive/20 hover:text-destructive hover:scale-105 active:scale-95',
                 'transition-all flex items-center gap-1',
@@ -388,14 +388,16 @@ export const DatePicker = React.forwardRef<HTMLDivElement, DatePickerProps>(
             </label>
           )}
 
-          <div className="border border-border rounded-lg p-4 bg-background">
+          <div className="border border-border rounded-[var(--radius-card)] p-4 bg-background">
             <Calendar
-              mode={variant === 'range' ? 'range' : 'single'}
-              selected={value as any}
-              onSelect={handleDateSelect as any}
-              disabled={disabled}
-              fromDate={minDate}
-              toDate={maxDate}
+              {...({
+                mode: (variant as string) === 'range' ? 'range' : 'single',
+                selected: value,
+                onSelect: handleDateSelect,
+                disabled,
+                fromDate: minDate,
+                toDate: maxDate,
+              } as any)}
             />
 
             {renderTimeInputs()}
@@ -429,7 +431,7 @@ export const DatePicker = React.forwardRef<HTMLDivElement, DatePickerProps>(
                   type="button"
                   disabled={disabled}
                   className={cn(
-                    'inline-flex items-center justify-between rounded-md border border-input w-full',
+                    'inline-flex items-center justify-between rounded-[var(--radius)] border border-input w-full',
                     'bg-background px-3 py-2 text-sm ring-offset-background',
                     'hover:bg-accent hover:text-accent-foreground',
                     'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
@@ -458,12 +460,14 @@ export const DatePicker = React.forwardRef<HTMLDivElement, DatePickerProps>(
               <PopoverContent className="w-auto p-0">
                 <div className="p-4">
                   <Calendar
-                    mode={variant === 'range' ? 'range' : 'single'}
-                    selected={value as any}
-                    onSelect={handleDateSelect as any}
-                    fromDate={minDate}
-                    toDate={maxDate}
-                    initialFocus
+                    {...({
+                      mode: variant === 'range' ? 'range' : 'single',
+                      selected: value,
+                      onSelect: handleDateSelect,
+                      fromDate: minDate,
+                      toDate: maxDate,
+                      initialFocus: true,
+                    } as any)}
                   />
 
                   {renderTimeInputs()}
@@ -499,7 +503,7 @@ export const DatePicker = React.forwardRef<HTMLDivElement, DatePickerProps>(
             placeholder="dd/mm/yyyy"
             disabled={disabled}
             className={cn(
-              'flex h-10 w-40 rounded-md border border-input bg-background px-3 py-2',
+              'flex h-10 w-40 rounded-[var(--radius)] border border-input bg-background px-3 py-2',
               'text-sm ring-offset-background',
               'file:border-0 file:bg-transparent file:text-sm file:font-medium',
               'placeholder:text-muted-foreground',

@@ -12,6 +12,30 @@ import { format } from 'date-fns';
 
 import { ThreadView } from './ThreadView';
 
+/** Extended types for Prisma relations included by the API but not reflected in tRPC output types */
+interface ChannelMemberWithUser {
+  userId: string;
+  role: string;
+  isFavorite?: boolean;
+  isArchived?: boolean;
+  isHidden?: boolean;
+  user: { id: string; firstname: string; lastname: string; image?: string | null; email?: string };
+}
+
+interface MessageWithSender {
+  id: string;
+  content: string;
+  senderId: string;
+  channelId: string;
+  parentId: string | null;
+  createdAt: string;
+  updatedAt: string;
+  readBy: string[];
+  metadata: unknown;
+  replyCount?: number;
+  sender: { id: string; firstname: string; lastname: string; image?: string | null };
+}
+
 interface ChannelChatAreaProps {
   channelId: string;
   onToggleSidebar?: () => void;
@@ -28,13 +52,15 @@ export function ChannelChatArea({ channelId, onToggleSidebar, isSidebarCollapsed
   const scrollRef = useRef<HTMLDivElement>(null);
   
   const ctx = trpc.useContext();
-  const { data: channel, isLoading: isChannelLoading } = trpc.channels.getChannel.useQuery({ channelId });
-  const { data: messages, isLoading: isMessagesLoading } = trpc.channels.getMessages.useQuery(
+  const { data: rawChannel, isLoading: isChannelLoading } = trpc.channels.getChannel.useQuery({ channelId });
+  const channel = rawChannel as (typeof rawChannel & { members?: ChannelMemberWithUser[] }) | undefined;
+  const { data: rawMessages, isLoading: isMessagesLoading } = trpc.channels.getMessages.useQuery(
     { channelId },
-    { 
-      refetchInterval: 3000 
+    {
+      refetchInterval: 3000
     }
   );
+  const messages = rawMessages as MessageWithSender[] | undefined;
 
   const { data: me } = trpc.user.me.useQuery();
   const markAsReadMutation = trpc.channels.markAsRead.useMutation();
@@ -48,22 +74,21 @@ export function ChannelChatArea({ channelId, onToggleSidebar, isSidebarCollapsed
   
 
   // Determine permissions
-  // @ts-ignore
-  const myMember = channel?.members?.find((m: any) => m.userId === me?.id);
+  const myMember = channel?.members?.find((m) => m.userId === me?.id);
   const isOwner = myMember?.role === 'OWNER';
   const isDM = channel?.type === 'DM';
   
   // Get DM display name
   const getDMName = () => {
     if (!isDM || !channel?.members) return null;
-    const others = channel.members.filter((m: any) => m.user.id !== me?.id);
+    const others = channel.members.filter((m) => m.user.id !== me?.id);
     if (others.length === 0) return 'Just You';
     if (others.length === 1) {
       const user = others[0].user;
       return `${user.firstname} ${user.lastname}`;
     }
     // Group DM
-    return others.map((m: any) => `${m.user.firstname} ${m.user.lastname}`).join(', ');
+    return others.map((m) => `${m.user.firstname} ${m.user.lastname}`).join(', ');
   };
   
   const displayName = isDM ? getDMName() : channel?.name;
@@ -132,7 +157,7 @@ export function ChannelChatArea({ channelId, onToggleSidebar, isSidebarCollapsed
           )}
           <div className="flex items-center gap-2">
             {isDM ? (
-              channel.members && channel.members.filter((m: any) => m.user.id !== me?.id).length > 1 ? (
+              channel.members && channel.members.filter((m) => m.user.id !== me?.id).length > 1 ? (
                 <Users className="w-5 h-5 text-gray-500" />
               ) : null
             ) : (
@@ -205,13 +230,13 @@ export function ChannelChatArea({ channelId, onToggleSidebar, isSidebarCollapsed
                             </p>
                             
                             {/* Thread Info */}
-                            {(msg.replyCount > 0 || activeThread?.id === msg.id) && (
-                                <div 
+                            {((msg.replyCount ?? 0) > 0 || activeThread?.id === msg.id) && (
+                                <div
                                     className="mt-1 flex items-center gap-2 cursor-pointer group/thread"
                                     onClick={() => setActiveThread(msg)}
                                 >
                                     <span className="text-xs text-blue-600 font-medium group-hover/thread:underline">
-                                        {msg.replyCount} {msg.replyCount === 1 ? 'reply' : 'replies'}
+                                        {msg.replyCount ?? 0} {msg.replyCount === 1 ? 'reply' : 'replies'}
                                     </span>
                                 </div>
                             )}

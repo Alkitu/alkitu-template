@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import React from 'react';
 import Status from './Status';
 import type { StatusVariant } from './Status.types';
 
@@ -75,7 +76,7 @@ const meta = {
 } satisfies Meta<typeof Status>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = Omit<StoryObj<typeof meta>, 'args'> & Partial<Pick<StoryObj<typeof meta>, 'args'>>;
 
 /**
  * Default variant with star icon and muted colors.
@@ -184,7 +185,7 @@ export const ThemeOverride: Story = {
       '--space-3-5': '20px',
       '--space-4': '24px',
       backgroundColor: '#f0f9ff',
-    },
+    } as React.CSSProperties,
   },
 };
 

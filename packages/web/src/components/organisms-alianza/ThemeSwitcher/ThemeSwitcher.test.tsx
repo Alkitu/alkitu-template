@@ -290,7 +290,7 @@ describe('ThemeSwitcher - Organism', () => {
 
   describe('Current Theme Display', () => {
     it('should show "Select Theme" when no current theme', () => {
-      mockUseGlobalTheme.currentTheme = null;
+      mockUseGlobalTheme.currentTheme = null as any;
       renderWithProviders(<ThemeSwitcher />);
 
       expect(screen.getByText('Select Theme')).toBeInTheDocument();

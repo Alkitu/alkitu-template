@@ -38,7 +38,7 @@ const meta = {
 } satisfies Meta<typeof Accordion>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = Omit<StoryObj<typeof meta>, 'args'> & Partial<Pick<StoryObj<typeof meta>, 'args'>>;
 
 // Sample data
 const faqItems: AccordionItem[] = [

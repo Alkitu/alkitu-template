@@ -196,9 +196,9 @@ export function AccordionMolecule({
       }}
     >
       <Accordion
-        type={accordionType}
-        value={accordionValue}
-        onValueChange={handleValueChange}
+        type={accordionType as any}
+        value={accordionValue as any}
+        onValueChange={handleValueChange as any}
         collapsible={collapsible}
       >
         {items.map((item, index) => {
@@ -310,9 +310,9 @@ export function AccordionMolecule({
                     </p>
                   ) : (
                     <div style={{
-                      '& > *:first-child': { marginTop: 0 },
-                      '& > *:last-child': { marginBottom: 0 }
-                    }}>
+                      marginTop: 0,
+                      marginBottom: 0
+                    } as React.CSSProperties}>
                       {item.content}
                     </div>
                   )}

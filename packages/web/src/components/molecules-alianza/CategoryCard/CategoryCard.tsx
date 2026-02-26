@@ -146,7 +146,7 @@ export const CategoryCard = React.forwardRef<HTMLDivElement, CategoryCardProps>(
             <div
               className={cn(
                 'flex-shrink-0 rounded-full p-2 transition-colors',
-                iconVariantClasses[iconVariant],
+                iconVariantClasses[iconVariant as CategoryIconVariant],
               )}
               aria-hidden="true"
             >

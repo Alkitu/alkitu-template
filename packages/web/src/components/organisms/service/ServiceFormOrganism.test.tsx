@@ -65,7 +65,7 @@ describe('ServiceFormOrganism', () => {
       categoryId: 'cat-1',
       thumbnail: 'https://example.com/plumbing.jpg',
       requestTemplate: { version: '1.0', fields: [] },
-    };
+    } as any;
 
     render(<ServiceFormOrganism initialData={initialData} />);
 
@@ -206,7 +206,7 @@ describe('ServiceFormOrganism', () => {
       name: 'Old Name',
       categoryId: 'cat-1',
       requestTemplate: { version: '1.0', fields: [] },
-    };
+    } as any;
 
     (global.fetch as any).mockImplementation((url: string, options?: any) => {
       if (url === '/api/categories') {
@@ -373,7 +373,7 @@ describe('ServiceFormOrganism', () => {
         version: '1.0',
         fields: [{ id: 'urgency', type: 'select', label: 'Urgency' }],
       },
-    };
+    } as any;
 
     render(<ServiceFormOrganism initialData={initialData} />);
 

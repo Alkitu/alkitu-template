@@ -198,7 +198,7 @@ export function Select({
             : isValid
             ? 'var(--colors-success, #16A34A)'
             : 'var(--colors-primary, #0066CC)',
-        }}
+        } as React.CSSProperties}
         onClick={handleToggle}
         onKeyDown={handleKeyDown}
         onFocus={(e) => {
@@ -214,7 +214,7 @@ export function Select({
         role="combobox"
         aria-expanded={isOpen}
         aria-haspopup="listbox"
-        {...getAccessibilityProps()}
+        {...(getAccessibilityProps() as React.HTMLAttributes<HTMLDivElement>)}
       >
         <span className={selectedOption ? 'text-foreground' : 'text-muted-foreground'}>
           {selectedOption ? selectedOption.label : placeholder}
@@ -274,7 +274,7 @@ export const MemoizedSelect = React.memo(Select, (prevProps, nextProps) => {
   ];
 
   for (const prop of scalarProps) {
-    if (prevProps[prop] !== nextProps[prop]) return false;
+    if ((prevProps as Record<string, unknown>)[prop] !== (nextProps as Record<string, unknown>)[prop]) return false;
   }
 
   // Comparación optimizada de opciones (array complejo)

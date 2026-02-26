@@ -317,7 +317,7 @@ export function FormBuilderOrganism({
                 {fields.map((field, index) => (
                   <CardMolecule
                     key={field.id}
-                    variant={selectedField === field.id ? 'primary' : 'default'}
+                    variant={selectedField === field.id ? 'interactive' : 'default'}
                     className={`cursor-pointer transition-all duration-200 ${
                       selectedField === field.id 
                         ? 'border-2 border-primary shadow-[0_0_0_1px_hsl(var(--primary)/0.2)]' 
@@ -415,7 +415,12 @@ function FormFieldPreview({ field }: { field: FormField }) {
       return <Input type={field.type} label={field.label} placeholder={field.placeholder} disabled />;
     
     case 'textarea':
-      return <Textarea label={field.label} placeholder={field.placeholder} disabled />;
+      return (
+        <div>
+          <label className={`${getTypographyClass('input-label')} text-foreground mb-1.5 block`}>{field.label}</label>
+          <Textarea placeholder={field.placeholder} disabled />
+        </div>
+      );
     
     case 'select':
       return (
@@ -423,13 +428,10 @@ function FormFieldPreview({ field }: { field: FormField }) {
           <label className={`${getTypographyClass('input-label')} text-foreground mb-1.5 block`}>
             {field.label}
           </label>
-          <Select disabled>
-            {field.options?.map(option => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </Select>
+          <Select
+            options={field.options?.map(o => ({ value: o.value, label: o.label })) || []}
+            disabled
+          />
         </div>
       );
     
@@ -444,7 +446,7 @@ function FormFieldPreview({ field }: { field: FormField }) {
           </label>
           <div className="flex flex-col gap-1.5">
             {field.options?.map(option => (
-              <RadioButton key={option.value} name={field.id} label={option.label} disabled />
+              <RadioButton key={option.value} name={field.id} value={option.value} label={option.label} disabled />
             ))}
           </div>
         </div>
@@ -587,47 +589,48 @@ function StylingProperties({ field, onUpdate }: { field: FormField; onUpdate: (u
     <div className="flex flex-col gap-4">
       <div>
         <label className={`${getTypographyClass('input-label')} text-foreground mb-1.5 block`}>Variant</label>
-        <Select 
+        <Select
+          options={[
+            { value: 'default', label: 'Default' },
+            { value: 'outline', label: 'Outline' },
+            { value: 'ghost', label: 'Ghost' },
+            { value: 'filled', label: 'Filled' },
+          ]}
           value={field.styling?.variant || 'default'}
-          onChange={(e) => onUpdate({ 
-            styling: { ...field.styling, variant: e.target.value as any } 
+          onValueChange={(val: string) => onUpdate({
+            styling: { ...field.styling, variant: val as any }
           })}
-        >
-          <option value="default">Default</option>
-          <option value="outline">Outline</option>
-          <option value="ghost">Ghost</option>
-          <option value="filled">Filled</option>
-        </Select>
+        />
       </div>
       
       <div>
         <label className={`${getTypographyClass('input-label')} text-foreground mb-2 block`}>Size</label>
         <div className="flex flex-col gap-1.5">
-          <RadioButton 
-            name={`${field.id}-size`} 
-            value="sm" 
-            label="Small" 
+          <RadioButton
+            name={`${field.id}-size`}
+            value="sm"
+            label="Small"
             checked={field.styling?.size === 'sm'}
-            onChange={(checked) => checked && onUpdate({ 
-              styling: { ...field.styling, size: 'sm' } 
+            onChange={() => onUpdate({
+              styling: { ...field.styling, size: 'sm' }
             })}
           />
-          <RadioButton 
-            name={`${field.id}-size`} 
-            value="default" 
-            label="Default" 
+          <RadioButton
+            name={`${field.id}-size`}
+            value="default"
+            label="Default"
             checked={field.styling?.size === 'default' || !field.styling?.size}
-            onChange={(checked) => checked && onUpdate({ 
-              styling: { ...field.styling, size: 'default' } 
+            onChange={() => onUpdate({
+              styling: { ...field.styling, size: 'default' }
             })}
           />
-          <RadioButton 
-            name={`${field.id}-size`} 
-            value="lg" 
-            label="Large" 
+          <RadioButton
+            name={`${field.id}-size`}
+            value="lg"
+            label="Large"
             checked={field.styling?.size === 'lg'}
-            onChange={(checked) => checked && onUpdate({ 
-              styling: { ...field.styling, size: 'lg' } 
+            onChange={() => onUpdate({
+              styling: { ...field.styling, size: 'lg' }
             })}
           />
         </div>
@@ -635,15 +638,16 @@ function StylingProperties({ field, onUpdate }: { field: FormField; onUpdate: (u
       
       <div>
         <label className={`${getTypographyClass('input-label')} text-foreground mb-1.5 block`}>Width</label>
-        <Select 
+        <Select
+          options={[
+            { value: 'full', label: 'Full Width' },
+            { value: 'half', label: 'Half Width' },
+            { value: 'third', label: 'Third Width' },
+            { value: 'custom', label: 'Custom Width' },
+          ]}
           value={field.width || 'full'}
-          onChange={(e) => onUpdate({ width: e.target.value as any })}
-        >
-          <option value="full">Full Width</option>
-          <option value="half">Half Width</option>
-          <option value="third">Third Width</option>
-          <option value="custom">Custom Width</option>
-        </Select>
+          onValueChange={(val: string) => onUpdate({ width: val as any })}
+        />
         
         {field.width === 'custom' && (
           <Input
@@ -846,15 +850,20 @@ function InteractivePreviewField({ field, value, onChange }: { field: FormField;
     
     case 'textarea':
       return (
-        <Textarea
-          label={field.label}
-          placeholder={field.placeholder}
-          required={field.required}
-          value={value || ''}
-          onChange={(e) => onChange(e.target.value)}
-        />
+        <div>
+          <label className={`${getTypographyClass('input-label')} text-foreground mb-1.5 block`}>
+            {field.label}
+            {field.required && <span className="text-destructive"> *</span>}
+          </label>
+          <Textarea
+            placeholder={field.placeholder}
+            required={field.required}
+            value={value || ''}
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => onChange(e.target.value)}
+          />
+        </div>
       );
-    
+
     case 'select':
       return (
         <div>
@@ -862,24 +871,23 @@ function InteractivePreviewField({ field, value, onChange }: { field: FormField;
             {field.label}
             {field.required && <span className="text-destructive"> *</span>}
           </label>
-          <Select value={value || ''} onChange={(e) => onChange(e.target.value)} required={field.required}>
-            <option value="">Select an option...</option>
-            {field.options?.map(option => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </Select>
+          <Select
+            options={[
+              { value: '', label: 'Select an option...' },
+              ...(field.options?.map(o => ({ value: o.value, label: o.label })) || [])
+            ]}
+            value={value || ''}
+            onValueChange={(val: string) => onChange(val)}
+          />
         </div>
       );
-    
+
     case 'checkbox':
       return (
         <Checkbox
           label={field.label}
           checked={value || false}
-          onChange={onChange}
-          required={field.required}
+          onChange={(checked: boolean) => onChange(checked)}
         />
       );
     
@@ -898,7 +906,7 @@ function InteractivePreviewField({ field, value, onChange }: { field: FormField;
                 label={option.label}
                 value={option.value}
                 checked={value === option.value}
-                onChange={(checked) => checked && onChange(option.value)}
+                onChange={() => onChange(option.value)}
               />
             ))}
           </div>

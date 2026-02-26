@@ -60,7 +60,7 @@ const stateClasses: Record<InputState, string> = {
 
 // Base classes applied to all inputs
 const baseClasses =
-  'flex w-full rounded-md border transition-colors ' +
+  'flex w-full rounded-[var(--radius-input)] border transition-colors ' +
   'file:border-0 file:bg-transparent file:text-sm file:font-medium ' +
   'placeholder:text-muted-foreground ' +
   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ' +

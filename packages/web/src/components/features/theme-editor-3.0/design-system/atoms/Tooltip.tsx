@@ -76,7 +76,7 @@ export function Tooltip({
   const [position, setPosition] = useState({ top: 0, left: 0 });
   const triggerRef = useRef<HTMLElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
-  const timeoutRef = useRef<NodeJS.Timeout>();
+  const timeoutRef = useRef<NodeJS.Timeout>(undefined);
 
   // Calculate tooltip position
   const calculatePosition = () => {
@@ -234,13 +234,14 @@ export function Tooltip({
   };
 
   // Clone children with event handlers
-  const triggerElement = React.cloneElement(children, {
+  const childProps = (children as React.ReactElement<Record<string, unknown>>).props as Record<string, unknown>;
+  const triggerElement = React.cloneElement(children as React.ReactElement<Record<string, unknown>>, {
     ref: triggerRef,
-    onMouseEnter: trigger === 'hover' ? showTooltip : children.props.onMouseEnter,
-    onMouseLeave: trigger === 'hover' ? hideTooltip : children.props.onMouseLeave,
-    onFocus: trigger === 'focus' ? showTooltip : children.props.onFocus,
-    onBlur: trigger === 'focus' ? hideTooltip : children.props.onBlur,
-    onClick: trigger === 'click' ? toggleTooltip : children.props.onClick,
+    onMouseEnter: trigger === 'hover' ? showTooltip : childProps.onMouseEnter,
+    onMouseLeave: trigger === 'hover' ? hideTooltip : childProps.onMouseLeave,
+    onFocus: trigger === 'focus' ? showTooltip : childProps.onFocus,
+    onBlur: trigger === 'focus' ? hideTooltip : childProps.onBlur,
+    onClick: trigger === 'click' ? toggleTooltip : childProps.onClick,
   });
 
   return (

@@ -383,12 +383,11 @@ export function ToastProvider({
             }}
             className="hover:scale-110 hover:bg-destructive/20 hover:opacity-100 hover:shadow-md active:scale-90"
           >
-            <X 
-              className="h-3 w-3" 
+            <X
+              className="h-3 w-3 group-hover:rotate-90"
               style={{
                 transition: 'transform 0.3s ease'
               }}
-              className="group-hover:rotate-90"
             />
           </Button>
         )}

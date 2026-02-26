@@ -96,7 +96,7 @@ describe('AuthPageOrganism - Organism', () => {
       const themeOverride = {
         '--primary': '#ff0000',
         '--secondary': '#00ff00',
-      };
+      } as React.CSSProperties;
 
       const { container } = renderWithProviders(
         <AuthPageOrganism headerLabel="Test" themeOverride={themeOverride}>

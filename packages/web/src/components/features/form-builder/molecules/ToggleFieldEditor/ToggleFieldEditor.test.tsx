@@ -18,7 +18,6 @@ describe('ToggleFieldEditor', () => {
       id: 'toggle-1',
       type: 'toggle',
       label: 'Enable notifications',
-      required: false,
       validation: { required: false },
       toggleOptions: {
         style: 'toggle',

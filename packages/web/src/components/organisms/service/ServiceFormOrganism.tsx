@@ -26,7 +26,7 @@ const LocalServiceSchema = z.object({
   categoryId: z.string().min(1, 'Category is required'),
   thumbnail: z.string().url('Thumbnail must be a valid URL').optional().or(z.literal('')),
   iconColor: z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Invalid hex color').default('#000000').optional(),
-  requestTemplate: z.any(), // Accept any value - Controller ensures it's always a valid object
+  requestTemplate: z.record(z.string(), z.unknown()), // Controller ensures it's always a valid object
 });
 
 /**

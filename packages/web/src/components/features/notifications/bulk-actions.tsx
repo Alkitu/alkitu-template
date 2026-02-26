@@ -151,7 +151,7 @@ export function BulkActions({
   const handleDeleteByType = async (type: string) => {
     setIsLoading(true);
     try {
-      const result = await deleteByTypeMutation.mutateAsync({ userId, type });
+      const result = await deleteByTypeMutation.mutateAsync({ userId, type: type as any });
       toast.success(`Deleted ${result.count} ${type} notifications`);
       onNotificationsUpdate();
       onSelectionChange([]);

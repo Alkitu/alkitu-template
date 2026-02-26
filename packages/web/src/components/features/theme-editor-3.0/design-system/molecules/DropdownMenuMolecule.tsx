@@ -642,7 +642,7 @@ export function DropdownMenuMolecule({
           align={placement.includes('end') ? 'end' : 'start'}
           side={placement.includes('top') ? 'top' : 'bottom'}
           style={{
-            background: colors?.popover?.value || 'var(--color-popover)',
+            background: `${colors?.popover?.value || 'var(--color-popover)'}f8`,
             border: `1px solid ${colors?.border?.value || 'var(--color-border)'}`,
             borderRadius: 'var(--radius-popover, 12px)',
             boxShadow: `${shadows?.shadowLg || 'var(--shadow-lg)'}, 0 0 0 1px ${colors?.border?.value || 'var(--color-border)'}20`,
@@ -650,7 +650,6 @@ export function DropdownMenuMolecule({
             minWidth: 'min(220px, calc(100vw - 40px))',
             maxWidth: 'min(320px, calc(100vw - 20px))',
             backdropFilter: 'blur(8px)',
-            background: `${colors?.popover?.value || 'var(--color-popover)'}f8`,
             animation: 'slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
             transformOrigin: 'var(--radix-dropdown-menu-content-transform-origin)'
           }}

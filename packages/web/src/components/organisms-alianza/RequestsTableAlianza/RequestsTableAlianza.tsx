@@ -60,7 +60,7 @@ export const RequestsTableAlianza: React.FC<RequestsTableAlianzaProps> = ({
   };
 
   return (
-    <div className={`w-full overflow-auto rounded-lg border border-border ${className}`}>
+    <div className={`w-full overflow-auto rounded-[var(--radius-card)] border border-border ${className}`}>
       <table className="w-full">
         <thead>
           <tr className="border-b border-border bg-muted/50">
@@ -192,7 +192,7 @@ export const RequestsTableAlianza: React.FC<RequestsTableAlianzaProps> = ({
                 <div className="flex items-center justify-end gap-2">
                   <button
                     onClick={() => onViewRequest(request.id, request.clientEmail || '')}
-                    className="p-2 hover:bg-muted rounded-md transition-colors"
+                    className="p-2 hover:bg-muted rounded-[var(--radius)] transition-colors"
                     title="Ver detalles"
                   >
                     <Eye className="h-4 w-4 text-foreground" />
@@ -200,7 +200,7 @@ export const RequestsTableAlianza: React.FC<RequestsTableAlianzaProps> = ({
                   {request.status === 'PENDING' && onAssignRequest && (
                     <button
                       onClick={() => onAssignRequest(request.id)}
-                      className="p-2 hover:bg-primary/20 rounded-md transition-colors"
+                      className="p-2 hover:bg-primary/20 rounded-[var(--radius)] transition-colors"
                       title="Asignar"
                     >
                       <UserPlus className="h-4 w-4 text-primary" />

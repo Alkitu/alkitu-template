@@ -547,7 +547,7 @@ describe('Logo - Atom (Alianza)', () => {
       const parent = container.querySelector('[data-testid="parent"]');
       const logo = container.querySelector('[data-name="Logo"]');
 
-      expect(parent).toContainElement(logo);
+      expect(parent).toContainElement(logo as HTMLElement | null);
     });
 
     it('can be rendered multiple times', () => {

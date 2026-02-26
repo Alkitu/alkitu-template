@@ -69,7 +69,7 @@ export function SpacingEditor({
   return (
     <div className={`space-y-6 ${className}`}>
       {spacingSizes.map((size, index) => {
-        const value = currentScale[size.key] || size.defaultValue;
+        const value = (currentScale as Record<string, string>)[size.key] || size.defaultValue;
         const label = `${size.title} Spacing`;
         const description = `--spacing-${size.key}`;
 

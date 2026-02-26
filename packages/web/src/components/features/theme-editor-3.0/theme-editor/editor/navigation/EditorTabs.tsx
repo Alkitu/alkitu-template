@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Tabs, TabsList, TabsTrigger } from '../../../design-system/primitives/tabs';
-import { Palette, Type, Building, Square, Spacing, Shadow, Scroll } from 'lucide-react';
+import { Palette, Type, Building, Square, Space, Layers, Scroll } from 'lucide-react';
 import { EditorSection } from '../../../core/types/editor.types';
 import { useThemeEditor } from '../../../core/context/ThemeEditorContext';
 
@@ -17,8 +17,8 @@ const EDITOR_SECTIONS = [
   { id: 'typography', label: 'Typography', icon: Type },
   { id: 'brand', label: 'Brand', icon: Building },
   { id: 'borders', label: 'Borders', icon: Square },
-  { id: 'spacing', label: 'Spacing', icon: Spacing },
-  { id: 'shadows', label: 'Shadows', icon: Shadow },
+  { id: 'spacing', label: 'Spacing', icon: Space },
+  { id: 'shadows', label: 'Shadows', icon: Layers },
   { id: 'scroll', label: 'Scroll', icon: Scroll }
 ] as const;
 

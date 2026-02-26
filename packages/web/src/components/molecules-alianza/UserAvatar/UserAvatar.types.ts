@@ -23,6 +23,12 @@ export interface UserAvatarProps {
   lastName?: string;
 
   /**
+   * URL of the user's profile image.
+   * When provided, displays the image instead of initials.
+   */
+  imageUrl?: string;
+
+  /**
    * Size variant
    * @default 'md'
    */

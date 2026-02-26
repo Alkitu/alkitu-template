@@ -20,7 +20,7 @@ export function useThemeAuth() {
 
   return {
     userId: user?.id || null,
-    companyId: user?.companyId || null,
+    companyId: user?.company || null,
     role: user?.role || null,
     isAdmin: user?.role === 'ADMIN',
     isLoading,

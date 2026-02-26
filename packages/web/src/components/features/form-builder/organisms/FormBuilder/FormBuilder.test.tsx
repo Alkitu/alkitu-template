@@ -9,7 +9,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { FormBuilder } from './FormBuilder';
-import type { FormSettings, FormField } from '../../types';
+import type { FormSettings, FormField, SupportedLocale } from '../../types';
 
 // ============================================================================
 // TEST HELPERS
@@ -29,14 +29,14 @@ const mockTextField: FormField = {
   id: 'field-1',
   type: 'text',
   label: 'Text Field',
-  required: false,
+  validation: { required: false },
 };
 
 const mockSelectField: FormField = {
   id: 'field-2',
   type: 'select',
   label: 'Select Field',
-  required: false,
+  validation: { required: false },
   selectOptions: {
     items: [
       { id: 'opt-1', label: 'Option 1', value: 'opt1' },
@@ -49,7 +49,7 @@ const mockGroupField: FormField = {
   id: 'field-3',
   type: 'group',
   label: 'Group Field',
-  required: false,
+  validation: { required: false },
   groupOptions: {
     title: 'Step 1',
     fields: [mockTextField],
@@ -404,7 +404,7 @@ describe('FormBuilder - Locale/I18n', () => {
   it('should render locale selector when multiple locales supported', () => {
     const multiLocaleSettings = {
       ...mockFormSettings,
-      supportedLocales: ['en', 'es'] as const,
+      supportedLocales: ['en', 'es'] as SupportedLocale[],
     };
     const handleChange = vi.fn();
 
@@ -435,7 +435,7 @@ describe('FormBuilder - Locale/I18n', () => {
   it('should switch editing locale', async () => {
     const multiLocaleSettings = {
       ...mockFormSettings,
-      supportedLocales: ['en', 'es'] as const,
+      supportedLocales: ['en', 'es'] as SupportedLocale[],
       fields: [mockTextField],
     };
     const handleChange = vi.fn();
@@ -463,7 +463,7 @@ describe('FormBuilder - Locale/I18n', () => {
   it('should display locale indicator when editing non-default locale', async () => {
     const multiLocaleSettings = {
       ...mockFormSettings,
-      supportedLocales: ['en', 'es'] as const,
+      supportedLocales: ['en', 'es'] as SupportedLocale[],
       defaultLocale: 'en' as const,
     };
     const handleChange = vi.fn();
@@ -545,7 +545,7 @@ describe('FormBuilder - Settings Tab', () => {
   it('should change default locale', async () => {
     const multiLocaleSettings = {
       ...mockFormSettings,
-      supportedLocales: ['en', 'es'] as const,
+      supportedLocales: ['en', 'es'] as SupportedLocale[],
     };
     const handleChange = vi.fn();
     const user = userEvent.setup();

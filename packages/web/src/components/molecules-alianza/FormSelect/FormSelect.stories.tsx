@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-
+import React from 'react';
 import { Mail, User, MapPin, Phone, CheckCircle, AlertCircle } from 'lucide-react';
 import { FormSelect } from './FormSelect';
 import type { SelectOption, SelectGroupOption } from '@/components/atoms-alianza/Select';
@@ -47,7 +47,7 @@ const meta = {
 } satisfies Meta<typeof FormSelect>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = Omit<StoryObj<typeof meta>, 'args'> & Partial<Pick<StoryObj<typeof meta>, 'args'>>;
 
 // Sample data
 const simpleOptions: SelectOption[] = [

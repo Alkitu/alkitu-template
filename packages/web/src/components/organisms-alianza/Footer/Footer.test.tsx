@@ -113,7 +113,7 @@ describe('Footer', () => {
     const themeOverride = {
       'primary-color': '#ff0000',
       'background-color': '#000000',
-    };
+    } as React.CSSProperties;
 
     const { container } = render(<Footer {...defaultProps} themeOverride={themeOverride} />);
 

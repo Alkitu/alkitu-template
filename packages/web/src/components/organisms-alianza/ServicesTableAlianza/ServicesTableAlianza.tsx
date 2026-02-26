@@ -69,7 +69,7 @@ export function ServicesTableAlianza({
   const mergedLabels = { ...defaultLabels, ...labels };
 
   return (
-    <div className={cn("w-full relative max-h-[600px] overflow-auto rounded-lg border border-border", className)}>
+    <div className={cn("w-full relative max-h-[600px] overflow-auto rounded-[var(--radius-card)] border border-border", className)}>
       <table className="w-full caption-bottom text-sm">
         <TableHeader>
           <TableRow className="bg-muted/50 hover:bg-muted/50 border-b border-border h-[46px] sticky top-0 z-20">

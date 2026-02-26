@@ -5,6 +5,7 @@ export interface OklchColor {
   l: number; // Lightness (0-1)
   c: number; // Chroma (0-0.5+) - Increased range for vivid colors
   h: number; // Hue (0-360)
+  a?: number; // Alpha/opacity (0-1), optional
 }
 
 export interface RGBColor {
@@ -21,19 +22,19 @@ export interface HSVColor {
 
 export interface ColorToken {
   name: string;
-  hex: string;           // NEW: Display principal (#RRGGBB)
+  hex?: string;           // Display principal (#RRGGBB) - computed from oklch
   oklch: OklchColor;     // Fuente de verdad numérica
-  oklchString: string;   // NEW: Para mostrar en UI "oklch(0.62 0.19 259.81)"
-  rgb: RGBColor;         // NEW: Para inputs RGB
-  hsv: HSVColor;         // NEW: Para color picker
+  oklchString?: string;   // Para mostrar en UI "oklch(0.62 0.19 259.81)" - computed from oklch
+  rgb?: RGBColor;         // Para inputs RGB - computed from oklch
+  hsv?: HSVColor;         // Para color picker - computed from oklch
   description?: string;
-  
+
   // Color linking system
   linkedTo?: string;     // Name of the parent color this is linked to
   linkedColors?: string[]; // Names of colors that are linked to this color
-  
+
   // Legacy compatibility
-  value: string;         // DEPRECATED: Use oklchString instead
+  value?: string;         // DEPRECATED: Use oklchString instead
 }
 
 export interface ThemeColors {
@@ -66,10 +67,10 @@ export interface ThemeColors {
   // Alert colors (destructive, warning, success)
   destructive: ColorToken;
   destructiveForeground: ColorToken;
-  warning: ColorToken;
-  warningForeground: ColorToken;
-  success: ColorToken;
-  successForeground: ColorToken;
+  warning?: ColorToken;
+  warningForeground?: ColorToken;
+  success?: ColorToken;
+  successForeground?: ColorToken;
   
   // Border & Input colors
   border: ColorToken;
@@ -107,6 +108,19 @@ export interface ThemeTypography {
   trackingNormal: string;
 }
 
+export interface LogoColorVariants {
+  original: string;
+  white: string;
+  black: string;
+  gray: string;
+}
+
+export interface LogoModeConfig {
+  variants: LogoColorVariants;
+  monoColor: string;
+  isLinkedToPrimary: boolean;
+}
+
 export interface LogoVariant {
   id: string;
   name: string;
@@ -114,21 +128,14 @@ export interface LogoVariant {
   aspectRatio: string;
   svgContent: string;
   detectedColors: string[];
-  variants: {
-    original: string;
-    white: string;
-    black: string;
-    gray: string;
-  };
+  variants?: LogoColorVariants;
+  // Dual-mode logo configurations
+  lightMode?: LogoModeConfig;
+  darkMode?: LogoModeConfig;
   // Logo específico para modo oscuro (opcional)
   darkModeVersion?: {
     svgContent: string;
-    variants: {
-      original: string;
-      white: string;
-      black: string;
-      gray: string;
-    };
+    variants: LogoColorVariants;
     metadata: {
       fileName: string;
       fileSize: string;
@@ -158,7 +165,7 @@ export interface ThemeBrand {
   colorGuidelines?: string;
   
   // Logo variants
-  logos: {
+  logos?: {
     icon: LogoVariant | null;
     horizontal: LogoVariant | null;
     vertical: LogoVariant | null;
@@ -175,7 +182,7 @@ export interface ThemeBrand {
 
 export interface ThemeSpacing {
   spacing: string; // Base spacing value (2.2rem)
-  scale: Record<string, string>; // Individual spacing scale values
+  scale?: Record<string, string>; // Individual spacing scale values
 }
 
 export interface BorderRadiusController {
@@ -186,25 +193,25 @@ export interface BorderRadiusController {
 
 export interface ThemeBorders {
   // Global Controllers
-  globalRadius: BorderRadiusController;
-  cardsRadius: BorderRadiusController;
-  buttonsRadius: BorderRadiusController;
-  checkboxRadius: BorderRadiusController;
-  
+  globalRadius?: BorderRadiusController;
+  cardsRadius?: BorderRadiusController;
+  buttonsRadius?: BorderRadiusController;
+  checkboxRadius?: BorderRadiusController;
+
   // Computed CSS values (auto-generated from controllers)
   radius: string; // Base radius value from globalRadius
-  radiusSm: string; // calc(var(--radius) - 4px)
-  radiusMd: string; // calc(var(--radius) - 2px)
-  radiusLg: string; // var(--radius)
-  radiusXl: string; // calc(var(--radius) + 4px)
-  
+  radiusSm?: string; // calc(var(--radius) - 4px)
+  radiusMd?: string; // calc(var(--radius) - 2px)
+  radiusLg?: string; // var(--radius)
+  radiusXl?: string; // calc(var(--radius) + 4px)
+
   // Component-specific values
-  radiusCard: string; // From cardsRadius controller
-  radiusCardInner: string; // With automatic padding formula
-  radiusButton: string; // From buttonsRadius controller
-  radiusButtonInner: string; // With automatic padding formula
-  radiusCheckbox: string; // From checkboxRadius controller
-  radiusCheckboxInner: string; // With automatic padding formula
+  radiusCard?: string; // From cardsRadius controller
+  radiusCardInner?: string; // With automatic padding formula
+  radiusButton?: string; // From buttonsRadius controller
+  radiusButtonInner?: string; // With automatic padding formula
+  radiusCheckbox?: string; // From checkboxRadius controller
+  radiusCheckboxInner?: string; // With automatic padding formula
 }
 
 export interface ThemeShadows {
@@ -223,25 +230,28 @@ export interface ThemeScroll {
   behavior: 'auto' | 'smooth' | 'instant';
   smooth: boolean;
   hide: boolean;
-  
+
   // Border radius controls for scrollbar elements
-  trackRadius: string;   // Border radius for scrollbar track (riel)
-  thumbRadius: string;   // Border radius for scrollbar thumb (deslizador)
+  trackRadius?: string;   // Border radius for scrollbar track (riel)
+  thumbRadius?: string;   // Border radius for scrollbar thumb (deslizador)
 }
 
 export interface ThemeData {
   id: string;
   name: string;
   description?: string;
-  version: string;
+  version?: string;
   author?: string;
-  createdAt: string;
-  updatedAt: string;
-  
+  createdAt?: string;
+  updatedAt?: string;
+
   // Dual-mode theme properties
   lightColors: ThemeColors;   // Light mode color configuration
   darkColors: ThemeColors;    // Dark mode color configuration
-  
+
+  // Current active colors (set by context based on mode)
+  colors?: ThemeColors;
+
   // Shared properties (mode-independent)
   typography: ThemeTypography;
   brand: ThemeBrand;
@@ -249,19 +259,17 @@ export interface ThemeData {
   borders: ThemeBorders;
   shadows: ThemeShadows;
   scroll: ThemeScroll;
-  
+
   // Metadata
   tags?: string[];
-  isPublic: boolean;
-  isFavorite: boolean;
+  isPublic?: boolean;
+  isFavorite?: boolean;
   isDefault?: boolean; // Whether this is the default/starred theme
 }
 
 // Helper to get current colors based on mode
-export interface ThemeWithCurrentColors extends Omit<ThemeData, 'lightColors' | 'darkColors'> {
+export interface ThemeWithCurrentColors extends ThemeData {
   colors: ThemeColors; // Current active colors based on mode
-  lightColors: ThemeColors;
-  darkColors: ThemeColors;
 }
 
 export type ThemeMode = 'light' | 'dark';

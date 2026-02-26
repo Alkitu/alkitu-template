@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 interface UnsubscribeRequest {
   userId?: string;
@@ -29,8 +27,6 @@ export async function POST(request: NextRequest) {
 
     const removedCount = result.count;
 
-    console.log(`Push subscription deactivated for endpoint:`, endpoint);
-
     // Count remaining active subscriptions for user if userId provided
     let remainingCount = 0;
     if (body.userId) {
@@ -48,8 +44,7 @@ export async function POST(request: NextRequest) {
       },
       { status: 200 },
     );
-  } catch (error) {
-    console.error('Error removing push subscription:', error);
+  } catch {
     return NextResponse.json(
       { error: 'Failed to remove push subscription' },
       { status: 500 },

@@ -86,10 +86,10 @@ export const CategoryServiceTree = React.forwardRef<HTMLDivElement, CategoryServ
         >
           {[1, 2, 3].map((i) => (
             <div key={i} className="space-y-2">
-              <div className="h-12 bg-muted rounded-lg" />
+              <div className="h-12 bg-muted rounded-[var(--radius-card)]" />
               <div className="ml-8 space-y-2">
-                <div className="h-10 bg-muted/60 rounded-lg" />
-                <div className="h-10 bg-muted/60 rounded-lg" />
+                <div className="h-10 bg-muted/60 rounded-[var(--radius-card)]" />
+                <div className="h-10 bg-muted/60 rounded-[var(--radius-card)]" />
               </div>
             </div>
           ))}
@@ -136,7 +136,7 @@ export const CategoryServiceTree = React.forwardRef<HTMLDivElement, CategoryServ
           return (
             <div
               key={category.id}
-              className="border border-border rounded-lg overflow-hidden bg-card"
+              className="border border-border rounded-[var(--radius-card)] overflow-hidden bg-card"
               data-testid={`category-${category.id}`}
             >
               {/* Category Header */}

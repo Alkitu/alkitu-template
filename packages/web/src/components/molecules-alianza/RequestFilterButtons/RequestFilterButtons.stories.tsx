@@ -58,7 +58,7 @@ const meta = {
 } satisfies Meta<typeof RequestFilterButtons>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = Omit<StoryObj<typeof meta>, 'args'> & Partial<Pick<StoryObj<typeof meta>, 'args'>>;
 
 /**
  * Default state showing "All" as the active filter

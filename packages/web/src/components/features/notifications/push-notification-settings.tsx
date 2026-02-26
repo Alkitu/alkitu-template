@@ -59,7 +59,7 @@ const PushNotificationSettings: React.FC<PushNotificationSettingsProps> = ({
         );
       case 'denied':
         return (
-          <Badge variant="destructive">
+          <Badge variant="error">
             <AlertCircle className="w-3 h-3 mr-1" />
             {t('preferences.push.denied')}
           </Badge>
@@ -162,7 +162,7 @@ const PushNotificationSettings: React.FC<PushNotificationSettingsProps> = ({
 
         {/* Error Display */}
         {error && (
-          <Alert variant="destructive">
+          <Alert variant="error">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>{error}</AlertDescription>
           </Alert>
@@ -181,7 +181,7 @@ const PushNotificationSettings: React.FC<PushNotificationSettingsProps> = ({
 
         {/* Denied Permission Help */}
         {permission === 'denied' && (
-          <Alert variant="destructive">
+          <Alert variant="error">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
               {t('preferences.push.blocked')}

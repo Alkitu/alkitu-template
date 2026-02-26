@@ -18,6 +18,12 @@ export interface CheckboxProps {
   onCheckedChange?: (checked: boolean) => void;
 
   /**
+   * Whether the checkbox is disabled
+   * @default false
+   */
+  disabled?: boolean;
+
+  /**
    * Additional CSS classes to apply to the checkbox button
    */
   className?: string;

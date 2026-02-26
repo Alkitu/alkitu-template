@@ -56,9 +56,10 @@ export function LogoUploadSection({
     }
   });
 
-  const currentModeConfig = logo ? 
-    (isDarkMode ? logo.darkMode : logo.lightMode) : 
-    createDefaultModeConfig(state.currentTheme.colors.primary.hex, isDarkMode);
+  const currentModeConfig = logo ?
+    (isDarkMode ? logo.darkMode : logo.lightMode) ??
+      createDefaultModeConfig(state.currentTheme.colors?.primary?.hex ?? '#000000', isDarkMode) :
+    createDefaultModeConfig(state.currentTheme.colors?.primary?.hex ?? '#000000', isDarkMode);
 
   const currentMonoColor = currentModeConfig.monoColor;
   const currentIsLinked = currentModeConfig.isLinkedToPrimary;
@@ -89,19 +90,19 @@ export function LogoUploadSection({
 
   // Función para re-vincular el modo actual a primary
   const handleLinkToPrimary = () => {
-    const primaryColor = state.currentTheme.colors.primary.hex;
+    const primaryColor = state.currentTheme.colors?.primary?.hex ?? '#000000';
     updateCurrentModeConfig(primaryColor, false);
   };
 
   // Efecto para sincronizar con primary cuando cambie el tema (solo si está vinculado)
   useEffect(() => {
     if (logo && currentIsLinked) {
-      const primaryColor = state.currentTheme.colors.primary.hex;
+      const primaryColor = state.currentTheme.colors?.primary?.hex ?? '#000000';
       if (primaryColor !== currentMonoColor) {
         updateCurrentModeConfig(primaryColor, false);
       }
     }
-  }, [state.currentTheme.colors.primary.hex, isDarkMode]);
+  }, [state.currentTheme.colors?.primary?.hex, isDarkMode]);
   const [colorPicker, setColorPicker] = useState<{
     isOpen: boolean;
     colorIndex: number;
@@ -148,7 +149,7 @@ export function LogoUploadSection({
       const metadata = extractSVGMetadata(svgContent, file.name);
 
       // Crear configuraciones para light y dark mode usando primary color
-      const primaryColor = state.currentTheme.colors.primary.hex;
+      const primaryColor = state.currentTheme.colors?.primary?.hex ?? '#000000';
       const lightModeConfig = createDefaultModeConfigUtil(svgContent, detectedColors, primaryColor, false);
       const darkModeConfig = createDefaultModeConfigUtil(svgContent, detectedColors, primaryColor, true);
 
@@ -218,7 +219,7 @@ export function LogoUploadSection({
       const svgContent = await readSVGContent(file);
       
       // Validar aspect ratio (debe ser similar al logo original)
-      if (!validateAspectRatio(svgContent, aspectRatio)) {
+      if (!(await validateAspectRatio(file, aspectRatio))) {
         throw new Error(`El archivo debe mantener la proporción ${aspectRatio} para ${type}`);
       }
 
@@ -227,7 +228,7 @@ export function LogoUploadSection({
       const metadata = extractSVGMetadata(svgContent, file.name);
 
       // Crear variantes de color para el logo modo oscuro
-      const primaryColor = state.currentTheme.colors.primary.hex;
+      const primaryColor = state.currentTheme.colors?.primary?.hex ?? '#000000';
       const variants = generateColorVariants(svgContent, detectedColors, primaryColor, true);
 
       // Actualizar el logo existente con la versión modo oscuro
@@ -293,7 +294,7 @@ export function LogoUploadSection({
 
   const handleColorPickerChange = (newColorToken: ColorToken) => {
     setColorToken(newColorToken);
-    setColorPicker(prev => ({ ...prev, currentColor: newColorToken.hex }));
+    setColorPicker(prev => ({ ...prev, currentColor: newColorToken.hex ?? prev.currentColor }));
   };
 
   const acceptColorChange = () => {
@@ -341,18 +342,19 @@ export function LogoUploadSection({
     newDetectedColors[colorIndex] = finalColor;
 
     // REGENERATE_VARIANTS: Regenerar configuraciones para ambos modos
-    const primaryColor = state.currentTheme.colors.primary.hex;
     const updatedLogo: LogoVariant = {
       ...logo,
       svgContent: newSvgContent,
       detectedColors: newDetectedColors,
       lightMode: {
-        ...logo.lightMode,
-        variants: generateColorVariants(newSvgContent, newDetectedColors, logo.lightMode.monoColor, false)
+        monoColor: logo.lightMode?.monoColor ?? '',
+        isLinkedToPrimary: logo.lightMode?.isLinkedToPrimary ?? false,
+        variants: generateColorVariants(newSvgContent, newDetectedColors, logo.lightMode?.monoColor ?? '', false)
       },
       darkMode: {
-        ...logo.darkMode,
-        variants: generateColorVariants(newSvgContent, newDetectedColors, logo.darkMode.monoColor, true)
+        monoColor: logo.darkMode?.monoColor ?? '',
+        isLinkedToPrimary: logo.darkMode?.isLinkedToPrimary ?? false,
+        variants: generateColorVariants(newSvgContent, newDetectedColors, logo.darkMode?.monoColor ?? '', true)
       },
       metadata: extractSVGMetadata(newSvgContent, logo.name)
     };

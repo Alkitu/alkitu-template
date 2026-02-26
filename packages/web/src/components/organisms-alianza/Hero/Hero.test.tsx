@@ -183,7 +183,7 @@ describe('Hero', () => {
     const themeOverride = {
       'primary-color': '#00ff00',
       'text-color': '#333333',
-    };
+    } as React.CSSProperties;
 
     const { container } = render(<Hero {...defaultProps} themeOverride={themeOverride} />);
 

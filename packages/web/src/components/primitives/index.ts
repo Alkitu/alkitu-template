@@ -1,7 +1,7 @@
 // Design System Main Exports (Internalized)
 
 // Atoms
-export * from '../atoms';
+// export * from '../atoms'; // Commented out - directory doesn't exist
 
 // Molecules
 export * from '../molecules';
@@ -10,10 +10,10 @@ export * from '../molecules';
 export * from '../organisms';
 
 // Templates
-export * from './templates';
+// export * from './templates'; // Commented out - directory doesn't exist
 
 // Contexts
-export { BrandingProvider } from '../../../context/BrandingContext';
+// export { BrandingProvider } from '../../../context/BrandingContext'; // Commented out - file doesn't exist
 
 // Themes and Tokens
 // export * from './themes/tokens'; // Commented out - file doesn't exist

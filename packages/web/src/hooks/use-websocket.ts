@@ -2,10 +2,10 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { io, Socket } from 'socket.io-client';
+import { logger } from '@/lib/logger';
 
 interface UseWebSocketProps {
   userId: string;
-  token?: string;
   enabled?: boolean;
   onNewNotification?: (notification: any) => void;
   onCountUpdate?: () => void;
@@ -24,7 +24,6 @@ const RECONNECT_DELAY = 2000; // 2 seconds
 
 export function useWebSocket({
   userId,
-  token,
   enabled = true,
   onNewNotification,
   onCountUpdate,
@@ -39,21 +38,21 @@ export function useWebSocket({
 
   const socketRef = useRef<Socket | null>(null);
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  
+
   // Use refs to avoid recreating connect function when callbacks change
   const onNewNotificationRef = useRef(onNewNotification);
   const onCountUpdateRef = useRef(onCountUpdate);
   const onConnectionChangeRef = useRef(onConnectionChange);
-  
+
   // Update refs when callbacks change
   useEffect(() => {
     onNewNotificationRef.current = onNewNotification;
   }, [onNewNotification]);
-  
+
   useEffect(() => {
     onCountUpdateRef.current = onCountUpdate;
   }, [onCountUpdate]);
-  
+
   useEffect(() => {
     onConnectionChangeRef.current = onConnectionChange;
   }, [onConnectionChange]);
@@ -68,12 +67,10 @@ export function useWebSocket({
         ? '/notifications'
         : 'http://localhost:3001/notifications';
 
-    console.log('Connecting to WebSocket:', websocketUrl);
+    logger.debug('WebSocket connecting', { url: websocketUrl });
 
     const socket = io(websocketUrl, {
-      auth: {
-        token: token || 'mock-token', // In production, use real JWT token
-      },
+      withCredentials: true,
       transports: ['websocket', 'polling'],
       upgrade: true,
       autoConnect: true,
@@ -86,7 +83,7 @@ export function useWebSocket({
 
     // Connection events
     socket.on('connect', () => {
-      console.log('WebSocket connected:', socket.id);
+      logger.debug('WebSocket connected', { socketId: socket.id });
       setState((prev) => ({
         ...prev,
         connected: true,
@@ -97,7 +94,7 @@ export function useWebSocket({
     });
 
     socket.on('disconnect', (reason) => {
-      console.log('WebSocket disconnected:', reason);
+      logger.debug('WebSocket disconnected', { reason });
       setState((prev) => ({
         ...prev,
         connected: false,
@@ -107,7 +104,7 @@ export function useWebSocket({
     });
 
     socket.on('connect_error', (error) => {
-      console.error('WebSocket connection error:', error);
+      logger.error('WebSocket connection error', { error: error.message });
       setState((prev) => ({
         ...prev,
         connected: false,
@@ -118,34 +115,32 @@ export function useWebSocket({
 
     // Notification events
     socket.on('notification:new', (notification) => {
-      console.log('New notification received:', notification);
+      logger.debug('New notification received via WebSocket');
       onNewNotificationRef.current?.(notification);
       onCountUpdateRef.current?.();
     });
 
     socket.on('notification:count_updated', () => {
-      console.log('Notification count updated');
+      logger.debug('Notification count updated via WebSocket');
       onCountUpdateRef.current?.();
     });
 
     socket.on('notification_read', () => {
-      console.log('Notification marked as read');
       onCountUpdateRef.current?.();
     });
 
     socket.on('connection:confirmed', (data) => {
-      console.log('Connection confirmed:', data);
+      logger.debug('WebSocket connection confirmed', { userId: data.userId });
     });
 
     // Subscribe to notifications
     socket.emit('notification:subscribe');
 
     setState((prev) => ({ ...prev, socket }));
-  }, [enabled, userId, token]);
+  }, [enabled, userId]);
 
   const disconnect = useCallback(() => {
     if (socketRef.current) {
-      console.log('Disconnecting WebSocket');
       socketRef.current.disconnect();
       socketRef.current = null;
     }
@@ -169,9 +164,9 @@ export function useWebSocket({
 
     if (state.reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
       reconnectTimeoutRef.current = setTimeout(() => {
-        console.log(
-          `Attempting to reconnect (${state.reconnectAttempts + 1}/${MAX_RECONNECT_ATTEMPTS})`,
-        );
+        logger.debug('WebSocket reconnecting', {
+          attempt: `${state.reconnectAttempts + 1}/${MAX_RECONNECT_ATTEMPTS}`,
+        });
         connect();
       }, RECONNECT_DELAY);
     }
@@ -186,7 +181,7 @@ export function useWebSocket({
     return () => {
       disconnect();
     };
-  }, [enabled, userId, token, connect]);
+  }, [enabled, userId, connect]);
 
   // Cleanup on unmount only
   useEffect(() => {

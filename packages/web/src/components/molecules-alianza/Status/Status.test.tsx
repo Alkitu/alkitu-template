@@ -400,7 +400,7 @@ describe('Status - Molecule (Alianza)', () => {
         '--icon-size-md': '32px',
         '--space-3': '12px',
         '--radius-xs': '4px',
-      };
+      } as React.CSSProperties;
       render(<Status themeOverride={themeOverride} />);
       const status = screen.getByTestId('status');
 
@@ -475,7 +475,7 @@ describe('Status - Molecule (Alianza)', () => {
     });
 
     it('ref can be used to access DOM element', () => {
-      const ref = { current: null } as React.RefObject<HTMLDivElement>;
+      const ref = { current: null } as unknown as React.RefObject<HTMLDivElement>;
       render(<Status ref={ref} label="Test" />);
       expect(ref.current?.textContent).toContain('Test');
     });

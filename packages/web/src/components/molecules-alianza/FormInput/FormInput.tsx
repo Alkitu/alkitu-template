@@ -53,7 +53,7 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
         </label>
         <div
           className={cn(
-            "flex h-10 w-full rounded-md border bg-background px-3 items-center gap-2 ring-offset-background transition-colors relative",
+            "flex h-10 w-full rounded-[var(--radius-input)] border bg-background px-3 items-center gap-2 ring-offset-background transition-colors relative",
             error ? "border-destructive focus-within:ring-destructive" : "border-input focus-within:ring-primary",
             "focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2",
             props.disabled && "cursor-not-allowed opacity-50 bg-muted"

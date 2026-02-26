@@ -18,7 +18,7 @@ const mockPlaceholders: AvailablePlaceholders = {
   templateResponses: ['{{templateResponses.*}}'],
 };
 
-const mockTemplate: EmailTemplate = {
+const mockTemplate = {
   id: 'template-1',
   name: 'request_created_client',
   subject: 'Request #{{request.id}} Created',
@@ -26,9 +26,14 @@ const mockTemplate: EmailTemplate = {
   trigger: 'ON_REQUEST_CREATED',
   status: null,
   active: true,
+  category: 'transactional',
+  localizations: [],
+  defaultLocale: 'en',
+  variables: [],
+  isDefault: false,
   createdAt: new Date('2024-01-01'),
   updatedAt: new Date('2024-01-01'),
-};
+} as any as EmailTemplate;
 
 // Mock tRPC
 const mockCreateMutation = vi.fn();
@@ -62,7 +67,7 @@ vi.mock('@/components/molecules/placeholder-palette', () => ({
   }) => (
     <div data-testid="placeholder-palette">
       {Object.entries(placeholders).map(([category, items]) =>
-        items.map((placeholder) => (
+        items.map((placeholder: string) => (
           <button
             key={placeholder}
             onClick={() => onPlaceholderClick?.(placeholder)}
@@ -232,7 +237,7 @@ describe('EmailTemplateFormOrganism', () => {
       const templateWithStatus: EmailTemplate = {
         ...mockTemplate,
         trigger: 'ON_STATUS_CHANGED',
-        status: 'COMPLETED',
+        status: 'COMPLETED' as any,
       };
 
       render(<EmailTemplateFormOrganism initialData={templateWithStatus} />);
@@ -252,7 +257,7 @@ describe('EmailTemplateFormOrganism', () => {
       const templateWithStatus: EmailTemplate = {
         ...mockTemplate,
         trigger: 'ON_STATUS_CHANGED',
-        status: 'COMPLETED',
+        status: 'COMPLETED' as any,
       };
 
       render(<EmailTemplateFormOrganism initialData={templateWithStatus} />);

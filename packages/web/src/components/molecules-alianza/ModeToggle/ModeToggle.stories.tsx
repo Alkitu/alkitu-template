@@ -105,7 +105,7 @@ const meta = {
 } satisfies Meta<typeof ModeToggle>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = Omit<StoryObj<typeof meta>, 'args'> & Partial<Pick<StoryObj<typeof meta>, 'args'>>;
 
 /**
  * Default icon dropdown variant

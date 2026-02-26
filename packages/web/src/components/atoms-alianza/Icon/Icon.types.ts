@@ -56,7 +56,7 @@ export interface IconProps {
    * Accessibility - whether the icon is hidden from screen readers
    * Use true for decorative icons
    */
-  'aria-hidden'?: boolean;
+  'aria-hidden'?: boolean | string;
 
   /**
    * Theme variable overrides for custom styling

@@ -4,9 +4,3 @@ export {
   AlertDescription,
   AlertTitle,
 } from '@/components/primitives/ui/alert';
-
-export type {
-  AlertProps,
-  AlertDescriptionProps,
-  AlertTitleProps,
-} from '@/components/primitives/ui/alert';

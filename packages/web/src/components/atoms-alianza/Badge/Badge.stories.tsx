@@ -95,7 +95,7 @@ const meta = {
 } satisfies Meta<typeof Badge>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = Omit<StoryObj<typeof meta>, 'args'> & Partial<Pick<StoryObj<typeof meta>, 'args'>>;
 
 /**
  * Default badge with no special styling

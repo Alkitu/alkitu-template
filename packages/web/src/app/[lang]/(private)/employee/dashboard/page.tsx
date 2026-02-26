@@ -136,7 +136,7 @@ export default function EmployeeDashboardPage() {
 
       {/* Assigned Requests */}
       <RequestListOrganism
-        requests={assignedRequests as RequestItem[]}
+        requests={assignedRequests as unknown as RequestItem[]}
         isLoading={isLoading}
         baseHref={`/${lang}/employee/requests`}
         emptyMessage="No tienes solicitudes asignadas"

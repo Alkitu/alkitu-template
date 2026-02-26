@@ -123,7 +123,7 @@ const ColorSwatch = React.forwardRef<HTMLDivElement, ColorSwatchProps>(
       <div
         ref={ref}
         className={cn(
-          'group relative rounded-md border border-border shadow-sm transition-all duration-200',
+          'group relative rounded-[var(--radius)] border border-border shadow-sm transition-all duration-200',
           sizeClasses,
           onClick && 'cursor-pointer hover:scale-110 hover:shadow-md',
           enableCopy && 'cursor-pointer hover:ring-2 hover:ring-primary/20',
@@ -146,7 +146,7 @@ const ColorSwatch = React.forwardRef<HTMLDivElement, ColorSwatchProps>(
         {enableCopy && (
           <div
             className={cn(
-              'absolute inset-0 flex items-center justify-center rounded-md bg-black/50 opacity-0 transition-opacity duration-200',
+              'absolute inset-0 flex items-center justify-center rounded-[var(--radius)] bg-black/50 opacity-0 transition-opacity duration-200',
               'group-hover:opacity-100',
             )}
           >
@@ -310,7 +310,7 @@ export const ThemePreview = React.forwardRef<HTMLDivElement, ThemePreviewProps>(
                       <ColorSwatch
                         key={token.key}
                         name={token.name}
-                        value={token.value.hex}
+                        value={token.value.hex || '#000000'}
                         hexValue={token.value.hex}
                         oklchValue={token.value.oklchString}
                         enableCopy={enableCopy}
@@ -329,7 +329,7 @@ export const ThemePreview = React.forwardRef<HTMLDivElement, ThemePreviewProps>(
                       >
                         <ColorSwatch
                           name={token.name}
-                          value={token.value.hex}
+                          value={token.value.hex || '#000000'}
                           hexValue={token.value.hex}
                           oklchValue={token.value.oklchString}
                           enableCopy={enableCopy}

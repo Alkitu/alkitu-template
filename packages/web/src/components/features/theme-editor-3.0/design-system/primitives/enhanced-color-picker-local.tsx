@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { Label } from "../design-system/primitives/label";
-import { Input } from "../design-system/primitives/input";
-import { Button } from "../design-system/primitives/button";
+import { Label } from "./label";
+import { Input } from "./input";
+import { Button } from "./Button";
 import { ColorSelectorPopover } from './color-selector-popover';
 import { cn } from '@/lib/utils';
 import { oklchToHex, hexToOklch } from '@/lib/themeUtils';
@@ -128,7 +128,7 @@ export function EnhancedColorPicker({
         {/* Tailwind Color Selector */}
         <ColorSelectorPopover
           currentColor={displayColor}
-          onChange={(newColor) => {
+          onChange={(newColor: string) => {
             const oklchValue = newColor.replace(/oklch\((.+)\)/, '$1');
             onChange(oklchValue);
           }}

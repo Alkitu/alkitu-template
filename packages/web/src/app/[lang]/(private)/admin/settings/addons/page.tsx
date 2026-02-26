@@ -88,11 +88,30 @@ const featureImpact: Record<string, {
       { name: 'Chips de Variables', location: 'Pagina de Email Templates', status: 'visible' },
     ],
   },
+  'media-manager': {
+    sidebarItems: [
+      { name: 'Media Manager', url: '/admin/media', status: 'visible' },
+    ],
+    pages: [
+      { name: 'Explorador de archivos', url: '/admin/media', status: 'enabled' },
+    ],
+    components: [
+      { name: 'MediaBrowser', location: 'Media Manager page', status: 'visible' },
+      { name: 'FolderBreadcrumb', location: 'Media Manager page', status: 'visible' },
+      { name: 'FileGrid', location: 'Media Manager page', status: 'visible' },
+    ],
+  },
+  'file-upload': {
+    components: [
+      { name: 'EnhancedDropZone', location: 'Media Manager & custom pages', status: 'visible' },
+      { name: 'DirectFileUploadManager', location: 'Custom pages', status: 'visible' },
+    ],
+  },
 };
 
 export default function AddonsPage() {
   const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({});
-  const { data: features, isLoading, refetch } = trpc.featureFlags.getAll.useQuery();
+  const { data: features, isLoading, refetch } = trpc.featureFlags.getAll.useQuery() as { data: any[] | undefined; isLoading: boolean; refetch: () => void };
   const toggleMutation = trpc.featureFlags.toggle.useMutation();
 
   const handleToggle = async (key: string, currentlyEnabled: boolean) => {

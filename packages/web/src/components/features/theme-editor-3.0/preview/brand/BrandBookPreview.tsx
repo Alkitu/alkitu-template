@@ -4,7 +4,7 @@ import React from 'react';
 import { Card } from '../../design-system/primitives/card';
 import { Badge } from '../../design-system/primitives/badge';
 import { BookOpen, Download, Copy, Check } from 'lucide-react';
-import { Button } from '../../design-system/primitives/button';
+import { Button } from '../../design-system/primitives/Button';
 import { LogoVariant, LOGO_SIZE_MAP, LogoSize } from '../../theme-editor/editor/brand/types';
 import { useThemeEditor } from '../../core/context/ThemeEditorContext';
 
@@ -176,7 +176,7 @@ export function BrandBookPreview({
             {/* COLOR_VARIANTS_STACK */}
             <div className="flex flex-col gap-6">
               {(['original', 'white', 'black', 'gray'] as const).map((variantKey) => {
-                const svgContent = logo.variants[variantKey];
+                const svgContent = logo.variants?.[variantKey];
                 if (!svgContent) return null;
                 return (
                 <div key={`${logo.id}-${variantKey}`} className="space-y-4">
@@ -260,7 +260,7 @@ export function BrandBookPreview({
                         boxShadow: shadows?.shadowSm || 'var(--shadow-sm)' // Small shadow for nested elements
                       }}
                     >
-                      {(['xs', 'sm', 'md', 'lg'] as LogoSize[]).map((size) => (
+                      {(['xs', 'sm', 'md', 'lg'] as unknown as LogoSize[]).map((size) => (
                         <div key={size} className="flex flex-col items-center gap-1">
                           <div className="svg-container flex items-center justify-center">
                             <div 

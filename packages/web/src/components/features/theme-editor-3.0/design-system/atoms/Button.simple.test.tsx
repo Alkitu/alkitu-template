@@ -67,14 +67,14 @@ describe('Button Component Structure', () => {
   });
 
   it('should extend HTML button attributes', () => {
-    const props: ButtonProps = {
+    const props = {
       disabled: true,
       onClick: vi.fn(),
       className: 'test-class',
       style: { color: 'red' },
       'data-testid': 'button-test',
-      type: 'button'
-    };
+      type: 'button',
+    } as ButtonProps & { 'data-testid': string };
 
     expect(props.disabled).toBe(true);
     expect(props.onClick).toBeTypeOf('function');

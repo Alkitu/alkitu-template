@@ -82,6 +82,7 @@ export const Icon = React.forwardRef<HTMLElement, IconProps>(
       role,
       tabIndex,
       'data-testid': dataTestId,
+      position: _position,
       ...props
     },
     ref
@@ -98,10 +99,9 @@ export const Icon = React.forwardRef<HTMLElement, IconProps>(
           color={color}
           className={cn(variantClass, 'animate-spin', className)}
           aria-label={ariaLabel || 'Loading'}
-          aria-hidden={ariaHidden}
+          aria-hidden={ariaHidden as boolean | undefined}
           data-testid={dataTestId}
           style={themeOverride}
-          {...props}
         />
       );
     }
@@ -139,7 +139,7 @@ export const Icon = React.forwardRef<HTMLElement, IconProps>(
     if (onClick) {
       return (
         <span
-          ref={ref}
+          ref={ref as any}
           role={role || 'button'}
           tabIndex={tabIndex !== undefined ? tabIndex : 0}
           onClick={onClick}
@@ -150,16 +150,15 @@ export const Icon = React.forwardRef<HTMLElement, IconProps>(
             }
           }}
           aria-label={ariaLabel || name}
-          aria-hidden={ariaHidden}
+          aria-hidden={ariaHidden as boolean | undefined}
           data-testid={dataTestId}
-          className="inline-flex items-center justify-center outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+          className="inline-flex items-center justify-center outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-[var(--radius-tooltip)]"
         >
           <LucideIcon
             size={iconSize}
             color={color}
             className={composedClassName}
             style={themeOverride}
-            {...props}
           />
         </span>
       );
@@ -172,11 +171,10 @@ export const Icon = React.forwardRef<HTMLElement, IconProps>(
         color={color}
         className={composedClassName}
         aria-label={ariaLabel || name}
-        aria-hidden={ariaHidden}
+        aria-hidden={ariaHidden as boolean | undefined}
         role={role}
         data-testid={dataTestId}
         style={themeOverride}
-        {...props}
       />
     );
   }

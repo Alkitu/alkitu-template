@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Icon } from '../../atoms-alianza/Icon';
+import { ChevronDown, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   DropdownMenu,
@@ -8,20 +8,6 @@ import {
   DropdownMenuTrigger,
 } from "../../primitives/ui/dropdown-menu";
 import type { EmployeeAssignmentButtonProps, Employee } from './EmployeeAssignmentButton.types';
-
-const ICONS = {
-  chevron: {
-    viewBox: "0 0 14 8",
-    path: "M0.665 0.665L6.665 6.665L12.665 0.665"
-  },
-  user: {
-    viewBox: "0 0 10 12",
-    paths: [
-      "M8.88862 10.6646V9.55348C8.88862 8.96411 8.65449 8.39888 8.23774 7.98213C7.821 7.56539 7.25577 7.33126 6.6664 7.33126H3.33306C2.74369 7.33126 2.17846 7.56539 1.76171 7.98213C1.34497 8.39888 1.11084 8.96411 1.11084 9.55348V10.6646",
-      "M5.00054 5.10944C6.22784 5.10944 7.22276 4.11452 7.22276 2.88722C7.22276 1.65992 6.22784 0.665 5.00054 0.665C3.77324 0.665 2.77832 1.65992 2.77832 2.88722C2.77832 4.11452 3.77324 5.10944 5.00054 5.10944Z"
-    ]
-  }
-};
 
 export function EmployeeAssignmentButton({
   options = ["Alejandro G.", "Maria P.", "Juan R.", "Sofia L."],
@@ -91,33 +77,24 @@ export function EmployeeAssignmentButton({
               <p className="body-sm text-base-foreground-b whitespace-nowrap">
                 Asignado a <span className="text-primary-1">{assignedTo}</span>
               </p>
-              <Icon
-                paths={[ICONS.chevron.path]}
-                viewBox={ICONS.chevron.viewBox}
+              <ChevronDown
                 className={cn("size-[var(--icon-size-xs)] shrink-0 transition-transform duration-200", isOpen && "rotate-180")}
-                strokeWidth="1.33"
-                color="currentColor"
+                strokeWidth={1.33}
               />
             </>
           ) : (
             // Unassigned State
             <>
-              <Icon
-                paths={ICONS.user.paths}
-                viewBox={ICONS.user.viewBox}
+              <User
                 className="size-[var(--icon-size-sm)] shrink-0"
-                strokeWidth="1.33"
-                color="currentColor"
+                strokeWidth={1.33}
               />
               <span className="body-sm whitespace-nowrap">
                 {placeholder}
               </span>
-              <Icon
-                paths={[ICONS.chevron.path]}
-                viewBox={ICONS.chevron.viewBox}
+              <ChevronDown
                 className={cn("size-[var(--icon-size-xs)] shrink-0 transition-transform duration-200", isOpen && "rotate-180")}
-                strokeWidth="1.33"
-                color="currentColor"
+                strokeWidth={1.33}
               />
             </>
           )}

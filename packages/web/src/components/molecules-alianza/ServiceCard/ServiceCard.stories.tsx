@@ -127,7 +127,7 @@ ServiceCard displays service information in a card format with optional actions.
 } satisfies Meta<typeof ServiceCard>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = Omit<StoryObj<typeof meta>, 'args'> & Partial<Pick<StoryObj<typeof meta>, 'args'>>;
 
 // Default Story
 export const Default: Story = {

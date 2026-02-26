@@ -37,7 +37,7 @@ export function LocationColorPicker({
   // Handle color changes from the HsvColorPicker
   const handleColorChange = useCallback(
     (newToken: ColorToken) => {
-      onChange(newToken.hex);
+      onChange(newToken.hex || '');
     },
     [onChange],
   );

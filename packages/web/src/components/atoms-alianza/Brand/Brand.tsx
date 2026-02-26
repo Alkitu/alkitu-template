@@ -206,7 +206,7 @@ export const Brand: React.FC<BrandProps> = ({
       <div 
         className={cn(
           sizeConfig.logo,
-          'rounded-md flex items-center justify-center font-bold',
+          'rounded-[var(--radius)] flex items-center justify-center font-bold',
           sizeConfig.text,
           // Use system classes when no custom colors
           !iconBackgroundColor || useSystemColors ? 'bg-primary' : '',
@@ -214,11 +214,11 @@ export const Brand: React.FC<BrandProps> = ({
         )}
         style={{ ...backgroundStyle, ...scaledStyle }}
       >
-        <Icon 
-          name="zap" 
-          size="sm" 
-          className="text-current" 
-          style={iconStyle}
+        <Icon
+          name="zap"
+          size="sm"
+          className="text-current"
+          themeOverride={iconStyle}
         />
       </div>
     );
@@ -237,8 +237,6 @@ export const Brand: React.FC<BrandProps> = ({
       if (primaryTextColor.includes('%')) {
         // OKLCH format: "50% 0.2 180"
         return {
-          color: `oklch(${primaryTextColor})`,
-          // Add CSS custom property for dark mode
           '--brand-primary-light': `oklch(${primaryTextColor})`,
           '--brand-primary-dark': `oklch(85% 0.15 ${primaryTextColor.split(' ')[2] || '0'})`,
           color: 'var(--brand-primary-light)',
@@ -257,8 +255,6 @@ export const Brand: React.FC<BrandProps> = ({
       if (secondaryTextColor.includes('%')) {
         // OKLCH format: "50% 0.2 180"
         return {
-          color: `oklch(${secondaryTextColor})`,
-          // Add CSS custom property for dark mode
           '--brand-secondary-light': `oklch(${secondaryTextColor})`,
           '--brand-secondary-dark': `oklch(70% 0.1 ${secondaryTextColor.split(' ')[2] || '0'})`,
           color: 'var(--brand-secondary-light)',
@@ -338,7 +334,7 @@ export const Brand: React.FC<BrandProps> = ({
       border: 'none',
       background: 'transparent',
       font: 'inherit',
-      textAlign: 'inherit'
+      textAlign: 'inherit' as const
     })
   };
 

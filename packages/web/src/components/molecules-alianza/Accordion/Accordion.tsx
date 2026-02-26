@@ -100,7 +100,7 @@ export const Accordion = React.forwardRef<HTMLDivElement, AccordionProps>(
         // Base styles
         'flex w-full items-center justify-between gap-3 text-left transition-all duration-300 ease-out',
         'min-h-[44px]', // Minimum touch target
-        'rounded-lg',
+        'rounded-[var(--radius-card)]',
 
         // Padding based on variant
         variant === 'minimal' ? 'px-0 py-3' : 'px-4 py-3',
@@ -146,11 +146,13 @@ export const Accordion = React.forwardRef<HTMLDivElement, AccordionProps>(
     return (
       <div ref={ref} className={containerClasses} data-testid="accordion">
         <AccordionPrimitive.Root
-          type={accordionType}
-          value={accordionValue}
-          onValueChange={handleValueChange}
-          collapsible={collapsible}
-          className="w-full"
+          {...({
+            type: accordionType,
+            value: accordionValue,
+            onValueChange: handleValueChange,
+            collapsible,
+            className: 'w-full',
+          } as any)}
         >
           {items.map((item, index) => {
             const isOpen = openItems.includes(item.id);

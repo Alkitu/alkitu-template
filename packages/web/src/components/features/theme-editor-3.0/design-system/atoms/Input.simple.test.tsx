@@ -84,18 +84,18 @@ describe('Input Component Structure', () => {
   });
 
   it('should extend HTML input attributes', () => {
-    const props: InputProps = {
+    const props = {
       disabled: true,
       onChange: vi.fn(),
       className: 'test-class',
       style: { width: '100px' },
       placeholder: 'Enter text',
-      type: 'text',
+      type: 'text' as const,
       value: 'test value',
       name: 'test-input',
       id: 'input-id',
-      'data-testid': 'input-test'
-    };
+      'data-testid': 'input-test',
+    } as InputProps & { 'data-testid': string };
 
     expect(props.disabled).toBe(true);
     expect(props.onChange).toBeTypeOf('function');

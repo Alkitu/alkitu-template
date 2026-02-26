@@ -174,7 +174,7 @@ export const ModeToggle = React.forwardRef<HTMLDivElement, ModeToggleProps>(
     }
 
     // Button group variant
-    const buttonClasses = cn('gap-1 p-1 bg-muted rounded-md', className);
+    const buttonClasses = cn('gap-1 p-1 bg-muted rounded-[var(--radius-button)]', className);
 
     return (
       <div

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Moon, Sun } from 'lucide-react';
 import { useGlobalTheme } from '@/hooks/useGlobalTheme';
+import type { ThemeToggleProps } from './ThemeToggle.types';
 
 /**
  * ThemeToggle - Botón circular para cambiar entre modo claro y oscuro
@@ -19,7 +20,7 @@ import { useGlobalTheme } from '@/hooks/useGlobalTheme';
  * <ThemeToggle />
  * ```
  */
-export function ThemeToggle() {
+export function ThemeToggle({ onThemeChange }: ThemeToggleProps = {}) {
   const { state, setThemeMode } = useGlobalTheme();
   const [mounted, setMounted] = useState(false);
   const isDark = state.themeMode === 'dark';
@@ -43,6 +44,7 @@ export function ThemeToggle() {
   const toggleTheme = () => {
     const newMode = isDark ? 'light' : 'dark';
     setThemeMode(newMode);
+    onThemeChange?.(newMode);
   };
 
   // Prevenir renderizado hasta que el componente esté montado en el cliente

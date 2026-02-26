@@ -41,6 +41,8 @@ export interface CardMoleculeProps {
   disabled?: boolean;
   href?: string;
   target?: '_blank' | '_self';
+  children?: React.ReactNode;
+  onClick?: (e: React.MouseEvent) => void;
 }
 
 /**
@@ -66,7 +68,9 @@ export function CardMolecule({
   loading = false,
   disabled = false,
   href,
-  target = '_self'
+  target = '_self',
+  children,
+  onClick
 }: CardMoleculeProps) {
   const { state } = useThemeEditor();
   
@@ -137,7 +141,7 @@ export function CardMolecule({
   const wrapperProps = href ? { href, target, rel: target === '_blank' ? 'noopener noreferrer' : undefined } : {};
 
   return (
-    <CardWrapper {...wrapperProps} className={className} style={{ textDecoration: 'none' }}>
+    <CardWrapper {...wrapperProps} className={className} style={{ textDecoration: 'none' }} onClick={onClick}>
       <Card 
         className={`text-foreground max-sm:mx-2 max-sm:max-w-[calc(100vw-1rem)] ${variant === 'interactive' ? 'hover:shadow-lg hover:scale-[1.02] transition-all duration-300' : ''}`}
         style={getVariantStyles()}
@@ -278,8 +282,8 @@ export function CardMolecule({
         )}
 
         {/* Content Section */}
-        {content && (
-          <CardContent className="text-foreground" style={{ 
+        {(content || children) && (
+          <CardContent className="text-foreground" style={{
             padding: smallSpacing,
             paddingTop: (title || description) ? 0 : smallSpacing
           }}>
@@ -289,6 +293,7 @@ export function CardMolecule({
               color: colors?.foreground?.value || 'var(--color-foreground)'
             }}>
               {content}
+              {children}
             </div>
           </CardContent>
         )}

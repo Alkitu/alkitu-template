@@ -35,7 +35,7 @@ const meta = {
     },
     supportedLocales: {
       description: 'List of supported locales',
-      control: { type: 'array' },
+      control: { type: 'object' },
     },
     defaultLocale: {
       description: 'Default locale',
@@ -58,7 +58,7 @@ const meta = {
 } satisfies Meta<typeof TextFieldEditor>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = Omit<StoryObj<typeof meta>, 'args'> & Partial<Pick<StoryObj<typeof meta>, 'args'>>;
 
 // ============================================================================
 // TEXT FIELD STORIES

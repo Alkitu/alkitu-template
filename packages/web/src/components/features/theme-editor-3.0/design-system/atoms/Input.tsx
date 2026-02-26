@@ -12,6 +12,8 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
   showPasswordToggle?: boolean;
+  /** Optional label text (not rendered by Input, used by form builders) */
+  label?: string;
   // Accessibility props (NEW - additive only)
   'aria-label'?: string;
   'aria-describedby'?: string;
@@ -20,16 +22,17 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
 }
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ 
-    className = '', 
-    variant = 'default', 
-    inputSize = 'default', 
+  ({
+    className = '',
+    variant = 'default',
+    inputSize = 'default',
     isInvalid = false,
     isValid = false,
     isWarning = false,
     leftIcon,
     rightIcon,
     showPasswordToggle = false,
+    label: _label,
     type,
     style,
     ...props 
@@ -193,7 +196,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
               : isValid
               ? 'var(--colors-success, #16A34A)'
               : 'var(--colors-primary, #0066CC)',
-          }}
+          } as React.CSSProperties}
           // Enhanced focus handlers (additive enhancement)
           onFocus={(e) => {
             // Enhanced focus ring for accessibility
@@ -241,7 +244,7 @@ export const MemoizedInput = React.memo(Input, (prevProps, nextProps) => {
 
   // Verificar cambios en props críticas
   for (const prop of criticalProps) {
-    if (prevProps[prop] !== nextProps[prop]) return false;
+    if ((prevProps as Record<string, unknown>)[prop] !== (nextProps as Record<string, unknown>)[prop]) return false;
   }
 
   // Verificar cambios en iconos (pueden ser ReactNode complejos)

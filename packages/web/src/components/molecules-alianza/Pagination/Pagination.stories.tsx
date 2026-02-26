@@ -54,10 +54,13 @@ const meta = {
       description: 'Number of page buttons to show at start and end',
     },
   },
+  args: {
+    onPageChange: () => {},
+  },
 } satisfies Meta<typeof Pagination>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = Omit<StoryObj<typeof meta>, 'args'> & Partial<Pick<StoryObj<typeof meta>, 'args'>>;
 
 // Interactive wrapper for stories
 const InteractivePagination = (args: any) => {

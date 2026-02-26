@@ -146,24 +146,23 @@ export function CalendarOrganism({
       {/* Calendar Content */}
       <CardContent style={{ padding: mediumSpacing, paddingTop: showHeader ? '0' : mediumSpacing }}>
         <div className="flex justify-center">
-          <Calendar
-            mode={mode as any}
-            selected={
-              mode === 'single' ? selectedDate : 
+          {/* DayPicker v9 mode/props type mismatch with dynamic mode - cast props to any */}
+          {React.createElement(Calendar as any, {
+            mode: mode,
+            selected: mode === 'single' ? selectedDate :
               mode === 'multiple' ? selectedDates :
-              selectedRange
-            }
-            onSelect={handleSelect as any}
-            className="rounded-md border-0"
-            style={{
+              selectedRange,
+            onSelect: handleSelect,
+            className: "rounded-md border-0",
+            style: {
               '--calendar-bg': colors?.background?.value || 'var(--color-background)',
               '--calendar-border': colors?.border?.value || 'var(--color-border)',
               '--calendar-selected': colors?.primary?.value || 'var(--color-primary)',
               '--calendar-selected-text': colors?.primaryForeground?.value || 'var(--color-primary-foreground)',
               '--calendar-hover': `${colors?.accent?.value || 'var(--color-accent)'}80`,
               width: '100%'
-            } as React.CSSProperties}
-          />
+            } as React.CSSProperties
+          })}
         </div>
 
         {/* Selection Info */}

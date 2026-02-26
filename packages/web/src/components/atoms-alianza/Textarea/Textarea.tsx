@@ -69,7 +69,7 @@ const stateClasses: Record<TextareaState, string> = {
 
 // Base classes applied to all textareas
 const baseClasses =
-  'flex w-full rounded-md border transition-colors ' +
+  'flex w-full rounded-[var(--radius-input)] border transition-colors ' +
   'placeholder:text-muted-foreground ' +
   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ' +
   'disabled:cursor-not-allowed disabled:opacity-50';

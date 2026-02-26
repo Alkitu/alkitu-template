@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
 import type { UserAvatarProps } from './UserAvatar.types';
 
@@ -9,27 +9,30 @@ const sizeClasses = {
 };
 
 /**
- * UserAvatar - Molecule for displaying user avatar with initials
+ * UserAvatar - Molecule for displaying user avatar with initials or image
  *
  * Displays initials in a golden/amber circle following the Alianza design.
- * Generates initials from first letter of name and last name.
+ * When imageUrl is provided, shows the image instead of initials.
+ * Falls back to initials if the image fails to load.
  *
  * @example
  * ```tsx
  * <UserAvatar name="Ana" lastName="Martínez" />
- * <UserAvatar name="Luis Gómez" size="lg" />
+ * <UserAvatar name="Luis" imageUrl="https://..." size="lg" />
  * ```
  */
 export function UserAvatar({
   name,
   lastName,
+  imageUrl,
   size = 'md',
   className,
   themeOverride
 }: UserAvatarProps) {
+  const [imgError, setImgError] = useState(false);
+
   // Generate initials
   const getInitials = (): string => {
-    // Split by whitespace (handles multiple spaces) and filter out empty strings
     const nameParts = name.trim().split(/\s+/).filter(Boolean);
     const firstName = nameParts[0] || '';
     const lastNamePart = lastName?.trim() || nameParts[1] || '';
@@ -40,10 +43,12 @@ export function UserAvatar({
     return `${firstInitial}${lastInitial}`.slice(0, 2);
   };
 
+  const showImage = imageUrl && !imgError;
+
   return (
     <div
       className={cn(
-        "flex items-center justify-center rounded-full",
+        "flex items-center justify-center rounded-full overflow-hidden",
         "bg-primary text-primary-foreground font-semibold",
         "shrink-0",
         sizeClasses[size],
@@ -51,7 +56,16 @@ export function UserAvatar({
       )}
       style={themeOverride}
     >
-      {getInitials()}
+      {showImage ? (
+        <img
+          src={imageUrl}
+          alt={`${name}${lastName ? ` ${lastName}` : ''}`}
+          className="h-full w-full object-cover"
+          onError={() => setImgError(true)}
+        />
+      ) : (
+        getInitials()
+      )}
     </div>
   );
 }

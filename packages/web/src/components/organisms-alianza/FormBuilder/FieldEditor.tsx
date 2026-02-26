@@ -243,7 +243,7 @@ export function FieldEditor({ field, isOpen, onClose, onSave }: FieldEditorProps
                   <Button
                     type="button"
                     variant="ghost"
-                    size="icon"
+                    size="sm"
                     onClick={() => removeOption(index)}
                     className="mt-1"
                   >

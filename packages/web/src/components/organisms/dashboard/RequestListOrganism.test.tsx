@@ -11,7 +11,7 @@ vi.mock('next/link', () => ({
 }));
 
 describe('RequestListOrganism', () => {
-  const mockRequests = [
+  const mockRequests: any[] = [
     {
       id: 'req-1',
       title: 'Fix broken pipe in bathroom',
@@ -169,7 +169,7 @@ describe('RequestListOrganism', () => {
   });
 
   it('should handle requests without client information', () => {
-    const requestsNoClient = [
+    const requestsNoClient: any[] = [
       {
         id: 'req-1',
         title: 'Test Request',
@@ -205,7 +205,7 @@ describe('RequestListOrganism', () => {
   });
 
   it('should truncate long request titles', () => {
-    const longTitleRequests = [
+    const longTitleRequests: any[] = [
       {
         id: 'req-1',
         title: 'This is a very long request title that should be truncated in the UI to prevent layout issues',

@@ -2,17 +2,17 @@
 
 import React from 'react';
 import { Badge } from '../../../design-system/primitives/badge';
-import { ThemeMode } from '../../../core/types/theme.types';
+import type { ThemeMode as ThemeModeType } from '../../../core/types/theme.types';
 import { ModeToggle } from './ModeToggle';
 
 interface ThemeModeProps {
-  mode: ThemeMode;
-  onModeChange: (mode: ThemeMode) => void;
+  mode: ThemeModeType;
+  onModeChange: (mode: ThemeModeType) => void;
   showLabel?: boolean;
   className?: string;
 }
 
-export function ThemeMode({ 
+export function ThemeMode({
   mode, 
   onModeChange, 
   showLabel = true,

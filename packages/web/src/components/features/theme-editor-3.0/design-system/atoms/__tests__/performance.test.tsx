@@ -73,7 +73,7 @@ describe('Performance Optimizations - ETAPA 3', () => {
         const memoizedButton = React.createElement(MemoizedButton, props);
 
         Object.keys(props).forEach(key => {
-          expect(memoizedButton.props[key]).toBe(props[key as keyof typeof props]);
+          expect((memoizedButton.props as any)[key]).toBe(props[key as keyof typeof props]);
         });
       });
     });

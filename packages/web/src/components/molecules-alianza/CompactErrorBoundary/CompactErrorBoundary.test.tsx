@@ -150,7 +150,7 @@ describe('CompactErrorBoundary - Molecule', () => {
 
     it('hides error details when showErrorDetails is false', () => {
       const originalEnv = process.env.NODE_ENV;
-      process.env.NODE_ENV = 'development';
+      (process.env as any).NODE_ENV = 'development';
 
       render(
         <CompactErrorBoundary showErrorDetails={false}>
@@ -160,7 +160,7 @@ describe('CompactErrorBoundary - Molecule', () => {
 
       expect(screen.queryByTestId('error-details')).not.toBeInTheDocument();
 
-      process.env.NODE_ENV = originalEnv;
+      (process.env as any).NODE_ENV = originalEnv;
     });
   });
 
@@ -341,7 +341,7 @@ describe('CompactErrorBoundary - Molecule', () => {
     const originalEnv = process.env.NODE_ENV;
 
     it('shows error details in development mode', () => {
-      process.env.NODE_ENV = 'development';
+      (process.env as any).NODE_ENV = 'development';
 
       render(
         <CompactErrorBoundary>
@@ -352,11 +352,11 @@ describe('CompactErrorBoundary - Molecule', () => {
       expect(screen.getByTestId('error-details')).toBeInTheDocument();
       expect(screen.getByText(/error details/i)).toBeInTheDocument();
 
-      process.env.NODE_ENV = originalEnv;
+      (process.env as any).NODE_ENV = originalEnv;
     });
 
     it('error details contain error message', () => {
-      process.env.NODE_ENV = 'development';
+      (process.env as any).NODE_ENV = 'development';
 
       render(
         <CompactErrorBoundary>
@@ -367,11 +367,11 @@ describe('CompactErrorBoundary - Molecule', () => {
       const details = screen.getByText(/test error message/i);
       expect(details).toBeInTheDocument();
 
-      process.env.NODE_ENV = originalEnv;
+      (process.env as any).NODE_ENV = originalEnv;
     });
 
     it('error details are expandable', () => {
-      process.env.NODE_ENV = 'development';
+      (process.env as any).NODE_ENV = 'development';
 
       const { container } = render(
         <CompactErrorBoundary>
@@ -382,11 +382,11 @@ describe('CompactErrorBoundary - Molecule', () => {
       const details = container.querySelector('details');
       expect(details).toBeInTheDocument();
 
-      process.env.NODE_ENV = originalEnv;
+      (process.env as any).NODE_ENV = originalEnv;
     });
 
     it('does not show error details in production', () => {
-      process.env.NODE_ENV = 'production';
+      (process.env as any).NODE_ENV = 'production';
 
       render(
         <CompactErrorBoundary>
@@ -396,7 +396,7 @@ describe('CompactErrorBoundary - Molecule', () => {
 
       expect(screen.queryByTestId('error-details')).not.toBeInTheDocument();
 
-      process.env.NODE_ENV = originalEnv;
+      (process.env as any).NODE_ENV = originalEnv;
     });
   });
 
@@ -488,7 +488,7 @@ describe('CompactErrorBoundary - Molecule', () => {
         throw new Error('A'.repeat(500));
       };
 
-      process.env.NODE_ENV = 'development';
+      (process.env as any).NODE_ENV = 'development';
 
       render(
         <CompactErrorBoundary>
@@ -536,7 +536,7 @@ describe('CompactErrorBoundary - Molecule', () => {
         throw new Error('Error: <script>alert("xss")</script>');
       };
 
-      process.env.NODE_ENV = 'development';
+      (process.env as any).NODE_ENV = 'development';
 
       render(
         <CompactErrorBoundary>
@@ -650,7 +650,7 @@ describe('CompactErrorBoundary - Molecule', () => {
     });
 
     it('shows stack trace in development', () => {
-      process.env.NODE_ENV = 'development';
+      (process.env as any).NODE_ENV = 'development';
 
       render(
         <CompactErrorBoundary>

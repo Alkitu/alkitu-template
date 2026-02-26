@@ -169,7 +169,7 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(
       'inline-flex items-center justify-center',
       'min-w-10 h-10 px-3',
       'text-sm font-medium',
-      'rounded-md',
+      'rounded-[var(--radius)]',
       'border border-input',
       'bg-background text-foreground',
       'transition-all duration-200',
@@ -212,7 +212,7 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(
                 'inline-flex items-center justify-center',
                 'min-w-[90px] px-4 py-2',
                 'text-sm font-semibold',
-                'rounded-md',
+                'rounded-[var(--radius)]',
                 'bg-primary/10 text-primary',
                 'border border-primary/40',
                 'backdrop-blur-sm',
@@ -263,7 +263,7 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(
                 className={cn(
                   'inline-flex items-center justify-center',
                   'px-4 py-2 text-sm',
-                  'rounded-md',
+                  'rounded-[var(--radius)]',
                   'bg-accent/30 text-foreground',
                   'border border-border/40',
                   'backdrop-blur-sm',
@@ -302,7 +302,7 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(
             className={cn(
               'px-4 py-2 text-sm font-medium',
               'text-center text-muted-foreground',
-              'rounded-md',
+              'rounded-[var(--radius)]',
               'bg-accent/30 border border-border/40',
               'backdrop-blur-sm',
             )}
@@ -416,7 +416,7 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(
               disabled={disabled}
               className={cn(
                 'px-3 py-1.5 text-sm',
-                'rounded-md',
+                'rounded-[var(--radius)]',
                 'border border-input',
                 'bg-background text-foreground',
                 'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
@@ -441,7 +441,7 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(
               className={cn(
                 'inline-flex items-center justify-center',
                 'px-3 py-1 text-xs font-medium',
-                'rounded-md',
+                'rounded-[var(--radius)]',
                 'border border-border',
                 'bg-background text-foreground',
               )}
@@ -452,7 +452,7 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(
               className={cn(
                 'inline-flex items-center justify-center',
                 'px-3 py-1 text-xs font-medium',
-                'rounded-md',
+                'rounded-[var(--radius)]',
                 'border border-border',
                 'bg-background text-foreground',
               )}

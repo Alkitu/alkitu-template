@@ -16,23 +16,23 @@ export * from './popover-local';
 export * from './tabs-local';
 
 // Form components
-export * from './textarea-local';
+export * from './textarea';
 export * from './slider-local';
 export * from './switch-local';
 export * from './progress-local';
-export * from './radio-group-local';
-export * from './toggle-local';
-export * from './toggle-group-local';
+export * from './radio-group';
+export * from './toggle';
+export * from './toggle-group';
 
 // Layout components
-export * from './table-local';
+export * from './table';
 export * from './separator-local';
-export * from './skeleton-local';
+export * from './skeleton';
 
 // Interactive components
 export * from './tooltip-local';
-export * from './dropdown-menu-local';
-export * from './context-menu-local';
+export * from './dropdown-menu';
+export * from './context-menu';
 export * from './command-local';
 
 // Toast system (Sonner only)
@@ -40,4 +40,4 @@ export * from './sonner';
 
 // Color pickers
 export * from './enhanced-color-picker-local';
-export * from './simple-color-picker-local';
+export * from './simple-color-picker';

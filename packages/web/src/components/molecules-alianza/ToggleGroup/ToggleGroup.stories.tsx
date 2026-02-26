@@ -80,7 +80,7 @@ ToggleGroup is a molecule component for creating groups of toggle buttons with s
 } satisfies Meta<typeof ToggleGroup>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = Omit<StoryObj<typeof meta>, 'args'> & Partial<Pick<StoryObj<typeof meta>, 'args'>>;
 
 // Text alignment items
 const textAlignItems: ToggleGroupItem[] = [
@@ -165,6 +165,7 @@ export const ControlledSingle: Story = {
     );
   },
   args: {
+    items: textAlignItems,
     'aria-label': 'Text alignment',
   },
 };
@@ -192,6 +193,7 @@ export const ControlledMultiple: Story = {
     );
   },
   args: {
+    items: formatItems,
     'aria-label': 'Text formatting',
   },
 };
@@ -333,6 +335,7 @@ export const TextAlignmentToolbar: Story = {
     );
   },
   args: {
+    items: textAlignItems,
     'aria-label': 'Text alignment',
   },
 };
@@ -383,6 +386,7 @@ export const ViewModeSwitcher: Story = {
     );
   },
   args: {
+    items: viewModeItems,
     'aria-label': 'View mode',
   },
 };
@@ -435,6 +439,7 @@ export const FilterOptions: Story = {
     );
   },
   args: {
+    items: filterItems,
     'aria-label': 'Status filter',
   },
 };

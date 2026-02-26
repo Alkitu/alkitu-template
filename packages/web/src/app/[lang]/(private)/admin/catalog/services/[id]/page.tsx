@@ -39,6 +39,7 @@ interface BasicServiceData {
   isActive: boolean;
   thumbnail: string;
   iconColor: string;
+  code: string;
 }
 
 /** Recursively count actual question fields (not groups) */
@@ -73,6 +74,7 @@ export default function EditServicePage() {
     isActive: true,
     thumbnail: '',
     iconColor: '#000000',
+    code: '',
   });
   const [formSettings, setFormSettings] = useState<FormSettings>(defaultFormSettings);
   const [formTemplateId, setFormTemplateId] = useState<string | null>(null);
@@ -105,6 +107,7 @@ export default function EditServicePage() {
         isActive: !service.deletedAt,
         thumbnail: (service as any).thumbnail || '',
         iconColor: (service as any).iconColor || '#000000',
+        code: (service as any).code || '',
       };
       setBasicData(initial);
       setInitialBasicData(initial);
@@ -134,7 +137,8 @@ export default function EditServicePage() {
       basicData.categoryId !== initialBasicData.categoryId ||
       basicData.isActive !== initialBasicData.isActive ||
       basicData.thumbnail !== initialBasicData.thumbnail ||
-      basicData.iconColor !== initialBasicData.iconColor
+      basicData.iconColor !== initialBasicData.iconColor ||
+      basicData.code !== initialBasicData.code
     );
   }, [basicData, initialBasicData]);
 
@@ -188,6 +192,7 @@ export default function EditServicePage() {
         isActive: basicData.isActive,
         thumbnail: basicData.thumbnail || null,
         iconColor: basicData.iconColor || '#000000',
+        code: basicData.code || null,
         ...(templateId && { formTemplateIds: [templateId] }),
       });
 
@@ -417,6 +422,19 @@ export default function EditServicePage() {
                 placeholder={loadingCategories ? 'Cargando...' : 'Seleccionar categoría'}
                 disabled={loadingCategories}
               />
+
+              <div>
+                <FormInput
+                  label="Código del Servicio"
+                  id="code"
+                  value={basicData.code}
+                  onChange={(e) => setBasicData({ ...basicData, code: e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6) })}
+                  placeholder="LIMP"
+                />
+                <p className="mt-1 text-xs text-muted-foreground">
+                  3-6 caracteres alfanuméricos en mayúsculas. Se usa para generar IDs de solicitudes (ej: REQ-LIMP-202602-0001)
+                </p>
+              </div>
 
               {/* Active/Inactive Toggle */}
               <div className="flex items-center justify-between p-3 rounded-lg border bg-muted/30">

@@ -125,14 +125,18 @@ export function updateBorderController(
   const updatedBorders = { ...safeBorders };
   
   // Actualizar el controlador específico
-  const controller = { ...updatedBorders[controllerName] };
-  controller.value = newValue;
-  
+  const existingController = updatedBorders[controllerName];
+  const controller: BorderRadiusController = {
+    value: newValue,
+    isLinked: existingController?.isLinked ?? false,
+    formula: existingController?.formula ?? '',
+  };
+
   // Si se cambia manualmente un controlador no-global, desvincularlo
   if (forceUnlink && controllerName !== 'globalRadius') {
     controller.isLinked = false;
   }
-  
+
   // Si se cambia el global, propagar a los vinculados
   if (controllerName === 'globalRadius') {
     if (updatedBorders.cardsRadius?.isLinked) {
@@ -145,7 +149,7 @@ export function updateBorderController(
       updatedBorders.checkboxRadius = { ...updatedBorders.checkboxRadius, value: newValue };
     }
   }
-  
+
   updatedBorders[controllerName] = controller;
   
   // Recalcular todos los valores
@@ -167,15 +171,18 @@ export function toggleBorderLink(
   // Asegurar que tenemos controladores válidos
   const safeBorders = computeBorderValues(borders);
   const updatedBorders = { ...safeBorders };
-  const controller = { ...updatedBorders[controllerName] };
-  
-  controller.isLinked = shouldLink;
-  
+  const existingCtrl = updatedBorders[controllerName];
+  const controller: BorderRadiusController = {
+    value: existingCtrl?.value ?? 8,
+    isLinked: shouldLink,
+    formula: existingCtrl?.formula ?? '',
+  };
+
   // Si se vincula, sincronizar con el valor global
   if (shouldLink) {
-    controller.value = updatedBorders.globalRadius?.value || 8;
+    controller.value = updatedBorders.globalRadius?.value ?? 8;
   }
-  
+
   updatedBorders[controllerName] = controller;
   
   // Recalcular valores
@@ -190,15 +197,15 @@ export function toggleBorderLink(
 export function generateBorderCSSVariables(borders: ThemeBorders): Record<string, string> {
   return {
     '--radius': borders.radius,
-    '--radius-sm': borders.radiusSm,
-    '--radius-md': borders.radiusMd,
-    '--radius-lg': borders.radiusLg,
-    '--radius-xl': borders.radiusXl,
-    '--radius-card': borders.radiusCard,
-    '--radius-card-inner': borders.radiusCardInner,
-    '--radius-button': borders.radiusButton,
-    '--radius-button-inner': borders.radiusButtonInner,
-    '--radius-checkbox': borders.radiusCheckbox,
-    '--radius-checkbox-inner': borders.radiusCheckboxInner,
+    '--radius-sm': borders.radiusSm ?? '',
+    '--radius-md': borders.radiusMd ?? '',
+    '--radius-lg': borders.radiusLg ?? '',
+    '--radius-xl': borders.radiusXl ?? '',
+    '--radius-card': borders.radiusCard ?? '',
+    '--radius-card-inner': borders.radiusCardInner ?? '',
+    '--radius-button': borders.radiusButton ?? '',
+    '--radius-button-inner': borders.radiusButtonInner ?? '',
+    '--radius-checkbox': borders.radiusCheckbox ?? '',
+    '--radius-checkbox-inner': borders.radiusCheckboxInner ?? '',
   };
 }

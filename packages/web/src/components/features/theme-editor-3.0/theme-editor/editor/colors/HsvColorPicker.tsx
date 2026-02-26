@@ -176,7 +176,7 @@ export function HsvColorPicker({ colorToken, onChange, className }: HsvColorPick
   // Handle Enter key in hex input
   const handleHexKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
-      e.currentTarget.blur(); // This will trigger handleHexBlur
+      (e.currentTarget as HTMLElement).blur(); // This will trigger handleHexBlur
     }
   };
 

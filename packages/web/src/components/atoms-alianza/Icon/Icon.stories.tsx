@@ -88,14 +88,14 @@ See full catalog: https://lucide.dev/icons
       control: 'boolean',
       description: 'Show loading spinner',
       table: {
-        defaultValue: { summary: false },
+        defaultValue: { summary: 'false' },
       },
     },
     useSystemColors: {
       control: 'boolean',
       description: 'Use system color variants',
       table: {
-        defaultValue: { summary: true },
+        defaultValue: { summary: 'true' },
       },
     },
     className: {
@@ -110,7 +110,7 @@ See full catalog: https://lucide.dev/icons
 } satisfies Meta<typeof Icon>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = Omit<StoryObj<typeof meta>, 'args'> & Partial<Pick<StoryObj<typeof meta>, 'args'>>;
 
 // Default story
 export const Default: Story = {
@@ -529,7 +529,7 @@ export const Accessibility: Story = {
       <div>
         <h3 className="text-sm font-medium mb-3">Decorative Icons</h3>
         <div className="flex items-center gap-2">
-          <Icon name="star" variant="warning" aria-hidden />
+          <Icon name="star" variant="warning" aria-hidden="true" />
           <span className="text-sm">Featured content (icon is decorative)</span>
         </div>
       </div>

@@ -19,7 +19,7 @@ vi.mock('@/components/molecules-alianza/DynamicForm', () => ({
   ),
 }));
 
-const mockTemplate = {
+const mockTemplate: any = {
   version: '1.0',
   fields: [
     {
@@ -139,7 +139,7 @@ describe('RequestTemplateRenderer - Organism', () => {
     });
 
     it('should show loading state during submission', async () => {
-      const onSubmit = vi.fn(() => new Promise(resolve => setTimeout(resolve, 100)));
+      const onSubmit = vi.fn(() => new Promise(resolve => setTimeout(resolve, 100))) as any;
       render(<RequestTemplateRenderer template={mockTemplate} onSubmit={onSubmit} />);
 
       const input = screen.getByLabelText('Describe the Issue');
@@ -154,7 +154,7 @@ describe('RequestTemplateRenderer - Organism', () => {
     });
 
     it('should disable form during submission', async () => {
-      const onSubmit = vi.fn(() => new Promise(resolve => setTimeout(resolve, 100)));
+      const onSubmit = vi.fn(() => new Promise(resolve => setTimeout(resolve, 100))) as any;
       render(<RequestTemplateRenderer template={mockTemplate} onSubmit={onSubmit} />);
 
       const input = screen.getByLabelText('Describe the Issue');
@@ -249,7 +249,7 @@ describe('RequestTemplateRenderer - Organism', () => {
     });
 
     it('should disable cancel button during submission', async () => {
-      const onSubmit = vi.fn(() => new Promise(resolve => setTimeout(resolve, 100)));
+      const onSubmit = vi.fn(() => new Promise(resolve => setTimeout(resolve, 100))) as any;
       render(
         <RequestTemplateRenderer
           template={mockTemplate}
@@ -394,7 +394,7 @@ describe('RequestTemplateRenderer - Organism', () => {
     });
 
     it('should show loader icon during submission', async () => {
-      const onSubmit = vi.fn(() => new Promise(resolve => setTimeout(resolve, 100)));
+      const onSubmit = vi.fn(() => new Promise(resolve => setTimeout(resolve, 100))) as any;
       render(<RequestTemplateRenderer template={mockTemplate} onSubmit={onSubmit} />);
 
       const input = screen.getByLabelText('Describe the Issue');

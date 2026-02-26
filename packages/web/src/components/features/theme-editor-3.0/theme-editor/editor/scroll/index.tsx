@@ -77,7 +77,7 @@ export function ScrollEditor({
             <Label className="text-xs">Default Scroll Behavior</Label>
             <Select 
               value={scroll.behavior} 
-              onValueChange={(value) => handlePropertyChange('behavior', value)}
+              onValueChange={(value: string) => handlePropertyChange('behavior', value as 'auto' | 'smooth' | 'instant')}
             >
               <SelectTrigger className="h-8">
                 <SelectValue />

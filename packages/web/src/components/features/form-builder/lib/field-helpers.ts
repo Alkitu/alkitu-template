@@ -72,7 +72,7 @@ export function createField(
     id: generateFieldId(),
     type: fieldType,
     label,
-    required: false,
+    validation: { required: false },
   };
 
   // Initialize field-specific options

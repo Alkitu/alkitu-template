@@ -57,10 +57,13 @@ const meta = {
       description: 'Disable all filters',
     },
   },
+  args: {
+    onFilterChange: () => {},
+  },
 } satisfies Meta<typeof ServiceFilterButtons>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = Omit<StoryObj<typeof meta>, 'args'> & Partial<Pick<StoryObj<typeof meta>, 'args'>>;
 
 /**
  * Default single-selection filter buttons
@@ -426,6 +429,7 @@ export const Playground: Story = {
     );
   },
   args: {
+    activeFilter: 'all',
     showCounts: true,
     counts: { all: 150, active: 95, inactive: 55 },
     showClearAll: true,

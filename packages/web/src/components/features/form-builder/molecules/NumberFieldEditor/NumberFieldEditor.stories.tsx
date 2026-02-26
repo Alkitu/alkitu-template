@@ -66,7 +66,7 @@ const meta = {
 } satisfies Meta<typeof NumberFieldEditor>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = Omit<StoryObj<typeof meta>, 'args'> & Partial<Pick<StoryObj<typeof meta>, 'args'>>;
 
 // ============================================================================
 // BASIC NUMBER FIELD STORIES

@@ -1,3 +1,4 @@
+import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Star, Heart, Folder, BookOpen, Briefcase, Code } from 'lucide-react';
 import { CategoryCard } from './CategoryCard';
@@ -148,7 +149,7 @@ export const WithActions: Story = {
 export const ClickableCard: Story = {
   args: {
     category: baseCategory,
-    onClick: (cat) => alert(`Clicked: ${cat.name}`),
+    onClick: (cat: Category) => alert(`Clicked: ${cat.name}`),
     showCount: true,
     showDate: true,
   },
@@ -446,5 +447,3 @@ export const LongContent: Story = {
   },
 };
 
-// Add React import for interactive example
-import React from 'react';

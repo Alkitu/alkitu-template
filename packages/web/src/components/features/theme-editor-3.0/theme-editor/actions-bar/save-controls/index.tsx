@@ -6,7 +6,7 @@ import { ThemeData } from '../../../core/types/theme.types';
 
 interface SaveControlsProps {
   theme: ThemeData;
-  onSave: (theme: ThemeData) => void;
+  onSave: (theme: ThemeData, isNewTheme: boolean) => Promise<void> | void;
   hasUnsavedChanges?: boolean;
   className?: string;
 }
@@ -21,7 +21,7 @@ export function SaveControls({
     <div className={className}>
       <SaveButton
         theme={theme}
-        onSave={onSave}
+        onSave={onSave as (theme: ThemeData, isNewTheme: boolean) => Promise<void>}
         hasUnsavedChanges={hasUnsavedChanges}
       />
     </div>

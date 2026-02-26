@@ -5,11 +5,12 @@ import { X } from 'lucide-react';
 
 interface BadgeProps {
   children: React.ReactNode;
-  variant?: 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'outline' | 'ghost';
+  variant?: 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'destructive' | 'outline' | 'ghost';
   size?: 'sm' | 'md' | 'lg';
   removable?: boolean;
   icon?: React.ReactNode;
   className?: string;
+  style?: React.CSSProperties;
   onRemove?: () => void;
   // Accessibility props (NEW - additive only)
   'aria-label'?: string;
@@ -28,6 +29,7 @@ const getBadgeVariantClasses = (variant: string) => {
     case 'warning':
       return 'bg-warning text-warning-foreground hover:bg-warning/90';
     case 'error':
+    case 'destructive':
       return 'bg-destructive text-destructive-foreground hover:bg-destructive/90';
     case 'outline':
       return 'border-2 border-input bg-background text-foreground hover:bg-accent hover:text-accent-foreground';
@@ -67,6 +69,7 @@ export function Badge({
   removable = false,
   icon,
   className = '',
+  style: externalStyle,
   onRemove,
   'aria-label': ariaLabel,
   'aria-describedby': ariaDescribedby,
@@ -85,7 +88,7 @@ export function Badge({
     };
 
     // Add semantic meaning based on variant
-    if (variant === 'error' || variant === 'warning') {
+    if (variant === 'error' || variant === 'destructive' || variant === 'warning') {
       accessibilityProps['aria-live'] = 'polite';
     }
 
@@ -103,13 +106,14 @@ export function Badge({
         fontSize: size === 'lg' ? 'var(--typography-emphasis-font-size)' : 'calc(var(--typography-emphasis-font-size) * 0.85)',
         letterSpacing: 'var(--typography-emphasis-letter-spacing)',
         borderRadius: 'var(--radius-badge, var(--radius))',
+        ...externalStyle,
       }}
       {...getAccessibilityProps()}
     >
       {/* Icon */}
       {icon && (
         <span className={`${iconSizeClasses} flex-shrink-0 flex items-center justify-center`} style={{ aspectRatio: '1' }}>
-          {React.cloneElement(icon as React.ReactElement, {
+          {React.cloneElement(icon as React.ReactElement<Record<string, unknown>>, {
             className: `${iconSizeClasses}`,
             style: { width: '100%', height: '100%' }
           })}

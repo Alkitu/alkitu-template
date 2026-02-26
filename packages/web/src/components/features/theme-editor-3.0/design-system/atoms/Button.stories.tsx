@@ -94,7 +94,7 @@ import { Button, MemoizedButton } from './Button';
 } satisfies Meta<typeof Button>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = Omit<StoryObj<typeof meta>, 'args'> & Partial<Pick<StoryObj<typeof meta>, 'args'>>;
 
 // ===== VARIANTES BÁSICAS =====
 export const Default: Story = {

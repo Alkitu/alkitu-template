@@ -1,4 +1,4 @@
-import { LogoModeConfig, LogoColorVariants } from './types';
+import { LogoModeConfig, LogoColorVariants, LogoVariant } from './types';
 
 // Utilidades para procesamiento de SVG
 
@@ -562,10 +562,10 @@ export const getCurrentModeVariants = (logo: LogoVariant, isDarkMode: boolean): 
 
 // Función para obtener el mono-color según el modo actual
 export const getCurrentModeMonoColor = (logo: LogoVariant, isDarkMode: boolean): string => {
-  return isDarkMode ? logo.darkMode.monoColor : logo.lightMode.monoColor;
+  return isDarkMode ? (logo.darkMode?.monoColor ?? '') : (logo.lightMode?.monoColor ?? '');
 };
 
 // Función para obtener el estado de vinculación según el modo actual
 export const getCurrentModeIsLinked = (logo: LogoVariant, isDarkMode: boolean): boolean => {
-  return isDarkMode ? logo.darkMode.isLinkedToPrimary : logo.lightMode.isLinkedToPrimary;
+  return isDarkMode ? (logo.darkMode?.isLinkedToPrimary ?? false) : (logo.lightMode?.isLinkedToPrimary ?? false);
 };

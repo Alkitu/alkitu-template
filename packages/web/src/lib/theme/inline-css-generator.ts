@@ -10,6 +10,7 @@ interface DbTheme {
   lightModeConfig: any; // ThemeColors
   darkModeConfig: any; // ThemeColors
   typography?: any;
+  themeData?: any; // Contains borders, spacing, shadows, etc.
   isDefault: boolean;
   isFavorite: boolean;
 }
@@ -94,6 +95,44 @@ function generateTypographyCSS(typography: any): string {
     .join('\n');
 }
 
+/**
+ * Generate inline CSS from border radius settings stored in themeData.borders
+ *
+ * If borders data is missing or has no radius value, returns an empty string
+ * so that globals.css defaults are used instead.
+ */
+function generateBorderRadiusCSS(themeData: any): string {
+  const borders = themeData?.borders;
+  if (!borders?.radius) return '';
+
+  const radius = borders.radius;
+
+  // Build CSS properties from stored values, with calc() derivations for missing ones
+  const properties: string[] = [];
+
+  properties.push(`    --radius: ${radius};`);
+  properties.push(`    --radius-sm: ${borders.radiusSm || `calc(${radius} - 4px)`};`);
+  properties.push(`    --radius-md: ${borders.radiusMd || `calc(${radius} - 2px)`};`);
+  properties.push(`    --radius-lg: ${borders.radiusLg || radius};`);
+  properties.push(`    --radius-xl: ${borders.radiusXl || `calc(${radius} + 4px)`};`);
+
+  // Component-specific (derive from base if not stored)
+  properties.push(`    --radius-button: ${borders.radiusButton || radius};`);
+  properties.push(`    --radius-input: ${borders.radiusInput || radius};`);
+  properties.push(`    --radius-card: ${borders.radiusCard || `calc(${radius} + 4px)`};`);
+  properties.push(`    --radius-dialog: ${borders.radiusDialog || `calc(${radius} + 8px)`};`);
+  properties.push(`    --radius-popover: ${borders.radiusPopover || radius};`);
+  properties.push(`    --radius-dropdown: ${borders.radiusDropdown || radius};`);
+  properties.push(`    --radius-tooltip: ${borders.radiusTooltip || `calc(${radius} - 2px)`};`);
+  properties.push(`    --radius-badge: ${borders.radiusBadge || `calc(${radius} + 12px)`};`);
+  properties.push(`    --radius-checkbox: ${borders.radiusCheckbox || `calc(${radius} - 2px)`};`);
+  properties.push(`    --radius-tabs: ${borders.radiusTabs || radius};`);
+  properties.push(`    --radius-select: ${borders.radiusSelect || radius};`);
+  properties.push(`    --radius-toast: ${borders.radiusToast || radius};`);
+
+  return properties.join('\n');
+}
+
 export function generateInlineThemeCSS(theme: DbTheme | null): string {
   if (!theme) {
     return '';
@@ -113,6 +152,7 @@ export function generateInlineThemeCSS(theme: DbTheme | null): string {
   const darkCSS = generateColorCSS(darkColors, 'dark');
   // Always generate typography CSS, using defaults if theme.typography is null/empty
   const typographyCSS = generateTypographyCSS(typography);
+  const borderRadiusCSS = generateBorderRadiusCSS(theme.themeData);
 
   return `
 /* Theme: ${theme.name} (ID: ${theme.id}) */
@@ -120,6 +160,7 @@ export function generateInlineThemeCSS(theme: DbTheme | null): string {
 
   :root {
 ${typographyCSS}
+${borderRadiusCSS ? `\n${borderRadiusCSS}` : ''}
   }
 
 ${lightCSS}

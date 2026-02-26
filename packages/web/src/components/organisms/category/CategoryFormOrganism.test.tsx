@@ -25,7 +25,7 @@ describe('CategoryFormOrganism', () => {
     const initialData = {
       id: 'cat-1',
       name: 'Plumbing',
-    };
+    } as any;
 
     renderWithProviders(<CategoryFormOrganism initialData={initialData} />);
 
@@ -97,7 +97,7 @@ describe('CategoryFormOrganism', () => {
     const initialData = {
       id: 'cat-1',
       name: 'Plumbing',
-    };
+    } as any;
     const mockResponse = {
       ok: true,
       json: () => Promise.resolve({ id: 'cat-1', name: 'Plumbing Services' }),
@@ -242,7 +242,7 @@ describe('CategoryFormOrganism', () => {
     const initialData = {
       id: 'cat-1',
       name: 'Plumbing',
-    };
+    } as any;
     const mockResponse = {
       ok: true,
       json: () => Promise.resolve({ id: 'cat-1', name: 'Plumbing Services' }),

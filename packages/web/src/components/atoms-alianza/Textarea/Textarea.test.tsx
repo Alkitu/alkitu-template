@@ -415,7 +415,7 @@ describe('Textarea Component', () => {
       render(<Textarea onChange={handleChange} data-testid="textarea" />);
       const textarea = screen.getByTestId('textarea');
 
-      await user.type(textarea, 'Test', { delay: 1 });
+      await user.type(textarea, 'Test', { delay: 1 } as any);
       expect(handleChange).toHaveBeenCalled();
       expect(textarea).toHaveValue('Test');
     });

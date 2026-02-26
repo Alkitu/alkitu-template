@@ -93,7 +93,7 @@ Unified typography system for the Alianza Design System.
 } satisfies Meta<typeof Typography>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = Omit<StoryObj<typeof meta>, 'args'> & Partial<Pick<StoryObj<typeof meta>, 'args'>>;
 
 // Basic Examples
 export const Paragraph: Story = {
@@ -316,7 +316,7 @@ export const FormLabelExample: Story = {
   render: () => (
     <div className="space-y-4 w-full max-w-md">
       <div>
-        <Typography variant="label" htmlFor="input-1" className="mb-2 block">
+        <Typography variant="label" {...{htmlFor: "input-1"}} className="mb-2 block">
           Email Address
         </Typography>
         <input
@@ -327,7 +327,7 @@ export const FormLabelExample: Story = {
         />
       </div>
       <div>
-        <Typography variant="label" htmlFor="input-2" className="mb-2 block">
+        <Typography variant="label" {...{htmlFor: "input-2"}} className="mb-2 block">
           Password
         </Typography>
         <input

@@ -41,8 +41,12 @@ const MOLECULE_CATEGORIES: CategoryMapping = {
 type MoleculeCategory = keyof typeof MOLECULE_CATEGORIES;
 
 // Molecule definitions
-interface MoleculeDefinition extends SearchableItem {
+interface MoleculeDefinition {
+  id: string;
+  name: string;
   category: MoleculeCategory;
+  keywords: string[];
+  component?: React.ComponentType;
   renderContent: () => React.ReactNode;
 }
 
@@ -74,7 +78,7 @@ export function MoleculesShowcase() {
 
   // Search state
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<MoleculeCategory | 'all'>('all');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [openMolecules, setOpenMolecules] = useState<Set<string>>(new Set());
 
   // Sample data
@@ -341,13 +345,13 @@ export function MoleculesShowcase() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: mediumSpacing }}>
           <DatePickerMolecule
             value={selectedDate}
-            onChange={setSelectedDate}
+            onChange={(d) => setSelectedDate(d instanceof Date ? d : undefined)}
             label="Fecha básica"
             placeholder="Selecciona una fecha"
           />
           <DatePickerMolecule
             value={selectedDate}
-            onChange={setSelectedDate}
+            onChange={(d) => setSelectedDate(d instanceof Date ? d : undefined)}
             variant="datetime"
             label="Fecha y hora"
             placeholder="Selecciona fecha y hora"
@@ -431,7 +435,7 @@ export function MoleculesShowcase() {
           <ComboboxMolecule
             options={comboboxOptions}
             value={multiSelectValue}
-            onChange={setMultiSelectValue}
+            onChange={(v) => setMultiSelectValue(Array.isArray(v) ? v : [v])}
             variant="multiple"
             placeholder="Selecciona múltiples..."
             maxSelections={3}
@@ -533,17 +537,17 @@ export function MoleculesShowcase() {
 
   return (
     <ComponentSearchFilter
-      items={AVAILABLE_MOLECULES}
+      items={AVAILABLE_MOLECULES as unknown as SearchableItem[]}
       categories={MOLECULE_CATEGORIES}
       searchTerm={searchTerm}
-      selectedCategory={selectedCategory}
+      selectedCategory={selectedCategory as string}
       onSearchChange={setSearchTerm}
-      onCategoryChange={setSelectedCategory}
+      onCategoryChange={setSelectedCategory as (category: string) => void}
       openGroups={openMolecules}
       onToggleGroup={handleToggleMolecule}
       onOpenAllGroups={handleOpenAllMolecules}
       onCloseAllGroups={handleCloseAllMolecules}
-      renderItem={renderMolecule}
+      renderItem={renderMolecule as (item: SearchableItem) => React.ReactNode}
       searchPlaceholder="Buscar moléculas por nombre o características..."
       noResultsMessage="No se encontraron moléculas con los filtros aplicados"
       className="w-full"

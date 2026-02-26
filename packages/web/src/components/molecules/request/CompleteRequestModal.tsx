@@ -79,7 +79,7 @@ export const CompleteRequestModal: React.FC<CompleteRequestModalProps> = ({
                 {t('description') || 'Mark this request as completed. You can add optional completion notes.'}
                 <br />
                 <span className="mt-2 inline-block text-sm font-medium text-gray-700">
-                  {request.service?.name || 'Service Request'}
+                  {(request as any).service?.name || 'Service Request'}
                 </span>
               </>
             )}

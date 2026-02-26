@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { CompactErrorBoundary } from './CompactErrorBoundary';
 import { useState } from 'react';
 import { Button } from '@/components/molecules-alianza/Button';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/primitives/Card';
 
 /**
  * CompactErrorBoundary - Molecule Component
@@ -80,7 +80,7 @@ const meta = {
 } satisfies Meta<typeof CompactErrorBoundary>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = Omit<StoryObj<typeof meta>, 'args'> & Partial<Pick<StoryObj<typeof meta>, 'args'>>;
 
 // Error-throwing component for stories
 const ThrowError = ({ message = 'Component error occurred' }: { message?: string }) => {

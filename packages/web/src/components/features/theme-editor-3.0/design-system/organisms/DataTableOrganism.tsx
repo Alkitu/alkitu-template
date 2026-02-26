@@ -154,7 +154,7 @@ export function DataTableOrganism({
   const smallSpacing = `var(--spacing-small, ${baseValue}px)`;
   const mediumSpacing = `var(--spacing-medium, ${baseValue * 2}px)`;
 
-  const config = TABLE_CONFIGS[variant] || TABLE_CONFIGS.users;
+  const config = (TABLE_CONFIGS as Record<string, { columns: TableColumn[]; data: TableRow[] }>)[variant] || TABLE_CONFIGS.users;
 
   // Data filtering and sorting
   const filteredData = useMemo(() => {
@@ -163,8 +163,8 @@ export function DataTableOrganism({
     // Search filter
     if (searchTerm) {
       data = data.filter(row =>
-        Object.values(row).some(value =>
-          value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+        Object.values(row).some((value: unknown) =>
+          String(value).toLowerCase().includes(searchTerm.toLowerCase())
         )
       );
     }
@@ -441,7 +441,7 @@ export function DataTableOrganism({
         <Table>
           <TableHeader>
             <TableRow>
-              {config.columns.map((column) => (
+              {config.columns.map((column: TableColumn) => (
                 <TableHead 
                   key={column.key}
                   style={{ 
@@ -480,7 +480,7 @@ export function DataTableOrganism({
                     'transparent'
                 }}
               >
-                {config.columns.map((column) => (
+                {config.columns.map((column: TableColumn) => (
                   <TableCell 
                     key={`${row.id}-${column.key}`}
                     style={{ 

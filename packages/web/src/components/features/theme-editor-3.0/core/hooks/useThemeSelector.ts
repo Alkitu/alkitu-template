@@ -51,7 +51,8 @@ export function useThemeSelector() {
   const savedThemes = useMemo(() => {
     if (!dbThemes) return [];
 
-    return dbThemes.map(theme => ({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (dbThemes as any[]).map((theme: any) => ({
       id: theme.id,
       name: theme.name,
       description: theme.description || '',
@@ -202,11 +203,11 @@ export function useThemeSelector() {
         name: theme.name,
         description: theme.description || `Built-in ${theme.name} theme`,
         author: theme.author || 'Alkitu',
-        companyId: companyId,
+        companyId: companyId ?? undefined,
         createdById: userId || '',
-        lightModeConfig: theme.lightColors,
-        darkModeConfig: theme.darkColors,
-        typography: theme.typography,
+        lightModeConfig: theme.lightColors as unknown as Record<string, unknown>,
+        darkModeConfig: theme.darkColors as unknown as Record<string, unknown>,
+        typography: theme.typography as unknown as Record<string, unknown>,
         tags: theme.tags || [],
       });
     } else {

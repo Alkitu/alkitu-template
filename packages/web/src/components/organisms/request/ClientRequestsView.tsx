@@ -70,13 +70,13 @@ export const ClientRequestsView: React.FC<ClientRequestsViewProps> = ({
     isError,
     error,
     refetch,
-  } = trpc.request.getFilteredRequests.useQuery({
+  } = (trpc.request.getFilteredRequests as any).useQuery({
     page: 1,
     limit: 100,
     status: statusFilter,
     sortBy: 'createdAt',
     sortOrder: 'desc',
-  });
+  }) as { data: any; isLoading: boolean; isError: boolean; error: any; refetch: () => void };
 
   const requests = requestsData?.requests || [];
 
@@ -267,10 +267,10 @@ export const ClientRequestsView: React.FC<ClientRequestsViewProps> = ({
       {/* Request List */}
       {!isLoading && !isError && requests.length > 0 && (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {requests.map((request) => (
+          {requests.map((request: any) => (
             <RequestCardMolecule
               key={request.id}
-              request={request}
+              request={request as any}
               showViewDetails
               showCancel={request.status === RequestStatus.PENDING}
               showAssign={false}

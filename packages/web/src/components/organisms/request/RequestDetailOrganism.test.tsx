@@ -90,7 +90,7 @@ const mockRequest = {
 describe('RequestDetailOrganism', () => {
   const defaultProps: RequestDetailOrganismProps = {
     requestId: 'req-1',
-    userRole: 'EMPLOYEE',
+    userRole: 'EMPLOYEE' as any,
   };
 
   beforeEach(() => {
@@ -264,7 +264,7 @@ describe('RequestDetailOrganism', () => {
       mutateAsync: vi.fn(),
     });
 
-    renderWithProviders(<RequestDetailOrganism {...defaultProps} userRole="EMPLOYEE" />);
+    renderWithProviders(<RequestDetailOrganism {...defaultProps} userRole={"EMPLOYEE" as any} />);
 
     // Button shows "Asignar Empleado" when no employee assigned
     expect(screen.getByText(/asignar empleado/i)).toBeInTheDocument();
@@ -286,7 +286,7 @@ describe('RequestDetailOrganism', () => {
       mutateAsync: vi.fn(),
     });
 
-    renderWithProviders(<RequestDetailOrganism {...defaultProps} userRole="CLIENT" />);
+    renderWithProviders(<RequestDetailOrganism {...defaultProps} userRole={"CLIENT" as any} />);
 
     expect(screen.queryByText(/asignar empleado/i)).not.toBeInTheDocument();
   });
@@ -307,7 +307,7 @@ describe('RequestDetailOrganism', () => {
       mutateAsync: vi.fn(),
     });
 
-    renderWithProviders(<RequestDetailOrganism {...defaultProps} userRole="ADMIN" />);
+    renderWithProviders(<RequestDetailOrganism {...defaultProps} userRole={"ADMIN" as any} />);
 
     expect(screen.getByText(/cambiar estado/i)).toBeInTheDocument();
   });
@@ -457,7 +457,7 @@ describe('RequestDetailOrganism', () => {
       mutateAsync: vi.fn(),
     });
 
-    renderWithProviders(<RequestDetailOrganism {...defaultProps} userRole="EMPLOYEE" />);
+    renderWithProviders(<RequestDetailOrganism {...defaultProps} userRole={"EMPLOYEE" as any} />);
 
     expect(screen.getByText(/editar/i)).toBeInTheDocument();
   });
@@ -546,7 +546,7 @@ describe('RequestDetailOrganism', () => {
       mutateAsync: vi.fn(),
     });
 
-    renderWithProviders(<RequestDetailOrganism {...defaultProps} userRole="EMPLOYEE" />);
+    renderWithProviders(<RequestDetailOrganism {...defaultProps} userRole={"EMPLOYEE" as any} />);
 
     // Button should not show for cancelled requests (canAssign is false)
     expect(screen.queryByText(/asignar empleado/i)).not.toBeInTheDocument();
@@ -573,7 +573,7 @@ describe('RequestDetailOrganism', () => {
       mutateAsync: vi.fn(),
     });
 
-    renderWithProviders(<RequestDetailOrganism {...defaultProps} userRole="EMPLOYEE" />);
+    renderWithProviders(<RequestDetailOrganism {...defaultProps} userRole={"EMPLOYEE" as any} />);
 
     // Button should not show for completed requests (canAssign is false)
     expect(screen.queryByText(/asignar empleado/i)).not.toBeInTheDocument();

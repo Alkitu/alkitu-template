@@ -1,7 +1,9 @@
+import { vi } from 'vitest';
 import React, { ReactElement } from 'react';
 import { render, RenderOptions } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createTRPCReact, httpBatchLink } from '@trpc/react-query';
+// @ts-expect-error - test-only import, @alkitu/api types not available in web package
 import type { AppRouter } from '@alkitu/api';
 import { TranslationsProvider } from '@/context/TranslationsContext';
 
@@ -14,7 +16,7 @@ export function createTestQueryClient() {
     defaultOptions: {
       queries: {
         retry: false,
-        cacheTime: 0,
+        gcTime: 0,
         staleTime: 0,
       },
       mutations: {
@@ -26,7 +28,7 @@ export function createTestQueryClient() {
 
 // Create test tRPC client
 export function createTestTRPCClient() {
-  return trpc.createClient({
+  return (trpc as any).createClient({
     links: [
       httpBatchLink({
         url: 'http://localhost:3001/trpc',
@@ -46,7 +48,7 @@ interface AllProvidersProps {
   children: React.ReactNode;
   trpcClient?: ReturnType<typeof createTestTRPCClient>;
   queryClient?: QueryClient;
-  translations?: Record<string, string>;
+  translations?: Record<string, any>;
   locale?: 'es' | 'en';
 }
 
@@ -60,8 +62,9 @@ export function AllProviders({
   const testQueryClient = queryClient || createTestQueryClient();
   const testTRPCClient = trpcClient || createTestTRPCClient();
 
+  const TRPCProvider = (trpc as any).Provider;
   return (
-    <trpc.Provider client={testTRPCClient} queryClient={testQueryClient}>
+    <TRPCProvider client={testTRPCClient} queryClient={testQueryClient}>
       <QueryClientProvider client={testQueryClient}>
         <TranslationsProvider
           initialLocale={locale}
@@ -70,14 +73,14 @@ export function AllProviders({
           {children}
         </TranslationsProvider>
       </QueryClientProvider>
-    </trpc.Provider>
+    </TRPCProvider>
   );
 }
 
 interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
   trpcClient?: ReturnType<typeof createTestTRPCClient>;
   queryClient?: QueryClient;
-  translations?: Record<string, string>;
+  translations?: Record<string, any>;
   locale?: 'es' | 'en';
 }
 
@@ -167,4 +170,4 @@ export function createMockTRPCMutation<T>(options = {}) {
 // Re-export everything from testing-library
 export * from '@testing-library/react';
 export { default as userEvent } from '@testing-library/user-event';
-export { vi } from 'vitest';
+export { vi };

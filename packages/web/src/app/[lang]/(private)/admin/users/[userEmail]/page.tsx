@@ -160,8 +160,8 @@ const UserDetailPage = ({
     try {
       await updateProfileMutation.mutateAsync({
         id: user.id,
-        name: formData.name,
-        lastName: formData.lastName,
+        firstname: formData.name,
+        lastname: formData.lastName,
         phone: formData.phone,
         role: formData.role,
       });

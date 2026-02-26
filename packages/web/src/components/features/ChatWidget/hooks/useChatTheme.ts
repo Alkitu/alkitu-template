@@ -28,7 +28,7 @@ export function useChatTheme() {
 
   return {
     // Primary brand color from theme or fallback
-    primaryColor: theme?.colors?.primary?.hex || theme?.colors?.primaryColor?.hex || '#22c55e',
+    primaryColor: theme?.colors?.primary?.hex || '#22c55e',
     
     // Secondary colors
     backgroundColor: '#FFFFFF',

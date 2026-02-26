@@ -34,7 +34,7 @@ const meta = {
 } satisfies Meta<typeof SonnerOrganism>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = Omit<StoryObj<typeof meta>, 'args'> & Partial<Pick<StoryObj<typeof meta>, 'args'>>;
 
 /**
  * Demo component for stories
@@ -48,7 +48,7 @@ const ToastDemo = () => {
         <h2 className="text-2xl font-bold mb-4">Toast Types</h2>
         <div className="flex flex-wrap gap-3">
           <Button
-            variant="default"
+            variant="outline"
             onClick={() =>
               addToast({
                 title: 'Default Toast',
@@ -60,7 +60,7 @@ const ToastDemo = () => {
           </Button>
 
           <Button
-            variant="default"
+            variant="outline"
             onClick={() =>
               addToast({
                 title: 'Success!',
@@ -73,7 +73,7 @@ const ToastDemo = () => {
           </Button>
 
           <Button
-            variant="default"
+            variant="outline"
             onClick={() =>
               addToast({
                 title: 'Error occurred',
@@ -86,7 +86,7 @@ const ToastDemo = () => {
           </Button>
 
           <Button
-            variant="default"
+            variant="outline"
             onClick={() =>
               addToast({
                 title: 'Warning',
@@ -99,7 +99,7 @@ const ToastDemo = () => {
           </Button>
 
           <Button
-            variant="default"
+            variant="outline"
             onClick={() =>
               addToast({
                 title: 'Information',
@@ -117,7 +117,7 @@ const ToastDemo = () => {
         <h2 className="text-2xl font-bold mb-4">With Actions</h2>
         <div className="flex flex-wrap gap-3">
           <Button
-            variant="default"
+            variant="outline"
             onClick={() =>
               addToast({
                 title: 'File deleted',
@@ -134,7 +134,7 @@ const ToastDemo = () => {
           </Button>
 
           <Button
-            variant="default"
+            variant="outline"
             onClick={() =>
               addToast({
                 title: 'Update available',
@@ -157,7 +157,7 @@ const ToastDemo = () => {
         <h2 className="text-2xl font-bold mb-4">Custom Icons</h2>
         <div className="flex flex-wrap gap-3">
           <Button
-            variant="default"
+            variant="outline"
             onClick={() =>
               addToast({
                 title: 'New email received',
@@ -170,7 +170,7 @@ const ToastDemo = () => {
           </Button>
 
           <Button
-            variant="default"
+            variant="outline"
             onClick={() =>
               addToast({
                 title: 'Item added to cart',
@@ -183,7 +183,7 @@ const ToastDemo = () => {
           </Button>
 
           <Button
-            variant="default"
+            variant="outline"
             onClick={() =>
               addToast({
                 title: 'You earned a badge!',
@@ -203,7 +203,7 @@ const ToastDemo = () => {
         <h2 className="text-2xl font-bold mb-4">Durations</h2>
         <div className="flex flex-wrap gap-3">
           <Button
-            variant="default"
+            variant="outline"
             onClick={() =>
               addToast({
                 title: 'Quick toast (1s)',
@@ -217,7 +217,7 @@ const ToastDemo = () => {
           </Button>
 
           <Button
-            variant="default"
+            variant="outline"
             onClick={() =>
               addToast({
                 title: 'Normal toast (4s)',
@@ -231,7 +231,7 @@ const ToastDemo = () => {
           </Button>
 
           <Button
-            variant="default"
+            variant="outline"
             onClick={() =>
               addToast({
                 title: 'Persistent toast',

@@ -67,7 +67,7 @@ const meta = {
 } satisfies Meta<typeof Textarea>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = Omit<StoryObj<typeof meta>, 'args'> & Partial<Pick<StoryObj<typeof meta>, 'args'>>;
 
 // Basic Stories
 export const Default: Story = {

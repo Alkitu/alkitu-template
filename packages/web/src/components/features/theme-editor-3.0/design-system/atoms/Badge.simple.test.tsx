@@ -32,11 +32,11 @@ describe('Badge Component Structure', () => {
     variants.forEach(variant => {
       const element = React.createElement(Badge, {
         variant,
-        children: `${variant} badge`
-      });
+        children: `${variant} badge`,
+      } as any);
 
       expect(element).toBeDefined();
-      expect(element.props.variant).toBe(variant);
+      expect((element.props as any).variant).toBe(variant);
     });
   });
 });

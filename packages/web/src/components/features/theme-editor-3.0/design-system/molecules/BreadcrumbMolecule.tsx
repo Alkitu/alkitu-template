@@ -219,7 +219,7 @@ export function BreadcrumbMolecule({
         {/* Item icon */}
         {item.icon && (
           <Icon
-            icon={item.icon}
+            icon={item.icon as import('lucide-react').LucideIcon}
             size={iconSize}
             style={{ color: 'currentColor' }}
           />

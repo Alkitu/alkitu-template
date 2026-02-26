@@ -44,7 +44,7 @@ const meta = {
 } satisfies Meta<typeof Avatar>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = Omit<StoryObj<typeof meta>, 'args'> & Partial<Pick<StoryObj<typeof meta>, 'args'>>;
 
 // Simplified API Stories
 export const Default: Story = {

@@ -20,8 +20,8 @@ describe('Checkbox Component Structure', () => {
     const element = React.createElement(Checkbox, {
       checked: true,
       onChange: vi.fn(),
-      'data-testid': 'test-checkbox'
-    });
+      'data-testid': 'test-checkbox',
+    } as any);
 
     expect(element).toBeDefined();
     expect(element.type).toBe(Checkbox);

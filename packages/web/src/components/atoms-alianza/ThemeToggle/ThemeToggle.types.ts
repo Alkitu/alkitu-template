@@ -6,5 +6,6 @@
  */
 
 export interface ThemeToggleProps {
-  // No props needed - component is fully self-contained
+  /** Optional callback fired after theme mode changes */
+  onThemeChange?: (mode: 'light' | 'dark') => void;
 }

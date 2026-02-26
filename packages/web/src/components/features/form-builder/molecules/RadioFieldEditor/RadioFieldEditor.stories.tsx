@@ -54,14 +54,13 @@ const meta = {
 } satisfies Meta<typeof RadioFieldEditor>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = Omit<StoryObj<typeof meta>, 'args'> & Partial<Pick<StoryObj<typeof meta>, 'args'>>;
 
 // Base field factory
 const createRadioField = (overrides?: Partial<FormField>): FormField => ({
   id: 'field-radio-1',
   type: 'radio',
   label: 'Favorite Color',
-  required: false,
   radioOptions: {
     items: [
       { id: 'opt-1', label: 'Red', value: 'red' },

@@ -45,7 +45,7 @@ export const Footer = React.forwardRef<HTMLElement, FooterProps>(
             <div className="space-y-4">
               <div className="flex items-center space-x-2">
                 {brand.logo || (
-                  <div className="h-8 w-8 rounded-md bg-primary flex items-center justify-center">
+                  <div className="h-8 w-8 rounded-[var(--radius)] bg-primary flex items-center justify-center">
                     <Typography
                       variant="span"
                       weight="bold"

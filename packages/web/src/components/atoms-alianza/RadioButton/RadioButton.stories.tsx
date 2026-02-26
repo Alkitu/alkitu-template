@@ -46,7 +46,7 @@ const meta = {
 } satisfies Meta<typeof RadioButton>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = Omit<StoryObj<typeof meta>, 'args'> & Partial<Pick<StoryObj<typeof meta>, 'args'>>;
 
 // Basic story
 export const Default: Story = {

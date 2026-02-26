@@ -60,7 +60,6 @@ describe('useWebSocket', () => {
     renderHook(() =>
       useWebSocket({
         userId: 'user-1',
-        token: 'test-token',
         enabled: true,
       }),
     );
@@ -68,9 +67,7 @@ describe('useWebSocket', () => {
     expect(mockIo).toHaveBeenCalledWith(
       'http://localhost:3001/notifications',
       expect.objectContaining({
-        auth: {
-          token: 'test-token',
-        },
+        withCredentials: true,
         transports: ['websocket', 'polling'],
         upgrade: true,
         autoConnect: true,

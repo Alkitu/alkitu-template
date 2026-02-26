@@ -64,14 +64,14 @@ export function ActionsBar() {
         <div className="flex gap-1">
           <ImportExport
             theme={currentTheme}
-            existingThemes={state.availableThemes}
+            existingThemes={(state as any).availableThemes || []}
             onImport={handleImport}
             onImportError={handleImportError}
           />
           {isAdmin && (
             <SaveControls
               theme={currentTheme}
-              onSave={handleSave}
+              onSave={(theme) => handleSave(theme, false)}
               hasUnsavedChanges={state.editor.hasUnsavedChanges}
             />
           )}

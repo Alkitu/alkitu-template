@@ -163,7 +163,7 @@ export function DatePickerMolecule({
       onChange?.(selected as { from?: Date; to?: Date });
       // Keep popover open until range is complete
       const range = selected as { from?: Date; to?: Date };
-      if (range.from && range.to && variant !== 'inline') {
+      if (range.from && range.to) {
         setIsOpen(false);
       }
     } else {
@@ -215,7 +215,7 @@ export function DatePickerMolecule({
     setTime(newTime);
 
     if (value) {
-      const updatedDate = new Date(value);
+      const updatedDate = new Date(value as Date);
       updatedDate.setHours(parseInt(newTime.hours), parseInt(newTime.minutes));
       onChange?.(updatedDate);
     }
@@ -253,14 +253,13 @@ export function DatePickerMolecule({
 
   const getPopoverContentStyles = () => ({
     padding: mediumSpacing,
-    background: colors?.popover?.value || 'var(--color-popover)',
+    background: `${colors?.popover?.value || 'var(--color-popover)'}f8`,
     border: `1px solid ${colors?.border?.value || 'var(--color-border)'}`,
     borderRadius: 'var(--radius-popover, 12px)',
     boxShadow: `${shadows?.shadowLg || 'var(--shadow-lg)'}, 0 0 0 1px ${colors?.border?.value || 'var(--color-border)'}20`,
     minWidth: variant === 'datetime' ? 'min(340px, calc(100vw - 40px))' : 'min(300px, calc(100vw - 40px))',
     maxWidth: 'calc(100vw - 20px)',
     backdropFilter: 'blur(8px)',
-    background: `${colors?.popover?.value || 'var(--color-popover)'}f8`,
     animation: 'slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
     transformOrigin: 'var(--radix-popover-content-transform-origin)'
   });
@@ -388,8 +387,8 @@ export function DatePickerMolecule({
           background: colors?.background?.value || 'var(--color-background)'
         }}>
           <Calendar
-            mode={variant === 'range' ? 'range' : 'single'}
-            selected={value}
+            mode="single"
+            selected={value as Date | undefined}
             onSelect={handleDateSelect as any}
             disabled={disabled}
             fromDate={minDate}
@@ -475,8 +474,10 @@ export function DatePickerMolecule({
                     transition: 'color 0.3s ease'
                   }} 
                 />
-                <span style={{ 
-                  truncate: 'true',
+                <span style={{
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
                   fontSize: '14px',
                   lineHeight: 1.4
                 }}>

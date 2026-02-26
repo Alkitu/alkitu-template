@@ -135,9 +135,9 @@ export function TabsMolecule({
   }, [value]);
 
   // Styles
-  const getContainerStyles = () => ({
+  const getContainerStyles = (): React.CSSProperties => ({
     display: 'flex',
-    flexDirection: orientation === 'vertical' ? 'row' : 'column' as const,
+    flexDirection: orientation === 'vertical' ? 'row' : 'column',
     gap: mediumSpacing,
     marginBottom: largeSpacing
   });

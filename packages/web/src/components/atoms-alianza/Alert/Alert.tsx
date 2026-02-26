@@ -127,7 +127,7 @@ export const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
         role="alert"
         className={cn(
           // Base styles
-          'relative flex items-start rounded-lg border',
+          'relative flex items-start rounded-[var(--radius-card)] border',
           // Variant styles
           variantConfig.containerClasses,
           variantConfig.textClasses,

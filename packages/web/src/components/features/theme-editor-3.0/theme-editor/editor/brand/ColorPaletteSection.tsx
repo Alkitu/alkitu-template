@@ -6,7 +6,7 @@ import { Button } from '../../../design-system/primitives/Button';
 import { Palette, X, Eye, EyeOff } from 'lucide-react';
 import { LogoVariant } from './types';
 import { replaceColorInSVG } from './utils';
-import { HsvColorPicker } from '../colors/HsvColorPicker';
+import { BrandColorPicker } from './BrandColorPicker';
 
 interface ColorPaletteSectionProps {
   logos: (LogoVariant | null)[];
@@ -291,9 +291,9 @@ export function ColorPaletteSection({
             </div>
 
             {/* COLOR_PICKER_COMPONENT */}
-            <HsvColorPicker
+            <BrandColorPicker
               color={colorPicker.currentColor}
-              onChange={(newColor) => {
+              onChange={(newColor: string) => {
                 setColorPicker(prev => ({ ...prev, currentColor: newColor }));
                 handleColorChange(newColor);
               }}

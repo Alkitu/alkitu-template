@@ -343,7 +343,7 @@ describe('Typography - Atom', () => {
         const element = container.querySelector('[data-testid="typography"]');
         const level = variant.charAt(1);
 
-        expect(element?.style.fontFamily).toBe(
+        expect((element as HTMLElement)?.style.fontFamily).toBe(
           `var(--typography-h${level}-font-family)`,
         );
       });
@@ -487,7 +487,7 @@ describe('Typography - Atom', () => {
 
     it('label has proper attributes for form association', () => {
       render(
-        <Typography variant="label" htmlFor="input-id">
+        <Typography variant="label" {...{ htmlFor: 'input-id' } as any}>
           Label Text
         </Typography>,
       );
@@ -522,7 +522,7 @@ describe('Typography - Atom', () => {
     it('has no accessibility violations - label', async () => {
       const { container } = render(
         <div>
-          <Typography variant="label" htmlFor="test-input">
+          <Typography variant="label" {...{ htmlFor: 'test-input' } as any}>
             Label
           </Typography>
           <input id="test-input" />

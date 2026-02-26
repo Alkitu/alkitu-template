@@ -42,6 +42,4 @@ export type {
   AssignRequestModalProps,
   CancelRequestModalProps,
   CompleteRequestModalProps,
-  QuickAssignModalProps,
-  QuickStatusModalProps,
 } from './request';

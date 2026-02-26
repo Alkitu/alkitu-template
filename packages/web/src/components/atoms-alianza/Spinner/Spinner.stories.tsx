@@ -118,14 +118,14 @@ Supports multiple styles, sizes, colors, and animation speeds with full theme in
       control: 'boolean',
       description: 'Use system theme colors (false uses currentColor)',
       table: {
-        defaultValue: { summary: true },
+        defaultValue: { summary: 'true' },
       },
     },
   },
 } satisfies Meta<typeof Spinner>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = Omit<StoryObj<typeof meta>, 'args'> & Partial<Pick<StoryObj<typeof meta>, 'args'>>;
 
 /**
  * Default spinner - most common usage

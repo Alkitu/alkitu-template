@@ -257,7 +257,7 @@ export function ImportCustomCSSModal({
     }
   };
 
-  const handleSaveConfirm = (theme: ThemeData, isNewTheme: boolean) => {
+  const handleSaveConfirm = (theme: ThemeData, _mode: 'update' | 'create') => {
     onImport(theme);
     setShowSaveDialog(false);
     handleClose();
@@ -372,6 +372,7 @@ export function ImportCustomCSSModal({
           currentTheme={parsedTheme}
           existingThemeNames={existingThemes.map(t => t.name)}
           onSave={handleSaveConfirm}
+          mode="create"
         />
       )}
     </>

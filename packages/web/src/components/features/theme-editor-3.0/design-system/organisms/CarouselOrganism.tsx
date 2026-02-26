@@ -295,8 +295,8 @@ export function CarouselOrganism({
         
         {item.badge && (
           <div className="absolute top-3 left-3">
-            <Badge 
-              variant="destructive"
+            <Badge
+              variant="error"
               style={{
                 background: item.badge === 'Sale' ? '#ef4444' : (colors?.primary?.value || 'var(--color-primary)'),
                 color: 'white'

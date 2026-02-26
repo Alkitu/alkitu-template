@@ -114,13 +114,17 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
             defaultSize: 'md',
             defaultWeight: 'normal',
           };
+        case 'body':
+          return { element: 'p', defaultSize: 'md', defaultWeight: 'normal' };
+        case 'body2':
+          return { element: 'p', defaultSize: 'sm', defaultWeight: 'normal' };
         default:
           return { element: 'p', defaultSize: 'md', defaultWeight: 'normal' };
       }
     };
 
     const config = getElementConfig(variant);
-    const Element = (as || config.element) as keyof JSX.IntrinsicElements;
+    const Element = (as || config.element) as React.ElementType;
 
     // Size classes
     const sizeClasses = {
@@ -179,6 +183,8 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
       overline: 'uppercase tracking-wide opacity-75',
       lead: 'leading-7',
       blockquote: 'border-l-2 border-muted pl-6 italic',
+      body: 'leading-7',
+      body2: 'leading-6',
     }[variant];
 
     const classes = cn([

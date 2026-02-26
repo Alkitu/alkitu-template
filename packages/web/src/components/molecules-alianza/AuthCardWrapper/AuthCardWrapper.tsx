@@ -166,7 +166,7 @@ export const AuthCardWrapper = React.forwardRef<HTMLDivElement, AuthCardWrapperP
           </div>
 
           <div
-            className="w-full p-4 border border-primary/30 bg-primary/5 rounded-lg flex items-center justify-center text-center"
+            className="w-full p-4 border border-primary/30 bg-primary/5 rounded-[var(--radius-card)] flex items-center justify-center text-center"
             data-testid="social-placeholder"
           >
             <Typography variant="span" size="sm" weight="light" color="primary">

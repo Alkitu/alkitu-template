@@ -66,7 +66,7 @@ export function FieldsList({ fields, onEdit, onDelete, onAdd }: FieldsListProps)
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-start gap-3 flex-1 min-w-0">
-                      <div className="bg-muted rounded-md p-2 mt-0.5">
+                      <div className="bg-muted rounded-[var(--radius)] p-2 mt-0.5">
                         <Icon className="h-4 w-4" />
                       </div>
 
@@ -109,7 +109,7 @@ export function FieldsList({ fields, onEdit, onDelete, onAdd }: FieldsListProps)
                     <div className="flex gap-1 shrink-0">
                       <Button
                         variant="ghost"
-                        size="icon"
+                        size="sm"
                         onClick={() => onEdit(field.id)}
                         className="h-8 w-8"
                       >
@@ -117,7 +117,7 @@ export function FieldsList({ fields, onEdit, onDelete, onAdd }: FieldsListProps)
                       </Button>
                       <Button
                         variant="ghost"
-                        size="icon"
+                        size="sm"
                         onClick={() => onDelete(field.id)}
                         className="h-8 w-8 text-destructive hover:text-destructive"
                       >

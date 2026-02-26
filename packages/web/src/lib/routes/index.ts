@@ -81,20 +81,6 @@ export const getDefaultAuthRedirect = (locale: 'es' | 'en' = 'es'): string => {
 };
 
 /**
- * @deprecated Use getDefaultLoginRedirect() instead
- * The default redirect path after successful login
- * @type {string}
- */
-export const DEFAULT_LOGIN_REDIRECT = '/admin/dashboard';
-
-/**
- * @deprecated Use getDefaultAuthRedirect() instead
- * The default redirect path for unauthenticated users
- * @type {string}
- */
-export const DEFAULT_AUTH_REDIRECT = '/auth/login';
-
-/**
  * Routes that need special redirection handling
  * @type {string[]}
  */

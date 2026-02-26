@@ -207,7 +207,7 @@ describe('Alert Component', () => {
 
   describe('Theme Reactivity', () => {
     it('uses theme CSS variables for colors', () => {
-      const { container } = render(<Alert variant="primary">Alert</Alert>);
+      const { container } = render(<Alert variant={"primary" as any}>Alert</Alert>);
       const alertElement = container.firstChild as HTMLElement;
 
       // Verify it uses Tailwind classes that map to CSS variables

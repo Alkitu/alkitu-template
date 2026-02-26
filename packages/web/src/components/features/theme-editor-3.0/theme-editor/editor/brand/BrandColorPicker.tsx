@@ -40,7 +40,7 @@ export function BrandColorPicker({ color, onChange, className }: BrandColorPicke
   // Handle color changes from HsvColorPicker
   const handleColorTokenChange = (newColorToken: ColorToken) => {
     setColorToken(newColorToken);
-    onChange(newColorToken.hex);
+    onChange(newColorToken.hex ?? '#000000');
   };
 
   return (

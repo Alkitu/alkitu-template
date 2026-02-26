@@ -81,7 +81,7 @@ SelectFieldEditor molecule for editing select dropdown field types.
 } satisfies Meta<typeof SelectFieldEditor>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = Omit<StoryObj<typeof meta>, 'args'> & Partial<Pick<StoryObj<typeof meta>, 'args'>>;
 
 // Helper function to create mock options
 const createOptions = (count: number): FormFieldOption[] => {

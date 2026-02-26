@@ -135,7 +135,7 @@ export const AssignRequestModal: React.FC<AssignRequestModalProps> = ({
                 {t('description') || 'Select an employee to assign this request to.'}
                 <br />
                 <span className="mt-2 inline-block text-sm font-medium text-gray-700">
-                  {request.service?.name || 'Service Request'}
+                  {(request as any).service?.name || 'Service Request'}
                 </span>
               </>
             )}

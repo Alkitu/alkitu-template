@@ -29,6 +29,7 @@ export interface OklchColor {
   l: number; // 0-1
   c: number; // 0-0.4+
   h: number; // 0-360
+  a?: number; // Alpha/opacity (0-1), optional
 }
 
 export interface PreciseColorToken {
@@ -91,7 +92,7 @@ export function createPreciseColorToken(
  * Updates a color token from HEX input (user typing)
  */
 export function updateColorTokenFromHex(
-  existingToken: PreciseColorToken,
+  existingToken: PreciseColorToken | { name: string; description?: string; linkedTo?: string; linkedColors?: string[] },
   hexValue: string
 ): PreciseColorToken {
   const newToken = createPreciseColorToken(
@@ -112,7 +113,7 @@ export function updateColorTokenFromHex(
  * Updates a color token from RGB input
  */
 export function updateColorTokenFromRgb(
-  existingToken: PreciseColorToken,
+  existingToken: PreciseColorToken | { name: string; description?: string; linkedTo?: string; linkedColors?: string[] },
   rgbValue: RGBColor
 ): PreciseColorToken {
   const hexValue = `#${rgbValue.r.toString(16).padStart(2, '0')}${rgbValue.g.toString(16).padStart(2, '0')}${rgbValue.b.toString(16).padStart(2, '0')}`;
@@ -134,7 +135,7 @@ export function updateColorTokenFromRgb(
  * Updates a color token from HSV input
  */
 export function updateColorTokenFromHsv(
-  existingToken: PreciseColorToken,
+  existingToken: PreciseColorToken | { name: string; description?: string; linkedTo?: string; linkedColors?: string[] },
   hsvValue: HSVColor
 ): PreciseColorToken {
   // Convert HSV to Culori format
@@ -164,7 +165,7 @@ export function updateColorTokenFromHsv(
  * Updates a color token from OKLCH input
  */
 export function updateColorTokenFromOklch(
-  existingToken: PreciseColorToken,
+  existingToken: PreciseColorToken | { name: string; description?: string; linkedTo?: string; linkedColors?: string[] },
   oklchValue: OklchColor
 ): PreciseColorToken {
   const newToken = createPreciseColorToken(

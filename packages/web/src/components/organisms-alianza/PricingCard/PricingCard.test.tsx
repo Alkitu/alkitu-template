@@ -135,7 +135,7 @@ describe('PricingCard', () => {
     const themeOverride = {
       'primary-color': '#ff6b00',
       'card-background': '#ffffff',
-    };
+    } as React.CSSProperties;
 
     const { container } = render(
       <PricingCard {...defaultProps} themeOverride={themeOverride} />

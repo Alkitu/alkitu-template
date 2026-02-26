@@ -112,7 +112,7 @@ describe('Input Component - Edge Cases & Comprehensive Testing', () => {
 
         expect(input.props.showPasswordToggle).toBe(true);
         Object.entries(state).forEach(([key, value]) => {
-          expect(input.props[key]).toBe(value);
+          expect((input.props as any)[key]).toBe(value);
         });
       });
     });
@@ -222,7 +222,7 @@ describe('Input Component - Edge Cases & Comprehensive Testing', () => {
       });
 
       Object.entries(eventHandlers).forEach(([key, handler]) => {
-        expect(input.props[key]).toBe(handler);
+        expect((input.props as any)[key]).toBe(handler);
       });
     });
 
@@ -258,11 +258,11 @@ describe('Input Component - Edge Cases & Comprehensive Testing', () => {
 
       const input = React.createElement(Input, {
         ...accessibilityProps,
-        placeholder: 'Accessible input'
-      });
+        placeholder: 'Accessible input',
+      } as any);
 
       Object.entries(accessibilityProps).forEach(([key, value]) => {
-        expect(input.props[key]).toBe(value);
+        expect((input.props as any)[key]).toBe(value);
       });
     });
 
@@ -297,11 +297,11 @@ describe('Input Component - Edge Cases & Comprehensive Testing', () => {
       requiredCases.forEach((props, index) => {
         const input = React.createElement(Input, {
           ...props,
-          placeholder: `Required input ${index}`
-        });
+          placeholder: `Required input ${index}`,
+        } as any);
 
         Object.entries(props).forEach(([key, value]) => {
-          expect(input.props[key]).toBe(value);
+          expect((input.props as any)[key]).toBe(value);
         });
       });
     });
@@ -323,8 +323,8 @@ describe('Input Component - Edge Cases & Comprehensive Testing', () => {
       valueTypes.forEach((value, index) => {
         const input = React.createElement(Input, {
           value,
-          placeholder: `Value test ${index}`
-        });
+          placeholder: `Value test ${index}`,
+        } as any);
 
         expect(input.props.value).toBe(value);
       });
@@ -362,8 +362,8 @@ describe('Input Component - Edge Cases & Comprehensive Testing', () => {
       placeholders.forEach((placeholder, index) => {
         const input = React.createElement(Input, {
           placeholder,
-          type: 'text'
-        });
+          type: 'text',
+        } as any);
 
         expect(input.props.placeholder).toBe(placeholder);
       });
@@ -469,11 +469,11 @@ describe('Input Component - Edge Cases & Comprehensive Testing', () => {
       const input = React.createElement(Input, {
         ...formProps,
         type: 'text',
-        placeholder: 'Form input'
-      });
+        placeholder: 'Form input',
+      } as any);
 
       Object.entries(formProps).forEach(([key, value]) => {
-        expect(input.props[key]).toBe(value);
+        expect((input.props as any)[key]).toBe(value);
       });
     });
 
@@ -539,11 +539,11 @@ describe('Input Component - Edge Cases & Comprehensive Testing', () => {
 
       const input = React.createElement(Input, {
         ...complexProps,
-        placeholder: 'Complex input'
-      });
+        placeholder: 'Complex input',
+      } as any);
 
       Object.entries(complexProps).forEach(([key, value]) => {
-        expect(input.props[key]).toEqual(value);
+        expect((input.props as any)[key]).toEqual(value);
       });
     });
   });

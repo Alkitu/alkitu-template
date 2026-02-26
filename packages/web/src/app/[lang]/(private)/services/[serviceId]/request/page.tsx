@@ -7,6 +7,7 @@ import { Loader2, AlertCircle, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/primitives/ui/button';
 import Link from 'next/link';
 import type { Service } from '@/components/molecules-alianza/ServiceCard';
+import type { RequestTemplate } from '@/components/organisms-alianza/RequestTemplateRenderer';
 
 /**
  * Service Request Page (ALI-118)
@@ -182,7 +183,7 @@ export default function ServiceRequestPage({
         </h2>
 
         <RequestTemplateRenderer
-          template={service.requestTemplate}
+          template={service.requestTemplate as unknown as RequestTemplate}
           onSubmit={handleSubmit}
           onError={handleError}
           submitButtonText="Submit Request"

@@ -24,8 +24,12 @@ const ORGANISM_CATEGORIES: CategoryMapping = {
 type OrganismCategory = keyof typeof ORGANISM_CATEGORIES;
 
 // Organism definitions
-interface OrganismDefinition extends SearchableItem {
+interface OrganismDefinition {
+  id: string;
+  name: string;
   category: OrganismCategory;
+  keywords: string[];
+  component?: React.ComponentType;
   renderContent: () => React.ReactNode;
 }
 
@@ -44,7 +48,7 @@ export function OrganismsTabContent() {
 
   // Search state
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<OrganismCategory | 'all'>('all');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [openOrganisms, setOpenOrganisms] = useState<Set<string>>(new Set());
 
 
@@ -151,17 +155,17 @@ export function OrganismsTabContent() {
 
   return (
     <ComponentSearchFilter
-      items={AVAILABLE_ORGANISMS}
+      items={AVAILABLE_ORGANISMS as unknown as SearchableItem[]}
       categories={ORGANISM_CATEGORIES}
       searchTerm={searchTerm}
-      selectedCategory={selectedCategory}
+      selectedCategory={selectedCategory as string}
       onSearchChange={setSearchTerm}
-      onCategoryChange={setSelectedCategory}
+      onCategoryChange={setSelectedCategory as (category: string) => void}
       openGroups={openOrganisms}
       onToggleGroup={handleToggleOrganism}
       onOpenAllGroups={handleOpenAllOrganisms}
       onCloseAllGroups={handleCloseAllOrganisms}
-      renderItem={renderOrganism}
+      renderItem={renderOrganism as (item: SearchableItem) => React.ReactNode}
       searchPlaceholder="Buscar organismos por nombre o características..."
       noResultsMessage="No se encontraron organismos con los filtros aplicados"
       className="px-4"

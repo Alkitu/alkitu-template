@@ -149,7 +149,7 @@ export function Alert({
 
   const variantConfig = getVariantConfig();
   const sizeStyles = getSizeStyles();
-  const IconComponent = CustomIcon || variantConfig.icon;
+  const IconComponent = (CustomIcon || variantConfig.icon) as import('lucide-react').LucideIcon;
 
   // Handle dismiss
   const handleDismiss = (e: React.MouseEvent) => {

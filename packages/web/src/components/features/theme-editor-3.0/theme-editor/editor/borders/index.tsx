@@ -68,7 +68,7 @@ export function BordersEditor({
         <BorderRadiusController
           label="Global Radius"
           description="Controla el border-radius base para todo el sistema de diseño"
-          controller={safeBorders.globalRadius}
+          controller={safeBorders.globalRadius!}
           isGlobal={true}
           onValueChange={handleGlobalRadiusChange}
         />
@@ -81,17 +81,17 @@ export function BordersEditor({
         <BorderRadiusController
           label="Cards Radius"
           description="Border-radius específico para cards y contenedores"
-          controller={safeBorders.cardsRadius}
-          globalValue={safeBorders.globalRadius.value}
+          controller={safeBorders.cardsRadius!}
+          globalValue={safeBorders.globalRadius!.value}
           onValueChange={handleCardsRadiusChange}
           onToggleLink={handleCardsLinkToggle}
         />
-        
+
         <BorderRadiusController
           label="Buttons Radius"
           description="Border-radius específico para botones y elementos interactivos"
-          controller={safeBorders.buttonsRadius}
-          globalValue={safeBorders.globalRadius.value}
+          controller={safeBorders.buttonsRadius!}
+          globalValue={safeBorders.globalRadius!.value}
           onValueChange={handleButtonsRadiusChange}
           onToggleLink={handleButtonsLinkToggle}
         />
@@ -99,8 +99,8 @@ export function BordersEditor({
         <BorderRadiusController
           label="Checkbox Radius"
           description="Border-radius específico para checkboxes y elementos de selección"
-          controller={safeBorders.checkboxRadius}
-          globalValue={safeBorders.globalRadius.value}
+          controller={safeBorders.checkboxRadius!}
+          globalValue={safeBorders.globalRadius!.value}
           onValueChange={handleCheckboxRadiusChange}
           onToggleLink={handleCheckboxLinkToggle}
         />

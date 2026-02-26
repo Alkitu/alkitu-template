@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 interface PushSubscriptionData {
   endpoint: string;
@@ -80,11 +78,6 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    console.log(
-      `Push subscription saved for user ${userId}:`,
-      subscription.endpoint,
-    );
-
     // Count active subscriptions for user
     const subscriptionCount = await prisma.pushSubscription.count({
       where: { userId, active: true },
@@ -103,8 +96,7 @@ export async function POST(request: NextRequest) {
       },
       { status: 200 },
     );
-  } catch (error) {
-    console.error('Error saving push subscription:', error);
+  } catch {
     return NextResponse.json(
       { error: 'Failed to save push subscription' },
       { status: 500 },
@@ -152,8 +144,7 @@ export async function GET(request: NextRequest) {
       })),
       count: userSubscriptions.length,
     });
-  } catch (error) {
-    console.error('Error getting push subscriptions:', error);
+  } catch {
     return NextResponse.json(
       { error: 'Failed to get push subscriptions' },
       { status: 500 },

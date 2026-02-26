@@ -27,7 +27,7 @@ const meta = {
 } satisfies Meta<typeof BreadcrumbNavigation>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = Omit<StoryObj<typeof meta>, 'args'> & Partial<Pick<StoryObj<typeof meta>, 'args'>>;
 
 /**
  * Basic breadcrumb navigation with three levels

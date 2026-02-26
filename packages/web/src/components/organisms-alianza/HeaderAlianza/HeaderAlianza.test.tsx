@@ -180,7 +180,7 @@ describe('HeaderAlianza - Organism', () => {
     });
 
     it('should render the header when user is logged out', () => {
-      mockUserQuery.mockReturnValue(createMockTRPCQuery(null));
+      mockUserQuery.mockReturnValue(createMockTRPCQuery(null as any));
 
       renderWithProviders(<HeaderAlianza />);
 
@@ -189,7 +189,7 @@ describe('HeaderAlianza - Organism', () => {
     });
 
     it('should render on public route (home)', () => {
-      mockUserQuery.mockReturnValue(createMockTRPCQuery(null));
+      mockUserQuery.mockReturnValue(createMockTRPCQuery(null as any));
 
       renderWithProviders(<HeaderAlianza />);
 
@@ -199,7 +199,7 @@ describe('HeaderAlianza - Organism', () => {
     });
 
     it('should render on auth route (/auth/login)', () => {
-      mockUserQuery.mockReturnValue(createMockTRPCQuery(null));
+      mockUserQuery.mockReturnValue(createMockTRPCQuery(null as any));
 
       renderWithProviders(<HeaderAlianza />);
 
@@ -217,7 +217,7 @@ describe('HeaderAlianza - Organism', () => {
     });
 
     it('should display login button when logged out', () => {
-      mockUserQuery.mockReturnValue(createMockTRPCQuery(null));
+      mockUserQuery.mockReturnValue(createMockTRPCQuery(null as any));
 
       renderWithProviders(<HeaderAlianza />);
 
@@ -226,7 +226,7 @@ describe('HeaderAlianza - Organism', () => {
     });
 
     it('should display register button when logged out', () => {
-      mockUserQuery.mockReturnValue(createMockTRPCQuery(null));
+      mockUserQuery.mockReturnValue(createMockTRPCQuery(null as any));
 
       renderWithProviders(<HeaderAlianza />);
 
@@ -315,7 +315,7 @@ describe('HeaderAlianza - Organism', () => {
     });
 
     it('should render all public navigation links', () => {
-      mockUserQuery.mockReturnValue(createMockTRPCQuery(null));
+      mockUserQuery.mockReturnValue(createMockTRPCQuery(null as any));
 
       renderWithProviders(<HeaderAlianza />);
 
@@ -328,7 +328,7 @@ describe('HeaderAlianza - Organism', () => {
 
     it('should navigate to login page when login button is clicked', async () => {
       const user = userEvent.setup();
-      mockUserQuery.mockReturnValue(createMockTRPCQuery(null));
+      mockUserQuery.mockReturnValue(createMockTRPCQuery(null as any));
 
       renderWithProviders(<HeaderAlianza />);
 
@@ -410,7 +410,7 @@ describe('HeaderAlianza - Organism', () => {
     });
 
     it('should render mobile menu with public routes', () => {
-      mockUserQuery.mockReturnValue(createMockTRPCQuery(null));
+      mockUserQuery.mockReturnValue(createMockTRPCQuery(null as any));
 
       renderWithProviders(<HeaderAlianza />);
 
@@ -418,7 +418,7 @@ describe('HeaderAlianza - Organism', () => {
     });
 
     it('should render mobile login button when logged out', () => {
-      mockUserQuery.mockReturnValue(createMockTRPCQuery(null));
+      mockUserQuery.mockReturnValue(createMockTRPCQuery(null as any));
 
       renderWithProviders(<HeaderAlianza />);
 
@@ -494,7 +494,7 @@ describe('HeaderAlianza - Organism', () => {
   describe('9. Loading States', () => {
     it('should handle loading state from tRPC query', () => {
       mockUserQuery.mockReturnValue(
-        createMockTRPCQuery(null, { isLoading: true })
+        createMockTRPCQuery(null as any, { isLoading: true })
       );
 
       renderWithProviders(<HeaderAlianza />);
@@ -531,7 +531,7 @@ describe('HeaderAlianza - Organism', () => {
 
   describe('11. Additional Edge Cases', () => {
     it('should handle null user data gracefully', () => {
-      mockUserQuery.mockReturnValue(createMockTRPCQuery(null));
+      mockUserQuery.mockReturnValue(createMockTRPCQuery(null as any));
 
       renderWithProviders(<HeaderAlianza />);
 
@@ -564,7 +564,7 @@ describe('HeaderAlianza - Organism', () => {
 
     it('should navigate to register page when register button is clicked', async () => {
       const user = userEvent.setup();
-      mockUserQuery.mockReturnValue(createMockTRPCQuery(null));
+      mockUserQuery.mockReturnValue(createMockTRPCQuery(null as any));
 
       renderWithProviders(<HeaderAlianza />);
 

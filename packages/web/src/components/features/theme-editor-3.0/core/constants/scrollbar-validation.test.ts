@@ -9,12 +9,12 @@ describe('Scrollbar Colors Validation', () => {
     const lightColors = DEFAULT_THEME.lightColors;
     
     // Track should be pure white
-    expect(lightColors.scrollbarTrack.hex.toUpperCase()).toBe('#FFFFFF');
+    expect(lightColors.scrollbarTrack.hex!.toUpperCase()).toBe('#FFFFFF');
     expect(lightColors.scrollbarTrack.name).toBe('Scrollbar Track');
     expect(lightColors.scrollbarTrack.oklchString).toContain('oklch(');
     
     // Thumb should be light gray
-    expect(lightColors.scrollbarThumb.hex.toUpperCase()).toBe('#CDCDCD');
+    expect(lightColors.scrollbarThumb.hex!.toUpperCase()).toBe('#CDCDCD');
     expect(lightColors.scrollbarThumb.name).toBe('Scrollbar Thumb');
     expect(lightColors.scrollbarThumb.oklchString).toContain('oklch(');
   });
@@ -23,12 +23,12 @@ describe('Scrollbar Colors Validation', () => {
     const darkColors = DEFAULT_THEME.darkColors;
     
     // Track should be very dark
-    expect(darkColors.scrollbarTrack.hex.toUpperCase()).toBe('#0A0A0A');
+    expect(darkColors.scrollbarTrack.hex!.toUpperCase()).toBe('#0A0A0A');
     expect(darkColors.scrollbarTrack.name).toBe('Scrollbar Track');
     expect(darkColors.scrollbarTrack.oklchString).toContain('oklch(');
     
     // Thumb should be dark gray
-    expect(darkColors.scrollbarThumb.hex.toUpperCase()).toBe('#2E2929');
+    expect(darkColors.scrollbarThumb.hex!.toUpperCase()).toBe('#2E2929');
     expect(darkColors.scrollbarThumb.name).toBe('Scrollbar Thumb');
     expect(darkColors.scrollbarThumb.oklchString).toContain('oklch(');
   });

@@ -123,7 +123,7 @@ import { Input, MemoizedInput } from './Input';
 } satisfies Meta<typeof Input>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = Omit<StoryObj<typeof meta>, 'args'> & Partial<Pick<StoryObj<typeof meta>, 'args'>>;
 
 // ===== VARIANTES BÁSICAS =====
 export const Default: Story = {

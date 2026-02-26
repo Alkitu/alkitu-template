@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { trpc } from '@/lib/trpc';
-import { io } from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
+import { logger } from '@/lib/logger';
 import { 
   getStoredConversations, 
   saveConversation, 
@@ -29,8 +30,8 @@ export function useChat() {
     if (storedLead) {
       try {
         setLead(JSON.parse(storedLead));
-      } catch (e) {
-        console.error('Failed to parse lead info', e);
+      } catch {
+        // Corrupted lead data in localStorage, ignore
       }
     }
   }, []);
@@ -55,7 +56,7 @@ export function useChat() {
           const restoredLead = {
             name: stored.contactInfo.name || '',
             email: stored.contactInfo.email || '',
-            phone: stored.contactInfo.phone || '',
+            phone: (stored.contactInfo as any).phone || '',
           };
           setLead(restoredLead);
           // Sync to lead storage too for future
@@ -142,20 +143,34 @@ export function useChat() {
 
   useEffect(() => {
     if (conversation?.id) {
-      const socket = io();
+      const chatUrl =
+        process.env.NODE_ENV === 'production'
+          ? '/chat'
+          : 'http://localhost:3001/chat';
 
-      socket.on(`typing:${conversation.id}`, (data: { isTyping: boolean }) => {
+      const socket: Socket = io(chatUrl, {
+        withCredentials: true,
+        transports: ['websocket', 'polling'],
+      });
+
+      socket.on('connect', () => {
+        logger.debug('Chat WebSocket connected');
+        socket.emit('chat:join', { conversationId: conversation.id });
+      });
+
+      socket.on('chat:typing', (data: { isTyping: boolean }) => {
         setIsTyping(data.isTyping);
         if (data.isTyping) {
           setTimeout(() => setIsTyping(false), 3000);
         }
       });
 
-      socket.on(`message:${conversation.id}`, () => {
+      socket.on('chat:newMessage', () => {
         utils.chat.getMessages.invalidate({ conversationId: conversation.id });
       });
 
       return () => {
+        socket.emit('chat:leave', { conversationId: conversation.id });
         socket.disconnect();
       };
     }
@@ -182,7 +197,7 @@ export function useChat() {
       if (!conversation?.id) {
         const name = user ? `${user.firstname} ${user.lastname}` : lead?.name;
         const email = user?.email || lead?.email;
-        const phone = user?.contactNumber || lead?.phone;
+        const phone = (user as any)?.contactNumber || lead?.phone;
 
         if (!name && !email) {
           throw new Error('No identity found');

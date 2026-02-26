@@ -328,7 +328,7 @@ describe('Brand Component', () => {
     });
 
     it('passes through additional HTML attributes', () => {
-      render(<Brand data-testid="custom-brand" id="brand-id" />);
+      render(<Brand {...{ 'data-testid': 'custom-brand', id: 'brand-id' } as any} />);
       const element = screen.getByTestId('custom-brand');
 
       expect(element).toHaveAttribute('id', 'brand-id');

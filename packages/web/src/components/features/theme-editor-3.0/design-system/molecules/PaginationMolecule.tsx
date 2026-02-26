@@ -201,15 +201,14 @@ export function PaginationMolecule({
               sm:min-w-8 sm:h-8 sm:p-1
             `}
           >
-            <ChevronLeft 
-              className="h-4 w-4" 
+            <ChevronLeft
+              className="h-4 w-4 group-hover:scale-110"
               style={{
                 transition: 'transform 0.3s ease',
-                color: (disabled || currentPage === 1) 
-                  ? (colors?.mutedForeground?.value || 'var(--color-muted-foreground)') 
+                color: (disabled || currentPage === 1)
+                  ? (colors?.mutedForeground?.value || 'var(--color-muted-foreground)')
                   : (colors?.foreground?.value || 'var(--color-foreground)')
               }}
-              className="group-hover:scale-110"
             />
           </Button>
 
@@ -262,15 +261,14 @@ export function PaginationMolecule({
               sm:min-w-8 sm:h-8 sm:p-1
             `}
           >
-            <ChevronRight 
-              className="h-4 w-4" 
+            <ChevronRight
+              className="h-4 w-4 group-hover:scale-110"
               style={{
                 transition: 'transform 0.3s ease',
-                color: (disabled || currentPage === totalPages) 
-                  ? (colors?.mutedForeground?.value || 'var(--color-muted-foreground)') 
+                color: (disabled || currentPage === totalPages)
+                  ? (colors?.mutedForeground?.value || 'var(--color-muted-foreground)')
                   : (colors?.foreground?.value || 'var(--color-foreground)')
               }}
-              className="group-hover:scale-110"
             />
           </Button>
         </div>
@@ -345,15 +343,14 @@ export function PaginationMolecule({
                   sm:min-w-8 sm:h-8 sm:p-1 sm:hidden
                 `}
               >
-                <ChevronsLeft 
-                  className="h-4 w-4" 
+                <ChevronsLeft
+                  className="h-4 w-4 group-hover:scale-110"
                   style={{
                     transition: 'transform 0.3s ease',
-                    color: disabled 
-                      ? (colors?.mutedForeground?.value || 'var(--color-muted-foreground)') 
+                    color: disabled
+                      ? (colors?.mutedForeground?.value || 'var(--color-muted-foreground)')
                       : (colors?.primary?.value || 'var(--color-primary)')
                   }}
-                  className="group-hover:scale-110"
                 />
               </Button>
             </PaginationItem>

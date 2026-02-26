@@ -69,14 +69,14 @@ const basicFormSettings: FormSettings = {
       type: 'text',
       label: 'Full Name',
       placeholder: 'Enter your full name',
-      required: true,
+      validation: { required: true },
     },
     {
       id: 'field-2',
       type: 'email',
       label: 'Email Address',
       placeholder: 'your@email.com',
-      required: true,
+      validation: { required: true },
       emailOptions: {
         showValidationIcon: true,
         validateOnBlur: true,
@@ -87,7 +87,6 @@ const basicFormSettings: FormSettings = {
       type: 'phone',
       label: 'Phone Number',
       placeholder: '(555) 123-4567',
-      required: false,
       phoneOptions: {
         format: 'national',
         defaultCountry: 'US',
@@ -99,12 +98,11 @@ const basicFormSettings: FormSettings = {
       type: 'textarea',
       label: 'Message',
       placeholder: 'Type your message here...',
-      required: true,
+      validation: { required: true, maxLength: 500 },
       textareaOptions: {
         rows: 4,
         resize: 'vertical',
         showCharacterCount: true,
-        maxLength: 500,
       },
     },
   ],
@@ -122,13 +120,13 @@ const complexFormSettings: FormSettings = {
       id: 'field-1',
       type: 'text',
       label: 'Product Name',
-      required: true,
+      validation: { required: true },
     },
     {
       id: 'field-2',
       type: 'select',
       label: 'Product Category',
-      required: true,
+      validation: { required: true },
       selectOptions: {
         items: [
           { id: 'cat-1', label: 'Electronics', value: 'electronics' },
@@ -143,7 +141,7 @@ const complexFormSettings: FormSettings = {
       id: 'field-3',
       type: 'radio',
       label: 'How satisfied are you?',
-      required: true,
+      validation: { required: true },
       radioOptions: {
         items: [
           { id: 'sat-1', label: 'Very Satisfied', value: '5' },
@@ -159,7 +157,6 @@ const complexFormSettings: FormSettings = {
       id: 'field-4',
       type: 'multiselect',
       label: 'Features Used',
-      required: false,
       multiSelectOptions: {
         items: [
           { id: 'feat-1', label: 'Feature A', value: 'a' },
@@ -174,7 +171,6 @@ const complexFormSettings: FormSettings = {
       id: 'field-5',
       type: 'toggle',
       label: 'Would you recommend this product?',
-      required: false,
       toggleOptions: {
         defaultChecked: false,
         style: 'toggle',
@@ -187,19 +183,17 @@ const complexFormSettings: FormSettings = {
       type: 'number',
       label: 'Price Paid',
       placeholder: '0.00',
-      required: false,
       numberOptions: {
-        type: 'currency',
-        currency: 'USD',
-        min: 0,
+        displayType: 'currency',
+        currencyCode: 'USD',
         step: 0.01,
       },
+      validation: { min: 0 },
     },
     {
       id: 'field-7',
       type: 'date',
       label: 'Purchase Date',
-      required: false,
       dateOptions: {
         mode: 'date',
         locale: 'en',
@@ -222,7 +216,7 @@ const multiLocaleFormSettings: FormSettings = {
       type: 'text',
       label: 'First Name',
       placeholder: 'Enter first name',
-      required: true,
+      validation: { required: true },
       i18n: {
         es: {
           label: 'Nombre',
@@ -235,7 +229,7 @@ const multiLocaleFormSettings: FormSettings = {
       type: 'text',
       label: 'Last Name',
       placeholder: 'Enter last name',
-      required: true,
+      validation: { required: true },
       i18n: {
         es: {
           label: 'Apellido',
@@ -248,7 +242,7 @@ const multiLocaleFormSettings: FormSettings = {
       type: 'email',
       label: 'Email',
       placeholder: 'your@email.com',
-      required: true,
+      validation: { required: true },
       emailOptions: {
         showValidationIcon: true,
         validateOnBlur: true,
@@ -282,7 +276,6 @@ const stepFormSettings: FormSettings = {
       id: 'group-1',
       type: 'group',
       label: 'Personal Information',
-      required: false,
       groupOptions: {
         title: 'Personal Information',
         description: 'Tell us about yourself',
@@ -291,19 +284,19 @@ const stepFormSettings: FormSettings = {
             id: 'field-1-1',
             type: 'text',
             label: 'First Name',
-            required: true,
+            validation: { required: true },
           },
           {
             id: 'field-1-2',
             type: 'text',
             label: 'Last Name',
-            required: true,
+            validation: { required: true },
           },
           {
             id: 'field-1-3',
             type: 'date',
             label: 'Date of Birth',
-            required: true,
+            validation: { required: true },
             dateOptions: {
               mode: 'date',
               locale: 'en',
@@ -318,7 +311,6 @@ const stepFormSettings: FormSettings = {
       id: 'group-2',
       type: 'group',
       label: 'Contact Details',
-      required: false,
       groupOptions: {
         title: 'Contact Details',
         description: 'How can we reach you?',
@@ -327,7 +319,7 @@ const stepFormSettings: FormSettings = {
             id: 'field-2-1',
             type: 'email',
             label: 'Email',
-            required: true,
+            validation: { required: true },
             emailOptions: {
               showValidationIcon: true,
               validateOnBlur: true,
@@ -337,7 +329,6 @@ const stepFormSettings: FormSettings = {
             id: 'field-2-2',
             type: 'phone',
             label: 'Phone',
-            required: false,
             phoneOptions: {
               format: 'national',
               defaultCountry: 'US',
@@ -352,7 +343,6 @@ const stepFormSettings: FormSettings = {
       id: 'group-3',
       type: 'group',
       label: 'Additional Information',
-      required: false,
       groupOptions: {
         title: 'Additional Information',
         description: 'Optional details',
@@ -361,12 +351,11 @@ const stepFormSettings: FormSettings = {
             id: 'field-3-1',
             type: 'textarea',
             label: 'Comments',
-            required: false,
+            validation: { maxLength: 500 },
             textareaOptions: {
               rows: 4,
               resize: 'vertical',
               showCharacterCount: true,
-              maxLength: 500,
             },
           },
         ],
@@ -430,13 +419,13 @@ export const FormWithFewFields: Story = {
           id: 'field-1',
           type: 'text',
           label: 'Name',
-          required: true,
+          validation: { required: true },
         },
         {
           id: 'field-2',
           type: 'email',
           label: 'Email',
-          required: true,
+          validation: { required: true },
           emailOptions: {
             showValidationIcon: true,
             validateOnBlur: true,
@@ -446,7 +435,7 @@ export const FormWithFewFields: Story = {
           id: 'field-3',
           type: 'select',
           label: 'Rating',
-          required: true,
+          validation: { required: true },
           selectOptions: {
             items: [
               { id: 'r1', label: '1 Star', value: '1' },
@@ -497,40 +486,36 @@ export const AllFieldTypesShowcase: Story = {
       title: 'All Field Types',
       description: 'Showcasing all available field types',
       fields: [
-        { id: 'f1', type: 'text', label: 'Text Field', required: false },
+        { id: 'f1', type: 'text', label: 'Text Field' },
         {
           id: 'f2',
           type: 'textarea',
           label: 'Textarea Field',
-          required: false,
           textareaOptions: { rows: 3, resize: 'vertical', showCharacterCount: false },
         },
         {
           id: 'f3',
           type: 'number',
           label: 'Number Field',
-          required: false,
-          numberOptions: { type: 'number', min: 0, max: 100, step: 1 },
+          numberOptions: { displayType: 'number', step: 1 },
+          validation: { min: 0, max: 100 },
         },
         {
           id: 'f4',
           type: 'email',
           label: 'Email Field',
-          required: false,
           emailOptions: { showValidationIcon: true, validateOnBlur: true },
         },
         {
           id: 'f5',
           type: 'phone',
           label: 'Phone Field',
-          required: false,
           phoneOptions: { format: 'national', defaultCountry: 'US', mask: '(###) ###-####' },
         },
         {
           id: 'f6',
           type: 'select',
           label: 'Select Field',
-          required: false,
           selectOptions: {
             items: [
               { id: 'o1', label: 'Option 1', value: 'opt1' },
@@ -543,7 +528,6 @@ export const AllFieldTypesShowcase: Story = {
           id: 'f7',
           type: 'radio',
           label: 'Radio Field',
-          required: false,
           radioOptions: {
             items: [
               { id: 'r1', label: 'Choice A', value: 'a' },
@@ -556,7 +540,6 @@ export const AllFieldTypesShowcase: Story = {
           id: 'f8',
           type: 'multiselect',
           label: 'Multi-Select Field',
-          required: false,
           multiSelectOptions: {
             items: [
               { id: 'm1', label: 'Item 1', value: '1' },
@@ -569,7 +552,6 @@ export const AllFieldTypesShowcase: Story = {
           id: 'f9',
           type: 'toggle',
           label: 'Toggle Field',
-          required: false,
           toggleOptions: {
             defaultChecked: false,
             style: 'toggle',
@@ -581,21 +563,18 @@ export const AllFieldTypesShowcase: Story = {
           id: 'f10',
           type: 'date',
           label: 'Date Field',
-          required: false,
           dateOptions: { mode: 'date', locale: 'en', hourCycle: 24 },
         },
         {
           id: 'f11',
           type: 'time',
           label: 'Time Field',
-          required: false,
-          timeOptions: { locale: 'en', hourCycle: 24 },
+          timeOptions: { format24: true },
         },
         {
           id: 'f12',
           type: 'datetime',
           label: 'DateTime Field',
-          required: false,
           dateOptions: { mode: 'datetime', locale: 'en', hourCycle: 24 },
         },
       ],
@@ -693,7 +672,7 @@ export const FormWithManyFields: Story = {
         type: ['text', 'email', 'select', 'textarea', 'number'][i % 5] as any,
         label: `Field ${i + 1}`,
         placeholder: `Enter field ${i + 1}`,
-        required: i % 3 === 0,
+        ...(i % 3 === 0 && { validation: { required: true } }),
         ...(i % 5 === 2 && {
           selectOptions: {
             items: [
@@ -707,7 +686,7 @@ export const FormWithManyFields: Story = {
           textareaOptions: { rows: 3, resize: 'vertical', showCharacterCount: false },
         }),
         ...(i % 5 === 4 && {
-          numberOptions: { type: 'number', min: 0, step: 1 },
+          numberOptions: { displayType: 'number', step: 1 },
         }),
       })),
     },

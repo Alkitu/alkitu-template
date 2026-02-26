@@ -33,14 +33,6 @@ export function parseOklchString(value: string): OklchColor | null {
 }
 
 /**
- * Applies theme colors to CSS root variables (legacy function)
- * @deprecated Use applyModeSpecificColors instead
- */
-export function applyThemeColorsToRoot(colors: ThemeColors): void {
-  applyModeSpecificColors(colors);
-}
-
-/**
  * Applies mode-specific colors to CSS root variables V2
  * Uses OKLCH strings as source of truth for precise color representation
  */
@@ -218,7 +210,7 @@ export function applyShadowElements(shadows: Record<string, string>): void {
   const root = document.documentElement;
 
   // Map shadow keys to CSS variable names
-  const shadowMap = {
+  const shadowMap: Record<string, string> = {
     'shadow2xs': '--shadow-2xs',
     'shadowXs': '--shadow-xs',
     'shadowSm': '--shadow-sm',
@@ -395,17 +387,17 @@ export function updateCSSVariable(variableName: string, value: string): void {
  * Applies ONLY scrollbar colors from theme colors
  * This ensures scrollbar colors update immediately when changed in Theme Editor
  */
-export function applyScrollbarColors(colors: import('../types/theme.types').ThemeColors): void {
+export function applyScrollbarColors(colors: import('../../../core/types/theme.types').ThemeColors): void {
   const root = document.documentElement;
 
   if (colors.scrollbarTrack) {
-    const trackValue = colors.scrollbarTrack.oklchString || colors.scrollbarTrack.value;
+    const trackValue = colors.scrollbarTrack.oklchString || colors.scrollbarTrack.value || null;
     root.style.setProperty('--scrollbar-track', trackValue);
     console.log('🎯 Applied scrollbar-track:', trackValue);
   }
 
   if (colors.scrollbarThumb) {
-    const thumbValue = colors.scrollbarThumb.oklchString || colors.scrollbarThumb.value;
+    const thumbValue = colors.scrollbarThumb.oklchString || colors.scrollbarThumb.value || null;
     root.style.setProperty('--scrollbar-thumb', thumbValue);
     console.log('🎯 Applied scrollbar-thumb:', thumbValue);
   }
@@ -415,7 +407,7 @@ export function applyScrollbarColors(colors: import('../types/theme.types').Them
  * SOLUTION 1: Apply scrollbar styling using CSS Custom Properties + Utility Classes
  * This is more reliable than dynamic CSS injection
  */
-export function applyScrollbarUtilityClass(scroll: { width: string; behavior: 'auto' | 'smooth' | 'instant'; smooth: boolean; hide: boolean; trackRadius?: string; thumbRadius?: string; }, colors: { scrollbarTrack?: { value: string }; scrollbarThumb?: { value: string } }): void {
+export function applyScrollbarUtilityClass(scroll: { width: string; behavior: 'auto' | 'smooth' | 'instant'; smooth: boolean; hide: boolean; trackRadius?: string; thumbRadius?: string; }, colors: { scrollbarTrack?: { value?: string }; scrollbarThumb?: { value?: string } }): void {
   const root = document.documentElement;
 
   console.log('🎯 SOLUTION 1 - APPLYING UTILITY CLASS METHOD:', {

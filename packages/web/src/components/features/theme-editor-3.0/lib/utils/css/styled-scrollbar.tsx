@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useThemeEditor } from '../../core/context/ThemeEditorContext';
+import { useThemeEditor } from '../../../core/context/ThemeEditorContext';
 
 /**
  * Scrollbar Styled Component - Solución 3

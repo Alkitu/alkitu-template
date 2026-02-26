@@ -3,7 +3,7 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
    * Visual variant of the button
    * @default 'default'
    */
-  variant?: 'default' | 'outline' | 'ghost' | 'destructive' | 'secondary' | 'loading' | 'icon';
+  variant?: 'default' | 'outline' | 'ghost' | 'destructive' | 'secondary' | 'loading' | 'icon' | 'primary' | 'warning' | 'error' | 'success' | 'link';
 
   /**
    * Size of the button

@@ -420,10 +420,8 @@ export const withProductionOptimization = <P extends object>(
 
 export default ThemeEditorProductionProvider;
 
+// ProductionOptimizedThemeEditor, ProductionDesignSystem, ProductionPreviewContainer,
+// and withProductionOptimization are already exported at their declaration site.
 export {
-  ProductionOptimizedThemeEditor,
-  ProductionDesignSystem,
-  ProductionPreviewContainer,
   setupProductionEnvironment,
-  withProductionOptimization
 };

@@ -135,7 +135,7 @@ export function QuickActionCard({
         {/* Icon container */}
         <div
           className={cn(
-            'h-12 w-12 rounded-lg flex items-center justify-center flex-shrink-0',
+            'h-12 w-12 rounded-[var(--radius-card)] flex items-center justify-center flex-shrink-0',
             iconBgClass
           )}
         >

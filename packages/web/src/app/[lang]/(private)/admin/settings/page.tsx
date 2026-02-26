@@ -38,6 +38,12 @@ const settingsOptions = [
     icon: 'Mail',
     badge: 'New',
   },
+  {
+    title: 'Google Drive',
+    description: 'Configurar carpeta raiz, credenciales y conexion de Google Drive',
+    href: 'drive',
+    icon: 'HardDrive',
+  },
 ];
 
 export default function SettingsPage() {

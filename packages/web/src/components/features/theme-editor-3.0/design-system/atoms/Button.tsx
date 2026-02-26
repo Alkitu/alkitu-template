@@ -3,7 +3,7 @@
 import React from 'react';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'default' | 'outline' | 'ghost' | 'destructive' | 'secondary' | 'loading' | 'icon';
+  variant?: 'default' | 'outline' | 'ghost' | 'destructive' | 'secondary' | 'primary' | 'warning' | 'error' | 'success' | 'loading' | 'icon' | 'link';
   size?: 'default' | 'sm' | 'lg' | 'icon';
   loading?: boolean;
   icon?: React.ReactNode;
@@ -132,7 +132,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           '--focus-ring-color': 'var(--colors-primary, #0066CC)',
           // Enhanced focus visibility
           boxShadow: loading ? 'none' : undefined,
-        }}
+        } as React.CSSProperties}
         // CSS focus-visible handler (additive enhancement)
         onFocus={(e) => {
           // Enhanced focus ring for accessibility

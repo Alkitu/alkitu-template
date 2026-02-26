@@ -59,7 +59,7 @@ const meta = {
 } satisfies Meta<typeof EmployeeAssignmentButton>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = Omit<StoryObj<typeof meta>, 'args'> & Partial<Pick<StoryObj<typeof meta>, 'args'>>;
 
 // Default unassigned state
 export const Default: Story = {

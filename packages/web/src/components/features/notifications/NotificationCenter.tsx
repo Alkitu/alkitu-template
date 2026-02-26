@@ -1,4 +1,4 @@
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { trpc } from '@/lib/trpc';
 import { Bell, Check, Trash2, MailOpen, Mail, Calendar, Info, Clock, CheckCheck } from 'lucide-react';
@@ -29,6 +29,9 @@ interface NotificationCenterProps {
 export function NotificationCenter({ userId }: NotificationCenterProps) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
+  // Extract role base path (e.g. "/es/admin" or "/en/client") from current URL
+  const roleBase = pathname.match(/\/[^/]+\/(admin|client|employee)/)?.[0] || '/admin';
   const queryClient = useQueryClient();
   const utils = trpc.useContext();
 
@@ -213,7 +216,7 @@ export function NotificationCenter({ userId }: NotificationCenterProps) {
             className="w-full text-xs h-8"
             onClick={() => {
               setOpen(false);
-              router.push('/admin/notifications');
+              router.push(`${roleBase}/notifications`);
             }}
           >
             Ver todas las notificaciones

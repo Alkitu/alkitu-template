@@ -29,10 +29,12 @@ export function BrandEditor({
   };
 
   const handleLogoChange = (type: 'icon' | 'horizontal' | 'vertical', logo: LogoVariant | null) => {
-    const updatedBrand = {
+    const updatedBrand: ThemeBrand = {
       ...brand,
       logos: {
-        ...brand.logos,
+        icon: brand.logos?.icon ?? null,
+        horizontal: brand.logos?.horizontal ?? null,
+        vertical: brand.logos?.vertical ?? null,
         [type]: logo
       }
     };
@@ -61,7 +63,7 @@ export function BrandEditor({
               type="icon"
               aspectRatio="1:1"
               instructions="Sube tu logo en formato cuadrado (1:1). Ideal para favicons, app icons y espacios reducidos."
-              logo={brand.logos.icon}
+              logo={brand.logos?.icon ?? null}
               onLogoChange={(logo) => handleLogoChange('icon', logo)}
               className="w-full"
             />
@@ -85,7 +87,7 @@ export function BrandEditor({
               type="horizontal"
               aspectRatio="3:1"
               instructions="Sube tu logo en formato horizontal (3:1). Perfecto para headers y navegación principal."
-              logo={brand.logos.horizontal}
+              logo={brand.logos?.horizontal ?? null}
               onLogoChange={(logo) => handleLogoChange('horizontal', logo)}
               className="w-full"
             />
@@ -109,7 +111,7 @@ export function BrandEditor({
               type="vertical"
               aspectRatio="3:4"
               instructions="Sube tu logo en formato vertical (3:4). Ideal para sidebars y espacios altos."
-              logo={brand.logos.vertical}
+              logo={brand.logos?.vertical ?? null}
               onLogoChange={(logo) => handleLogoChange('vertical', logo)}
               className="w-full"
             />

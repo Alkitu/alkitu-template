@@ -124,11 +124,11 @@ export function useActionsBarLogic(): ActionsBarLogic {
           name: theme.name,
           description: theme.description,
           author: theme.author,
-          companyId: companyId,
-          createdById: userId,
-          lightModeConfig: theme.lightColors,
-          darkModeConfig: theme.darkColors,
-          typography: completeTypography,
+          companyId: companyId ?? undefined,
+          createdById: userId ?? undefined,
+          lightModeConfig: theme.lightColors as unknown as Record<string, unknown>,
+          darkModeConfig: theme.darkColors as unknown as Record<string, unknown>,
+          typography: completeTypography as Record<string, unknown>,
           tags: theme.tags,
           // NO isActive field - always creates as inactive
         });
@@ -152,12 +152,12 @@ export function useActionsBarLogic(): ActionsBarLogic {
         // UPDATE existing theme (NO isActive in input)
         const updatedTheme = await updateThemeMutation.mutateAsync({
           themeId: theme.id,
-          userId: userId,
+          userId: userId ?? undefined,
           name: theme.name,
           description: theme.description,
-          lightModeConfig: theme.lightColors,
-          darkModeConfig: theme.darkColors,
-          typography: completeTypography,
+          lightModeConfig: theme.lightColors as unknown as Record<string, unknown>,
+          darkModeConfig: theme.darkColors as unknown as Record<string, unknown>,
+          typography: completeTypography as Record<string, unknown>,
           tags: theme.tags,
           // NO isActive field - use setGlobalActiveTheme instead
         });

@@ -192,7 +192,6 @@ export function createCustomIconComponent(svg: string) {
 
     return (
       <CustomIcon
-        ref={ref}
         svg={svg}
         size={size}
         variant={variant}

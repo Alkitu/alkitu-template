@@ -9,8 +9,8 @@ import { cn } from '@/lib/utils';
 export {
   Button,
   MemoizedButton,
-} from '@/components/features/theme-editor-3.0/design-system/primitives/Button';
-export type { ButtonProps } from '@/components/features/theme-editor-3.0/design-system/primitives/Button';
+} from '@/components/features/theme-editor-3.0/design-system/primitives/Button/Button';
+export type { ButtonProps } from '@/components/features/theme-editor-3.0/design-system/primitives/Button/Button.types';
 
 /**
  * buttonVariants utility function for consistent button styling

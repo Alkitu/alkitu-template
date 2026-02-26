@@ -154,14 +154,14 @@ export function applyTypographyToken(
   element.style.fontWeight = token.fontWeight;
   element.style.lineHeight = token.lineHeight;
   element.style.letterSpacing = token.letterSpacing;
-  
+
   if (token.textDecoration) {
     element.style.textDecoration = token.textDecoration;
   }
-  if (token.textTransform) {
+  if ('textTransform' in token && token.textTransform) {
     element.style.textTransform = token.textTransform;
   }
-  if (token.color) {
+  if ('color' in token && token.color) {
     element.style.color = token.color;
   }
 }
@@ -174,13 +174,13 @@ export function generateTypographyCSSVariables(
 ): string {
   let css = '';
   
-  Object.entries(SYSTEM_TYPOGRAPHY_TOKENS).forEach(([name, token]) => {
+  (Object.entries(SYSTEM_TYPOGRAPHY_TOKENS) as [string, TypographyToken][]).forEach(([name, token]) => {
     css += `  ${prefix}-${name}-font-family: ${token.fontFamily};\n`;
     css += `  ${prefix}-${name}-font-size: ${token.fontSize};\n`;
     css += `  ${prefix}-${name}-font-weight: ${token.fontWeight};\n`;
     css += `  ${prefix}-${name}-line-height: ${token.lineHeight};\n`;
     css += `  ${prefix}-${name}-letter-spacing: ${token.letterSpacing};\n`;
-    
+
     if (token.textDecoration) {
       css += `  ${prefix}-${name}-text-decoration: ${token.textDecoration};\n`;
     }
@@ -213,7 +213,7 @@ ${generateTypographyCSSVariables()}
 }
 
 /* Clases utilitarias basadas en tokens */
-${Object.entries(SYSTEM_TYPOGRAPHY_TOKENS).map(([name, token]) => `
+${(Object.entries(SYSTEM_TYPOGRAPHY_TOKENS) as [string, TypographyToken][]).map(([name, token]) => `
 .typography-${name} {
   font-family: var(--typography-${name}-font-family);
   font-size: var(--typography-${name}-font-size);
@@ -236,7 +236,6 @@ export function createTypographyToken(
   config: Partial<TypographyToken> & { fontFamily: string }
 ): TypographyToken {
   return {
-    fontFamily: config.fontFamily,
     fontSize: config.fontSize || '1rem',
     fontWeight: config.fontWeight || '400',
     lineHeight: config.lineHeight || '1.5',

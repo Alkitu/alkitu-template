@@ -116,7 +116,7 @@ const createValidationForRule = (rule: ValidationRule, schema: z.ZodTypeAny): z.
 }
 
 const createFieldValidation = (field: FormField) => {
-  let schema: z.ZodTypeAny = z.any()
+  let schema: z.ZodTypeAny = z.unknown()
 
   // Base schema based on field type
   switch (field.type) {
@@ -152,7 +152,7 @@ const createFieldValidation = (field: FormField) => {
       schema = z.number()
       break
     default:
-      schema = z.any()
+      schema = z.unknown()
   }
 
   // Apply date/time-specific validations

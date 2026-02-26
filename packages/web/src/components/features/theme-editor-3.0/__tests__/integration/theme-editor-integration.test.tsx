@@ -238,8 +238,8 @@ describe('Theme Editor Integration Tests', () => {
         React.createElement(Select, {
           tabIndex: 0,
           options: [{ value: 'option1', label: 'Option 1' }],
-          'aria-label': 'Theme category'
-        }),
+          'aria-label': 'Theme category',
+        } as any),
         React.createElement(Button, {
           tabIndex: 0,
           onKeyDown: vi.fn(),
@@ -250,8 +250,8 @@ describe('Theme Editor Integration Tests', () => {
 
       // Verificar orden de tabulación
       keyboardFlow.forEach((component, index) => {
-        expect(component.props.tabIndex).toBe(0);
-        expect(component.props['aria-label']).toBeDefined();
+        expect((component.props as any).tabIndex).toBe(0);
+        expect((component.props as any)['aria-label']).toBeDefined();
       });
     });
   });

@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Card } from '../../design-system/primitives/card';
 import { useThemeEditor } from '../../core/context/ThemeEditorContext';
-import { Button } from '../../design-system/primitives/button';
+import { Button } from '../../design-system/primitives/Button';
 import { Badge } from '../../design-system/primitives/badge';
 import { Ruler, RotateCcw, Eye, EyeOff } from 'lucide-react';
 import { LogoVariant, LOGO_SIZE_MAP, LogoSize } from '../../theme-editor/editor/brand/types';
@@ -39,7 +39,7 @@ export function ScalabilityTest({
   logos, 
   className = ""
 }: ScalabilityTestProps) {
-  const [selectedVariant, setSelectedVariant] = useState<keyof LogoVariant['variants']>('original');
+  const [selectedVariant, setSelectedVariant] = useState<keyof typeof VARIANT_NAMES>('original');
   const [showGrid, setShowGrid] = useState(true);
 
   // Filtrar logos que no son null
@@ -181,7 +181,7 @@ export function ScalabilityTest({
                 lineHeight: 'var(--typography-h4-line-height)',
                 letterSpacing: 'var(--typography-h4-letter-spacing)'
               }} className="text-foreground capitalize">
-                {logo.type} - {VARIANT_NAMES[selectedVariant]}
+                {logo.type} - {(VARIANT_NAMES as Record<string, string>)[selectedVariant]}
               </h4>
               <div className="flex gap-2">
                 <Badge variant="outline" className="text-xs">
@@ -195,7 +195,7 @@ export function ScalabilityTest({
 
             {/* SIZE_PROGRESSION_SHOWCASE */}
             <div 
-              className={`border ${VARIANT_BACKGROUNDS[selectedVariant]} ${showGrid ? 'bg-grid-pattern' : ''}`}
+              className={`border ${(VARIANT_BACKGROUNDS as Record<string, string>)[selectedVariant]} ${showGrid ? 'bg-grid-pattern' : ''}`}
               style={{ 
                 borderRadius: 'var(--radius-card, 8px)',
                 padding: mediumSpacing, // Using connected spacing
@@ -203,13 +203,13 @@ export function ScalabilityTest({
               }}
             >
               <div className="flex items-end justify-center gap-8 flex-wrap min-h-[120px]">
-                {(['xs', 'sm', 'md', 'lg', 'xl'] as LogoSize[]).map((size) => (
+                {(['xs', 'sm', 'md', 'lg', 'xl'] as unknown as LogoSize[]).map((size) => (
                   <div key={size} className="flex flex-col items-center gap-3">
                     {/* SIZE_SHOWCASE */}
                     <div className="flex flex-col items-center gap-2">
                       <div className="svg-container flex items-center justify-center transition-all duration-200 hover:scale-105">
                         <div 
-                          dangerouslySetInnerHTML={{ __html: logo.variants[selectedVariant] }}
+                          dangerouslySetInnerHTML={{ __html: (logo.variants?.[selectedVariant as keyof typeof logo.variants] ?? '') as string }}
                           className="svg-wrapper block"
                           style={{ 
                             width: `${LOGO_SIZE_MAP[size]}px`, 
@@ -247,7 +247,7 @@ export function ScalabilityTest({
 
             {/* SIZE_DESCRIPTIONS */}
             <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-              {(['xs', 'sm', 'md', 'lg', 'xl'] as LogoSize[]).map((size) => (
+              {(['xs', 'sm', 'md', 'lg', 'xl'] as unknown as LogoSize[]).map((size) => (
                 <div key={size} className="bg-muted/30 p-3 rounded-md">
                   <p style={{
                     fontFamily: 'var(--typography-emphasis-font-family)',
@@ -264,7 +264,7 @@ export function ScalabilityTest({
                     lineHeight: 'var(--typography-paragraph-line-height)',
                     letterSpacing: 'var(--typography-paragraph-letter-spacing)'
                   }} className="text-muted-foreground text-xs leading-tight">
-                    {SIZE_DESCRIPTIONS[size]}
+                    {(SIZE_DESCRIPTIONS as Record<string, string>)[size]}
                   </p>
                 </div>
               ))}

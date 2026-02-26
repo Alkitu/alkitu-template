@@ -57,7 +57,7 @@ const meta = {
 } satisfies Meta<typeof DatePicker>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = Omit<StoryObj<typeof meta>, 'args'> & Partial<Pick<StoryObj<typeof meta>, 'args'>>;
 
 // ============================================================
 // BASIC VARIANTS
@@ -299,7 +299,7 @@ export const InFormContext: Story = {
     const [formData, setFormData] = useState({
       startDate: undefined as DateValue,
       endDate: undefined as DateValue,
-      appointmentTime: new Date(2025, 0, 15, 14, 0),
+      appointmentTime: new Date(2025, 0, 15, 14, 0) as DateValue,
     });
 
     return (

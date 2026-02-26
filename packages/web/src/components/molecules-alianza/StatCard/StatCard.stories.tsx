@@ -102,7 +102,7 @@ const meta = {
 } satisfies Meta<typeof StatCard>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = Omit<StoryObj<typeof meta>, 'args'> & Partial<Pick<StoryObj<typeof meta>, 'args'>>;
 
 // Basic Examples
 export const Default: Story = {

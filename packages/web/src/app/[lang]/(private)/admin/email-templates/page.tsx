@@ -143,7 +143,7 @@ export default function AdminEmailTemplatesPage() {
                   </pre>
                 </div>
                 <div className="mt-4 flex items-center justify-between">
-                  <Typography variant="small" className="text-muted-foreground">
+                  <Typography variant="caption" className="text-muted-foreground">
                     Created: {new Date(template.createdAt).toLocaleDateString()}
                   </Typography>
                   <div className="flex items-center gap-2">

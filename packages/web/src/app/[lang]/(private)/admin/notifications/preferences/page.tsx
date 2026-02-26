@@ -51,9 +51,6 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 
-// Test user ID - En una aplicación real, esto vendría de la sesión del usuario
-const TEST_USER_ID = '6861ea1a1c0cf932169adce4';
-
 const timeRegex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
 
 const preferencesSchema = z.object({
@@ -82,7 +79,14 @@ type PreferencesFormData = z.infer<typeof preferencesSchema>;
 
 export default function NotificationPreferencesPage() {
   const t = useTranslations('notifications');
-  const { lang } = useParams(); // Added
+  const { lang } = useParams();
+
+  // Get current user
+  const { data: user, isLoading: isUserLoading } = trpc.user.me.useQuery(undefined, {
+    retry: 1,
+    refetchOnWindowFocus: false,
+  });
+  const userId = user?.id;
 
   // Get notification types with translations
   const getNotificationTypes = () => [
@@ -128,33 +132,28 @@ export default function NotificationPreferencesPage() {
     data: preferences,
     isLoading: loading,
     refetch,
-  } = trpc.notification.getUserPreferences.useQuery({
-    // TODO: Implement this
-    userId: TEST_USER_ID,
-  });
+  } = trpc.notification.getUserPreferences.useQuery(
+    { userId: userId! },
+    { enabled: !!userId },
+  );
 
   const updatePreferences =
     trpc.notification.createOrUpdatePreferences.useMutation({
-      // TODO: Implement this
       onSuccess: () => {
         toast.success(t('preferences.successUpdate'));
         refetch();
       },
-      onError: (error) => {
-        console.error('Error updating preferences:', error);
+      onError: () => {
         toast.error(t('preferences.errorUpdate'));
       },
     });
 
   const deletePreferences = trpc.notification.deletePreferences.useMutation({
-    // TODO: Implement this
     onSuccess: () => {
       toast.success(t('preferences.successReset'));
       refetch();
     },
-    onError: (error) => {
-      // TODO: Implement this
-      console.error('Error resetting preferences:', error);
+    onError: () => {
       toast.error(t('preferences.errorReset'));
     },
   });
@@ -204,19 +203,21 @@ export default function NotificationPreferencesPage() {
   }, [preferences, form]);
 
   const onSubmit = async (data: PreferencesFormData) => {
+    if (!userId) return;
     updatePreferences.mutate({
-      userId: TEST_USER_ID,
+      userId,
       preferences: data,
     });
   };
 
   const resetToDefaults = async () => {
+    if (!userId) return;
     deletePreferences.mutate({
-      userId: TEST_USER_ID,
+      userId,
     });
   };
 
-  if (loading) {
+  if (loading || isUserLoading || !userId) {
     return (
       <div className="p-6 max-w-4xl mx-auto">
         <div className="flex items-center justify-center py-12">
@@ -500,7 +501,7 @@ export default function NotificationPreferencesPage() {
 
           {/* Push Notifications - Browser Settings */}
           <PushNotificationSettings
-            userId={TEST_USER_ID}
+            userId={userId}
             enabled={form.watch('pushEnabled')}
           />
 

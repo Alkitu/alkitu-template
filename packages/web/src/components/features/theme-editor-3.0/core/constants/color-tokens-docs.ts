@@ -85,10 +85,7 @@ export const COLOR_TOKENS_DOCUMENTATION = {
    * TOKENS LEGACY (DEPRECADOS)
    * Estos tokens han sido completamente migrados al sistema estándar
    */
-  LEGACY_TOKENS: {
-    // Todos los tokens legacy han sido migrados exitosamente
-    // No quedan tokens legacy en uso en el Theme Editor 3.0
-  },
+  LEGACY_TOKENS: {} as Record<string, { replacement: string; description?: string }>,
 
   /**
    * GUÍAS DE USO

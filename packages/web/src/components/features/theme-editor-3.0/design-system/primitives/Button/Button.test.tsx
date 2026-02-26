@@ -9,7 +9,8 @@
 
 import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
-import { Button, type ButtonProps } from './Button';
+import { Button } from './Button';
+import type { ButtonProps } from './Button.types';
 
 describe('Button Component Structure', () => {
   it('should export Button component', () => {
@@ -67,14 +68,14 @@ describe('Button Component Structure', () => {
   });
 
   it('should extend HTML button attributes', () => {
-    const props: ButtonProps = {
+    const props = {
       disabled: true,
       onClick: vi.fn(),
       className: 'test-class',
       style: { color: 'red' },
       'data-testid': 'button-test',
-      type: 'button'
-    };
+      type: 'button' as const,
+    } as ButtonProps & { 'data-testid': string };
 
     expect(props.disabled).toBe(true);
     expect(props.onClick).toBeTypeOf('function');

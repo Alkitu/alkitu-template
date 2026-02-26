@@ -204,7 +204,7 @@ export class CompactErrorBoundary extends Component<
           this.state.error && (
             <details
               className={cn(
-                'w-full rounded-md border border-border bg-muted/50',
+                'w-full rounded-[var(--radius)] border border-border bg-muted/50',
                 config.padding
               )}
               data-testid="error-details"

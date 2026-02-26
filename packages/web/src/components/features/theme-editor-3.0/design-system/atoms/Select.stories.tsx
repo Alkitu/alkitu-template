@@ -143,7 +143,7 @@ import { Select, MemoizedSelect } from './Select';
 } satisfies Meta<typeof Select>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = Omit<StoryObj<typeof meta>, 'args'> & Partial<Pick<StoryObj<typeof meta>, 'args'>>;
 
 // ===== VARIANTES BÁSICAS =====
 export const Default: Story = {

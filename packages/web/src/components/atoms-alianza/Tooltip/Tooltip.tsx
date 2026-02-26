@@ -39,7 +39,7 @@ export const Tooltip = React.forwardRef<HTMLDivElement, TooltipProps>(
     const [position, setPosition] = useState({ top: 0, left: 0 });
     const triggerRef = useRef<HTMLElement>(null);
     const tooltipRef = useRef<HTMLDivElement>(null);
-    const timeoutRef = useRef<NodeJS.Timeout>();
+    const timeoutRef = useRef<NodeJS.Timeout>(undefined);
 
     // Calculate tooltip position
     const calculatePosition = () => {
@@ -199,20 +199,22 @@ export const Tooltip = React.forwardRef<HTMLDivElement, TooltipProps>(
     };
 
     // Clone children with event handlers
-    const triggerElement = React.cloneElement(children, {
+    const childElement = children as React.ReactElement<Record<string, unknown>>;
+    const childProps = childElement.props;
+    const triggerElement = React.cloneElement(childElement, {
       ref: triggerRef,
-      onMouseEnter: trigger === 'hover' ? showTooltip : children.props.onMouseEnter,
-      onMouseLeave: trigger === 'hover' ? hideTooltip : children.props.onMouseLeave,
-      onFocus: trigger === 'focus' ? showTooltip : children.props.onFocus,
-      onBlur: trigger === 'focus' ? hideTooltip : children.props.onBlur,
-      onClick: trigger === 'click' ? toggleTooltip : children.props.onClick,
+      onMouseEnter: trigger === 'hover' ? showTooltip : childProps.onMouseEnter,
+      onMouseLeave: trigger === 'hover' ? hideTooltip : childProps.onMouseLeave,
+      onFocus: trigger === 'focus' ? showTooltip : childProps.onFocus,
+      onBlur: trigger === 'focus' ? hideTooltip : childProps.onBlur,
+      onClick: trigger === 'click' ? toggleTooltip : childProps.onClick,
     });
 
     // Compose tooltip classes
     const tooltipClasses = cn(
       // Base styles
       'fixed z-[999] max-w-[300px]',
-      'rounded-sm border px-3 py-2',
+      'rounded-[var(--radius-tooltip)] border px-3 py-2',
       'text-sm font-medium leading-tight',
       'shadow-md',
       'transition-all duration-150 ease-in-out',

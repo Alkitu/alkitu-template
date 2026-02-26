@@ -667,7 +667,7 @@ describe('ToggleGroup - Molecule (Alianza)', () => {
       const themeOverride = {
         '--accent': '#ff0000',
         '--custom-var': 'blue',
-      };
+      } as React.CSSProperties;
 
       render(
         <ToggleGroup

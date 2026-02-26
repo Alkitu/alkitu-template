@@ -188,8 +188,12 @@ function getInitialThemeMode(): ThemeMode {
   if (typeof window !== 'undefined') {
     try {
       const savedMode = localStorage.getItem('theme-mode');
-      if (savedMode === 'dark' || savedMode === 'light' || savedMode === 'system') {
+      if (savedMode === 'dark' || savedMode === 'light') {
         return savedMode;
+      }
+      // 'system' mode is not supported by ThemeMode type; default to 'light'
+      if (savedMode === 'system') {
+        return 'light';
       }
     } catch (error) {
       console.warn('Failed to read theme-mode from localStorage:', error);
@@ -463,10 +467,12 @@ export function ThemeEditorProvider({ children, companyId: propCompanyId, initia
     // Priority 2: Database themes - only if no initialTheme from server
     else if (dbThemes && dbThemes.length > 0) {
       // Find active theme (user selected)
-      themeToLoad = dbThemes.find(t => t.isActive);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      themeToLoad = (dbThemes as any[]).find((t: any) => t.isActive);
 
       // If no active, find default theme (company default)
       if (!themeToLoad) {
+        // @ts-expect-error - TS2589: Prisma/tRPC type instantiation too deep, runtime types are correct
         themeToLoad = dbThemes.find(t => t.isDefault);
       }
 

@@ -3,7 +3,7 @@
 import React from 'react';
 import { ImportButton } from './ImportButton';
 import { CodeButton } from './CodeButton';
-import { ThemeData, ThemeExportFormat } from '../../../core/types/theme.types';
+import { ThemeData, ThemeExportFormat, ThemeWithCurrentColors } from '../../../core/types/theme.types';
 
 interface ImportExportProps {
   theme: ThemeData;
@@ -29,8 +29,8 @@ export function ImportExport({
         onError={onImportError}
         existingThemes={existingThemes}
       />
-      <CodeButton 
-        theme={theme}
+      <CodeButton
+        theme={theme as ThemeWithCurrentColors}
         onExport={onExport}
       />
     </div>

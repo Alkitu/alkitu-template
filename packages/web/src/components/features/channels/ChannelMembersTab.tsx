@@ -9,6 +9,15 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from '@/components/primitives/ui/input';
 import { ScrollArea } from '@/components/primitives/ui/scroll-area';
 
+/** Extended type for channel members with included user relation */
+interface ChannelMemberWithUser {
+  id: string;
+  userId: string;
+  role: string;
+  isFavorite?: boolean;
+  user: { id: string; firstname: string; lastname: string; image?: string | null; email?: string };
+}
+
 interface ChannelMembersTabProps {
   channelId: string;
   isOwner: boolean;
@@ -16,7 +25,8 @@ interface ChannelMembersTabProps {
 
 export function ChannelMembersTab({ channelId, isOwner }: ChannelMembersTabProps) {
   const ctx = trpc.useContext();
-  const { data: channel, isLoading } = trpc.channels.getChannel.useQuery({ channelId });
+  const { data: rawChannel, isLoading } = trpc.channels.getChannel.useQuery({ channelId });
+  const channel = rawChannel as (typeof rawChannel & { members?: ChannelMemberWithUser[] }) | undefined;
   const { data: me } = trpc.user.me.useQuery();
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [search, setSearch] = useState('');
@@ -66,7 +76,7 @@ export function ChannelMembersTab({ channelId, isOwner }: ChannelMembersTabProps
                         <div className="space-y-2">
                              {/* @ts-ignore */}
                             {searchResults?.users?.map((u: any) => {
-                                const isMember = channel?.members?.some((m: any) => m.userId === u.id);
+                                const isMember = channel?.members?.some((m) => m.userId === u.id);
                                 return (
                                 <div key={u.id} className="flex items-center justify-between p-2 hover:bg-gray-50 rounded">
                                     <div className="flex items-center gap-2">
@@ -93,12 +103,11 @@ export function ChannelMembersTab({ channelId, isOwner }: ChannelMembersTabProps
         </div>
 
         <div className="space-y-2">
-            {/* @ts-ignore */}
-            {channel?.members?.map((member: any) => (
+            {channel?.members?.map((member) => (
                 <div key={member.id} className="flex items-center justify-between p-3 border rounded-lg bg-white shadow-sm">
                     <div className="flex items-center gap-3">
                          <Avatar>
-                            <AvatarImage src={member.user.image} />
+                            <AvatarImage src={member.user.image || undefined} />
                             <AvatarFallback>{member.user.firstname?.[0]}</AvatarFallback>
                         </Avatar>
                         <div>

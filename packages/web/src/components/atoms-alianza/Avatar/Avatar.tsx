@@ -132,13 +132,14 @@ export const Avatar = React.forwardRef<
       variant = 'circular',
       status = 'none',
       className,
-      children,
       themeOverride,
       useSystemColors = true,
       ...props
     },
     ref
   ) => {
+    // Extract children safely from union type
+    const children = 'children' in props ? (props as AvatarProps).children : undefined;
     // Check if simplified API is being used (has src/alt/fallback props AND no children)
     const isSimplifiedAPI =
       ('src' in props || 'alt' in props || 'fallback' in props) && !children;

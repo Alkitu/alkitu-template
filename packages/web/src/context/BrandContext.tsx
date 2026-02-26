@@ -34,7 +34,18 @@ export const BrandContext = React.createContext<{
 } | null>(null);
 
 export function BrandProvider({ children }: { children: React.ReactNode }) {
-  const { theme, updateThemeColors, isDarkMode } = useCompanyTheme();
+  const { theme, themeMode } = useCompanyTheme();
+  const isDarkMode = themeMode === 'dark';
+
+  // updateThemeColors is not available from useCompanyTheme - use CSS variable manipulation directly
+  const updateThemeColors = (_updates: Record<string, string>, _mode: 'light' | 'dark') => {
+    // Apply CSS variables directly to document root
+    if (typeof document !== 'undefined') {
+      Object.entries(_updates).forEach(([key, value]) => {
+        document.documentElement.style.setProperty(`--${key}`, value);
+      });
+    }
+  };
   
   const [config, setConfig] = React.useState<BrandConfig>({
     primaryText: 'Alkitu',

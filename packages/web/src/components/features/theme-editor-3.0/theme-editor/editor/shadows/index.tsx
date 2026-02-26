@@ -20,7 +20,7 @@ export function ShadowsEditor({
 
   // Apply shadows to CSS variables whenever shadows change
   useEffect(() => {
-    applyShadowElements(shadows);
+    applyShadowElements(shadows as unknown as Record<string, string>);
   }, [shadows]);
 
   // Handle shadow value change
@@ -57,7 +57,7 @@ export function ShadowsEditor({
   return (
     <div className={`space-y-6 ${className}`}>
       {shadowSizes.map((size, index) => {
-        const value = shadows[size.key] || size.defaultValue;
+        const value = (shadows as unknown as Record<string, string>)[size.key] || size.defaultValue;
         const label = `${size.title} Shadow`;
         const description = `--shadow-${size.key.replace('shadow', '').toLowerCase()}`;
 

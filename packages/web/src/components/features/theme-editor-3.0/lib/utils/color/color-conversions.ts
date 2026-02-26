@@ -19,6 +19,7 @@ export interface OklchColor {
   l: number; // 0-1
   c: number; // 0-0.37+
   h: number; // 0-360
+  a?: number; // Alpha/opacity (0-1), optional
 }
 
 // HEX to RGB conversion

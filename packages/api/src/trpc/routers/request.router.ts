@@ -1,8 +1,7 @@
-import { z } from 'zod';
 import { t, protectedProcedure } from '../trpc';
 import {
   Prisma,
-  PrismaClient,
+  type PrismaClient,
   RequestStatus,
   UserRole,
   AccessLevel,
@@ -15,6 +14,9 @@ import {
   updateRequestStatusSchema,
   assignRequestSchema,
   cancelRequestSchema,
+  getRequestStatsSchema,
+  getRequestByIdSchema,
+  deleteRequestSchema,
 } from '../schemas/request.schemas';
 import {
   adminProcedure,
@@ -23,19 +25,11 @@ import {
 } from '../middlewares/roles.middleware';
 import { RequestStatusChangedHook } from '../../requests/hooks/request-status-changed.hook';
 import { NotificationService } from '../../notification/notification.service';
-import { PushNotificationService } from '../../notification/push-notification.service';
-import { PrismaService } from '../../prisma.service';
-
-const prisma = new PrismaClient();
-const prismaService = new PrismaService();
-const pushNotificationService = new PushNotificationService(prismaService);
-const notificationService = new NotificationService(
-  prismaService,
-  pushNotificationService,
-);
-const requestStatusChangedHook = new RequestStatusChangedHook(
-  notificationService,
-);
+import { EmailTemplateService } from '../../email-templates/email-template.service';
+import { CounterService } from '../../counter/counter.service';
+import { DriveFolderService } from '../../drive/drive-folder.service';
+import { DriveService } from '../../drive/drive.service';
+import { z } from 'zod';
 
 /**
  * Request tRPC Router
@@ -47,7 +41,18 @@ const requestStatusChangedHook = new RequestStatusChangedHook(
  * - EMPLOYEE role: can view assigned requests + own requests, update status, assign
  * - ADMIN role: full access to all requests
  */
-export function createRequestRouter() {
+export function createRequestRouter(
+  prisma: PrismaClient,
+  notificationService: NotificationService,
+  emailTemplateService: EmailTemplateService,
+  counterService: CounterService,
+  driveFolderService: DriveFolderService,
+  driveService: DriveService,
+) {
+  const requestStatusChangedHook = new RequestStatusChangedHook(
+    notificationService,
+    emailTemplateService,
+  );
   return t.router({
     /**
      * Get filtered requests with role-based access control
@@ -171,7 +176,7 @@ export function createRequestRouter() {
      * - ADMIN: global stats
      */
     getRequestStats: protectedProcedure
-      .input(z.object({}).optional())
+      .input(getRequestStatsSchema)
       .query(async ({ ctx }) => {
         // Build where clause based on role
         const where: Record<string, unknown> = {};
@@ -219,7 +224,7 @@ export function createRequestRouter() {
      * Security: Uses requireResourceAccess middleware
      */
     getRequestById: protectedProcedure
-      .input(z.object({ id: z.string() }))
+      .input(getRequestByIdSchema)
       .use(
         requireResourceAccess({
           resourceType: 'REQUEST',
@@ -267,6 +272,25 @@ export function createRequestRouter() {
           });
         }
 
+        // Lookup service to get the code for customId generation
+        const service = await prisma.service.findUnique({
+          where: { id: input.serviceId },
+          select: { id: true, code: true },
+        });
+
+        if (!service) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Service not found',
+          });
+        }
+
+        // Generate customId if service has a code configured
+        let customId: string | undefined;
+        if (service.code) {
+          customId = await counterService.generateRequestCustomId(service.code);
+        }
+
         // Extract title from templateResponses or use default
         const responses = input.templateResponses as
           | Record<string, unknown>
@@ -274,21 +298,49 @@ export function createRequestRouter() {
           | undefined;
         const title = (responses?.title as string) || 'Nueva Solicitud';
 
-        return await prisma.request.create({
+        const createdRequest = await prisma.request.create({
           data: {
             userId: input.userId,
             serviceId: input.serviceId,
             locationId: input.locationId,
             title,
+            customId,
             executionDateTime: new Date(input.executionDateTime),
-            templateResponses: input.templateResponses as
-              | Prisma.InputJsonValue
-              | undefined,
-            note: input.note as string | undefined,
+            templateResponses: (input.templateResponses ?? {}) as Prisma.InputJsonValue,
+            ...(input.note != null && {
+              note: input.note as Prisma.InputJsonValue,
+            }),
             status: RequestStatus.PENDING,
             createdBy: input.userId,
           },
         });
+
+        // Non-blocking: create Drive folder for this request
+        driveFolderService
+          .ensureRequestFolder(createdRequest.id)
+          .catch(() => {});
+
+        // Send request creation emails (non-blocking)
+        prisma.request
+          .findUnique({
+            where: { id: createdRequest.id },
+            include: {
+              user: true,
+              service: { include: { category: true } },
+              location: true,
+              assignedTo: true,
+            },
+          })
+          .then((fullRequest) => {
+            if (fullRequest) {
+              emailTemplateService
+                .sendRequestCreatedEmails(fullRequest as any)
+                .catch(() => {});
+            }
+          })
+          .catch(() => {});
+
+        return createdRequest;
       }),
 
     /**
@@ -309,9 +361,7 @@ export function createRequestRouter() {
         const serviceId = input.serviceId;
         const executionDateTime = input.executionDateTime;
         const locationId = input.locationId;
-        const locationData = input.locationData as
-          | Record<string, string | undefined>
-          | undefined;
+        const locationData = input.locationData;
         const templateResponses = input.templateResponses as
           | Record<string, unknown>
           | undefined;
@@ -421,15 +471,15 @@ export function createRequestRouter() {
             },
             user: true,
             assignedTo: true,
+            location: true,
           },
         });
 
         // Trigger notification hook (non-blocking)
         await requestStatusChangedHook
           .execute(updatedRequest, oldRequest.status, input.status)
-          .catch((error) => {
-            console.error('Failed to send status change notifications:', error);
-            // Don't throw - notification failures shouldn't block the mutation
+          .catch(() => {
+            // Non-blocking: notification failures shouldn't block the mutation
           });
 
         return updatedRequest;
@@ -449,13 +499,28 @@ export function createRequestRouter() {
         }),
       )
       .mutation(async ({ input }) => {
-        return await prisma.request.update({
+        const updatedRequest = await prisma.request.update({
           where: { id: input.id },
           data: {
             assignedToId: input.assignedToId,
             status: RequestStatus.ONGOING,
           },
+          include: {
+            service: { include: { category: true } },
+            user: true,
+            assignedTo: true,
+            location: true,
+          },
         });
+
+        // Send notifications to employee and client
+        await requestStatusChangedHook.execute(
+          updatedRequest,
+          RequestStatus.PENDING,
+          RequestStatus.ONGOING,
+        );
+
+        return updatedRequest;
       }),
 
     /**
@@ -468,7 +533,7 @@ export function createRequestRouter() {
         // Check if user owns the request or has EMPLOYEE+ role
         const request = await prisma.request.findUnique({
           where: { id: input.id },
-          select: { userId: true },
+          select: { userId: true, status: true },
         });
 
         if (!request) {
@@ -491,14 +556,30 @@ export function createRequestRouter() {
           });
         }
 
-        return await prisma.request.update({
+        const oldStatus = request.status;
+        const updatedRequest = await prisma.request.update({
           where: { id: input.id },
           data: {
             status: RequestStatus.CANCELLED,
             cancellationRequested: true,
             cancellationRequestedAt: new Date(),
           },
+          include: {
+            service: { include: { category: true } },
+            user: true,
+            assignedTo: true,
+            location: true,
+          },
         });
+
+        // Send cancellation notifications
+        await requestStatusChangedHook.execute(
+          updatedRequest,
+          oldStatus,
+          RequestStatus.CANCELLED,
+        );
+
+        return updatedRequest;
       }),
 
     /**
@@ -506,7 +587,7 @@ export function createRequestRouter() {
      * Security: ADMIN only
      */
     deleteRequest: adminProcedure
-      .input(z.object({ id: z.string() }))
+      .input(deleteRequestSchema)
       .use(
         requireResourceAccess({
           resourceType: 'REQUEST',
@@ -518,6 +599,90 @@ export function createRequestRouter() {
         return await prisma.request.delete({
           where: { id: input.id },
         });
+      }),
+
+    /**
+     * Upload files to a request's Drive folder
+     * Security: User must own the request or be EMPLOYEE+
+     */
+    uploadRequestFiles: protectedProcedure
+      .input(
+        z.object({
+          requestId: z.string(),
+          files: z.array(
+            z.object({
+              name: z.string(),
+              data: z.string(), // base64
+              mimeType: z.string(),
+              size: z.number(),
+            }),
+          ),
+        }),
+      )
+      .mutation(async ({ input, ctx }) => {
+        // Verify request exists and user has access
+        const request = await prisma.request.findUnique({
+          where: { id: input.requestId },
+          select: { id: true, userId: true, attachments: true },
+        });
+
+        if (!request) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Request not found',
+          });
+        }
+
+        const canUpload =
+          ctx.user.id === request.userId ||
+          ctx.user.role === UserRole.EMPLOYEE ||
+          ctx.user.role === UserRole.LEAD ||
+          ctx.user.role === UserRole.ADMIN;
+
+        if (!canUpload) {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'Cannot upload files to this request',
+          });
+        }
+
+        // Ensure request folder exists (lazy creation for existing requests)
+        const folderId = await driveFolderService.ensureRequestFolder(
+          input.requestId,
+        );
+
+        // Upload each file
+        const uploadedFiles = [];
+        for (const file of input.files) {
+          const buffer = Buffer.from(file.data, 'base64');
+          const driveFile = await driveService.uploadBuffer(
+            buffer,
+            file.name,
+            file.mimeType,
+            { parentId: folderId },
+          );
+          uploadedFiles.push({
+            fileId: driveFile.id,
+            name: file.name,
+            mimeType: file.mimeType,
+            webViewLink: driveFile.webViewLink,
+            size: file.size,
+          });
+        }
+
+        // Merge with existing attachments
+        const existingAttachments = Array.isArray(request.attachments)
+          ? (request.attachments as Record<string, unknown>[])
+          : [];
+        const allAttachments = [...existingAttachments, ...uploadedFiles];
+
+        // Update request with attachments
+        await prisma.request.update({
+          where: { id: input.requestId },
+          data: { attachments: allAttachments as Prisma.InputJsonValue },
+        });
+
+        return { uploaded: uploadedFiles, total: allAttachments.length };
       }),
   });
 }

@@ -1,10 +1,18 @@
-import { z } from 'zod';
 import { t, protectedProcedure } from '../trpc';
-import { Prisma, PrismaClient } from '@prisma/client';
+import { type Prisma, type PrismaClient } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { adminProcedure } from '../middlewares/roles.middleware';
-
-const prisma = new PrismaClient();
+import {
+  createFormTemplateSchema,
+  updateFormTemplateSchema,
+  deleteFormTemplateSchema,
+  getFormTemplateByIdSchema,
+  getAllFormTemplatesSchema,
+  linkToServiceSchema,
+  unlinkFromServiceSchema,
+  createVersionSchema,
+  getVersionHistorySchema,
+} from '../schemas/form-template.schemas';
 
 /**
  * FormTemplate tRPC Router
@@ -22,24 +30,14 @@ const prisma = new PrismaClient();
  * - Version history tracking
  * - Usage statistics (how many services use each template)
  */
-export function createFormTemplateRouter() {
+export function createFormTemplateRouter(prisma: PrismaClient) {
   return t.router({
     /**
      * Create a new form template
      * Security: Requires admin role
      */
     create: adminProcedure
-      .input(
-        z.object({
-          name: z.string().min(1, 'Name is required'),
-          description: z.string().optional(),
-          category: z.string().optional(),
-          formSettings: z.any(), // FormSettings JSON
-          isActive: z.boolean().default(true),
-          isPublic: z.boolean().default(false),
-          serviceIds: z.array(z.string()).optional(),
-        }),
-      )
+      .input(createFormTemplateSchema)
       .mutation(async ({ input, ctx }) => {
         const { serviceIds, ...templateData } = input;
 
@@ -73,20 +71,9 @@ export function createFormTemplateRouter() {
      * Security: Requires admin role
      */
     update: adminProcedure
-      .input(
-        z.object({
-          id: z.string(),
-          name: z.string().min(1).optional(),
-          description: z.string().optional(),
-          category: z.string().optional(),
-          formSettings: z.any().optional(),
-          isActive: z.boolean().optional(),
-          isPublic: z.boolean().optional(),
-          serviceIds: z.array(z.string()).optional(),
-        }),
-      )
+      .input(updateFormTemplateSchema)
       .mutation(async ({ input, ctx }) => {
-        const { id, serviceIds, ...updateData } = input;
+        const { id, serviceIds, formSettings, ...updateData } = input;
 
         // Check if template exists
         const existing = await prisma.formTemplate.findUnique({
@@ -105,6 +92,9 @@ export function createFormTemplateRouter() {
           where: { id },
           data: {
             ...updateData,
+            ...(formSettings !== undefined && {
+              formSettings: formSettings as Prisma.InputJsonValue,
+            }),
             ...(serviceIds !== undefined && { serviceIds }),
             updatedBy: ctx.user.id,
           },
@@ -126,11 +116,7 @@ export function createFormTemplateRouter() {
      * Security: Requires admin role
      */
     delete: adminProcedure
-      .input(
-        z.object({
-          id: z.string(),
-        }),
-      )
+      .input(deleteFormTemplateSchema)
       .mutation(async ({ input, ctx }) => {
         const { id } = input;
 
@@ -177,11 +163,7 @@ export function createFormTemplateRouter() {
      * Security: Requires authentication
      */
     getById: protectedProcedure
-      .input(
-        z.object({
-          id: z.string(),
-        }),
-      )
+      .input(getFormTemplateByIdSchema)
       .query(async ({ input }) => {
         const { id } = input;
 
@@ -236,22 +218,7 @@ export function createFormTemplateRouter() {
      * Security: Requires authentication
      */
     getAll: protectedProcedure
-      .input(
-        z
-          .object({
-            page: z.number().min(1).default(1),
-            pageSize: z.number().min(1).max(100).default(20),
-            search: z.string().optional(),
-            category: z.string().optional(),
-            isActive: z.boolean().optional(),
-            isPublic: z.boolean().optional(),
-            sortBy: z
-              .enum(['name', 'createdAt', 'updatedAt'])
-              .default('createdAt'),
-            sortOrder: z.enum(['asc', 'desc']).default('desc'),
-          })
-          .optional(),
-      )
+      .input(getAllFormTemplatesSchema)
       .query(async ({ input = {} }) => {
         const {
           page = 1,
@@ -338,12 +305,7 @@ export function createFormTemplateRouter() {
      * Security: Requires admin role
      */
     linkToService: adminProcedure
-      .input(
-        z.object({
-          templateId: z.string(),
-          serviceId: z.string(),
-        }),
-      )
+      .input(linkToServiceSchema)
       .mutation(async ({ input }) => {
         const { templateId, serviceId } = input;
 
@@ -401,12 +363,7 @@ export function createFormTemplateRouter() {
      * Security: Requires admin role
      */
     unlinkFromService: adminProcedure
-      .input(
-        z.object({
-          templateId: z.string(),
-          serviceId: z.string(),
-        }),
-      )
+      .input(unlinkFromServiceSchema)
       .mutation(async ({ input }) => {
         const { templateId, serviceId } = input;
 
@@ -448,12 +405,7 @@ export function createFormTemplateRouter() {
      * Security: Requires admin role
      */
     createVersion: adminProcedure
-      .input(
-        z.object({
-          id: z.string(),
-          changes: z.string().optional(), // Summary of changes
-        }),
-      )
+      .input(createVersionSchema)
       .mutation(async ({ input, ctx }) => {
         const { id } = input;
 
@@ -479,7 +431,7 @@ export function createFormTemplateRouter() {
             name: original.name,
             description: original.description,
             category: original.category,
-            formSettings: original.formSettings,
+            formSettings: original.formSettings as Prisma.InputJsonValue,
             version: newVersion,
             isActive: true,
             isPublic: original.isPublic,
@@ -497,11 +449,7 @@ export function createFormTemplateRouter() {
      * Security: Requires authentication
      */
     getVersionHistory: protectedProcedure
-      .input(
-        z.object({
-          id: z.string(),
-        }),
-      )
+      .input(getVersionHistorySchema)
       .query(async ({ input }) => {
         const { id } = input;
 

@@ -71,7 +71,7 @@ export const RequestTemplateFieldSchema = z.object({
   required: z.boolean(),
   validation: FieldValidationSchema,
   options: z.array(FieldOptionSchema).optional(),
-  defaultValue: z.any().optional(),
+  defaultValue: z.unknown().optional(),
 });
 
 /**
@@ -84,12 +84,6 @@ export const RequestTemplateSchema = z.object({
     .min(1, 'Template must have at least one field')
     .max(50, 'Template cannot have more than 50 fields'),
 });
-
-/**
- * Template responses schema (dynamic based on template)
- * Commented out to avoid duplicate export - use from schemas/request.ts instead
- */
-// export const TemplateResponsesSchema = z.record(z.any());
 
 /**
  * Inferred types from schemas

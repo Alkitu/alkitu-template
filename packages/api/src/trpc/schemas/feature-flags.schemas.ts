@@ -15,7 +15,7 @@ export const toggleFeatureSchema = z.object({
 
 export const updateConfigSchema = z.object({
   key: z.string(),
-  config: z.record(z.any()),
+  config: z.record(z.string(), z.unknown()),
 });
 
 export const getHistorySchema = z.object({

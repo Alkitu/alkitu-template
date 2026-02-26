@@ -8,6 +8,7 @@ export * from "./types/request";
 export * from "./types/notification"; // ALI-120
 export * from "./types/email-template"; // ALI-121
 export * from "./types/form-template.types"; // Form Builder types
+export * from "./types/drive"; // Drive upload types
 
 // Schemas
 export * from "./schemas/auth";
@@ -18,6 +19,7 @@ export * from "./schemas/request-template";
 export * from "./schemas/request";
 export * from "./schemas/notification"; // ALI-120
 export * from "./schemas/email-template"; // ALI-121
+export * from "./schemas/drive"; // Drive upload schemas
 
 // Constants
 export * from "./constants/api";

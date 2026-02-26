@@ -701,7 +701,7 @@ export class EmailTemplateService {
       if (!grouped.has(cat)) {
         grouped.set(cat, []);
       }
-      grouped.get(cat).push(template);
+      grouped.get(cat)!.push(template);
     }
 
     return Array.from(grouped.entries()).map(

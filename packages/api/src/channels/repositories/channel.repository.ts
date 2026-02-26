@@ -6,14 +6,14 @@ import {
   ChannelType,
   ChannelRole,
 } from '@prisma/client';
-import { CreateChannelDto } from '../dto/channels.dto';
+import type { CreateChannelInput } from '../../trpc/schemas/channels.schemas';
 
 @Injectable()
 export class ChannelRepository {
   constructor(private prisma: PrismaService) {}
 
   async create(
-    data: CreateChannelDto & { workspaceId?: string },
+    data: CreateChannelInput & { workspaceId?: string },
     ownerId: string,
   ): Promise<Channel> {
     return this.prisma.channel.create({
@@ -54,7 +54,7 @@ export class ChannelRepository {
     });
   }
 
-  async update(id: string, data: Partial<CreateChannelDto>): Promise<Channel> {
+  async update(id: string, data: Partial<CreateChannelInput>): Promise<Channel> {
     return this.prisma.channel.update({
       where: { id },
       data: {
@@ -159,7 +159,7 @@ export class ChannelRepository {
 
     if (existing) {
       // Return full details including user info
-      return this.findById(existing.id);
+      return this.findById(existing.id) as Promise<Channel>;
     }
 
     // 2. Create new DM

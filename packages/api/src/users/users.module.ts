@@ -6,6 +6,7 @@ import { NotificationModule } from '../notification/notification.module';
 import { AuthModule } from '../auth/auth.module';
 import { EmailModule } from '../email/email.module';
 import { AuditModule } from '../audit/audit.module';
+import { DriveModule } from '../drive/drive.module';
 
 // ✅ SOLID Services Import
 import {
@@ -17,7 +18,7 @@ import {
 } from './services';
 
 @Module({
-  imports: [NotificationModule, forwardRef(() => AuthModule), EmailModule, AuditModule],
+  imports: [NotificationModule, forwardRef(() => AuthModule), EmailModule, AuditModule, DriveModule],
   controllers: [UsersController],
   providers: [
     // ✅ SOLID Architecture Services

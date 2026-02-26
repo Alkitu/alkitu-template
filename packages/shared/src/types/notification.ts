@@ -3,7 +3,7 @@
  * Shared types for notification system with structured payload support
  */
 
-// NotificationType enum (must match Prisma schema)
+// NotificationType enum (must match Prisma schema exactly)
 export enum NotificationType {
   // Generic system notifications
   INFO = 'INFO',
@@ -11,16 +11,17 @@ export enum NotificationType {
   ERROR = 'ERROR',
   SUCCESS = 'SUCCESS',
 
+  // Chat notifications
+  CHAT_NEW_CONVERSATION = 'CHAT_NEW_CONVERSATION',
+  CHAT_NEW_MESSAGE = 'CHAT_NEW_MESSAGE',
+
   // Request lifecycle notifications (ALI-120)
   REQUEST_CREATED = 'REQUEST_CREATED',
-  REQUEST_UPDATED = 'REQUEST_UPDATED',
   REQUEST_ASSIGNED = 'REQUEST_ASSIGNED',
-  REQUEST_COMPLETED = 'REQUEST_COMPLETED',
+  REQUEST_STATUS_CHANGED = 'REQUEST_STATUS_CHANGED',
+  REQUEST_CANCELLATION_REQUESTED = 'REQUEST_CANCELLATION_REQUESTED',
   REQUEST_CANCELLED = 'REQUEST_CANCELLED',
-
-  // Chat notifications
-  CHAT_MESSAGE = 'CHAT_MESSAGE',
-  CHAT_CONVERSATION_CREATED = 'CHAT_CONVERSATION_CREATED',
+  REQUEST_COMPLETED = 'REQUEST_COMPLETED',
 }
 
 // Base notification interface
@@ -44,7 +45,7 @@ export type NotificationData =
 // Generic notifications (chat, system, info)
 export interface GenericNotificationData {
   // Can be empty or have generic fields
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 // Request lifecycle notifications (ALI-120)

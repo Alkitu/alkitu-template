@@ -13,7 +13,7 @@ export const channelsSchemas = {
   sendMessage: z.object({
     channelId: z.string(),
     content: z.string(),
-    attachments: z.any().optional(),
+    attachments: z.array(z.record(z.string(), z.unknown())).optional(),
     parentId: z.string().optional(),
   }),
 
@@ -74,3 +74,7 @@ export const channelsSchemas = {
     channelId: z.string(),
   }),
 };
+
+// Zod-inferred types — use these in services instead of DTOs
+export type CreateChannelInput = z.infer<typeof channelsSchemas.createChannel>;
+export type SendChannelMessageInput = z.infer<typeof channelsSchemas.sendMessage>;

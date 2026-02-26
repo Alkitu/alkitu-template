@@ -141,7 +141,7 @@ export const sendTestEmailSchema = z.object({
       phone: z.string().nullable().optional(),
     }).nullable().optional(),
 
-    templateResponses: z.record(z.any()).nullable().optional(),
+    templateResponses: z.record(z.string(), z.unknown()).nullable().optional(),
   }).optional(),
 });
 

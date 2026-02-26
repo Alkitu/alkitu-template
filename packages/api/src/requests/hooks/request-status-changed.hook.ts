@@ -11,6 +11,7 @@
 
 import { Injectable, Logger } from '@nestjs/common';
 import { NotificationService } from '../../notification/notification.service';
+import { EmailTemplateService } from '../../email-templates/email-template.service';
 import { NotificationType, RequestStatus } from '@prisma/client';
 
 interface RequestWithRelations {
@@ -40,13 +41,23 @@ interface RequestWithRelations {
     firstname: string;
     lastname: string;
   } | null;
+  location?: {
+    id: string;
+    street: string;
+    city: string;
+    state: string;
+    zip: string;
+  } | null;
 }
 
 @Injectable()
 export class RequestStatusChangedHook {
   private readonly logger = new Logger(RequestStatusChangedHook.name);
 
-  constructor(private notificationService: NotificationService) {}
+  constructor(
+    private notificationService: NotificationService,
+    private emailTemplateService: EmailTemplateService,
+  ) {}
 
   /**
    * Execute hook when request status changes
@@ -85,6 +96,19 @@ export class RequestStatusChangedHook {
       this.logger.log(
         `[RequestStatusChangedHook] Successfully sent notifications for request ${request.id}`,
       );
+
+      // 3. Send lifecycle emails (non-blocking)
+      try {
+        await this.emailTemplateService.sendStatusChangedEmails(
+          request as any,
+          newStatus,
+        );
+      } catch (emailError) {
+        this.logger.error(
+          `[RequestStatusChangedHook] Failed to send email for request ${request.id}`,
+          emailError instanceof Error ? emailError.stack : String(emailError),
+        );
+      }
     } catch (error) {
       this.logger.error(
         `[RequestStatusChangedHook] Failed to send notifications for request ${request.id}`,

@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ChannelRepository } from './repositories/channel.repository';
 import { ChannelMessageRepository } from './repositories/channel-message.repository';
-import { CreateChannelDto, SendChannelMessageDto } from './dto/channels.dto';
+import type { CreateChannelInput, SendChannelMessageInput } from '../trpc/schemas/channels.schemas';
 
 @Injectable()
 export class ChannelsService {
@@ -10,7 +10,7 @@ export class ChannelsService {
     private readonly messageRepository: ChannelMessageRepository,
   ) {}
 
-  async createChannel(data: CreateChannelDto, userId: string) {
+  async createChannel(data: CreateChannelInput, userId: string) {
     const channel = await this.channelRepository.create(data, userId);
 
     // Add other initial members if provided
@@ -37,7 +37,7 @@ export class ChannelsService {
     return this.messageRepository.findByChannel(channelId);
   }
 
-  async sendMessage(userId: string, data: SendChannelMessageDto) {
+  async sendMessage(userId: string, data: SendChannelMessageInput) {
     return this.messageRepository.create({
       channelId: data.channelId,
       content: data.content,
@@ -51,7 +51,7 @@ export class ChannelsService {
     return this.messageRepository.findReplies(parentId);
   }
 
-  async updateChannel(id: string, data: Partial<CreateChannelDto>) {
+  async updateChannel(id: string, data: Partial<CreateChannelInput>) {
     return this.channelRepository.update(id, data);
   }
 

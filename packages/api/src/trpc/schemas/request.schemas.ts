@@ -22,8 +22,8 @@ export const updateRequestSchema = z.object({
       zip: z.string(),
     })
     .optional(),
-  templateResponses: z.record(z.any()).optional(),
-  note: z.any().optional(),
+  templateResponses: z.record(z.string(), z.unknown()).optional(),
+  note: z.union([z.string(), z.record(z.string(), z.unknown())]).optional(),
 });
 
 export type UpdateRequestInput = z.infer<typeof updateRequestSchema>;
@@ -36,8 +36,8 @@ export const createRequestSchema = z.object({
   serviceId: z.string(),
   locationId: z.string(),
   executionDateTime: z.string().or(z.date()),
-  templateResponses: z.any(),
-  note: z.any().optional(),
+  templateResponses: z.record(z.string(), z.unknown()),
+  note: z.union([z.string(), z.record(z.string(), z.unknown())]).optional(),
 });
 
 export type CreateRequestInput = z.infer<typeof createRequestSchema>;
@@ -91,3 +91,14 @@ export const cancelRequestSchema = z.object({
 });
 
 export type CancelRequestInput = z.infer<typeof cancelRequestSchema>;
+
+/**
+ * Schema for getting request stats
+ */
+export const getRequestStatsSchema = z.object({}).optional();
+
+/**
+ * Schema for getting/deleting a request by ID
+ */
+export const getRequestByIdSchema = z.object({ id: z.string() });
+export const deleteRequestSchema = z.object({ id: z.string() });

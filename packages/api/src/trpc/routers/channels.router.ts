@@ -16,7 +16,6 @@ export const channelsRouter = createTRPCRouter({
   create: teamChannelsProcedure
     .input(channelsSchemas.createChannel)
     .mutation(async ({ input, ctx }) => {
-      // @ts-expect-error - Assuming we add channelsService to context
       return await ctx.channelsService.createChannel(input, ctx.user.id);
     }),
 
@@ -52,7 +51,6 @@ export const channelsRouter = createTRPCRouter({
   sendMessage: teamChannelsProcedure
     .input(channelsSchemas.sendMessage)
     .mutation(async ({ input, ctx }) => {
-      // @ts-expect-error - Assuming channelsService in context
       return await ctx.channelsService.sendMessage(ctx.user.id, input);
     }),
 

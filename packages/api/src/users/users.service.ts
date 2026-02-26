@@ -12,12 +12,12 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { FilterUsersDto } from './dto/filter-users.dto';
-import {
-  BulkDeleteUsersDto,
-  BulkUpdateRoleDto,
-  BulkUpdateStatusDto,
-  AdminResetPasswordDto,
-} from './dto/bulk-users.dto';
+import type {
+  BulkDeleteUsersInput,
+  BulkUpdateRoleInput,
+  ResetUserPasswordInput,
+} from '../trpc/schemas/user.schemas';
+import { BulkUpdateStatusDto } from './dto/bulk-users.dto';
 import * as bcrypt from 'bcryptjs';
 import { BCRYPT_SALT_ROUNDS } from '@alkitu/shared';
 import { NotificationService } from '../notification/notification.service';
@@ -27,6 +27,7 @@ import { UpdateUserTagsDto } from './dto/update-user-tags.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { EmailService } from '../email/email.service';
 import { AuditService } from '../audit/audit.service';
+import { DriveFolderService } from '../drive/drive-folder.service';
 
 @Injectable()
 export class UsersService {
@@ -37,6 +38,7 @@ export class UsersService {
     private notificationService: NotificationService,
     private emailService: EmailService,
     private auditService: AuditService,
+    private driveFolderService: DriveFolderService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -98,9 +100,16 @@ export class UsersService {
       // Continue without failing the user creation
     }
 
-    const result = user;
+    // Non-blocking: create Drive folders for the user
+    this.driveFolderService
+      .ensureUserFolders(user.id)
+      .catch((error) => {
+        this.logger.warn(
+          `Failed to create Drive folders for user ${user.email}: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        );
+      });
 
-    return result;
+    return user;
   }
 
   /**
@@ -252,6 +261,8 @@ export class UsersService {
         createdAt: true,
         lastLogin: true,
         emailVerified: true,
+        theme: true,
+        language: true,
       },
     });
 
@@ -580,7 +591,7 @@ export class UsersService {
   }
 
   // Bulk Operations
-  async bulkDeleteUsers(bulkDeleteDto: BulkDeleteUsersDto) {
+  async bulkDeleteUsers(bulkDeleteDto: BulkDeleteUsersInput) {
     const { userIds } = bulkDeleteDto;
 
     // Validate that users exist
@@ -604,7 +615,7 @@ export class UsersService {
     };
   }
 
-  async bulkUpdateRole(bulkUpdateRoleDto: BulkUpdateRoleDto, changedBy?: string) {
+  async bulkUpdateRole(bulkUpdateRoleDto: BulkUpdateRoleInput, changedBy?: string) {
     const { userIds, role } = bulkUpdateRoleDto;
 
     // Validate that users exist and get their current data
@@ -677,7 +688,7 @@ export class UsersService {
     };
   }
 
-  async resetUserPassword(resetPasswordDto: AdminResetPasswordDto) {
+  async resetUserPassword(resetPasswordDto: ResetUserPasswordInput) {
     const { userId, sendEmail = true } = resetPasswordDto;
 
     // Find user

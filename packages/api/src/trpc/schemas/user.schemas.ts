@@ -136,6 +136,59 @@ export const createImpersonationTokenSchema = z.object({
 });
 
 /**
+ * Change My Password Schema
+ * Used for authenticated users to change their own password
+ */
+export const changeMyPasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1, 'Current password is required'),
+    newPassword: z
+      .string()
+      .min(8, 'Password must be at least 8 characters')
+      .max(50, 'Password must not exceed 50 characters'),
+    confirmPassword: z.string().min(1, 'Please confirm your password'),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: 'Passwords do not match',
+    path: ['confirmPassword'],
+  });
+
+/**
+ * Update My Profile Schema
+ * Used for authenticated users to update their own profile
+ */
+export const updateMyProfileSchema = z.object({
+  firstname: z
+    .string()
+    .min(2, 'First name must be at least 2 characters')
+    .optional(),
+  lastname: z
+    .string()
+    .min(2, 'Last name must be at least 2 characters')
+    .optional(),
+  phone: z.string().optional(),
+  company: z.string().optional(),
+  address: z.string().optional(),
+  contactPerson: z
+    .object({
+      name: z.string().min(1, 'Name is required'),
+      lastname: z.string().min(1, 'Last name is required'),
+      phone: z.string().min(1, 'Phone is required'),
+      email: z.string().email('Invalid email format'),
+    })
+    .optional(),
+});
+
+/**
+ * Update My Preferences Schema
+ * Used for authenticated users to update their display preferences
+ */
+export const updateMyPreferencesSchema = z.object({
+  theme: z.enum(['light', 'dark', 'system']),
+  language: z.enum(['es', 'en']),
+});
+
+/**
  * Type exports for TypeScript consumers
  * These can be used in services, controllers, etc.
  */
@@ -154,4 +207,9 @@ export type SendMessageToUserInput = z.infer<typeof sendMessageToUserSchema>;
 export type AnonymizeUserInput = z.infer<typeof anonymizeUserSchema>;
 export type CreateImpersonationTokenInput = z.infer<
   typeof createImpersonationTokenSchema
+>;
+export type ChangeMyPasswordInput = z.infer<typeof changeMyPasswordSchema>;
+export type UpdateMyProfileInput = z.infer<typeof updateMyProfileSchema>;
+export type UpdateMyPreferencesInput = z.infer<
+  typeof updateMyPreferencesSchema
 >;

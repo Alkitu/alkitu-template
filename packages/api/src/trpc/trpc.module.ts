@@ -14,6 +14,8 @@ import { EmailTemplateModule } from '../email-templates/email-template.module';
 import { ChannelsModule } from '../channels/channels.module';
 import { FeatureFlagsModule } from '../feature-flags/feature-flags.module';
 import { AccessControlModule } from '../access-control/access-control.module';
+import { CounterModule } from '../counter/counter.module';
+import { DriveModule } from '../drive/drive.module';
 
 @Module({
   imports: [
@@ -28,6 +30,8 @@ import { AccessControlModule } from '../access-control/access-control.module';
     ChannelsModule,
     FeatureFlagsModule, // Feature Flags Module
     AccessControlModule, // Access Control Module
+    CounterModule, // Counter for sequential IDs
+    DriveModule, // Google Drive integration
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'fallback-secret-key',
       signOptions: { expiresIn: '1d' },

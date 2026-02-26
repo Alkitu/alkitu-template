@@ -1,14 +1,14 @@
 import { Conversation, ChatMessage, ContactInfo } from '@prisma/client';
-import {
-  StartConversationDto,
-  SendMessageDto,
-  GetConversationsDto,
-  AssignConversationDto,
-  UpdateStatusDto,
-  ReplyToMessageDto,
-  AddInternalNoteDto,
-  MarkAsReadDto,
-} from '../dto/chat.dto';
+import type {
+  StartConversationInput,
+  SendMessageInput,
+  GetConversationsInput,
+  AssignConversationInput,
+  UpdateStatusInput,
+  ReplyToMessageInput,
+  AddInternalNoteInput,
+  MarkAsReadInput,
+} from '../../trpc/schemas/chat.schemas';
 import { ConversationStatus, Priority } from '@prisma/client';
 
 export interface ConversationResult {
@@ -113,15 +113,15 @@ export interface ContactInfoFindOptions {
 }
 
 export interface IChatService {
-  startConversation(data: StartConversationDto): Promise<ConversationResult>;
-  sendMessage(data: SendMessageDto): Promise<MessageResult>;
+  startConversation(data: StartConversationInput): Promise<ConversationResult>;
+  sendMessage(data: SendMessageInput): Promise<MessageResult>;
   getMessages(conversationId: string): Promise<ChatMessage[]>;
-  getConversations(filter: GetConversationsDto): Promise<Conversation[]>;
-  assignConversation(data: AssignConversationDto): Promise<Conversation>;
-  updateStatus(data: UpdateStatusDto): Promise<Conversation>;
-  replyToMessage(data: ReplyToMessageDto): Promise<MessageResult>;
-  addInternalNote(data: AddInternalNoteDto): Promise<Conversation>;
-  markAsRead(data: MarkAsReadDto): Promise<void>;
+  getConversations(filter: GetConversationsInput): Promise<Conversation[]>;
+  assignConversation(data: AssignConversationInput): Promise<Conversation>;
+  updateStatus(data: UpdateStatusInput): Promise<Conversation>;
+  replyToMessage(data: ReplyToMessageInput): Promise<MessageResult>;
+  addInternalNote(data: AddInternalNoteInput): Promise<Conversation>;
+  markAsRead(data: MarkAsReadInput): Promise<void>;
 }
 
 export interface IConversationRepository {

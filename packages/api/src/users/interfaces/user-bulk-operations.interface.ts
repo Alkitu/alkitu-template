@@ -1,24 +1,22 @@
 // ✅ SRP COMPLIANT: Single Responsibility - Bulk Operations Only
 // packages/api/src/users/interfaces/user-bulk-operations.interface.ts
 
-import {
-  BulkDeleteUsersDto,
-  BulkUpdateRoleDto,
-  BulkUpdateStatusDto,
-} from '../dto/bulk-users.dto';
-// UserRole and UserStatus types are available but not directly used in interfaces
-// They are used in the imported DTOs
+import type {
+  BulkDeleteUsersInput,
+  BulkUpdateRoleInput,
+  BulkUpdateStatusInput,
+} from '../../trpc/schemas/user.schemas';
 
 export interface IUserBulkOperations {
   // Bulk Operations - Single Responsibility
   bulkDeleteUsers(
-    bulkDeleteDto: BulkDeleteUsersDto,
+    bulkDeleteDto: BulkDeleteUsersInput,
   ): Promise<BulkOperationResult>;
   bulkUpdateRole(
-    bulkUpdateRoleDto: BulkUpdateRoleDto,
+    bulkUpdateRoleDto: BulkUpdateRoleInput,
   ): Promise<BulkOperationResult>;
   bulkUpdateStatus(
-    bulkUpdateStatusDto: BulkUpdateStatusDto,
+    bulkUpdateStatusDto: BulkUpdateStatusInput,
   ): Promise<BulkOperationResult>;
   bulkUpdateField(
     userIds: string[],

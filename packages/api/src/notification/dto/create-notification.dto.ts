@@ -29,7 +29,7 @@ const RequestNotificationDataSchema = z.object({
 });
 
 const GenericNotificationDataSchema = z.object({
-  metadata: z.record(z.any()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 });
 
 const NotificationDataSchema = z.union([
@@ -94,7 +94,7 @@ export class CreateNotificationDto {
     },
   })
   @IsOptional()
-  data?: Record<string, any>; // ALI-120: Structured data payload
+  data?: Record<string, unknown>; // ALI-120: Structured data payload
 }
 
 export class BulkMarkAsReadDto {

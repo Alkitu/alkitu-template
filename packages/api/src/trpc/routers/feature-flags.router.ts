@@ -1,4 +1,5 @@
 import { createTRPCRouter, publicProcedure, protectedProcedure } from '../trpc';
+import { TRPCError } from '@trpc/server';
 import { featureFlagsSchemas } from '../schemas/feature-flags.schemas';
 import { FeatureFlagsService } from '../../feature-flags/feature-flags.service';
 import { requireRoles } from '../middlewares/roles.middleware';
@@ -42,7 +43,7 @@ export function createFeatureFlagsRouter(
       .input(featureFlagsSchemas.toggleFeature)
       .mutation(async ({ input, ctx }) => {
         if (!ctx.user) {
-          throw new Error('Unauthorized');
+          throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Unauthorized' });
         }
 
         return await featureFlagsService.toggleFeature(
@@ -61,7 +62,7 @@ export function createFeatureFlagsRouter(
       .input(featureFlagsSchemas.updateConfig)
       .mutation(async ({ input, ctx }) => {
         if (!ctx.user) {
-          throw new Error('Unauthorized');
+          throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Unauthorized' });
         }
 
         return await featureFlagsService.updateFeatureConfig(

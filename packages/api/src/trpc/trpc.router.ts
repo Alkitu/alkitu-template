@@ -23,6 +23,9 @@ import { ChatbotConfigService } from '../chatbot-config/chatbot-config.service';
 import { ThemeService } from '../theme/theme.service';
 import { EmailTemplateService } from '../email-templates/email-template.service';
 import { FeatureFlagsService } from '../feature-flags/feature-flags.service';
+import { CounterService } from '../counter/counter.service';
+import { DriveFolderService } from '../drive/drive-folder.service';
+import { DriveService } from '../drive/drive.service';
 
 @Injectable()
 export class TrpcRouter {
@@ -35,6 +38,9 @@ export class TrpcRouter {
     private themeService: ThemeService,
     private emailTemplateService: EmailTemplateService,
     private featureFlagsService: FeatureFlagsService,
+    private counterService: CounterService,
+    private driveFolderService: DriveFolderService,
+    private driveService: DriveService,
   ) {}
 
   appRouter() {
@@ -48,18 +54,18 @@ export class TrpcRouter {
         }),
       notification: createNotificationRouter(this.notificationService), // Incluir el router de notificaciones
       billing: billingRouter, // Incluir el router de facturación
-      user: createUserRouter(this.usersService, this.emailService), // Incluir el router de usuario con servicios
+      user: createUserRouter(this.usersService, this.emailService, this.driveFolderService, this.driveService), // Incluir el router de usuario con servicios
       chat: chatRouter, // Incluir el router de chat
       channels: channelsRouter, // Channels router
       chatbotConfig: chatbotConfigRouter, // Incluir el router de configuración del chatbot
       theme: createThemeRouter(this.themeService), // Incluir el router de temas
       emailTemplate: createEmailTemplateRouter(this.emailTemplateService), // ALI-121: Router de email templates
-      request: createRequestRouter(), // ALI-119: Router de solicitudes (requests)
-      service: createServiceRouter(), // Service catalog router
-      category: createCategoryRouter(), // Category catalog router with stats
-      location: createLocationRouter(), // Work location router
+      request: createRequestRouter(this.prisma, this.notificationService, this.emailTemplateService, this.counterService, this.driveFolderService, this.driveService), // ALI-119: Router de solicitudes (requests)
+      service: createServiceRouter(this.prisma), // Service catalog router
+      category: createCategoryRouter(this.prisma), // Category catalog router with stats
+      location: createLocationRouter(this.prisma), // Work location router
       featureFlags: createFeatureFlagsRouter(this.featureFlagsService), // Feature flags router
-      formTemplate: createFormTemplateRouter(), // Form template router (Advanced Form Builder)
+      formTemplate: createFormTemplateRouter(this.prisma), // Form template router (Advanced Form Builder)
     });
   }
 }

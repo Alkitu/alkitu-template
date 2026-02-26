@@ -31,7 +31,7 @@ export class CreateChannelDto {
     example: ChannelType.PUBLIC,
   })
   @IsEnum(ChannelType)
-  type: ChannelType;
+  type!: ChannelType;
 
   @ApiPropertyOptional({
     description: 'Initial members to add (user IDs)',
@@ -58,14 +58,14 @@ export class AddMemberDto {
     example: '60d5ecb74f3b2c001c8b4567',
   })
   @IsString()
-  channelId: string;
+  channelId!: string;
 
   @ApiProperty({
     description: 'User ID to add',
     example: '60d5ecb74f3b2c001c8b4566',
   })
   @IsString()
-  userId: string;
+  userId!: string;
 
   @ApiPropertyOptional({
     description: 'Role of the member',
@@ -83,14 +83,14 @@ export class SendChannelMessageDto {
     example: '60d5ecb74f3b2c001c8b4567',
   })
   @IsString()
-  channelId: string;
+  channelId!: string;
 
   @ApiProperty({
     description: 'Message content',
     example: 'Hello team!',
   })
   @IsString()
-  content: string;
+  content!: string;
 
   @ApiPropertyOptional({
     description: 'Attachments',

@@ -1,20 +1,26 @@
 /// ALI-121: tRPC Router for Email Templates & Automation
 
-import { z } from 'zod';
 import { t } from '../trpc';
+import { adminProcedure } from '../middlewares/roles.middleware';
 import { EmailTemplateService } from '../../email-templates/email-template.service';
 import { TRPCError } from '@trpc/server';
 import { TemplateTrigger, RequestStatus } from '@prisma/client';
 import {
   createEmailTemplateSchema,
-  updateEmailTemplateSchema,
-  templateTriggerSchema,
-  requestStatusSchema,
   resetToDefaultSchema,
   updateLocalizationSchema,
   getVariablesByCategorySchema,
 } from '@alkitu/shared';
 import type { PlaceholderData } from '@alkitu/shared';
+import {
+  getAllEmailTemplatesSchema,
+  getEmailTemplateByIdSchema,
+  getByTriggerSchema,
+  updateEmailTemplateInputSchema,
+  deleteEmailTemplateSchema,
+  previewTemplateSchema,
+  sendAllTestEmailsSchema,
+} from '../schemas/email-template.schemas';
 
 /** Extract error message safely from unknown error */
 function getErrorMessage(error: unknown): string {
@@ -23,6 +29,9 @@ function getErrorMessage(error: unknown): string {
 
 /**
  * Create email template router with all CRUD operations and utilities
+ * All endpoints require admin role — email templates are managed only by admins.
+ * Internal email sending (notifications) bypasses tRPC entirely.
+ *
  * @param emailTemplateService - EmailTemplateService instance
  * @returns tRPC router for email templates
  */
@@ -33,15 +42,8 @@ export const createEmailTemplateRouter = (
     /**
      * Get all email templates with optional filters
      */
-    getAll: t.procedure
-      .input(
-        z.object({
-          trigger: templateTriggerSchema.optional(),
-          status: requestStatusSchema.optional(),
-          active: z.boolean().optional(),
-          search: z.string().optional(),
-        }),
-      )
+    getAll: adminProcedure
+      .input(getAllEmailTemplatesSchema)
       .query(async ({ input }) => {
         try {
           return await emailTemplateService.findAll({
@@ -51,7 +53,6 @@ export const createEmailTemplateRouter = (
             search: input.search,
           });
         } catch (error: unknown) {
-          console.error('Error fetching email templates:', error);
           throw new TRPCError({
             code: 'INTERNAL_SERVER_ERROR',
             message: 'Failed to fetch email templates',
@@ -62,8 +63,8 @@ export const createEmailTemplateRouter = (
     /**
      * Get a single email template by ID
      */
-    getById: t.procedure
-      .input(z.object({ id: z.string() }))
+    getById: adminProcedure
+      .input(getEmailTemplateByIdSchema)
       .query(async ({ input }) => {
         try {
           return await emailTemplateService.findOne(input.id);
@@ -75,7 +76,6 @@ export const createEmailTemplateRouter = (
               message: 'Email template not found',
             });
           }
-          console.error('Error fetching email template:', error);
           throw new TRPCError({
             code: 'INTERNAL_SERVER_ERROR',
             message: 'Failed to fetch email template',
@@ -86,13 +86,8 @@ export const createEmailTemplateRouter = (
     /**
      * Get templates by trigger (and optional status)
      */
-    getByTrigger: t.procedure
-      .input(
-        z.object({
-          trigger: templateTriggerSchema,
-          status: requestStatusSchema.optional(),
-        }),
-      )
+    getByTrigger: adminProcedure
+      .input(getByTriggerSchema)
       .query(async ({ input }) => {
         try {
           return await emailTemplateService.findByTrigger(
@@ -100,7 +95,6 @@ export const createEmailTemplateRouter = (
             input.status as RequestStatus | undefined,
           );
         } catch (error) {
-          console.error('Error fetching templates by trigger:', error);
           throw new TRPCError({
             code: 'INTERNAL_SERVER_ERROR',
             message: 'Failed to fetch templates by trigger',
@@ -111,11 +105,10 @@ export const createEmailTemplateRouter = (
     /**
      * Get available placeholders
      */
-    getAvailablePlaceholders: t.procedure.query(() => {
+    getAvailablePlaceholders: adminProcedure.query(() => {
       try {
         return emailTemplateService.getAvailablePlaceholders();
       } catch (error) {
-        console.error('Error fetching available placeholders:', error);
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
           message: 'Failed to fetch available placeholders',
@@ -126,7 +119,7 @@ export const createEmailTemplateRouter = (
     /**
      * Create a new email template
      */
-    create: t.procedure
+    create: adminProcedure
       .input(createEmailTemplateSchema)
       .mutation(async ({ input }) => {
         try {
@@ -145,7 +138,6 @@ export const createEmailTemplateRouter = (
               message: msg,
             });
           }
-          console.error('Error creating email template:', error);
           throw new TRPCError({
             code: 'INTERNAL_SERVER_ERROR',
             message: 'Failed to create email template',
@@ -156,13 +148,8 @@ export const createEmailTemplateRouter = (
     /**
      * Update an email template
      */
-    update: t.procedure
-      .input(
-        z.object({
-          id: z.string(),
-          data: updateEmailTemplateSchema,
-        }),
-      )
+    update: adminProcedure
+      .input(updateEmailTemplateInputSchema)
       .mutation(async ({ input }) => {
         try {
           return await emailTemplateService.update(input.id, input.data);
@@ -180,7 +167,6 @@ export const createEmailTemplateRouter = (
               message: 'Email template with this name already exists',
             });
           }
-          console.error('Error updating email template:', error);
           throw new TRPCError({
             code: 'INTERNAL_SERVER_ERROR',
             message: 'Failed to update email template',
@@ -191,8 +177,8 @@ export const createEmailTemplateRouter = (
     /**
      * Delete an email template
      */
-    delete: t.procedure
-      .input(z.object({ id: z.string() }))
+    delete: adminProcedure
+      .input(deleteEmailTemplateSchema)
       .mutation(async ({ input }) => {
         try {
           await emailTemplateService.delete(input.id);
@@ -205,7 +191,6 @@ export const createEmailTemplateRouter = (
               message: 'Email template not found',
             });
           }
-          console.error('Error deleting email template:', error);
           throw new TRPCError({
             code: 'INTERNAL_SERVER_ERROR',
             message: 'Failed to delete email template',
@@ -216,50 +201,8 @@ export const createEmailTemplateRouter = (
     /**
      * Preview a template with sample data
      */
-    previewTemplate: t.procedure
-      .input(
-        z.object({
-          templateId: z.string(),
-          data: z.object({
-            request: z.object({
-              id: z.string(),
-              status: z.string(),
-              executionDateTime: z.union([z.string(), z.date()]),
-              createdAt: z.union([z.string(), z.date()]),
-              completedAt: z
-                .union([z.string(), z.date()])
-                .nullable()
-                .optional(),
-            }),
-            user: z.object({
-              firstname: z.string(),
-              lastname: z.string(),
-              email: z.string().email(),
-              phone: z.string().nullable().optional(),
-            }),
-            service: z.object({
-              name: z.string(),
-              category: z.string(),
-            }),
-            location: z.object({
-              street: z.string(),
-              city: z.string(),
-              state: z.string(),
-              zipCode: z.string(),
-            }),
-            employee: z
-              .object({
-                firstname: z.string(),
-                lastname: z.string(),
-                email: z.string().email(),
-                phone: z.string().nullable().optional(),
-              })
-              .nullable()
-              .optional(),
-            templateResponses: z.record(z.unknown()).nullable().optional(),
-          }),
-        }),
-      )
+    previewTemplate: adminProcedure
+      .input(previewTemplateSchema)
       .query(async ({ input }) => {
         try {
           return await emailTemplateService.previewTemplate(
@@ -274,7 +217,6 @@ export const createEmailTemplateRouter = (
               message: 'Email template not found',
             });
           }
-          console.error('Error previewing template:', error);
           throw new TRPCError({
             code: 'INTERNAL_SERVER_ERROR',
             message: 'Failed to preview template',
@@ -285,7 +227,7 @@ export const createEmailTemplateRouter = (
     /**
      * Reset a template to its default content
      */
-    resetToDefault: t.procedure
+    resetToDefault: adminProcedure
       .input(resetToDefaultSchema)
       .mutation(async ({ input }) => {
         try {
@@ -304,7 +246,6 @@ export const createEmailTemplateRouter = (
               message: msg,
             });
           }
-          console.error('Error resetting template:', error);
           throw new TRPCError({
             code: 'INTERNAL_SERVER_ERROR',
             message: 'Failed to reset template to default',
@@ -315,13 +256,12 @@ export const createEmailTemplateRouter = (
     /**
      * Get available variables/placeholders by category
      */
-    getVariablesByCategory: t.procedure
+    getVariablesByCategory: adminProcedure
       .input(getVariablesByCategorySchema)
       .query(({ input }) => {
         try {
           return emailTemplateService.getVariablesByCategory(input.category);
         } catch (error) {
-          console.error('Error fetching variables by category:', error);
           throw new TRPCError({
             code: 'INTERNAL_SERVER_ERROR',
             message: 'Failed to fetch variables by category',
@@ -332,7 +272,7 @@ export const createEmailTemplateRouter = (
     /**
      * Update or insert a localized version of a template
      */
-    updateLocalization: t.procedure
+    updateLocalization: adminProcedure
       .input(updateLocalizationSchema)
       .mutation(async ({ input }) => {
         try {
@@ -350,7 +290,6 @@ export const createEmailTemplateRouter = (
               message: 'Email template not found',
             });
           }
-          console.error('Error updating localization:', error);
           throw new TRPCError({
             code: 'INTERNAL_SERVER_ERROR',
             message: 'Failed to update localization',
@@ -361,11 +300,10 @@ export const createEmailTemplateRouter = (
     /**
      * Get all templates grouped by category
      */
-    getGroupedByCategory: t.procedure.query(async () => {
+    getGroupedByCategory: adminProcedure.query(async () => {
       try {
         return await emailTemplateService.findAllGroupedByCategory();
       } catch (error) {
-        console.error('Error fetching grouped templates:', error);
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
           message: 'Failed to fetch grouped templates',
@@ -376,13 +314,12 @@ export const createEmailTemplateRouter = (
     /**
      * Send all active templates as test emails to a recipient
      */
-    sendAllTestEmails: t.procedure
-      .input(z.object({ recipient: z.string().email() }))
+    sendAllTestEmails: adminProcedure
+      .input(sendAllTestEmailsSchema)
       .mutation(async ({ input }) => {
         try {
           return await emailTemplateService.sendAllTestEmails(input.recipient);
         } catch (error) {
-          console.error('Error sending test emails:', error);
           throw new TRPCError({
             code: 'INTERNAL_SERVER_ERROR',
             message: 'Failed to send test emails',

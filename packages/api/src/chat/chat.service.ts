@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { NotificationService } from '@/notification/notification.service';
+import { NotificationService } from '../notification/notification.service';
 import { ChatGateway } from './chat.gateway';
 import { EmailService } from '../email/email.service';
 import {
@@ -12,17 +12,17 @@ import {
   User,
 } from '@prisma/client';
 import { ConversationResult, MessageResult } from './interfaces/chat.interface';
-import {
-  StartConversationDto,
-  SendMessageDto,
-  GetConversationsDto,
-  AssignConversationDto,
-  UpdateStatusDto,
-  ReplyToMessageDto,
-  AddInternalNoteDto,
-  MarkAsReadDto,
-  MarkAsDeliveredDto,
-} from './dto/chat.dto';
+import type {
+  StartConversationInput,
+  SendMessageInput,
+  GetConversationsInput,
+  AssignConversationInput,
+  UpdateStatusInput,
+  ReplyToMessageInput,
+  AddInternalNoteInput,
+  MarkAsReadInput,
+  MarkAsDeliveredInput,
+} from '../trpc/schemas/chat.schemas';
 import { ConversationRepository } from './repositories/conversation.repository';
 import { MessageRepository } from './repositories/message.repository';
 import { ContactInfoRepository } from './repositories/contact-info.repository';
@@ -71,7 +71,7 @@ export class ChatService {
   }
 
   async startConversation(
-    data: StartConversationDto,
+    data: StartConversationInput,
   ): Promise<ConversationResult> {
     // Sanitize inputs: treat empty strings as undefined
     const email = data.email?.trim() || undefined;
@@ -176,7 +176,7 @@ export class ChatService {
     };
   }
 
-  async sendMessage(data: SendMessageDto): Promise<MessageResult> {
+  async sendMessage(data: SendMessageInput): Promise<MessageResult> {
     const message = await this.messageRepository.create({
       conversationId: data.conversationId,
       content: data.content,
@@ -190,7 +190,7 @@ export class ChatService {
       message.createdAt,
     );
 
-    this.websocketGateway.server.emit('newMessage', message); // Emit to all connected clients
+    this.websocketGateway.sendMessageToConversation(data.conversationId, message);
 
     if (data.isFromVisitor) {
       await this.notificationService.notifyNewChatMessage(message);
@@ -227,7 +227,7 @@ export class ChatService {
     });
   }
 
-  async getConversations(filter: GetConversationsDto): Promise<{ conversations: Conversation[], total: number, page: number, limit: number, totalPages: number }> {
+  async getConversations(filter: GetConversationsInput): Promise<{ conversations: Conversation[], total: number, page: number, limit: number, totalPages: number }> {
     interface WhereClause {
       status?: ConversationStatus;
       priority?: Priority;
@@ -308,7 +308,7 @@ export class ChatService {
     return this.sanitizeConversation(conversation[0]);
   }
 
-  async assignConversation(data: AssignConversationDto): Promise<Conversation> {
+  async assignConversation(data: AssignConversationInput): Promise<Conversation> {
     const conversation = await this.conversationRepository.findById(
       data.conversationId,
     );
@@ -319,7 +319,7 @@ export class ChatService {
     });
   }
 
-  async updateStatus(data: UpdateStatusDto): Promise<Conversation> {
+  async updateStatus(data: UpdateStatusInput): Promise<Conversation> {
     const conversation = await this.conversationRepository.findById(
       data.conversationId,
     );
@@ -330,7 +330,7 @@ export class ChatService {
     });
   }
 
-  async replyToMessage(data: ReplyToMessageDto): Promise<MessageResult> {
+  async replyToMessage(data: ReplyToMessageInput): Promise<MessageResult> {
     const message = await this.messageRepository.create({
       conversationId: data.conversationId,
       content: data.content,
@@ -343,12 +343,12 @@ export class ChatService {
       message.createdAt,
     );
 
-    this.websocketGateway.server.emit('newMessage', message); // Emit to all connected clients
+    this.websocketGateway.sendMessageToConversation(data.conversationId, message);
 
     return { message: this.sanitizeMessage(message) };
   }
 
-  async addInternalNote(data: AddInternalNoteDto): Promise<Conversation> {
+  async addInternalNote(data: AddInternalNoteInput): Promise<Conversation> {
     const conversation = await this.conversationRepository.findById(
       data.conversationId,
     );
@@ -364,7 +364,7 @@ export class ChatService {
   }
 
   async markAsRead(
-    data: MarkAsReadDto & { isVisitor?: boolean },
+    data: MarkAsReadInput & { isVisitor?: boolean },
   ): Promise<void> {
     // Mark messages as read based on who is doing the reading
     // If visitor is reading, mark messages FROM support as read
@@ -382,7 +382,7 @@ export class ChatService {
     });
   }
 
-  async markAsDelivered(data: MarkAsDeliveredDto): Promise<void> {
+  async markAsDelivered(data: MarkAsDeliveredInput & { isVisitor?: boolean }): Promise<void> {
     // Mark messages as delivered when they are received by the client
     await this.prisma.chatMessage.updateMany({
       where: {

@@ -89,21 +89,21 @@ export class SendMessageDto {
     example: '60d5ecb74f3b2c001c8b4567',
   })
   @IsString()
-  conversationId: string;
+  conversationId!: string;
 
   @ApiProperty({
     description: 'Message content',
     example: 'Thank you for contacting us!',
   })
   @IsString()
-  content: string;
+  content!: string;
 
   @ApiProperty({
     description: 'Whether the message is from a visitor or agent',
     example: false,
   })
   @IsBoolean()
-  isFromVisitor: boolean;
+  isFromVisitor!: boolean;
 
   @ApiPropertyOptional({
     description: 'User ID of the sender (for agent messages)',
@@ -127,7 +127,7 @@ export class GetMessagesDto {
     example: '60d5ecb74f3b2c001c8b4567',
   })
   @IsString()
-  conversationId: string;
+  conversationId!: string;
 }
 
 export class GetConversationsDto {
@@ -182,14 +182,14 @@ export class AssignConversationDto {
     example: '60d5ecb74f3b2c001c8b4567',
   })
   @IsString()
-  conversationId: string;
+  conversationId!: string;
 
   @ApiProperty({
     description: 'User ID to assign the conversation to',
     example: '60d5ecb74f3b2c001c8b4566',
   })
   @IsString()
-  assignedToId: string;
+  assignedToId!: string;
 }
 
 export class UpdateStatusDto {
@@ -198,7 +198,7 @@ export class UpdateStatusDto {
     example: '60d5ecb74f3b2c001c8b4567',
   })
   @IsString()
-  conversationId: string;
+  conversationId!: string;
 
   @ApiProperty({
     description: 'New conversation status',
@@ -206,7 +206,7 @@ export class UpdateStatusDto {
     example: ConversationStatus.RESOLVED,
   })
   @IsEnum(ConversationStatus)
-  status: ConversationStatus;
+  status!: ConversationStatus;
 }
 
 export class ReplyToMessageDto {
@@ -215,21 +215,21 @@ export class ReplyToMessageDto {
     example: '60d5ecb74f3b2c001c8b4567',
   })
   @IsString()
-  conversationId: string;
+  conversationId!: string;
 
   @ApiProperty({
     description: 'Reply message content',
     example: 'I can help you with that!',
   })
   @IsString()
-  content: string;
+  content!: string;
 
   @ApiProperty({
     description: 'User ID of the agent replying',
     example: '60d5ecb74f3b2c001c8b4566',
   })
   @IsString()
-  senderUserId: string;
+  senderUserId!: string;
 }
 
 export class AddInternalNoteDto {
@@ -238,14 +238,14 @@ export class AddInternalNoteDto {
     example: '60d5ecb74f3b2c001c8b4567',
   })
   @IsString()
-  conversationId: string;
+  conversationId!: string;
 
   @ApiProperty({
     description: 'Internal note content (not visible to visitors)',
     example: 'Customer seems frustrated, handle with care',
   })
   @IsString()
-  note: string;
+  note!: string;
 }
 
 export class MarkAsReadDto {
@@ -254,14 +254,14 @@ export class MarkAsReadDto {
     example: '60d5ecb74f3b2c001c8b4567',
   })
   @IsString()
-  conversationId: string;
+  conversationId!: string;
 
   @ApiProperty({
     description: 'User ID marking the conversation as read',
     example: '60d5ecb74f3b2c001c8b4566',
   })
   @IsString()
-  userId: string;
+  userId!: string;
 }
 
 export class MarkAsDeliveredDto {
@@ -270,7 +270,7 @@ export class MarkAsDeliveredDto {
     example: '60d5ecb74f3b2c001c8b4567',
   })
   @IsString()
-  conversationId: string;
+  conversationId!: string;
 
   @ApiPropertyOptional({
     description: 'Whether marking as visitor or agent',

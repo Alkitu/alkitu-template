@@ -8,7 +8,7 @@ import {
   UpdateConversationData,
   ConversationFindOptions,
 } from '../interfaces/chat.interface';
-import { Conversation, ConversationStatus, Priority } from '@prisma/client';
+import { Conversation, ConversationStatus, ConversationType, Priority } from '@prisma/client';
 
 describe('ConversationRepository', () => {
   let repository: ConversationRepository;
@@ -24,6 +24,8 @@ describe('ConversationRepository', () => {
     clientUserId: null,
     tags: [],
     internalNotes: null,
+    type: ConversationType.CLIENT_SUPPORT,
+    requestId: null,
     lastMessageAt: new Date(),
     createdAt: new Date(),
     updatedAt: new Date(),

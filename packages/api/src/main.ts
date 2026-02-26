@@ -1,6 +1,7 @@
 import { config } from 'dotenv';
 config(); // Load environment variables
 
+import { json, raw } from 'express';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
@@ -10,6 +11,11 @@ import { GlobalExceptionFilter } from './common/filters/global-exception.filter'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // Raw body parser for resumable upload chunks (must be before json parser)
+  app.use('/drive/upload/resumable-chunk', raw({ type: '*/*', limit: '2mb' }));
+  // Increased JSON body limit for base64 uploads
+  app.use(json({ limit: '50mb' }));
 
   // Enable CORS
   const allowedOrigins = [

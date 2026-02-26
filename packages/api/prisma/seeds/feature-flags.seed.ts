@@ -73,6 +73,35 @@ const defaultFeatureFlags = [
       enableInApp: true,
     },
   },
+  {
+    key: 'media-manager',
+    name: 'Media Manager',
+    description: 'Gestor de archivos y medios con integración Google Drive',
+    category: 'addon',
+    status: FeatureStatus.DISABLED,
+    icon: 'FolderOpen',
+    badge: 'New',
+    sortOrder: 6,
+    config: {
+      enableUpload: true,
+      enableFolders: true,
+      enablePreview: true,
+    },
+  },
+  {
+    key: 'file-upload',
+    name: 'File Upload',
+    description: 'Sistema de carga de archivos en solicitudes y formularios',
+    category: 'addon',
+    status: FeatureStatus.DISABLED,
+    icon: 'Upload',
+    badge: 'New',
+    sortOrder: 7,
+    config: {
+      maxFileSize: 52428800,
+      allowedTypes: ['image/*', 'application/pdf', 'text/*'],
+    },
+  },
 ];
 
 export async function seedFeatureFlags() {

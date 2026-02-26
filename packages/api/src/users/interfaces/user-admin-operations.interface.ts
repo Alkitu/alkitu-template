@@ -1,12 +1,12 @@
 // ✅ SRP COMPLIANT: Single Responsibility - Admin Operations Only
 // packages/api/src/users/interfaces/user-admin-operations.interface.ts
 
-import { AdminResetPasswordDto } from '../dto/bulk-users.dto';
+import type { ResetUserPasswordInput } from '../../trpc/schemas/user.schemas';
 
 export interface IUserAdminOperations {
   // Admin-Specific Operations - Single Responsibility
   resetUserPassword(
-    resetPasswordDto: AdminResetPasswordDto,
+    resetPasswordDto: ResetUserPasswordInput,
   ): Promise<PasswordResetResult>;
   adminChangePassword(userId: string, newPassword: string): Promise<void>;
   anonymizeUser(userId: string): Promise<AnonymizationResult>;

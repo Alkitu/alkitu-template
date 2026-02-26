@@ -1,8 +1,13 @@
 import { t, protectedProcedure } from '../trpc';
-import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 import { UserRole } from '@prisma/client';
 import { adminProcedure } from '../middlewares/roles.middleware';
+import {
+  getBillingRecordsSchema,
+  createBillingRecordSchema,
+  updateBillingRecordSchema,
+  deleteBillingRecordSchema,
+} from '../schemas/billing.schemas';
 
 /**
  * Billing Router Factory
@@ -20,7 +25,7 @@ export function createBillingRouter() {
      * Security: Users can only view their own records, unless ADMIN
      */
     getBillingRecords: protectedProcedure
-      .input(z.object({ userId: z.string() }))
+      .input(getBillingRecordsSchema)
       .use(async ({ ctx, next, input }) => {
         // Check ownership - only allow if requesting own data or is ADMIN
         if (ctx.user.role !== UserRole.ADMIN && ctx.user.id !== input.userId) {
@@ -47,19 +52,7 @@ export function createBillingRouter() {
      * Security: ADMIN only
      */
     createBillingRecord: adminProcedure
-      .input(
-        z.object({
-          userId: z.string(),
-          plan: z.string(),
-          status: z.string(),
-          amount: z.number(),
-          currency: z.string(),
-          startDate: z.date(),
-          endDate: z.date().optional(),
-          paymentMethod: z.string().optional(),
-          transactionId: z.string().optional(),
-        }),
-      )
+      .input(createBillingRecordSchema)
       .mutation(async ({ input, ctx }) => {
         const newBillingRecord = await ctx.prisma.billing.create({
           data: {
@@ -85,19 +78,7 @@ export function createBillingRouter() {
      * Security: ADMIN only
      */
     updateBillingRecord: adminProcedure
-      .input(
-        z.object({
-          id: z.string(),
-          plan: z.string().optional(),
-          status: z.string().optional(),
-          amount: z.number().optional(),
-          currency: z.string().optional(),
-          startDate: z.date().optional(),
-          endDate: z.date().optional(),
-          paymentMethod: z.string().optional(),
-          transactionId: z.string().optional(),
-        }),
-      )
+      .input(updateBillingRecordSchema)
       .mutation(async ({ input, ctx }) => {
         const { id, ...data } = input;
         const updatedBillingRecord = await ctx.prisma.billing.update({
@@ -115,7 +96,7 @@ export function createBillingRouter() {
      * Security: ADMIN only
      */
     deleteBillingRecord: adminProcedure
-      .input(z.object({ id: z.string() }))
+      .input(deleteBillingRecordSchema)
       .mutation(async ({ input, ctx }) => {
         await ctx.prisma.billing.delete({ where: { id: input.id } });
         return { message: 'Billing record deleted successfully' };

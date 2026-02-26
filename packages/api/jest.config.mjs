@@ -62,6 +62,7 @@ export default {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
     '^@alkitu/shared$': '<rootDir>/../shared/src',
+    '^@alkitu/shared/(.*)$': '<rootDir>/../shared/src/$1',
     '^@/test/(.*)$': '<rootDir>/test/$1',
     '^@/test/mocks/(.*)$': '<rootDir>/test/mocks/$1',
     '^@/test/fixtures/(.*)$': '<rootDir>/test/fixtures/$1',

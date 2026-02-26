@@ -8,7 +8,7 @@ export const saveThemeSchema = z.object({
   author: z.string().optional(),
   userId: z.string().optional(), // DEPRECATED: Use createdById
   createdById: z.string().optional(), // User who created the theme (audit only)
-  themeData: z.any(), // Complex nested JSON structure
+  themeData: z.record(z.string(), z.unknown()),
   tags: z.array(z.string()).optional(),
   isPublic: z.boolean().optional(),
   isFavorite: z.boolean().optional(),
@@ -24,7 +24,7 @@ export const updateThemeSchema = z.object({
   author: z.string().optional(),
   userId: z.string().optional(), // DEPRECATED: Use createdById
   createdById: z.string().optional(),
-  themeData: z.any().optional(),
+  themeData: z.record(z.string(), z.unknown()).optional(),
   tags: z.array(z.string()).optional(),
   isPublic: z.boolean().optional(),
   isFavorite: z.boolean().optional(),
@@ -34,17 +34,6 @@ export const updateThemeSchema = z.object({
 // Schema for getting a theme by ID
 export const getThemeSchema = z.object({
   id: z.string(),
-});
-
-// Schema for getting active theme
-export const getActiveThemeSchema = z.object({
-  userId: z.string().optional(),
-});
-
-// Schema for listing themes
-export const listThemesSchema = z.object({
-  userId: z.string().optional(),
-  includePublic: z.boolean().optional().default(true),
 });
 
 // Schema for deleting a theme
@@ -59,14 +48,7 @@ export const toggleFavoriteSchema = z.object({
   userId: z.string().optional(),
 });
 
-// Schema for setting active theme
-// @deprecated Use setGlobalActiveThemeSchema instead
-export const setActiveThemeSchema = z.object({
-  id: z.string(),
-  userId: z.string().optional(),
-});
-
-// NEW: Schema for setting global active theme
+// Schema for setting global active theme
 export const setGlobalActiveThemeSchema = z.object({
   themeId: z.string(),
   requestingUserId: z.string(),
@@ -75,15 +57,46 @@ export const setGlobalActiveThemeSchema = z.object({
 // NEW: Schema for listing all themes (no parameters)
 export const listAllThemesSchema = z.object({});
 
+// Schema for creating a theme (new format with light/dark mode configs)
+export const createThemeSchema = z.object({
+  name: z.string().min(1, 'Theme name is required'),
+  description: z.string().optional(),
+  author: z.string().optional(),
+  companyId: z.string().optional(),
+  createdById: z.string(),
+  lightModeConfig: z.record(z.string(), z.unknown()),
+  darkModeConfig: z.record(z.string(), z.unknown()).optional(),
+  typography: z.record(z.string(), z.unknown()).optional(),
+  tags: z.array(z.string()).optional(),
+  isDefault: z.boolean().optional(),
+});
+
+// Schema for updating a theme (new format)
+export const updateThemeNewSchema = z.object({
+  themeId: z.string(),
+  userId: z.string(),
+  name: z.string().optional(),
+  description: z.string().optional(),
+  lightModeConfig: z.record(z.string(), z.unknown()).optional(),
+  darkModeConfig: z.record(z.string(), z.unknown()).optional(),
+  typography: z.record(z.string(), z.unknown()).optional(),
+  tags: z.array(z.string()).optional(),
+});
+
+// Schema for getting a theme by themeId
+export const getThemeByIdSchema = z.object({
+  themeId: z.string(),
+});
+
 export const themeSchemas = {
   save: saveThemeSchema,
   update: updateThemeSchema,
   get: getThemeSchema,
-  getActive: getActiveThemeSchema,
-  list: listThemesSchema,
   delete: deleteThemeSchema,
   toggleFavorite: toggleFavoriteSchema,
-  setActive: setActiveThemeSchema,
   setGlobalActiveTheme: setGlobalActiveThemeSchema,
   listAllThemes: listAllThemesSchema,
+  createTheme: createThemeSchema,
+  updateTheme: updateThemeNewSchema,
+  getThemeById: getThemeByIdSchema,
 };

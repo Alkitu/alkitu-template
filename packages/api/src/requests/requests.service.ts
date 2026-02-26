@@ -28,6 +28,8 @@ import {
 } from '../email-templates/email-template.service';
 import { AccessControlService } from '../access-control/access-control.service';
 import { AccessLevel } from '@prisma/client';
+import { CounterService } from '../counter/counter.service';
+import { DriveFolderService } from '../drive/drive-folder.service';
 
 /**
  * Service for managing service requests lifecycle (ALI-119 + ALI-120 + ALI-121)
@@ -42,6 +44,8 @@ export class RequestsService {
     private readonly notificationService: NotificationService,
     private readonly emailTemplateService: EmailTemplateService,
     private readonly accessControl: AccessControlService,
+    private readonly counterService: CounterService,
+    private readonly driveFolderService: DriveFolderService,
   ) {}
 
   /**
@@ -74,6 +78,7 @@ export class RequestsService {
       // Validate service exists (excluding soft-deleted)
       const service = await this.prisma.service.findFirst({
         where: { id: createRequestDto.serviceId, deletedAt: null },
+        select: { id: true, name: true, categoryId: true, code: true, category: { select: { id: true, name: true } } },
       });
 
       if (!service) {
@@ -106,6 +111,14 @@ export class RequestsService {
       // This validation should check if all required fields are filled
       // and if the data matches the expected types
 
+      // Generate customId if service has a code configured
+      let customId: string | undefined;
+      if (service.code) {
+        customId = await this.counterService.generateRequestCustomId(
+          service.code,
+        );
+      }
+
       // Create the request with audit logging
       const createdRequest = await this.prisma.request.create({
         data: {
@@ -115,6 +128,7 @@ export class RequestsService {
           executionDateTime: executionDate,
           templateResponses: createRequestDto.templateResponses as any,
           note: createRequestDto.note as any,
+          customId,
           status: RequestStatus.PENDING,
           deletedAt: null, // Explicitly set to null for soft delete queries
           createdBy: userId,
@@ -166,6 +180,15 @@ export class RequestsService {
           },
         },
       });
+
+      // Non-blocking: create Drive folder for this request
+      this.driveFolderService
+        .ensureRequestFolder(createdRequest.id)
+        .catch((error) => {
+          this.logger.warn(
+            `Failed to create Drive folder for request ${createdRequest.id}: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          );
+        });
 
       // ALI-120: Send multi-channel notifications
       try {

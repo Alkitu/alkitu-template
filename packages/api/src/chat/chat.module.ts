@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { JwtModule } from '@nestjs/jwt';
 import { ChatService } from './chat.service';
 import { ChatGateway } from './chat.gateway';
 import { ChatController } from './chat.controller';
@@ -10,7 +11,14 @@ import { MessageRepository } from './repositories/message.repository';
 import { ContactInfoRepository } from './repositories/contact-info.repository';
 
 @Module({
-  imports: [NotificationModule, EmailModule],
+  imports: [
+    JwtModule.register({
+      secret: process.env.JWT_SECRET || 'your-secret-key',
+      signOptions: { expiresIn: '24h' },
+    }),
+    NotificationModule,
+    EmailModule,
+  ],
   controllers: [ChatController],
   providers: [
     ChatService,

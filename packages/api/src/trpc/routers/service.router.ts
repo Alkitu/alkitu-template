@@ -1,16 +1,18 @@
-import { z } from 'zod';
 import { t, protectedProcedure } from '../trpc';
 import { adminProcedure } from '../middlewares/roles.middleware';
-import { Prisma, PrismaClient, RequestStatus } from '@prisma/client';
+import { Prisma, type PrismaClient, RequestStatus } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { handlePrismaError } from '../utils/prisma-error-mapper';
+import { createPaginatedResponse, calculatePagination } from '../schemas/common.schemas';
 import {
-  paginatedSortingSchema,
-  createPaginatedResponse,
-  calculatePagination,
-} from '../schemas/common.schemas';
-
-const prisma = new PrismaClient();
+  getAllServicesSchema,
+  getServiceByIdSchema,
+  getServicesByCategorySchema,
+  createServiceSchema,
+  updateServiceSchema,
+  deleteServiceSchema,
+  getServiceRequestStatsSchema,
+} from '../schemas/service.schemas';
 
 /**
  * Service tRPC Router
@@ -19,22 +21,14 @@ const prisma = new PrismaClient();
  * Security:
  * - All endpoints require authentication
  */
-export function createServiceRouter() {
+export function createServiceRouter(prisma: PrismaClient) {
   return t.router({
     /**
      * Get all active services with pagination
      * Security: Requires authentication
      */
     getAllServices: protectedProcedure
-      .input(
-        paginatedSortingSchema
-          .extend({
-            statusFilter: z
-              .enum(['all', 'active', 'inactive'])
-              .default('active'),
-          })
-          .optional(),
-      )
+      .input(getAllServicesSchema)
       .query(async ({ input }) => {
         try {
           // Use default values if no input provided
@@ -131,7 +125,7 @@ export function createServiceRouter() {
      * Security: Requires authentication
      */
     getServiceById: protectedProcedure
-      .input(z.object({ id: z.string() }))
+      .input(getServiceByIdSchema)
       .query(async ({ input }) => {
         try {
           const service = await prisma.service.findUnique({
@@ -160,7 +154,7 @@ export function createServiceRouter() {
      * Security: Requires authentication
      */
     getServicesByCategory: protectedProcedure
-      .input(z.object({ categoryId: z.string() }))
+      .input(getServicesByCategorySchema)
       .query(async ({ input }) => {
         try {
           return await prisma.service.findMany({
@@ -202,18 +196,22 @@ export function createServiceRouter() {
      * Security: Requires admin role
      */
     createService: adminProcedure
-      .input(
-        z.object({
-          name: z.string().min(1, 'Name is required'),
-          categoryId: z.string(),
-          formTemplateIds: z.array(z.string()).optional(),
-          thumbnail: z.string().optional(),
-          iconColor: z.string().optional().default('#000000'),
-          isActive: z.boolean().optional().default(true),
-        }),
-      )
+      .input(createServiceSchema)
       .mutation(async ({ input, ctx }) => {
         try {
+          // Validate code uniqueness if provided
+          if (input.code) {
+            const existingWithCode = await prisma.service.findFirst({
+              where: { code: input.code },
+            });
+            if (existingWithCode) {
+              throw new TRPCError({
+                code: 'CONFLICT',
+                message: `Service code "${input.code}" is already in use`,
+              });
+            }
+          }
+
           const service = await prisma.service.create({
             data: {
               name: input.name,
@@ -221,6 +219,7 @@ export function createServiceRouter() {
               formTemplateIds: input.formTemplateIds || [],
               thumbnail: input.thumbnail,
               iconColor: input.iconColor,
+              code: input.code,
               createdBy: ctx.user?.id,
               deletedAt: input.isActive ? null : new Date(),
             },
@@ -242,17 +241,7 @@ export function createServiceRouter() {
      * Security: Requires admin role
      */
     updateService: adminProcedure
-      .input(
-        z.object({
-          id: z.string(),
-          name: z.string().min(1, 'Name is required').optional(),
-          categoryId: z.string().optional(),
-          formTemplateIds: z.array(z.string()).optional(),
-          thumbnail: z.string().nullish(),
-          iconColor: z.string().nullish(),
-          isActive: z.boolean().optional(),
-        }),
-      )
+      .input(updateServiceSchema)
       .mutation(async ({ input, ctx }) => {
         try {
           const {
@@ -263,6 +252,7 @@ export function createServiceRouter() {
             formTemplateIds,
             thumbnail,
             iconColor,
+            code,
           } = input;
 
           // Check if service exists
@@ -277,6 +267,19 @@ export function createServiceRouter() {
             });
           }
 
+          // Validate code uniqueness if being changed
+          if (code !== undefined && code !== null && code !== existing.code) {
+            const existingWithCode = await prisma.service.findFirst({
+              where: { code, id: { not: id } },
+            });
+            if (existingWithCode) {
+              throw new TRPCError({
+                code: 'CONFLICT',
+                message: `Service code "${code}" is already in use`,
+              });
+            }
+          }
+
           // Build update data explicitly to avoid XOR type issues with Prisma
           const data: Prisma.ServiceUncheckedUpdateInput = {
             updatedBy: ctx.user.id,
@@ -285,12 +288,11 @@ export function createServiceRouter() {
           if (categoryId !== undefined) data.categoryId = categoryId;
           if (thumbnail !== undefined) data.thumbnail = thumbnail;
           if (iconColor !== undefined) data.iconColor = iconColor;
+          if (code !== undefined) data.code = code;
           if (formTemplateIds !== undefined)
             data.formTemplateIds = formTemplateIds;
           if (isActive !== undefined)
             data.deletedAt = isActive ? null : new Date();
-
-          console.log('[updateService] id:', id, 'data:', JSON.stringify(data));
 
           const service = await prisma.service.update({
             where: { id },
@@ -302,8 +304,6 @@ export function createServiceRouter() {
               formTemplates: true,
             },
           });
-
-          console.log('[updateService] saved iconColor:', service.iconColor);
 
           return service;
         } catch (error) {
@@ -318,7 +318,7 @@ export function createServiceRouter() {
      * Security: Requires admin role
      */
     deleteService: adminProcedure
-      .input(z.object({ id: z.string() }))
+      .input(deleteServiceSchema)
       .mutation(async ({ input, ctx }) => {
         try {
           const existing = await prisma.service.findUnique({
@@ -370,7 +370,7 @@ export function createServiceRouter() {
       }),
 
     getServiceRequestStats: protectedProcedure
-      .input(z.object({}).optional())
+      .input(getServiceRequestStatsSchema)
       .query(async () => {
         try {
           // Get all services with their requests

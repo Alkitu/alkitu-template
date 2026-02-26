@@ -1,8 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import {
@@ -10,6 +5,7 @@ import {
   NotificationType,
 } from './dto/create-notification.dto';
 import { PushNotificationService } from './push-notification.service';
+import { Prisma } from '@prisma/client';
 
 interface Notification {
   id: string;
@@ -26,31 +22,6 @@ interface NotificationGateway {
     userId: string,
     notification: Record<string, unknown>,
   ): Promise<void>;
-}
-
-interface WhereClause {
-  userId: string;
-  AND?: any[];
-  OR?: any[];
-  type?: any;
-  read?: boolean;
-  message?: any;
-  createdAt?: {
-    gte?: Date;
-    lte?: Date;
-  };
-  id?: {
-    gt?: string;
-    lt?: string;
-  };
-  NOT?: any;
-}
-
-interface QueryOptions {
-  where: any;
-  orderBy: any;
-  take?: number;
-  skip?: number;
 }
 
 @Injectable()
@@ -79,7 +50,7 @@ export class NotificationService {
     notification: {
       type: NotificationType;
       message: string;
-      data?: any;
+      data?: Record<string, unknown>;
       link?: string;
     },
   ): Promise<void> {
@@ -184,18 +155,9 @@ export class NotificationService {
         );
       }
 
-      // 4. EMAIL: TODO - Implement in future (ALI-121)
-      // For now, just log
-      const shouldSendEmail = await this.shouldSendNotification(
-        userId,
-        notification.type,
-        'email',
-      );
-      if (shouldSendEmail) {
-        logger.debug(
-          `Email notification queued for user ${userId} (not implemented)`,
-        );
-      }
+      // 4. EMAIL: Handled by domain-specific hooks (e.g., RequestStatusChangedHook)
+      // which call EmailTemplateService directly with full context data needed
+      // for placeholder replacement (user, service, location, etc.).
 
       logger.log(
         `Multi-channel notification sent to user ${userId} (type: ${notification.type})`,
@@ -234,42 +196,93 @@ export class NotificationService {
 
   async createNotification(createNotificationDto: CreateNotificationDto) {
     return this.prisma.notification.create({
-      data: createNotificationDto,
+      data: {
+        userId: createNotificationDto.userId,
+        message: createNotificationDto.message,
+        type: createNotificationDto.type,
+        link: createNotificationDto.link,
+        data: createNotificationDto.data as Prisma.InputJsonValue,
+      },
     });
   }
 
-  async notifyNewChatConversation(conversation: any) {
-    // TODO: Implement proper admin user lookup or use a system notification mechanism
-    // Temporarily disabled notification creation to prevent ObjectID errors
-    // The hardcoded userId 'admin' is not a valid MongoDB ObjectID
-    console.log(
-      `New chat conversation from ${conversation.contactInfo?.name || conversation.contactInfo?.email || 'a visitor'}`,
-    );
+  /**
+   * Notify admins about a new chat conversation.
+   * Looks up ADMIN users in the database and sends multi-channel notifications.
+   */
+  async notifyNewChatConversation(conversation: {
+    id: string;
+    contactInfo?: { name?: string; email?: string };
+  }) {
+    const logger = new Logger('NotificationService');
+    const contactName =
+      conversation.contactInfo?.name ||
+      conversation.contactInfo?.email ||
+      'a visitor';
 
-    // const adminUserId = 'admin'; // Invalid ObjectID
-    // await this.createNotification({
-    //   userId: adminUserId,
-    //   message: `New chat conversation from ${conversation.contactInfo?.name || conversation.contactInfo?.email || 'a visitor'}`,
-    //   type: NotificationType.CHAT_NEW_CONVERSATION,
-    //   link: `/dashboard/chat/${conversation.id}`,
-    // });
+    try {
+      // Find admin users to notify
+      const admins = await this.prisma.user.findMany({
+        where: { role: 'ADMIN' },
+        select: { id: true },
+      });
+
+      if (admins.length === 0) {
+        logger.warn('No admin users found to notify about new chat conversation');
+        return;
+      }
+
+      // Send notification to each admin
+      for (const admin of admins) {
+        await this.sendMultiChannelNotification(admin.id, {
+          type: NotificationType.CHAT_NEW_CONVERSATION,
+          message: `New chat conversation from ${contactName}`,
+          link: `/dashboard/chat/${conversation.id}`,
+        });
+      }
+    } catch (error) {
+      logger.error('Failed to notify admins about new chat conversation:', error);
+    }
   }
 
-  async notifyNewChatMessage(message: any) {
-    // TODO: Implement proper admin user lookup or use a system notification mechanism
-    // Temporarily disabled notification creation to prevent ObjectID errors
-    // The hardcoded userId 'admin' is not a valid MongoDB ObjectID
-    console.log(
-      `New message in conversation ${message.conversationId}: ${message.content.substring(0, 50)}...`,
-    );
+  /**
+   * Notify the assigned agent about a new chat message.
+   * Falls back to notifying all admins if no agent is assigned.
+   */
+  async notifyNewChatMessage(message: {
+    conversationId: string;
+    content: string;
+    assignedToId?: string;
+  }) {
+    const logger = new Logger('NotificationService');
+    const preview = message.content.substring(0, 50);
 
-    // const adminUserId = 'admin'; // Invalid ObjectID
-    // await this.createNotification({
-    //   userId: adminUserId,
-    //   message: `New message in conversation ${message.conversationId}: ${message.content.substring(0, 50)}...`,
-    //   type: NotificationType.CHAT_NEW_MESSAGE,
-    //   link: `/dashboard/chat/${message.conversationId}`,
-    // });
+    try {
+      if (message.assignedToId) {
+        // Notify the assigned agent
+        await this.sendMultiChannelNotification(message.assignedToId, {
+          type: NotificationType.CHAT_NEW_MESSAGE,
+          message: `New message in conversation: ${preview}...`,
+          link: `/dashboard/chat/${message.conversationId}`,
+        });
+      } else {
+        // No assigned agent — notify all admins
+        const admins = await this.prisma.user.findMany({
+          where: { role: 'ADMIN' },
+          select: { id: true },
+        });
+
+        for (const admin of admins) {
+          await this.sendMultiChannelNotification(admin.id, {
+            type: NotificationType.CHAT_NEW_MESSAGE,
+            message: `New message in conversation: ${preview}...`,
+            link: `/dashboard/chat/${message.conversationId}`,
+          });
+        }
+      }
+    } catch (error) {
+      logger.error('Failed to notify about new chat message:', error);
+    }
   }
 
   async getNotifications(userId: string) {
@@ -449,7 +462,7 @@ export class NotificationService {
     } = filters;
 
     // Build where clause
-    const where: WhereClause = { userId };
+    const where: Prisma.NotificationWhereInput = { userId };
 
     // Advanced search parsing
     if (search) {
@@ -457,11 +470,8 @@ export class NotificationService {
       if (advancedSearch) {
         Object.assign(where, advancedSearch);
       } else {
-        // Fallback to simple search
-        where.OR = [
-          { message: { contains: search, mode: 'insensitive' } },
-          { type: { contains: search, mode: 'insensitive' } },
-        ];
+        // Fallback to simple search (type is an enum, search message only)
+        where.message = { contains: search, mode: 'insensitive' as Prisma.QueryMode };
       }
     }
 
@@ -469,19 +479,19 @@ export class NotificationService {
     if (types && types.length > 0) {
       if (where.AND) {
         // Check if there's already a type filter from advanced search
-        const existingTypeFilter = where.AND.find(
-          (condition: any) => condition.type?.in,
+        const existingTypeFilter = (where.AND as Prisma.NotificationWhereInput[]).find(
+          (condition) => typeof condition === 'object' && condition !== null && 'type' in condition,
         );
-        if (existingTypeFilter) {
+        if (existingTypeFilter && existingTypeFilter.type && typeof existingTypeFilter.type === 'object' && 'in' in existingTypeFilter.type) {
           // Merge type filters
-          const existingTypes = existingTypeFilter.type.in;
+          const existingTypes = existingTypeFilter.type.in as string[];
           const mergedTypes = [...new Set([...existingTypes, ...types])];
-          existingTypeFilter.type.in = mergedTypes;
+          existingTypeFilter.type = { in: mergedTypes as NotificationType[] };
         } else {
-          where.AND.push({ type: { in: types } });
+          (where.AND as Prisma.NotificationWhereInput[]).push({ type: { in: types as NotificationType[] } });
         }
       } else {
-        where.type = { in: types };
+        where.type = { in: types as NotificationType[] };
       }
     }
 
@@ -504,7 +514,7 @@ export class NotificationService {
     }
 
     // Build orderBy clause
-    let orderBy: any = { createdAt: 'desc' };
+    let orderBy: Prisma.NotificationOrderByWithRelationInput | Prisma.NotificationOrderByWithRelationInput[] = { createdAt: 'desc' };
     if (sortBy === 'oldest') {
       orderBy = { createdAt: 'asc' };
     } else if (sortBy === 'type') {
@@ -512,7 +522,7 @@ export class NotificationService {
     }
 
     // Execute query with pagination
-    const query: QueryOptions = {
+    const query: Prisma.NotificationFindManyArgs = {
       where,
       orderBy,
     };
@@ -664,31 +674,33 @@ export class NotificationService {
   }
 
   // Parse advanced search query
-  private parseAdvancedSearch(searchQuery: string): WhereClause | null {
-    const conditions: any = {
+  // Note: `type` is an enum field (NotificationType) — only `message` supports text search
+  private parseAdvancedSearch(searchQuery: string): Prisma.NotificationWhereInput | null {
+    const insensitive = 'insensitive' as Prisma.QueryMode;
+    const conditions: {
+      AND: Prisma.NotificationWhereInput[];
+      OR: Prisma.NotificationWhereInput[];
+    } = {
       AND: [],
       OR: [],
     };
 
-    // Handle type: prefix
+    // Handle type: prefix (exact enum match, case-insensitive input)
     const typeMatch = searchQuery.match(/type:(\w+)/gi);
     if (typeMatch) {
-      const types = typeMatch.map((match) => match.split(':')[1].toLowerCase());
-      conditions.AND.push({ type: { in: types } });
+      const types = typeMatch.map((match) => match.split(':')[1].toUpperCase());
+      conditions.AND.push({ type: { in: types as NotificationType[] } });
       // Remove type: patterns from search
       searchQuery = searchQuery.replace(/type:\w+/gi, '').trim();
     }
 
-    // Handle quoted phrases
+    // Handle quoted phrases (search message only — type is enum)
     const quotedPhrases = searchQuery.match(/"([^"]*)"/g);
     if (quotedPhrases) {
       quotedPhrases.forEach((phrase) => {
         const cleanPhrase = phrase.replace(/"/g, '');
         conditions.AND.push({
-          OR: [
-            { message: { contains: cleanPhrase, mode: 'insensitive' } },
-            { type: { contains: cleanPhrase, mode: 'insensitive' } },
-          ],
+          message: { contains: cleanPhrase, mode: insensitive },
         });
       });
       // Remove quoted phrases from search
@@ -702,10 +714,7 @@ export class NotificationService {
         .map((term) => term.trim())
         .filter(Boolean);
       const orConditions = orTerms.map((term) => ({
-        OR: [
-          { message: { contains: term, mode: 'insensitive' } },
-          { type: { contains: term, mode: 'insensitive' } },
-        ],
+        message: { contains: term, mode: insensitive },
       }));
       conditions.OR.push(...orConditions);
     } else if (searchQuery.includes(' AND ')) {
@@ -720,18 +729,12 @@ export class NotificationService {
           const excludeTerm = term.substring(1);
           conditions.AND.push({
             NOT: {
-              OR: [
-                { message: { contains: excludeTerm, mode: 'insensitive' } },
-                { type: { contains: excludeTerm, mode: 'insensitive' } },
-              ],
+              message: { contains: excludeTerm, mode: insensitive },
             },
           });
         } else {
           conditions.AND.push({
-            OR: [
-              { message: { contains: term, mode: 'insensitive' } },
-              { type: { contains: term, mode: 'insensitive' } },
-            ],
+            message: { contains: term, mode: insensitive },
           });
         }
       });
@@ -744,26 +747,20 @@ export class NotificationService {
           const excludeTerm = term.substring(1);
           conditions.AND.push({
             NOT: {
-              OR: [
-                { message: { contains: excludeTerm, mode: 'insensitive' } },
-                { type: { contains: excludeTerm, mode: 'insensitive' } },
-              ],
+              message: { contains: excludeTerm, mode: insensitive },
             },
           });
         } else {
           conditions.OR.push({
-            OR: [
-              { message: { contains: term, mode: 'insensitive' } },
-              { type: { contains: term, mode: 'insensitive' } },
-            ],
+            message: { contains: term, mode: insensitive },
           });
         }
       });
     }
 
     // Clean up empty arrays
-    if (conditions.AND.length === 0) delete conditions.AND;
-    if (conditions.OR.length === 0) delete conditions.OR;
+    if (conditions.AND.length === 0) delete (conditions as any).AND;
+    if (conditions.OR.length === 0) delete (conditions as any).OR;
 
     return Object.keys(conditions).length > 0 ? conditions : null;
   }
@@ -887,7 +884,7 @@ export class NotificationService {
 
   async createOrUpdatePreferences(
     userId: string,
-    preferences: Record<string, any>,
+    preferences: Prisma.NotificationPreferenceCreateWithoutUserInput,
   ) {
     return this.prisma.notificationPreference.upsert({
       where: { userId },
@@ -1042,7 +1039,7 @@ export class NotificationService {
     } = options;
 
     // Build base where clause
-    const where: WhereClause = { userId };
+    const where: Prisma.NotificationWhereInput = { userId };
 
     // Advanced search parsing
     if (search) {
@@ -1050,11 +1047,8 @@ export class NotificationService {
       if (advancedSearch) {
         Object.assign(where, advancedSearch);
       } else {
-        // Fallback to simple search
-        where.OR = [
-          { message: { contains: search, mode: 'insensitive' } },
-          { type: { contains: search, mode: 'insensitive' } },
-        ];
+        // Fallback to simple search (type is an enum, search message only)
+        where.message = { contains: search, mode: 'insensitive' as Prisma.QueryMode };
       }
     }
 
@@ -1062,19 +1056,19 @@ export class NotificationService {
     if (types && types.length > 0) {
       if (where.AND) {
         // Check if there's already a type filter from advanced search
-        const existingTypeFilter = where.AND.find(
-          (condition: any) => condition.type?.in,
+        const existingTypeFilter = (where.AND as Prisma.NotificationWhereInput[]).find(
+          (condition) => typeof condition === 'object' && condition !== null && 'type' in condition,
         );
-        if (existingTypeFilter) {
+        if (existingTypeFilter && existingTypeFilter.type && typeof existingTypeFilter.type === 'object' && 'in' in existingTypeFilter.type) {
           // Merge type filters
-          const existingTypes = existingTypeFilter.type.in;
+          const existingTypes = existingTypeFilter.type.in as string[];
           const mergedTypes = [...new Set([...existingTypes, ...types])];
-          existingTypeFilter.type.in = mergedTypes;
+          existingTypeFilter.type = { in: mergedTypes as NotificationType[] };
         } else {
-          where.AND.push({ type: { in: types } });
+          (where.AND as Prisma.NotificationWhereInput[]).push({ type: { in: types as NotificationType[] } });
         }
       } else {
-        where.type = { in: types };
+        where.type = { in: types as NotificationType[] };
       }
     }
 
@@ -1106,7 +1100,7 @@ export class NotificationService {
     }
 
     // Build orderBy clause
-    let orderBy: any = { createdAt: 'desc' };
+    let orderBy: Prisma.NotificationOrderByWithRelationInput | Prisma.NotificationOrderByWithRelationInput[] = { createdAt: 'desc' };
     if (sortBy === 'oldest') {
       orderBy = { createdAt: 'asc' };
     } else if (sortBy === 'type') {
@@ -1189,7 +1183,7 @@ export class NotificationService {
       batches.push(notificationIds.slice(i, i + batchSize));
     }
 
-    const results: any[] = [];
+    const results: Prisma.BatchPayload[] = [];
     for (const batch of batches) {
       const result = await this.prisma.notification.updateMany({
         where: { id: { in: batch } },
@@ -1199,7 +1193,7 @@ export class NotificationService {
     }
 
     const totalUpdated = results.reduce(
-      (sum: number, result: any) => sum + result.count,
+      (sum, result) => sum + result.count,
       0,
     );
 

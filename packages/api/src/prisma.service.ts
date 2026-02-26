@@ -32,7 +32,8 @@ export class PrismaService
     }
     */
 
-    this.$on('error' as any, (e: any) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (this as any).$on('error', (e: unknown) => {
       this.logger.error('Prisma Error:', e);
     });
   }

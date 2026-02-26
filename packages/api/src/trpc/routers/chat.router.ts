@@ -1,16 +1,6 @@
-import { z } from 'zod';
 import { createTRPCRouter, publicProcedure, protectedProcedure } from '../trpc';
 import { chatSchemas } from '../schemas/chat.schemas';
 import { requireFeature } from '../middlewares/roles.middleware';
-import {
-  SendMessageDto,
-  AssignConversationDto,
-  UpdateStatusDto,
-  ReplyToMessageDto,
-  AddInternalNoteDto,
-  MarkAsReadDto,
-  MarkAsDeliveredDto,
-} from '../../chat/dto/chat.dto';
 
 export const chatRouter = createTRPCRouter({
   // Public API for website visitors
@@ -23,7 +13,7 @@ export const chatRouter = createTRPCRouter({
   sendMessage: publicProcedure
     .input(chatSchemas.sendMessage)
     .mutation(async ({ input, ctx }) => {
-      return await ctx.chatService.sendMessage(input as SendMessageDto);
+      return await ctx.chatService.sendMessage(input);
     }),
 
   getMessages: publicProcedure
@@ -39,7 +29,7 @@ export const chatRouter = createTRPCRouter({
     }),
 
   markAsReadVisitor: publicProcedure
-    .input(z.object({ conversationId: z.string() }))
+    .input(chatSchemas.markAsReadVisitor)
     .mutation(async ({ input, ctx }) => {
       return await ctx.chatService.markAsRead({
         conversationId: input.conversationId,
@@ -81,44 +71,42 @@ export const chatRouter = createTRPCRouter({
     .use(requireFeature('support-chat'))
     .input(chatSchemas.assignConversation)
     .mutation(async ({ input, ctx }) => {
-      return await ctx.chatService.assignConversation(
-        input as AssignConversationDto,
-      );
+      return await ctx.chatService.assignConversation(input);
     }),
 
   updateStatus: protectedProcedure
     .use(requireFeature('support-chat'))
     .input(chatSchemas.updateStatus)
     .mutation(async ({ input, ctx }) => {
-      return await ctx.chatService.updateStatus(input as UpdateStatusDto);
+      return await ctx.chatService.updateStatus(input);
     }),
 
   replyToMessage: protectedProcedure
     .use(requireFeature('support-chat'))
     .input(chatSchemas.replyToMessage)
     .mutation(async ({ input, ctx }) => {
-      return await ctx.chatService.replyToMessage(input as ReplyToMessageDto);
+      return await ctx.chatService.replyToMessage(input);
     }),
 
   addInternalNote: protectedProcedure
     .use(requireFeature('support-chat'))
     .input(chatSchemas.addInternalNote)
     .mutation(async ({ input, ctx }) => {
-      return await ctx.chatService.addInternalNote(input as AddInternalNoteDto);
+      return await ctx.chatService.addInternalNote(input);
     }),
 
   markAsRead: protectedProcedure
     .use(requireFeature('support-chat'))
     .input(chatSchemas.markAsRead)
     .mutation(async ({ input, ctx }) => {
-      return await ctx.chatService.markAsRead(input as MarkAsReadDto);
+      return await ctx.chatService.markAsRead(input);
     }),
 
   markAsDelivered: protectedProcedure
     .use(requireFeature('support-chat'))
     .input(chatSchemas.markAsDelivered)
     .mutation(async ({ input, ctx }) => {
-      return await ctx.chatService.markAsDelivered(input as MarkAsDeliveredDto);
+      return await ctx.chatService.markAsDelivered(input);
     }),
 
   getChatAnalytics: protectedProcedure
@@ -141,7 +129,7 @@ export const chatRouter = createTRPCRouter({
    */
   getOrCreateRequestConversation: protectedProcedure
     .use(requireFeature('request-collaboration'))
-    .input(z.object({ requestId: z.string() }))
+    .input(chatSchemas.getOrCreateRequestConversation)
     .mutation(async ({ input, ctx }) => {
       return await ctx.chatService.getOrCreateRequestConversation(
         input.requestId,

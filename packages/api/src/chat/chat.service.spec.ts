@@ -8,7 +8,7 @@ import { ConversationRepository } from './repositories/conversation.repository';
 import { MessageRepository } from './repositories/message.repository';
 import { ContactInfoRepository } from './repositories/contact-info.repository';
 import { EmailService } from '../email/email.service';
-import { ConversationStatus, Priority } from '@prisma/client';
+import { ConversationStatus, Priority, ConversationType } from '@prisma/client';
 
 describe('ChatService - Comprehensive Business Logic Tests', () => {
   let service: ChatService;
@@ -45,6 +45,8 @@ describe('ChatService - Comprehensive Business Logic Tests', () => {
     clientUserId: null,
     internalNotes: null,
     tags: [],
+    type: ConversationType.CLIENT_SUPPORT,
+    requestId: null,
     createdAt: new Date(),
     updatedAt: new Date(),
     lastMessageAt: new Date(),
@@ -67,9 +69,7 @@ describe('ChatService - Comprehensive Business Logic Tests', () => {
 
   // Mock WebSocket Gateway
   const mockWebSocketGateway = {
-    server: {
-      emit: jest.fn(),
-    },
+    sendMessageToConversation: jest.fn(),
   };
 
   // Mock PrismaService
@@ -80,6 +80,9 @@ describe('ChatService - Comprehensive Business Logic Tests', () => {
     contactInfo: {
       findFirst: jest.fn(),
       update: jest.fn(),
+    },
+    conversation: {
+      count: jest.fn(),
     },
   };
 
@@ -306,8 +309,8 @@ describe('ChatService - Comprehensive Business Logic Tests', () => {
         'conv-1',
         mockMessage.createdAt,
       );
-      expect(chatGateway.server.emit).toHaveBeenCalledWith(
-        'newMessage',
+      expect(chatGateway.sendMessageToConversation).toHaveBeenCalledWith(
+        expect.any(String),
         mockMessage,
       );
       expect(notificationService.notifyNewChatMessage).toHaveBeenCalledWith(
@@ -341,8 +344,8 @@ describe('ChatService - Comprehensive Business Logic Tests', () => {
         senderUserId: 'agent-1',
         metadata: undefined,
       });
-      expect(chatGateway.server.emit).toHaveBeenCalledWith(
-        'newMessage',
+      expect(chatGateway.sendMessageToConversation).toHaveBeenCalledWith(
+        expect.any(String),
         agentMessage,
       );
       expect(notificationService.notifyNewChatMessage).not.toHaveBeenCalled();
@@ -391,6 +394,7 @@ describe('ChatService - Comprehensive Business Logic Tests', () => {
 
       const conversations = [mockConversation];
       conversationRepository.findAll.mockResolvedValue(conversations);
+      mockPrismaService.conversation.count.mockResolvedValue(1);
 
       const result = await service.getConversations(filter);
 
@@ -416,13 +420,20 @@ describe('ChatService - Comprehensive Business Logic Tests', () => {
         skip: 0,
         take: 10,
       });
-      expect(result).toEqual(conversations);
+      expect(result).toEqual({
+        conversations,
+        total: 1,
+        page: 1,
+        limit: 10,
+        totalPages: 1,
+      });
     });
 
     it('should retrieve conversations without filters', async () => {
       const filter = {};
       const conversations = [mockConversation];
       conversationRepository.findAll.mockResolvedValue(conversations);
+      mockPrismaService.conversation.count.mockResolvedValue(1);
 
       const result = await service.getConversations(filter);
 
@@ -432,13 +443,20 @@ describe('ChatService - Comprehensive Business Logic Tests', () => {
         skip: 0,
         take: 10,
       });
-      expect(result).toEqual(conversations);
+      expect(result).toEqual({
+        conversations,
+        total: 1,
+        page: 1,
+        limit: 10,
+        totalPages: 1,
+      });
     });
 
     it('should handle pagination correctly', async () => {
       const filter = { page: 3, limit: 5 };
       const conversations = [mockConversation];
       conversationRepository.findAll.mockResolvedValue(conversations);
+      mockPrismaService.conversation.count.mockResolvedValue(15);
 
       const result = await service.getConversations(filter);
 
@@ -448,7 +466,13 @@ describe('ChatService - Comprehensive Business Logic Tests', () => {
         skip: 10, // (3-1) * 5
         take: 5,
       });
-      expect(result).toEqual(conversations);
+      expect(result).toEqual({
+        conversations,
+        total: 15,
+        page: 3,
+        limit: 5,
+        totalPages: 3,
+      });
     });
   });
 
@@ -556,8 +580,8 @@ describe('ChatService - Comprehensive Business Logic Tests', () => {
         'conv-1',
         replyMessage.createdAt,
       );
-      expect(chatGateway.server.emit).toHaveBeenCalledWith(
-        'newMessage',
+      expect(chatGateway.sendMessageToConversation).toHaveBeenCalledWith(
+        expect.any(String),
         replyMessage,
       );
       expect(result).toEqual({ message: replyMessage });
@@ -796,8 +820,8 @@ describe('ChatService - Comprehensive Business Logic Tests', () => {
 
       await service.sendMessage(sendMessageDto);
 
-      expect(chatGateway.server.emit).toHaveBeenCalledWith(
-        'newMessage',
+      expect(chatGateway.sendMessageToConversation).toHaveBeenCalledWith(
+        expect.any(String),
         mockMessage,
       );
     });
@@ -819,8 +843,8 @@ describe('ChatService - Comprehensive Business Logic Tests', () => {
 
       await service.replyToMessage(replyData);
 
-      expect(chatGateway.server.emit).toHaveBeenCalledWith(
-        'newMessage',
+      expect(chatGateway.sendMessageToConversation).toHaveBeenCalledWith(
+        expect.any(String),
         replyMessage,
       );
     });
@@ -897,7 +921,7 @@ describe('ChatService - Comprehensive Business Logic Tests', () => {
 
       expect(result1.message.content).toBe('Message 1');
       expect(result2.message.content).toBe('Message 2');
-      expect(chatGateway.server.emit).toHaveBeenCalledTimes(2);
+      expect(chatGateway.sendMessageToConversation).toHaveBeenCalledTimes(2);
     });
   });
 });

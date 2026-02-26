@@ -11,6 +11,7 @@ export const chatSchemas = {
     source: z.string().optional(),
     ipAddress: z.string().optional(),
     userAgent: z.string().optional(),
+    userId: z.string().optional(),
   }),
 
   sendMessage: z.object({
@@ -18,7 +19,7 @@ export const chatSchemas = {
     content: z.string(),
     isFromVisitor: z.boolean(),
     senderUserId: z.string().optional(),
-    metadata: z.any().optional(),
+    metadata: z.record(z.string(), z.unknown()).optional(),
   }),
 
   getMessages: z.object({
@@ -71,4 +72,23 @@ export const chatSchemas = {
     conversationId: z.string(),
     email: z.string().email(),
   }),
+
+  markAsReadVisitor: z.object({
+    conversationId: z.string(),
+  }),
+
+  getOrCreateRequestConversation: z.object({
+    requestId: z.string(),
+  }),
 };
+
+// Zod-inferred types — use these in services instead of DTOs
+export type StartConversationInput = z.infer<typeof chatSchemas.startConversation>;
+export type SendMessageInput = z.infer<typeof chatSchemas.sendMessage>;
+export type GetConversationsInput = z.infer<typeof chatSchemas.getConversations>;
+export type AssignConversationInput = z.infer<typeof chatSchemas.assignConversation>;
+export type UpdateStatusInput = z.infer<typeof chatSchemas.updateStatus>;
+export type ReplyToMessageInput = z.infer<typeof chatSchemas.replyToMessage>;
+export type AddInternalNoteInput = z.infer<typeof chatSchemas.addInternalNote>;
+export type MarkAsReadInput = z.infer<typeof chatSchemas.markAsRead>;
+export type MarkAsDeliveredInput = z.infer<typeof chatSchemas.markAsDelivered>;

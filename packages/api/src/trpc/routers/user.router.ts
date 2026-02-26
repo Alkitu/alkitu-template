@@ -1,10 +1,13 @@
 import { UsersService } from '../../users/users.service';
 import { EmailService } from '../../email/email.service';
+import { DriveFolderService } from '../../drive/drive-folder.service';
+import { DriveService } from '../../drive/drive.service';
 import { t, protectedProcedure } from '../trpc';
 import { UserStatus, UserRole } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { adminProcedure } from '../middlewares/roles.middleware';
 import { handlePrismaError } from '../utils/prisma-error-mapper';
+import { z } from 'zod';
 import {
   paginatedSortingSchema,
   createPaginatedResponse,
@@ -23,14 +26,11 @@ import {
   sendMessageToUserSchema,
   anonymizeUserSchema,
   createImpersonationTokenSchema,
+  changeMyPasswordSchema,
+  updateMyProfileSchema,
+  updateMyPreferencesSchema,
 } from '../schemas/user.schemas';
 import { FilterUsersDto } from '../../users/dto/filter-users.dto';
-import {
-  BulkDeleteUsersDto,
-  BulkUpdateRoleDto,
-  BulkUpdateStatusDto,
-  AdminResetPasswordDto,
-} from '../../users/dto/bulk-users.dto';
 
 /**
  * User Router
@@ -40,14 +40,16 @@ import {
 export const createUserRouter = (
   usersService: UsersService,
   emailService: EmailService,
+  driveFolderService: DriveFolderService,
+  driveService: DriveService,
 ) =>
   t.router({
+    // Intentionally public: returns null for unauthenticated requests (session check)
     me: t.procedure.query(async ({ ctx }) => {
       if (!ctx.user) return null;
       try {
         return await usersService.findOne(ctx.user.id);
-      } catch (error) {
-        console.error('[UserRouter] Me query failed:', error);
+      } catch {
         return null;
       }
     }),
@@ -80,13 +82,8 @@ export const createUserRouter = (
             unsubscribeUrl: `${frontendUrl}/unsubscribe`,
             supportUrl: `${frontendUrl}/support`,
           });
-
-          console.log('✅ Email de bienvenida enviado a:', user.email);
-        } catch (emailError) {
-          const errorMessage =
-            emailError instanceof Error ? emailError.message : 'Unknown error';
-          console.error('❌ Error enviando email de bienvenida:', errorMessage);
-          // No fallar el registro si el email falla
+        } catch {
+          // Non-blocking: registration succeeds even if welcome email fails
         }
 
         return {
@@ -122,8 +119,6 @@ export const createUserRouter = (
             updateDto,
           );
 
-          console.log(`[UserRouter] Profile updated for user ${input.id}`);
-
           return {
             id: updatedUser.id,
             name: updatedUser.firstname,
@@ -134,10 +129,6 @@ export const createUserRouter = (
             message: 'Profile updated successfully',
           };
         } catch (error) {
-          console.error(
-            `[UserRouter] Failed to update profile for ${input.id}:`,
-            error,
-          );
           handlePrismaError(error, 'update user profile');
         }
       }),
@@ -209,14 +200,14 @@ export const createUserRouter = (
         }
       }),
 
-    getUserStats: t.procedure.query(async () => {
+    getUserStats: protectedProcedure.query(async () => {
       return usersService.getUserStats();
     }),
 
     bulkDeleteUsers: adminProcedure
       .input(bulkDeleteUsersSchema)
       .mutation(async ({ input }) => {
-        return usersService.bulkDeleteUsers(input as BulkDeleteUsersDto);
+        return usersService.bulkDeleteUsers(input);
       }),
 
     bulkUpdateRole: adminProcedure
@@ -224,33 +215,26 @@ export const createUserRouter = (
       .mutation(async ({ input }) => {
         return usersService.bulkUpdateRole({
           userIds: input.userIds,
-          role: input.role as UserRole,
-        } as BulkUpdateRoleDto);
+          role: input.role,
+        });
       }),
 
     bulkUpdateStatus: adminProcedure
       .input(bulkUpdateStatusSchema)
       .mutation(async ({ input }) => {
         // Convert isActive boolean to UserStatus enum
-        const statusDto: BulkUpdateStatusDto = {
+        return usersService.bulkUpdateStatus({
           userIds: input.userIds,
           status: input.isActive ? UserStatus.VERIFIED : UserStatus.SUSPENDED,
-        };
-        return usersService.bulkUpdateStatus(statusDto);
+        });
       }),
 
     resetUserPassword: adminProcedure
       .input(resetUserPasswordSchema)
       .mutation(async ({ input }) => {
         try {
-          return await usersService.resetUserPassword(
-            input as AdminResetPasswordDto,
-          );
+          return await usersService.resetUserPassword(input);
         } catch (error) {
-          console.error(
-            `[UserRouter] Failed to reset password for ${input.userId}:`,
-            error,
-          );
           handlePrismaError(error, 'reset user password');
         }
       }),
@@ -304,8 +288,122 @@ export const createUserRouter = (
           handlePrismaError(error, 'create impersonation token');
         }
       }),
-  });
 
-// For backward compatibility, export the original router
-// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-export const userRouter = createUserRouter(null as any, null as any);
+    /**
+     * Change own password (authenticated user)
+     * Validates current password before allowing change
+     */
+    changeMyPassword: protectedProcedure
+      .input(changeMyPasswordSchema)
+      .mutation(async ({ input, ctx }) => {
+        try {
+          return await usersService.changePassword(ctx.user.id, {
+            currentPassword: input.currentPassword,
+            newPassword: input.newPassword,
+          });
+        } catch (error) {
+          handlePrismaError(error, 'change password');
+        }
+      }),
+
+    /**
+     * Update own profile (authenticated user)
+     * Role-based field filtering handled by UsersService.updateProfile()
+     */
+    updateMyProfile: protectedProcedure
+      .input(updateMyProfileSchema)
+      .mutation(async ({ input, ctx }) => {
+        try {
+          const updateDto = {
+            firstname: input.firstname,
+            lastname: input.lastname,
+            phone: input.phone,
+            company: input.company,
+            address: input.address,
+            ...(input.contactPerson && {
+              contactPerson: {
+                name: input.contactPerson.name,
+                lastname: input.contactPerson.lastname,
+                phone: input.contactPerson.phone,
+                email: input.contactPerson.email,
+              },
+            }),
+          };
+          const updatedUser = await usersService.updateProfile(
+            ctx.user.id,
+            updateDto,
+          );
+          return {
+            ...updatedUser,
+            message: 'Profile updated successfully',
+          };
+        } catch (error) {
+          handlePrismaError(error, 'update own profile');
+        }
+      }),
+
+    /**
+     * Update own preferences (theme, language)
+     */
+    updateMyPreferences: protectedProcedure
+      .input(updateMyPreferencesSchema)
+      .mutation(async ({ input, ctx }) => {
+        try {
+          const updated = await usersService['prisma'].user.update({
+            where: { id: ctx.user.id },
+            data: {
+              theme: input.theme,
+              language: input.language,
+            },
+            select: {
+              id: true,
+              theme: true,
+              language: true,
+            },
+          });
+          return {
+            ...updated,
+            message: 'Preferences updated successfully',
+          };
+        } catch (error) {
+          handlePrismaError(error, 'update preferences');
+        }
+      }),
+
+    /**
+     * Upload user avatar to Google Drive profile folder
+     * Security: Users can only upload their own avatar
+     */
+    uploadAvatar: protectedProcedure
+      .input(
+        z.object({
+          data: z.string(), // base64 encoded image
+          mimeType: z.string(),
+          fileName: z.string(),
+        }),
+      )
+      .mutation(async ({ input, ctx }) => {
+        // Ensure user Drive folders exist
+        const { profileFolderId } = await driveFolderService.ensureUserFolders(
+          ctx.user.id,
+        );
+
+        // Upload image to profile folder
+        const buffer = Buffer.from(input.data, 'base64');
+        const driveFile = await driveService.uploadBuffer(
+          buffer,
+          input.fileName,
+          input.mimeType,
+          { parentId: profileFolderId },
+        );
+
+        // Update user's image field with the web view link
+        const imageUrl = driveFile.webViewLink || `drive:${driveFile.id}`;
+        await usersService['prisma'].user.update({
+          where: { id: ctx.user.id },
+          data: { image: imageUrl },
+        });
+
+        return { imageUrl, fileId: driveFile.id };
+      }),
+  });

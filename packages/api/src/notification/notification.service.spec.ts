@@ -1340,18 +1340,8 @@ describe('NotificationService - Real Business Logic Tests', () => {
           expect.objectContaining({
             where: expect.objectContaining({
               OR: expect.arrayContaining([
-                {
-                  OR: [
-                    { message: { contains: 'urgent', mode: 'insensitive' } },
-                    { type: { contains: 'urgent', mode: 'insensitive' } },
-                  ],
-                },
-                {
-                  OR: [
-                    { message: { contains: 'warning', mode: 'insensitive' } },
-                    { type: { contains: 'warning', mode: 'insensitive' } },
-                  ],
-                },
+                { message: { contains: 'urgent', mode: 'insensitive' } },
+                { message: { contains: 'warning', mode: 'insensitive' } },
               ]),
             }),
           }),
@@ -1371,18 +1361,8 @@ describe('NotificationService - Real Business Logic Tests', () => {
           expect.objectContaining({
             where: expect.objectContaining({
               AND: expect.arrayContaining([
-                {
-                  OR: [
-                    { message: { contains: 'urgent', mode: 'insensitive' } },
-                    { type: { contains: 'urgent', mode: 'insensitive' } },
-                  ],
-                },
-                {
-                  OR: [
-                    { message: { contains: 'message', mode: 'insensitive' } },
-                    { type: { contains: 'message', mode: 'insensitive' } },
-                  ],
-                },
+                { message: { contains: 'urgent', mode: 'insensitive' } },
+                { message: { contains: 'message', mode: 'insensitive' } },
               ]),
             }),
           }),
@@ -1402,18 +1382,10 @@ describe('NotificationService - Real Business Logic Tests', () => {
           expect.objectContaining({
             where: expect.objectContaining({
               AND: expect.arrayContaining([
-                {
-                  OR: [
-                    { message: { contains: 'urgent', mode: 'insensitive' } },
-                    { type: { contains: 'urgent', mode: 'insensitive' } },
-                  ],
-                },
+                { message: { contains: 'urgent', mode: 'insensitive' } },
                 {
                   NOT: {
-                    OR: [
-                      { message: { contains: 'spam', mode: 'insensitive' } },
-                      { type: { contains: 'spam', mode: 'insensitive' } },
-                    ],
+                    message: { contains: 'spam', mode: 'insensitive' },
                   },
                 },
               ]),
@@ -1437,26 +1409,13 @@ describe('NotificationService - Real Business Logic Tests', () => {
               AND: expect.arrayContaining([
                 {
                   NOT: {
-                    OR: [
-                      { message: { contains: 'spam', mode: 'insensitive' } },
-                      { type: { contains: 'spam', mode: 'insensitive' } },
-                    ],
+                    message: { contains: 'spam', mode: 'insensitive' },
                   },
                 },
               ]),
               OR: expect.arrayContaining([
-                {
-                  OR: [
-                    { message: { contains: 'urgent', mode: 'insensitive' } },
-                    { type: { contains: 'urgent', mode: 'insensitive' } },
-                  ],
-                },
-                {
-                  OR: [
-                    { message: { contains: 'test', mode: 'insensitive' } },
-                    { type: { contains: 'test', mode: 'insensitive' } },
-                  ],
-                },
+                { message: { contains: 'urgent', mode: 'insensitive' } },
+                { message: { contains: 'test', mode: 'insensitive' } },
               ]),
             }),
           }),
@@ -1476,10 +1435,7 @@ describe('NotificationService - Real Business Logic Tests', () => {
           expect.objectContaining({
             where: expect.objectContaining({
               userId,
-              OR: [
-                { message: { contains: '', mode: 'insensitive' } },
-                { type: { contains: '', mode: 'insensitive' } },
-              ],
+              message: { contains: '', mode: 'insensitive' },
             }),
           }),
         );
@@ -1487,9 +1443,9 @@ describe('NotificationService - Real Business Logic Tests', () => {
 
       it('should merge type filters from advanced search and filters', async () => {
         const userId = 'user-id';
-        const filters = { 
-          search: 'type:INFO type:WARNING', 
-          types: ['ERROR', 'SUCCESS'] 
+        const filters = {
+          search: 'type:INFO type:WARNING',
+          types: ['ERROR', 'SUCCESS']
         };
 
         (prismaService.notification.findMany as jest.Mock).mockResolvedValue([]);
@@ -1501,7 +1457,7 @@ describe('NotificationService - Real Business Logic Tests', () => {
           expect.objectContaining({
             where: expect.objectContaining({
               AND: expect.arrayContaining([
-                { type: { in: ['info', 'warning', 'ERROR', 'SUCCESS'] } },
+                { type: { in: ['INFO', 'WARNING', 'ERROR', 'SUCCESS'] } },
               ]),
             }),
           }),
@@ -1512,7 +1468,7 @@ describe('NotificationService - Real Business Logic Tests', () => {
     describe('getNotificationsWithCursor - Advanced Search Integration', () => {
       it.skip('should handle advanced search in cursor pagination', async () => {
         const userId = 'user-id';
-        const options = { 
+        const options = {
           search: 'type:INFO urgent',
           cursor: 'cursor-id',
           sortBy: 'oldest' as const,
@@ -1528,11 +1484,10 @@ describe('NotificationService - Real Business Logic Tests', () => {
               userId,
               id: { gt: 'cursor-id' },
               AND: expect.arrayContaining([
-                { type: { in: ['info'] } },
+                { type: { in: ['INFO'] } },
               ]),
               OR: expect.arrayContaining([
                 { message: { contains: 'urgent', mode: 'insensitive' } },
-                { type: { contains: 'urgent', mode: 'insensitive' } },
               ]),
             }),
             orderBy: { createdAt: 'asc' },
@@ -1543,7 +1498,7 @@ describe('NotificationService - Real Business Logic Tests', () => {
 
       it('should handle cursor pagination with type sort and advanced search', async () => {
         const userId = 'user-id';
-        const options = { 
+        const options = {
           search: 'type:INFO',
           sortBy: 'type' as const,
         };
@@ -1557,7 +1512,7 @@ describe('NotificationService - Real Business Logic Tests', () => {
             where: expect.objectContaining({
               userId,
               AND: expect.arrayContaining([
-                { type: { in: ['info'] } },
+                { type: { in: ['INFO'] } },
               ]),
             }),
             orderBy: [{ type: 'asc' }, { createdAt: 'desc' }],
@@ -1568,7 +1523,7 @@ describe('NotificationService - Real Business Logic Tests', () => {
 
       it('should merge type filters in cursor pagination', async () => {
         const userId = 'user-id';
-        const options = { 
+        const options = {
           search: 'type:INFO',
           types: ['WARNING', 'ERROR'],
         };
@@ -1582,7 +1537,7 @@ describe('NotificationService - Real Business Logic Tests', () => {
             where: expect.objectContaining({
               userId,
               AND: expect.arrayContaining([
-                { type: { in: ['info', 'WARNING', 'ERROR'] } },
+                { type: { in: ['INFO', 'WARNING', 'ERROR'] } },
               ]),
             }),
           }),

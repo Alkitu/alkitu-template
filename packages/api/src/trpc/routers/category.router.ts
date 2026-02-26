@@ -1,10 +1,15 @@
-import { z } from 'zod';
 import { t, protectedProcedure } from '../trpc';
-import { PrismaClient, RequestStatus } from '@prisma/client';
+import { type PrismaClient, RequestStatus } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { adminProcedure } from '../middlewares/roles.middleware';
-
-const prisma = new PrismaClient();
+import {
+  getAllCategoriesSchema,
+  getCategoriesWithStatsSchema,
+  getCategoryByIdSchema,
+  createCategorySchema,
+  updateCategorySchema,
+  deleteCategorySchema,
+} from '../schemas/category.schemas';
 
 /**
  * Category tRPC Router
@@ -15,14 +20,14 @@ const prisma = new PrismaClient();
  * - Stats endpoints available to all authenticated users
  * - Admin endpoints for management operations
  */
-export function createCategoryRouter() {
+export function createCategoryRouter(prisma: PrismaClient) {
   return t.router({
     /**
      * Get all categories
      * Security: Requires authentication
      */
     getAllCategories: protectedProcedure
-      .input(z.object({}).optional())
+      .input(getAllCategoriesSchema)
       .query(async () => {
         return await prisma.category.findMany({
           where: {
@@ -60,7 +65,7 @@ export function createCategoryRouter() {
      * }
      */
     getCategoriesWithStats: protectedProcedure
-      .input(z.object({}).optional())
+      .input(getCategoriesWithStatsSchema)
       .query(async () => {
         // Get all non-deleted categories with their services and requests
         const categories = await prisma.category.findMany({
@@ -141,7 +146,7 @@ export function createCategoryRouter() {
      * Security: Requires authentication
      */
     getCategoryById: protectedProcedure
-      .input(z.object({ id: z.string() }))
+      .input(getCategoryByIdSchema)
       .query(async ({ input }) => {
         const category = await prisma.category.findUnique({
           where: { id: input.id },
@@ -172,12 +177,7 @@ export function createCategoryRouter() {
      * Security: ADMIN only
      */
     createCategory: adminProcedure
-      .input(
-        z.object({
-          name: z.string().min(1, 'Name is required'),
-          createdBy: z.string().optional(),
-        }),
-      )
+      .input(createCategorySchema)
       .mutation(async ({ input, ctx }) => {
         return await prisma.category.create({
           data: {
@@ -192,13 +192,7 @@ export function createCategoryRouter() {
      * Security: ADMIN only
      */
     updateCategory: adminProcedure
-      .input(
-        z.object({
-          id: z.string(),
-          name: z.string().min(1, 'Name is required'),
-          updatedBy: z.string().optional(),
-        }),
-      )
+      .input(updateCategorySchema)
       .mutation(async ({ input, ctx }) => {
         const { id, name, updatedBy } = input;
 
@@ -216,7 +210,7 @@ export function createCategoryRouter() {
      * Security: ADMIN only
      */
     deleteCategory: adminProcedure
-      .input(z.object({ id: z.string() }))
+      .input(deleteCategorySchema)
       .mutation(async ({ input }) => {
         // Check if category has services
         const category = await prisma.category.findUnique({

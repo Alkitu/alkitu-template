@@ -2,18 +2,26 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { Test, TestingModule } from '@nestjs/testing';
 import { ChatGateway } from './chat.gateway';
+import { JwtService } from '@nestjs/jwt';
 import { Server, Socket } from 'socket.io';
 import { ChatMessage } from '@prisma/client';
+
+interface AuthenticatedSocket extends Socket {
+  userId?: string;
+}
 
 describe('ChatGateway', () => {
   let gateway: ChatGateway;
   let mockServer: jest.Mocked<Server>;
-  let mockSocket: jest.Mocked<Socket>;
+  let mockSocket: jest.Mocked<AuthenticatedSocket>;
+  let jwtService: jest.Mocked<JwtService>;
 
   beforeEach(async () => {
-    // Create mock server
+    // Create mock server with room support
+    const mockToEmit = { emit: jest.fn() };
     mockServer = {
       emit: jest.fn(),
+      to: jest.fn().mockReturnValue(mockToEmit),
     } as any;
 
     // Create mock socket
@@ -22,12 +30,25 @@ describe('ChatGateway', () => {
       disconnect: jest.fn(),
       emit: jest.fn(),
       on: jest.fn(),
-      join: jest.fn(),
-      leave: jest.fn(),
+      join: jest.fn().mockResolvedValue(undefined),
+      leave: jest.fn().mockResolvedValue(undefined),
+      to: jest.fn().mockReturnValue({ emit: jest.fn() }),
+      handshake: {
+        auth: {},
+        query: {},
+        headers: {},
+      },
+    } as any;
+
+    jwtService = {
+      verifyAsync: jest.fn(),
     } as any;
 
     const module: TestingModule = await Test.createTestingModule({
-      providers: [ChatGateway],
+      providers: [
+        ChatGateway,
+        { provide: JwtService, useValue: jwtService },
+      ],
     }).compile();
 
     gateway = module.get<ChatGateway>(ChatGateway);
@@ -38,81 +59,146 @@ describe('ChatGateway', () => {
     jest.clearAllMocks();
   });
 
+  it('should be defined', () => {
+    expect(gateway).toBeDefined();
+  });
+
+  it('should have server property', () => {
+    expect(gateway.server).toBeDefined();
+    expect(gateway.server).toBe(mockServer);
+  });
+
   describe('handleConnection', () => {
-    it('should log client connection', () => {
-      const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
+    it('should authenticate user with valid JWT from cookie', async () => {
+      mockSocket.handshake.headers.cookie = 'auth-token=valid-jwt-token';
+      jwtService.verifyAsync.mockResolvedValue({ sub: 'user-123' });
 
-      gateway.handleConnection(mockSocket);
+      await gateway.handleConnection(mockSocket);
 
-      expect(consoleSpy).toHaveBeenCalledWith(`Client connected: ${mockSocket.id}`);
-      
-      consoleSpy.mockRestore();
+      expect(mockSocket.userId).toBe('user-123');
+      expect(jwtService.verifyAsync).toHaveBeenCalledWith('valid-jwt-token');
     });
 
-    it('should handle connection with different socket id', () => {
-      const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
-      const differentSocket = { ...mockSocket, id: 'different-socket-id' } as any;
+    it('should authenticate user with token from handshake auth', async () => {
+      mockSocket.handshake.auth = { token: 'auth-jwt-token' };
+      jwtService.verifyAsync.mockResolvedValue({ sub: 'user-456' });
 
-      gateway.handleConnection(differentSocket);
+      await gateway.handleConnection(mockSocket);
 
-      expect(consoleSpy).toHaveBeenCalledWith('Client connected: different-socket-id');
-      
-      consoleSpy.mockRestore();
+      expect(mockSocket.userId).toBe('user-456');
+    });
+
+    it('should allow anonymous connection when no token provided', async () => {
+      await gateway.handleConnection(mockSocket);
+
+      expect(mockSocket.userId).toBeUndefined();
+      expect(mockSocket.disconnect).not.toHaveBeenCalled();
+    });
+
+    it('should allow anonymous connection when JWT verification fails', async () => {
+      mockSocket.handshake.headers.cookie = 'auth-token=invalid-token';
+      jwtService.verifyAsync.mockRejectedValue(new Error('Invalid token'));
+
+      await gateway.handleConnection(mockSocket);
+
+      expect(mockSocket.userId).toBeUndefined();
+      expect(mockSocket.disconnect).not.toHaveBeenCalled();
+    });
+
+    it('should skip mock-token and treat as anonymous', async () => {
+      mockSocket.handshake.auth = { token: 'mock-token' };
+
+      await gateway.handleConnection(mockSocket);
+
+      expect(mockSocket.userId).toBeUndefined();
+      expect(jwtService.verifyAsync).not.toHaveBeenCalled();
     });
   });
 
   describe('handleDisconnect', () => {
-    it('should log client disconnection', () => {
-      const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
+    it('should handle disconnect for authenticated user', () => {
+      mockSocket.userId = 'user-123';
 
-      gateway.handleDisconnect(mockSocket);
-
-      expect(consoleSpy).toHaveBeenCalledWith(`Client disconnected: ${mockSocket.id}`);
-      
-      consoleSpy.mockRestore();
-    });
-
-    it('should handle disconnection with different socket id', () => {
-      const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
-      const differentSocket = { ...mockSocket, id: 'another-socket-id' } as any;
-
-      gateway.handleDisconnect(differentSocket);
-
-      expect(consoleSpy).toHaveBeenCalledWith('Client disconnected: another-socket-id');
-      
-      consoleSpy.mockRestore();
-    });
-  });
-
-  describe('handleMessage', () => {
-    it('should handle incoming message without errors', () => {
-      const testData = 'test message data';
-
-      // This method doesn't do anything currently, but we test it doesn't throw
       expect(() => {
-        gateway.handleMessage(testData, mockSocket);
+        gateway.handleDisconnect(mockSocket);
       }).not.toThrow();
     });
 
-    it('should handle empty message data', () => {
-      const testData = '';
-
+    it('should handle disconnect for anonymous user', () => {
       expect(() => {
-        gateway.handleMessage(testData, mockSocket);
-      }).not.toThrow();
-    });
-
-    it('should handle null message data', () => {
-      const testData = null as any;
-
-      expect(() => {
-        gateway.handleMessage(testData, mockSocket);
+        gateway.handleDisconnect(mockSocket);
       }).not.toThrow();
     });
   });
 
-  describe('sendMessageUpdate', () => {
-    it('should emit new message to all clients', () => {
+  describe('handleJoin', () => {
+    it('should join conversation room', async () => {
+      await gateway.handleJoin({ conversationId: 'conv-123' }, mockSocket);
+
+      expect(mockSocket.join).toHaveBeenCalledWith('conversation:conv-123');
+      expect(mockSocket.emit).toHaveBeenCalledWith('chat:joined', {
+        conversationId: 'conv-123',
+      });
+    });
+
+    it('should not join when conversationId is missing', async () => {
+      await gateway.handleJoin({ conversationId: '' }, mockSocket);
+
+      expect(mockSocket.join).not.toHaveBeenCalled();
+    });
+
+    it('should not join when data is null', async () => {
+      await gateway.handleJoin(null as any, mockSocket);
+
+      expect(mockSocket.join).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('handleLeave', () => {
+    it('should leave conversation room', async () => {
+      await gateway.handleLeave({ conversationId: 'conv-123' }, mockSocket);
+
+      expect(mockSocket.leave).toHaveBeenCalledWith('conversation:conv-123');
+    });
+
+    it('should not leave when conversationId is missing', async () => {
+      await gateway.handleLeave({ conversationId: '' }, mockSocket);
+
+      expect(mockSocket.leave).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('handleTyping', () => {
+    it('should broadcast typing event to room', async () => {
+      mockSocket.userId = 'user-123';
+      const mockRoomEmit = { emit: jest.fn() };
+      mockSocket.to = jest.fn().mockReturnValue(mockRoomEmit) as any;
+
+      await gateway.handleTyping(
+        { conversationId: 'conv-123', isTyping: true },
+        mockSocket,
+      );
+
+      expect(mockSocket.to).toHaveBeenCalledWith('conversation:conv-123');
+      expect(mockRoomEmit.emit).toHaveBeenCalledWith('chat:typing', {
+        conversationId: 'conv-123',
+        isTyping: true,
+        userId: 'user-123',
+      });
+    });
+
+    it('should not broadcast when conversationId is missing', async () => {
+      await gateway.handleTyping(
+        { conversationId: '', isTyping: true },
+        mockSocket,
+      );
+
+      expect(mockSocket.to).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('sendMessageToConversation', () => {
+    it('should emit message to conversation room', () => {
       const mockMessage: ChatMessage = {
         id: 'msg-123',
         conversationId: 'conv-123',
@@ -125,13 +211,16 @@ describe('ChatGateway', () => {
         metadata: null,
       };
 
-      gateway.sendMessageUpdate(mockMessage);
+      gateway.sendMessageToConversation('conv-123', mockMessage);
 
-      expect(mockServer.emit).toHaveBeenCalledWith('newMessage', mockMessage);
-      expect(mockServer.emit).toHaveBeenCalledTimes(1);
+      expect(mockServer.to).toHaveBeenCalledWith('conversation:conv-123');
+      expect(mockServer.to('conversation:conv-123').emit).toHaveBeenCalledWith(
+        'chat:newMessage',
+        mockMessage,
+      );
     });
 
-    it('should emit message from agent', () => {
+    it('should emit agent message to conversation room', () => {
       const agentMessage: ChatMessage = {
         id: 'msg-124',
         conversationId: 'conv-123',
@@ -144,32 +233,12 @@ describe('ChatGateway', () => {
         metadata: null,
       };
 
-      gateway.sendMessageUpdate(agentMessage);
+      gateway.sendMessageToConversation('conv-123', agentMessage);
 
-      expect(mockServer.emit).toHaveBeenCalledWith('newMessage', agentMessage);
-      expect(mockServer.emit).toHaveBeenCalledTimes(1);
+      expect(mockServer.to).toHaveBeenCalledWith('conversation:conv-123');
     });
 
-    it('should emit internal note message', () => {
-      const internalMessage: ChatMessage = {
-        id: 'msg-125',
-        conversationId: 'conv-123',
-        content: 'Internal note for agents',
-        isFromVisitor: false,
-        senderUserId: 'agent-123',
-        createdAt: new Date(),
-        isRead: false,
-        isDelivered: false,
-        metadata: { isInternal: true },
-      };
-
-      gateway.sendMessageUpdate(internalMessage);
-
-      expect(mockServer.emit).toHaveBeenCalledWith('newMessage', internalMessage);
-      expect(mockServer.emit).toHaveBeenCalledTimes(1);
-    });
-
-    it('should handle multiple message updates', () => {
+    it('should handle multiple message updates to same room', () => {
       const message1: ChatMessage = {
         id: 'msg-126',
         conversationId: 'conv-123',
@@ -194,21 +263,10 @@ describe('ChatGateway', () => {
         metadata: null,
       };
 
-      gateway.sendMessageUpdate(message1);
-      gateway.sendMessageUpdate(message2);
+      gateway.sendMessageToConversation('conv-123', message1);
+      gateway.sendMessageToConversation('conv-123', message2);
 
-      expect(mockServer.emit).toHaveBeenCalledTimes(2);
-      expect(mockServer.emit).toHaveBeenNthCalledWith(1, 'newMessage', message1);
-      expect(mockServer.emit).toHaveBeenNthCalledWith(2, 'newMessage', message2);
+      expect(mockServer.to).toHaveBeenCalledTimes(2);
     });
-  });
-
-  it('should be defined', () => {
-    expect(gateway).toBeDefined();
-  });
-
-  it('should have server property', () => {
-    expect(gateway.server).toBeDefined();
-    expect(gateway.server).toBe(mockServer);
   });
 });

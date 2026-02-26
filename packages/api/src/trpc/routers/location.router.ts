@@ -1,15 +1,13 @@
-import { z } from 'zod';
 import { t, protectedProcedure } from '../trpc';
-import { Prisma, PrismaClient, UserRole } from '@prisma/client';
+import { Prisma, type PrismaClient, UserRole } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { handlePrismaError } from '../utils/prisma-error-mapper';
+import { createPaginatedResponse, calculatePagination } from '../schemas/common.schemas';
 import {
-  paginatedSortingSchema,
-  createPaginatedResponse,
-  calculatePagination,
-} from '../schemas/common.schemas';
-
-const prisma = new PrismaClient();
+  getAllLocationsSchema,
+  getLocationByIdSchema,
+  getUserLocationsSchema,
+} from '../schemas/location.schemas';
 
 /**
  * WorkLocation tRPC Router
@@ -19,21 +17,14 @@ const prisma = new PrismaClient();
  * - All endpoints require authentication
  * - Users can only access their own locations (except ADMIN)
  */
-export function createLocationRouter() {
+export function createLocationRouter(prisma: PrismaClient) {
   return t.router({
     /**
      * Get all locations with pagination (optionally filtered by user)
      * Security: Non-admins only see their own locations
      */
     getAllLocations: protectedProcedure
-      .input(
-        z
-          .object({
-            userId: z.string().optional(),
-          })
-          .merge(paginatedSortingSchema)
-          .optional(),
-      )
+      .input(getAllLocationsSchema)
       .query(async ({ input, ctx }) => {
         try {
           // Use default values if no input provided
@@ -82,7 +73,7 @@ export function createLocationRouter() {
      * Security: Users can only access their own locations (except ADMIN)
      */
     getLocationById: protectedProcedure
-      .input(z.object({ id: z.string() }))
+      .input(getLocationByIdSchema)
       .query(async ({ input, ctx }) => {
         try {
           const location = await prisma.workLocation.findUnique({
@@ -118,7 +109,7 @@ export function createLocationRouter() {
      * Security: Users can only access their own locations (except ADMIN)
      */
     getUserLocations: protectedProcedure
-      .input(z.object({ userId: z.string() }))
+      .input(getUserLocationsSchema)
       .query(async ({ input, ctx }) => {
         try {
           // Check authorization

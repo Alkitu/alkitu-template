@@ -21,7 +21,7 @@ export const chatbotConfigSchemas = {
     thankYouMessage: z.string().optional(),
     businessHoursEnabled: z.boolean().optional(),
     timezone: z.string().optional(),
-    schedule: z.any().optional(), // TODO: Define a more specific schema for schedule
+    schedule: z.record(z.string(), z.unknown()).optional(),
     rateLimitMessages: z.number().int().min(1).optional(),
     rateLimitWindow: z.number().int().min(1).optional(),
     blockSpamKeywords: z.array(z.string()).optional(),

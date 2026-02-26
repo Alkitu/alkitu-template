@@ -2,7 +2,7 @@ import { TRPCError } from '@trpc/server';
 import { UserRole as PrismaUserRole, AccessLevel } from '@prisma/client';
 import { UserRole } from '@alkitu/shared/enums/user-role.enum';
 import { hasRole } from '@alkitu/shared/rbac/role-hierarchy';
-import { t } from '../trpc';
+import { t, protectedProcedure } from '../trpc';
 import { AccessControlService } from '../../access-control/access-control.service';
 
 /**
@@ -50,7 +50,12 @@ export const requireRoles = (...roles: PrismaUserRole[]) => {
       });
     }
 
-    return next();
+    return next({
+      ctx: {
+        ...ctx,
+        user: ctx.user,
+      },
+    });
   });
 };
 
@@ -64,7 +69,7 @@ export const requireRoles = (...roles: PrismaUserRole[]) => {
  *   .mutation(async ({ ctx, input }) => { ... });
  * ```
  */
-export const adminProcedure = t.procedure.use(
+export const adminProcedure = protectedProcedure.use(
   requireRoles(PrismaUserRole.ADMIN),
 );
 
@@ -78,7 +83,7 @@ export const adminProcedure = t.procedure.use(
  *   .mutation(async ({ ctx, input }) => { ... });
  * ```
  */
-export const employeeProcedure = t.procedure.use(
+export const employeeProcedure = protectedProcedure.use(
   requireRoles(PrismaUserRole.EMPLOYEE, PrismaUserRole.ADMIN),
 );
 
@@ -92,7 +97,7 @@ export const employeeProcedure = t.procedure.use(
  *   .mutation(async ({ ctx, input }) => { ... });
  * ```
  */
-export const clientProcedure = t.procedure.use(
+export const clientProcedure = protectedProcedure.use(
   requireRoles(
     PrismaUserRole.CLIENT,
     PrismaUserRole.EMPLOYEE,
@@ -109,7 +114,7 @@ export const clientProcedure = t.procedure.use(
  *   .query(async ({ ctx }) => { ... });
  * ```
  */
-export const leadProcedure = t.procedure.use(
+export const leadProcedure = protectedProcedure.use(
   requireRoles(PrismaUserRole.LEAD, PrismaUserRole.ADMIN),
 );
 

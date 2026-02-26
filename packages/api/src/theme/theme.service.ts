@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '@/prisma.service';
-import { Theme } from '@prisma/client';
+import { PrismaService } from '../prisma.service';
+import { Prisma, Theme } from '@prisma/client';
 
 export interface SaveThemeDto {
   name: string;
@@ -76,10 +76,10 @@ export class ThemeService {
    * MODIFIED: Removed ability to change isActive directly (must use setGlobalActiveTheme)
    */
   async updateTheme(data: UpdateThemeDto): Promise<Theme> {
-    const { id, isActive, ...updateData } = data;
+    const { id, isActive, userId, ...updateData } = data;
 
     // Support both userId and createdById for backward compatibility
-    const requestingUserId = updateData.userId || updateData.createdById;
+    const requestingUserId = userId || updateData.createdById;
 
     // Verify authorization if requestingUserId is provided
     if (requestingUserId) {
@@ -163,7 +163,7 @@ export class ThemeService {
     }
 
     // 3. TRANSACCIÓN: Desactivar todos y activar seleccionado
-    return this.prisma.$transaction(async (tx) => {
+    return this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       await tx.theme.updateMany({
         where: { isActive: true },
         data: { isActive: false },
@@ -172,25 +172,6 @@ export class ThemeService {
         where: { id: themeId },
         data: { isActive: true },
       });
-    });
-  }
-
-  /**
-   * @deprecated Use getGlobalActiveTheme() instead
-   */
-  async getActiveTheme(userId?: string): Promise<Theme | null> {
-    console.warn('getActiveTheme is deprecated. Use getGlobalActiveTheme instead.');
-    return this.getGlobalActiveTheme();
-  }
-
-  /**
-   * List all themes
-   * MODIFIED: No longer filters by userId - returns all themes
-   */
-  async listThemes(userId?: string, includePublic = true): Promise<Theme[]> {
-    // MODIFIED: Return all themes without filtering by user
-    return this.prisma.theme.findMany({
-      orderBy: { updatedAt: 'desc' },
     });
   }
 
@@ -269,29 +250,6 @@ export class ThemeService {
   }
 
   /**
-   * @deprecated Use setGlobalActiveTheme() instead
-   */
-  async setActiveTheme(id: string, userId?: string): Promise<Theme> {
-    console.warn('setActiveTheme is deprecated. Use setGlobalActiveTheme instead.');
-    if (!userId) {
-      throw new Error('userId required for setActiveTheme (deprecated)');
-    }
-    return this.setGlobalActiveTheme(id, userId);
-  }
-
-  /**
-   * @deprecated Use listAllThemes() instead
-   * Get themes by company ID (kept for backward compatibility)
-   */
-  async getCompanyThemes(
-    companyId: string,
-    activeOnly = false,
-  ): Promise<Theme[]> {
-    console.warn('getCompanyThemes is deprecated. Use listAllThemes instead.');
-    return this.listAllThemes();
-  }
-
-  /**
    * Get theme by ID (alias for getTheme)
    */
   async getThemeById(themeId: string): Promise<Theme | null> {
@@ -305,19 +263,4 @@ export class ThemeService {
     return this.saveTheme(data);
   }
 
-  /**
-   * @deprecated Use setGlobalActiveTheme() instead
-   * Set a theme as the default theme for a company (kept for backward compatibility)
-   */
-  async setDefaultTheme(
-    themeId: string,
-    companyId: string,
-    userId?: string,
-  ): Promise<Theme> {
-    console.warn('setDefaultTheme is deprecated. Use setGlobalActiveTheme instead.');
-    if (!userId) {
-      throw new Error('userId required for setDefaultTheme (deprecated)');
-    }
-    return this.setGlobalActiveTheme(themeId, userId);
-  }
 }

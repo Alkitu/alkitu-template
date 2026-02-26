@@ -23,6 +23,7 @@ import { ChannelsModule } from './channels/channels.module';
 import { FeatureFlagsModule } from './feature-flags/feature-flags.module';
 import { AuditModule } from './audit/audit.module';
 import { AccessControlModule } from './access-control/access-control.module';
+import { DriveModule } from './drive/drive.module';
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { AccessControlModule } from './access-control/access-control.module';
     RequestsModule,
     ChannelsModule,
     FeatureFlagsModule,
+    DriveModule,
   ],
   controllers: [AppController],
   providers: [

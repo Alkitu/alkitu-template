@@ -32,7 +32,7 @@ export const RequestNotificationDataSchema = z.object({
  * Used for INFO, WARNING, ERROR, SUCCESS, CHAT_* notification types
  */
 export const GenericNotificationDataSchema = z.object({
-  metadata: z.record(z.any()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 });
 
 /**

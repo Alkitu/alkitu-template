@@ -81,6 +81,10 @@ model User {
   terms                   Boolean                 @default(false)
   isTwoFactorEnabled      Boolean                 @default(false)
 
+  // User preferences
+  theme                   String?                 @default("system") // "light" | "dark" | "system"
+  language                String?                 @default("es")     // "es" | "en"
+
   // Session tracking
   isActive                Boolean                 @default(false) // Session state - true if currently logged in
   lastActivity            DateTime?               // Last activity timestamp (updated on login/logout)
@@ -90,6 +94,11 @@ model User {
   createdAt               DateTime                @default(now())
   updatedAt               DateTime                @updatedAt
   lastLogin               DateTime?               @default(now())
+
+  // Google Drive folder IDs
+  driveFolderId           String?  // carpeta users/{email}/
+  driveProfileFolderId    String?  // carpeta users/{email}/profile/
+  driveRequestsFolderId   String?  // carpeta users/{email}/requests/
 
   // Relations
   twoFactorConfirmation   TwoFactorConfirmation?
@@ -665,6 +674,7 @@ model Service {
   categoryId      String    @db.ObjectId
   thumbnail       String?
   iconColor       String?   @default("#000000") // Hex color for service icon
+  code            String?  // "LIMP", "ELEC" — 3-6 chars uppercase, used for customId generation. Uniqueness enforced at app level (sparse index)
 
   // FormTemplate relation (replaces old requestTemplate JSON field)
   formTemplateIds String[]       @db.ObjectId
@@ -698,6 +708,13 @@ enum RequestStatus {
 /// ALI-119: Service Requests Lifecycle & Assignment
 model Request {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
+
+  // Sequential custom ID (e.g., "REQ-LIMP-202602-0001")
+  customId    String?  // Uniqueness enforced at app level (sparse index)
+  // Google Drive folder ID for this request's attachments
+  folderId    String?
+  // File attachments metadata [{fileId, name, mimeType, webViewLink, size}]
+  attachments Json?
 
   // Request title (specific title entered by client, e.g., "Aire roto oficina principal")
   title     String   @default("Nueva Solicitud")
@@ -946,4 +963,22 @@ model FormTemplate {
   @@index([parentId])
   @@index([createdAt])
   @@map("form_templates")
+}
+
+/// Atomic counter for sequential ID generation (e.g., request customId)
+model Counter {
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  name  String @unique   // e.g., "req_LIMP_202602"
+  value Int    @default(0)
+
+  @@map("counters")
+}
+
+/// Key-value store for system configuration (e.g., Drive folder IDs)
+model SystemConfig {
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  key   String @unique   // e.g., "drive_users_folder_id"
+  value String
+
+  @@map("system_configs")
 }

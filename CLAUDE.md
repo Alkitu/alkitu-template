@@ -63,8 +63,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - 🔗 **REFERENCE GUIDES**:
   - Component structure: `/docs/00-conventions/component-structure-and-testing.md`
   - Testing frameworks: `/docs/00-conventions/testing-strategy-and-frameworks.md`
-  - Frontend testing: `/docs/05-testing/frontend-testing-guide.md`
-  - Backend testing: `/docs/05-testing/backend-testing-guide.md`
+  - Security testing: `/docs/05-testing/security-testing-guide.md`
 
 ## Project Overview
 
@@ -73,7 +72,7 @@ This is **Alkitu Template** - an enterprise-grade TypeScript monorepo for buildi
 ### Technology Stack
 
 - **Backend**: NestJS v11 + MongoDB + Prisma + tRPC + GraphQL + WebSocket + JWT Auth
-- **Frontend**: Next.js v15 + Radix UI + NextUI + Tailwind CSS v4 + Zustand + React Query
+- **Frontend**: Next.js v16 + Radix UI + NextUI + Tailwind CSS v4 + Zustand + React Query
 - **Mobile**: Flutter 3.10+ + BLoC + GoRouter + GraphQL
 - **Shared**: TypeScript types, Zod schemas, utilities
 - **Infrastructure**: Docker + MongoDB replica set + Redis + Nginx
@@ -197,7 +196,7 @@ packages/
 
 ### Frontend Architecture (packages/web/)
 
-- **Framework**: Next.js v15 with App Router
+- **Framework**: Next.js v16 with App Router
 - **Component Architecture**: Atomic Design methodology (Atoms → Molecules → Organisms → Templates → Pages)
 - **State Management**: Zustand + React Query for server state
 - **API Integration**: tRPC client with React Query
@@ -297,41 +296,13 @@ JWT_SECRET=your-jwt-secret  # Must match API — server-side only, NOT NEXT_PUBL
 
 ## AI Agent Integration
 
-This project uses AI-driven development with specialized agents:
+This project uses AI-driven development with specialized agents defined in `docs/03-ai-agents/`:
 
-- **Architecture Agent**: SOLID principles and system design
-- **Backend Agent**: NestJS and API development
-- **Frontend Agent**: Next.js and UI development
-- **Frontend Component Builder**: Creates Atomic Design components automatically (`.claude/agents/frontend-component-builder.md`)
-- **Frontend Testing Expert**: Vitest/Playwright/Storybook test generation (`.claude/agents/frontend-testing-expert.md`)
-- **Backend Testing Expert**: Jest/Stryker TDD workflow (`.claude/agents/backend-testing-expert.md`)
-- **Component Migration Coordinator**: Orchestrates complete migration workflow (`.claude/agents/component-migration-coordinator.md`)
-- **Component Verification Agent**: Automated component migration verification
-- **Documentation Agent**: Maintains comprehensive documentation
-
-### Workflows
-
-#### Component Creation Workflow (New Components)
-
-```
-User request → frontend-component-builder → frontend-testing-expert → Complete component
-```
-
-#### Component Migration Workflow (Existing Components)
-
-```
-/migrate-component → component-migration-coordinator
-  ├─ Analyzes original component
-  ├─ Invokes frontend-component-builder
-  ├─ Migrates code logic
-  ├─ Verifies quality gates
-  └─ Updates tracking document automatically
-```
-
-**Quick Start Commands**:
-
-- `/migrate-component` - Start automated migration workflow with tracking
-- Invoke `frontend-component-builder` - Create new component from scratch
+- **Architecture Agent** (`docs/03-ai-agents/01-architecture-agent.md`): SOLID principles and system design
+- **Testing Agent** (`docs/03-ai-agents/02-testing-agent.md`): Test generation and TDD workflows
+- **Backend Agent** (`docs/03-ai-agents/03-backend-agent.md`): NestJS and API development
+- **Frontend Agent** (`docs/03-ai-agents/04-frontend-agent.md`): Next.js and UI development
+- **Documentation Agent** (`docs/03-ai-agents/05-documentation-agent.md`): Maintains comprehensive documentation
 
 Refer to `docs/03-ai-agents/` for agent-specific protocols and workflows.
 
@@ -357,18 +328,13 @@ Refer to `docs/03-ai-agents/` for agent-specific protocols and workflows.
   - `component-molecule-template.md` - Molecule component template (form fields, cards)
   - `component-organism-template.md` - Organism component template (forms, complex features)
 - `docs/05-testing/` - Testing guides and strategies
-  - `frontend-testing-guide.md` - Complete frontend testing guide
-  - `backend-testing-guide.md` - TDD workflow for backend
-  - `playwright-setup-and-usage.md` - E2E testing with Playwright
-  - `testing-cheatsheet.md` - Quick reference for testing
-- `.claude/agents/` - AI agent definitions
-  - `frontend-component-builder.md` - Frontend component creation agent
-  - `frontend-testing-expert.md` - Frontend test generation agent
-  - `backend-testing-expert.md` - Backend TDD agent
-  - `component-migration-coordinator.md` - Migration orchestration agent
-  - `component-verification-agent.md` - Component verification agent
-- `.claude/commands/` - Slash commands
-  - `migrate-component.md` - Start migration workflow (/migrate-component)
+  - `security-testing-guide.md` - Security testing patterns and guidelines
+- `docs/03-ai-agents/` - AI agent definitions
+  - `01-architecture-agent.md` - SOLID principles and system design
+  - `02-testing-agent.md` - Test generation and TDD workflows
+  - `03-backend-agent.md` - NestJS and API development
+  - `04-frontend-agent.md` - Next.js and UI development
+  - `05-documentation-agent.md` - Documentation maintenance
 - `infrastructure/docker/` - Docker configurations for all services
 - `packages/api/test/` - Testing utilities, factories, and mocks
 - `packages/web/src/components/` - Atomic Design components

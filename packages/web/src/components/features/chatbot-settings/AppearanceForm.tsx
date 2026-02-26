@@ -13,7 +13,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/primitives/ui/form';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
 
@@ -50,14 +50,12 @@ export function AppearanceForm({ initialConfig }: AppearanceFormProps) {
     },
   });
 
-  const updateConfigMutation = useMutation({
-    mutationFn: (data: Partial<AppearanceFormData>) =>
-      trpc.chatbotConfig.update.mutate(data),
+  const updateConfigMutation = (trpc.chatbotConfig.update as any).useMutation({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['chatbotConfig'] });
       toast.success('Chatbot appearance updated successfully.');
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast.error(`Failed to update appearance: ${error.message}`);
     },
   });

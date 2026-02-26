@@ -86,12 +86,12 @@ export default function AdminCreateRequestPage() {
     { enabled: !!selectedClient }
   );
 
-  const createRequestMutation = trpc.request.createRequest.useMutation({
+  const createRequestMutation = (trpc.request.createRequest as any).useMutation({
     onSuccess: () => {
       toast.success(t('success'));
       router.push(`/${lang}/admin/requests`);
     },
-    onError: (error) => handleApiError(error, router),
+    onError: (error: any) => handleApiError(error, router),
   });
 
   // Transform services into SelectableService[] for the CategorizedServiceSelector

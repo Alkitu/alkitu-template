@@ -13,7 +13,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/primitives/ui/form';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
 
@@ -45,9 +45,7 @@ export function MessagesForm({ initialConfig }: MessagesFormProps) {
     },
   });
 
-  const updateConfigMutation = useMutation({
-    mutationFn: (data: Partial<MessagesFormData>) =>
-      trpc.chatbotConfig.update.mutate(data), // TODO: Implement this
+  const updateConfigMutation = trpc.chatbotConfig.update.useMutation({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['chatbotConfig'] });
       toast.success('Chatbot messages updated successfully.');

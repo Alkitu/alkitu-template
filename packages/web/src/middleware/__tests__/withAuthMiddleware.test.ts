@@ -110,7 +110,7 @@ describe('Auth Middleware Integration Tests', () => {
   describe('SKIP_AUTH bypass', () => {
     it('should bypass auth in development when SKIP_AUTH is true', async () => {
       process.env.SKIP_AUTH = 'true';
-      process.env.NODE_ENV = 'development';
+      (process.env as any).NODE_ENV = 'development';
 
       const request = createRequest(
         'http://localhost:3000/es/admin/dashboard',
@@ -123,7 +123,7 @@ describe('Auth Middleware Integration Tests', () => {
 
     it('should throw error if SKIP_AUTH is true in production', async () => {
       process.env.SKIP_AUTH = 'true';
-      process.env.NODE_ENV = 'production';
+      (process.env as any).NODE_ENV = 'production';
 
       const request = createRequest(
         'http://localhost:3000/es/admin/dashboard',

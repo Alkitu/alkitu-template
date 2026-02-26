@@ -60,7 +60,7 @@ describe('i18n Middleware Integration Tests', () => {
       expect(response?.headers.get('Location')).toBe('http://localhost:3000/es');
 
       // Verify cookie is set
-      const setCookieHeader = response.headers.get('Set-Cookie');
+      const setCookieHeader = response!.headers.get('Set-Cookie');
       expect(setCookieHeader).toContain('NEXT_LOCALE=es');
       expect(setCookieHeader).toContain('SameSite=lax');
     });
@@ -178,7 +178,7 @@ describe('i18n Middleware Integration Tests', () => {
       const middleware = withI18nMiddleware(mockNext);
       const response = await middleware(request, event);
 
-      const setCookieHeader = response.headers.get('Set-Cookie');
+      const setCookieHeader = response!.headers.get('Set-Cookie');
       expect(setCookieHeader).toContain('NEXT_LOCALE=es');
       expect(setCookieHeader).toContain('Path=/');
       expect(setCookieHeader).toContain('Max-Age=31536000'); // 1 year
@@ -226,7 +226,7 @@ describe('i18n Middleware Integration Tests', () => {
       expect(mockNext).toHaveBeenCalled();
 
       // Cookie should be updated to match path locale
-      const setCookieHeader = response.headers.get('Set-Cookie');
+      const setCookieHeader = response!.headers.get('Set-Cookie');
       expect(setCookieHeader).toContain('NEXT_LOCALE=en');
     });
   });
@@ -320,13 +320,13 @@ describe('i18n Middleware Integration Tests', () => {
         requests.map((req) => middleware(req, createEvent())),
       );
 
-      expect(responses[0].headers.get('Location')).toBe(
+      expect(responses[0]!.headers.get('Location')).toBe(
         'http://localhost:3000/es/dashboard',
       );
-      expect(responses[1].headers.get('Location')).toBe(
+      expect(responses[1]!.headers.get('Location')).toBe(
         'http://localhost:3000/en/profile',
       );
-      expect(responses[2].headers.get('Location')).toBe(
+      expect(responses[2]!.headers.get('Location')).toBe(
         'http://localhost:3000/es/settings',
       );
     });

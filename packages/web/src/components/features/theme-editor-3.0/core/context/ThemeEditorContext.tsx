@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
 import { ThemeData, ThemeWithCurrentColors, ThemeMode, EditorState, EditorSection, ViewportState, ViewportSize, PreviewState, PreviewSection } from '../types';
 import { DEFAULT_THEME, DEFAULT_THEMES } from '../constants/default-themes';
-import { applyThemeToRoot, applyThemeMode, applyModeSpecificColors, applyTypographyElements, applyBorderElements, applyScrollElements, applyScrollbarColors, applyScrollbarUtilityClass } from '../../lib/utils/css/css-variables';
+import { applyThemeToRoot, applyThemeMode, applyModeSpecificColors, applyTypographyElements, applyBorderElements, applyScrollElements, applyScrollbarColors, applyScrollbarUtilityClass, applySpacingElements, applyShadowElements } from '../../lib/utils/css/css-variables';
 import { DEFAULT_TYPOGRAPHY } from '../../theme-editor/editor/typography/types';
 import { trpc } from '@/lib/trpc';
 import { useThemeAuth } from '../hooks/useThemeAuth';
@@ -533,9 +533,14 @@ export function ThemeEditorProvider({ children, companyId: propCompanyId, initia
     applyModeSpecificColors(colors);
     applyThemeMode(state.themeMode);
     applyScrollElements(loadedTheme.scroll || {});
-    applyScrollElements(loadedTheme.scroll || {});
     const typography = { ...DEFAULT_TYPOGRAPHY, ...(loadedTheme.typography || {}) };
     applyTypographyElements(typography);
+    if (loadedTheme.spacing && Object.keys(loadedTheme.spacing).length > 0) {
+      applySpacingElements(loadedTheme.spacing as unknown as Record<string, string>);
+    }
+    if (loadedTheme.shadows && Object.keys(loadedTheme.shadows).length > 0) {
+      applyShadowElements(loadedTheme.shadows as unknown as Record<string, string>);
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialTheme]); // MODIFIED: Only depend on initialTheme to prevent re-loading from dbThemes
 

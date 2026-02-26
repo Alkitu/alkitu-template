@@ -133,6 +133,43 @@ function generateBorderRadiusCSS(themeData: any): string {
   return properties.join('\n');
 }
 
+/**
+ * Generate inline CSS from shadow settings stored in themeData.shadows
+ */
+function generateShadowCSS(themeData: any): string {
+  const shadows = themeData?.shadows;
+  if (!shadows) return '';
+
+  const shadowMap: Record<string, string> = {
+    shadow2xs: '--shadow-2xs',
+    shadowXs: '--shadow-xs',
+    shadowSm: '--shadow-sm',
+    shadow: '--shadow',
+    shadowMd: '--shadow-md',
+    shadowLg: '--shadow-lg',
+    shadowXl: '--shadow-xl',
+    shadow2xl: '--shadow-2xl',
+  };
+
+  return Object.entries(shadows)
+    .map(([key, value]) => (shadowMap[key] ? `    ${shadowMap[key]}: ${value};` : ''))
+    .filter(Boolean)
+    .join('\n');
+}
+
+/**
+ * Generate inline CSS from spacing settings stored in themeData.spacing
+ */
+function generateSpacingCSS(themeData: any): string {
+  const spacing = themeData?.spacing;
+  if (!spacing) return '';
+
+  return Object.entries(spacing)
+    .map(([key, value]) => `    --spacing-${key}: ${value};`)
+    .filter(Boolean)
+    .join('\n');
+}
+
 export function generateInlineThemeCSS(theme: DbTheme | null): string {
   if (!theme) {
     return '';
@@ -153,6 +190,8 @@ export function generateInlineThemeCSS(theme: DbTheme | null): string {
   // Always generate typography CSS, using defaults if theme.typography is null/empty
   const typographyCSS = generateTypographyCSS(typography);
   const borderRadiusCSS = generateBorderRadiusCSS(theme.themeData);
+  const shadowCSS = generateShadowCSS(theme.themeData);
+  const spacingCSS = generateSpacingCSS(theme.themeData);
 
   return `
 /* Theme: ${theme.name} (ID: ${theme.id}) */
@@ -161,6 +200,8 @@ export function generateInlineThemeCSS(theme: DbTheme | null): string {
   :root {
 ${typographyCSS}
 ${borderRadiusCSS ? `\n${borderRadiusCSS}` : ''}
+${shadowCSS ? `\n${shadowCSS}` : ''}
+${spacingCSS ? `\n${spacingCSS}` : ''}
   }
 
 ${lightCSS}

@@ -47,7 +47,8 @@ export default function FilePreviewPage() {
     }
 
     if (fileId) fetchFile();
-  }, [fileId, t]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- t creates a new ref each render (namespaced useTranslations), including it causes an infinite fetch loop
+  }, [fileId]);
 
   const backHref =
     file?.parents?.[0]

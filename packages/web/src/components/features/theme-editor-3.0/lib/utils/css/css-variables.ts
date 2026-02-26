@@ -245,23 +245,6 @@ export function applyScrollElements(scroll: { width: string; behavior: 'auto' | 
   root.style.setProperty('--scrollbar-track-radius', scroll.trackRadius || '0px');
   root.style.setProperty('--scrollbar-thumb-radius', scroll.thumbRadius || '4px');
 
-  // DEBUG: Log current scrollbar settings to verify they exist
-  console.log('🎨 SCROLLBAR DEBUG CHECK:', {
-    trackColor: getComputedStyle(root).getPropertyValue('--scrollbar-track').trim(),
-    thumbColor: getComputedStyle(root).getPropertyValue('--scrollbar-thumb').trim(),
-    width: scroll.width,
-    trackRadius: scroll.trackRadius || '0px',
-    thumbRadius: scroll.thumbRadius || '4px'
-  });
-
-  console.log('📏 SCROLLBAR WIDTH APPLYING:', {
-    widthValue: scroll.width,
-    cssRule: `*::-webkit-scrollbar { width: ${scroll.width} !important; height: ${scroll.width} !important; }`
-  });
-
-  // Track radius logging for debugging
-  console.log('🔴 TRACK RADIUS VALUE:', scroll.trackRadius || '0px');
-
   // REMOVE OLD STYLE ELEMENTS FIRST to prevent conflicts
   const oldStaticStyles = document.getElementById('theme-scrollbar-styles');
   if (oldStaticStyles) {
@@ -356,14 +339,6 @@ export function applyScrollElements(scroll: { width: string; behavior: 'auto' | 
       document.head.appendChild(scrollbarStyleElement);
     }
     scrollbarStyleElement.textContent = style;
-
-    // DEBUG: Log the actual CSS being applied
-    console.log('💉 CSS INJECTED:', {
-      elementId: 'unified-scrollbar-styles',
-      cssContent: style,
-      elementExists: !!document.getElementById('unified-scrollbar-styles'),
-      headChildren: document.head.children.length
-    });
   }
 }
 
@@ -393,13 +368,11 @@ export function applyScrollbarColors(colors: import('../../../core/types/theme.t
   if (colors.scrollbarTrack) {
     const trackValue = colors.scrollbarTrack.oklchString || colors.scrollbarTrack.value || null;
     root.style.setProperty('--scrollbar-track', trackValue);
-    console.log('🎯 Applied scrollbar-track:', trackValue);
   }
 
   if (colors.scrollbarThumb) {
     const thumbValue = colors.scrollbarThumb.oklchString || colors.scrollbarThumb.value || null;
     root.style.setProperty('--scrollbar-thumb', thumbValue);
-    console.log('🎯 Applied scrollbar-thumb:', thumbValue);
   }
 }
 
@@ -410,18 +383,9 @@ export function applyScrollbarColors(colors: import('../../../core/types/theme.t
 export function applyScrollbarUtilityClass(scroll: { width: string; behavior: 'auto' | 'smooth' | 'instant'; smooth: boolean; hide: boolean; trackRadius?: string; thumbRadius?: string; }, colors: { scrollbarTrack?: { value?: string }; scrollbarThumb?: { value?: string } }): void {
   const root = document.documentElement;
 
-  console.log('🎯 SOLUTION 1 - APPLYING UTILITY CLASS METHOD:', {
-    width: scroll.width,
-    trackRadius: scroll.trackRadius || '0px',
-    thumbRadius: scroll.thumbRadius || '4px',
-    trackColor: colors.scrollbarTrack?.value || '#ffffff',
-    thumbColor: colors.scrollbarThumb?.value || '#cdcdcd'
-  });
-
   // Step 1: Add the utility class to body/html
   if (!document.body.classList.contains('dynamic-scrollbar')) {
     document.body.classList.add('dynamic-scrollbar');
-    console.log('✅ Added dynamic-scrollbar class to body');
   }
 
   // Step 2: Update CSS custom properties
@@ -431,14 +395,6 @@ export function applyScrollbarUtilityClass(scroll: { width: string; behavior: 'a
   root.style.setProperty('--dynamic-scrollbar-track-color', colors.scrollbarTrack?.value || '#ffffff');
   root.style.setProperty('--dynamic-scrollbar-thumb-color', colors.scrollbarThumb?.value || '#cdcdcd');
 
-  console.log('✅ CSS Variables Updated:', {
-    '--dynamic-scrollbar-width': scroll.width,
-    '--dynamic-scrollbar-track-radius': scroll.trackRadius || '0px',
-    '--dynamic-scrollbar-thumb-radius': scroll.thumbRadius || '4px',
-    '--dynamic-scrollbar-track-color': colors.scrollbarTrack?.value || '#ffffff',
-    '--dynamic-scrollbar-thumb-color': colors.scrollbarThumb?.value || '#cdcdcd'
-  });
-
   // Step 3: Apply scroll behavior
   root.style.setProperty('scroll-behavior', scroll.behavior);
 
@@ -446,11 +402,9 @@ export function applyScrollbarUtilityClass(scroll: { width: string; behavior: 'a
   if (scroll.hide) {
     document.body.classList.add('scrollbar-hidden');
     document.body.classList.remove('dynamic-scrollbar');
-    console.log('✅ Scrollbars hidden');
   } else {
     document.body.classList.remove('scrollbar-hidden');
     document.body.classList.add('dynamic-scrollbar');
-    console.log('✅ Scrollbars visible with dynamic styling');
   }
 }
 

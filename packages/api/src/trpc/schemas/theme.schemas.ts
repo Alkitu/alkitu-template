@@ -67,6 +67,7 @@ export const createThemeSchema = z.object({
   lightModeConfig: z.record(z.string(), z.unknown()),
   darkModeConfig: z.record(z.string(), z.unknown()).optional(),
   typography: z.record(z.string(), z.unknown()).optional(),
+  themeData: z.record(z.string(), z.unknown()).optional(),
   tags: z.array(z.string()).optional(),
   isDefault: z.boolean().optional(),
 });
@@ -80,6 +81,7 @@ export const updateThemeNewSchema = z.object({
   lightModeConfig: z.record(z.string(), z.unknown()).optional(),
   darkModeConfig: z.record(z.string(), z.unknown()).optional(),
   typography: z.record(z.string(), z.unknown()).optional(),
+  themeData: z.record(z.string(), z.unknown()).optional(),
   tags: z.array(z.string()).optional(),
 });
 

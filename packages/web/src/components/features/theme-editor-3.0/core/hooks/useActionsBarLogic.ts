@@ -82,25 +82,15 @@ export function useActionsBarLogic(): ActionsBarLogic {
   };
 
   const handleSave: ThemeSaveHandler = async (theme, isNewTheme) => {
-    console.log('🎯 [Frontend] handleSave called with:', {
-      themeName: theme.name,
-      isNewTheme,
-      userId,
-      companyId,
-      isAdmin
-    });
-
     try {
       // Validate authentication
       if (!userId) {
-        console.error('❌ [Frontend] Authentication failed: no userId');
         setError('Authentication required to save themes');
         return;
       }
 
       // Validate admin role
       if (!isAdmin) {
-        console.error('❌ [Frontend] Not admin:', { isAdmin });
         setError('Only administrators can create or update themes');
         return;
       }
@@ -110,15 +100,16 @@ export function useActionsBarLogic(): ActionsBarLogic {
       // Ensure typography is complete
       const completeTypography = { ...DEFAULT_TYPOGRAPHY, ...(theme.typography || {}) };
 
-      // MODIFIED: Always create themes as inactive, then activate explicitly
-      if (isNewTheme) {
-        console.log('📝 [Frontend] Creating new theme...');
-        console.log('📝 [Frontend] Calling createThemeMutation with:', {
-          name: theme.name,
-          companyId: companyId,
-          createdById: userId,
-        });
+      // Build themeData payload with spacing, shadows, scroll, borders, and brand
+      const themeData = {
+        spacing: theme.spacing,
+        shadows: theme.shadows,
+        scroll: theme.scroll,
+        borders: theme.borders,
+        brand: theme.brand,
+      } as Record<string, unknown>;
 
+      if (isNewTheme) {
         // CREATE new theme (NOT active by default)
         const savedTheme = await createThemeMutation.mutateAsync({
           name: theme.name,
@@ -129,10 +120,9 @@ export function useActionsBarLogic(): ActionsBarLogic {
           lightModeConfig: theme.lightColors as unknown as Record<string, unknown>,
           darkModeConfig: theme.darkColors as unknown as Record<string, unknown>,
           typography: completeTypography as Record<string, unknown>,
+          themeData,
           tags: theme.tags,
-          // NO isActive field - always creates as inactive
         });
-        console.log('✅ [Frontend] Created new theme:', savedTheme);
 
         // Add to local state with DB-generated ID
         addTheme({
@@ -142,15 +132,8 @@ export function useActionsBarLogic(): ActionsBarLogic {
         });
         savedThemeId = savedTheme.id;
       } else {
-        console.log('🔄 [Frontend] Updating existing theme...');
-        console.log('🔄 [Frontend] Calling updateThemeMutation with:', {
-          themeId: theme.id,
-          name: theme.name,
-          userId,
-        });
-
-        // UPDATE existing theme (NO isActive in input)
-        const updatedTheme = await updateThemeMutation.mutateAsync({
+        // UPDATE existing theme
+        await updateThemeMutation.mutateAsync({
           themeId: theme.id,
           userId: userId ?? undefined,
           name: theme.name,
@@ -158,10 +141,9 @@ export function useActionsBarLogic(): ActionsBarLogic {
           lightModeConfig: theme.lightColors as unknown as Record<string, unknown>,
           darkModeConfig: theme.darkColors as unknown as Record<string, unknown>,
           typography: completeTypography as Record<string, unknown>,
+          themeData,
           tags: theme.tags,
-          // NO isActive field - use setGlobalActiveTheme instead
         });
-        console.log('✅ [Frontend] Updated existing theme:', updatedTheme);
 
         // Update local state
         updateTheme({
@@ -171,28 +153,17 @@ export function useActionsBarLogic(): ActionsBarLogic {
         savedThemeId = theme.id;
       }
 
-      // MODIFIED: Activate as GLOBAL theme (platform-wide)
-      console.log('🌍 [Frontend] Activating as global theme:', savedThemeId);
+      // Activate as GLOBAL theme (platform-wide)
       await setGlobalActiveThemeMutation.mutateAsync({
         themeId: savedThemeId,
         requestingUserId: userId,
       });
-      console.log('✅ [Frontend] Activated as global theme successfully');
 
       // Invalidate theme queries to refresh the theme list
-      console.log('🔄 [Frontend] Invalidating theme cache...');
       await utils.theme.listAllThemes.invalidate();
-      console.log('✅ [Frontend] Theme cache invalidated');
 
       markSaved();
-      console.log('✅ [Frontend] Save complete!');
     } catch (error: any) {
-      console.error('❌ [Frontend] Failed to save theme:', error);
-      console.error('❌ [Frontend] Error details:', {
-        message: error.message,
-        stack: error.stack,
-        data: error.data
-      });
       setError(error.message || 'Failed to save theme');
       throw error; // Re-throw so toast shows error
     }

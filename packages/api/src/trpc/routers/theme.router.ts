@@ -102,6 +102,7 @@ export function createThemeRouter(themeService: ThemeService) {
             | Record<string, unknown>
             | undefined,
           typography: input.typography as Record<string, unknown> | undefined,
+          themeData: input.themeData as Record<string, unknown> | undefined,
           tags: input.tags,
           isDefault: input.isDefault,
         });
@@ -123,6 +124,7 @@ export function createThemeRouter(themeService: ThemeService) {
             | Record<string, unknown>
             | undefined,
           typography: input.typography as Record<string, unknown> | undefined,
+          themeData: input.themeData as Record<string, unknown> | undefined,
           tags: input.tags,
         });
       }),

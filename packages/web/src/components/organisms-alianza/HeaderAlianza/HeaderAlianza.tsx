@@ -31,10 +31,12 @@ export function HeaderAlianza() {
 
   const { data: user, isLoading } = trpc.user.me.useQuery(undefined, {
     retry: false,
-    refetchOnWindowFocus: false, 
+    refetchOnWindowFocus: false,
   });
-  
+
   const isLoggedIn = !!user;
+
+  const updatePreferencesMutation = trpc.user.updateMyPreferences.useMutation();
 
   const handleLogout = async () => {
     try {
@@ -50,7 +52,19 @@ export function HeaderAlianza() {
     router.push('/auth/login');
   };
 
+  const handleThemeChange = (mode: 'light' | 'dark') => {
+    if (isLoggedIn) {
+      updatePreferencesMutation.mutate({ theme: mode, language: currentLocale(pathname) });
+    }
+  };
+
   const handleLanguageChange = (newLocale: 'es' | 'en') => {
+    // Persist to DB if logged in
+    if (isLoggedIn) {
+      const currentTheme = (localStorage.getItem('theme-mode') as 'light' | 'dark' | 'system') || 'system';
+      updatePreferencesMutation.mutate({ theme: currentTheme, language: newLocale });
+    }
+
     // Get current path without language prefix
     const segments = pathname.split('/').filter(Boolean);
     const currentLang = segments[0];
@@ -152,7 +166,7 @@ export function HeaderAlianza() {
             <div className="h-8 w-px bg-border/50 mx-2" />
 
              {/* Theme & Language */}
-            <ThemeToggle />
+            <ThemeToggle onThemeChange={handleThemeChange} />
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -264,7 +278,7 @@ export function HeaderAlianza() {
                     <div className="pt-6 border-t border-border/30 flex flex-col gap-6">
                       <div className="flex items-center justify-between">
                          <span className="text-base font-medium text-muted-foreground">Tema</span>
-                         <ThemeToggle />
+                         <ThemeToggle onThemeChange={handleThemeChange} />
                       </div>
                       
                       <div className="flex flex-col gap-3">
@@ -275,7 +289,7 @@ export function HeaderAlianza() {
                                 handleLanguageChange('es');
                                 setIsOpen(false);
                               }}
-                              className={cn("flex items-center justify-center py-3 px-3 rounded-lg text-sm border transition-all", 
+                              className={cn("flex items-center justify-center py-3 px-3 rounded-[var(--radius-card)] text-sm border transition-all",
                                   currentLocale(pathname) === 'es' ? "bg-primary/10 border-primary text-primary font-medium" : "border-border hover:bg-muted"
                               )}
                             >
@@ -286,7 +300,7 @@ export function HeaderAlianza() {
                                 handleLanguageChange('en');
                                 setIsOpen(false);
                               }}
-                              className={cn("flex items-center justify-center py-3 px-3 rounded-lg text-sm border transition-all", 
+                              className={cn("flex items-center justify-center py-3 px-3 rounded-[var(--radius-card)] text-sm border transition-all",
                                   currentLocale(pathname) === 'en' ? "bg-primary/10 border-primary text-primary font-medium" : "border-border hover:bg-muted"
                               )}
                             >

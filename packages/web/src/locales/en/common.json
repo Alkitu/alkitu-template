@@ -356,7 +356,8 @@
       "clientDashboard": "Client Dashboard",
       "employeeDashboard": "Employee Dashboard",
       "analyticsOverview": "Overview",
-      "analyticsReports": "Reports"
+      "analyticsReports": "Reports",
+      "media": "Media Manager"
     },
     "projects": {
       "alkitu": "Alkitu Platform"
@@ -627,7 +628,9 @@
             "active": "Active",
             "inactive": "Inactive",
             "activeDescription": "Service will be visible in the catalog",
-            "inactiveDescription": "Service will be hidden from the catalog"
+            "inactiveDescription": "Service will be hidden from the catalog",
+            "serviceCode": "Service Code",
+            "serviceCodeDescription": "3-6 uppercase alphanumeric characters. Used for request IDs (e.g., REQ-LIMP-202602-0001)"
           },
           "buttons": {
             "next": "Next: Design Form",
@@ -1398,6 +1401,76 @@
       "security": "Security",
       "preferences": "Preferences",
       "locations": "Locations"
+    },
+    "sections": {
+      "profileDescription": "Update your personal and contact information.",
+      "securityDescription": "Change your password to keep your account secure.",
+      "preferencesDescription": "Customize the interface theme and language.",
+      "locationsDescription": "Manage your work locations for service requests."
+    },
+    "form": {
+      "email": "Email",
+      "firstname": "First Name",
+      "lastname": "Last Name",
+      "phone": "Phone",
+      "company": "Company",
+      "address": "Address",
+      "contactPerson": {
+        "toggle": "Contact Person",
+        "name": "Contact Name",
+        "lastname": "Contact Last Name",
+        "phone": "Contact Phone",
+        "email": "Contact Email"
+      },
+      "save": "Save Changes",
+      "saving": "Saving..."
+    },
+    "password": {
+      "current": "Current Password",
+      "currentPlaceholder": "Enter your current password",
+      "new": "New Password",
+      "newPlaceholder": "Enter your new password",
+      "confirm": "Confirm Password",
+      "confirmPlaceholder": "Repeat your new password",
+      "change": "Change Password",
+      "changing": "Changing...",
+      "mismatch": "Passwords do not match",
+      "requirementsTitle": "Password Requirements",
+      "requirements": {
+        "minLength": "At least 8 characters",
+        "maxLength": "Maximum 50 characters",
+        "uppercase": "One uppercase letter",
+        "lowercase": "One lowercase letter",
+        "number": "One number",
+        "specialChar": "One special character"
+      }
+    },
+    "preferences": {
+      "save": "Save Preferences",
+      "saving": "Saving...",
+      "theme": {
+        "label": "Theme",
+        "light": "Light",
+        "dark": "Dark",
+        "system": "System"
+      },
+      "language": {
+        "label": "Language",
+        "es": "Spanish",
+        "en": "English"
+      }
+    },
+    "toast": {
+      "profileUpdated": "Profile updated successfully",
+      "profileError": "Failed to update profile",
+      "passwordChanged": "Password changed successfully",
+      "passwordError": "Failed to change password",
+      "wrongPassword": "Current password is incorrect",
+      "preferencesUpdated": "Preferences updated successfully",
+      "preferencesError": "Failed to update preferences"
+    },
+    "error": {
+      "loadFailed": "Could not load profile information. Please try again."
     }
   },
   "locations": {
@@ -1410,6 +1483,165 @@
       "cannotEditHasRequests": "This location cannot be edited because it has associated service requests.",
       "cannotDeleteHasRequests": "This location cannot be deleted because it has associated service requests.",
       "employeeCannotEdit": "Employees cannot modify client locations."
+    }
+  },
+  "media": {
+    "title": "Media Manager",
+    "description": "Browse, upload, and manage Google Drive files",
+    "notConfigured": "Media Manager not configured",
+    "notConfiguredDescription": "Set the environment variable",
+    "notConfiguredOrGoTo": "or go to",
+    "driveSettings": "Drive Settings",
+    "notConfiguredSetRoot": "to set the root folder.",
+    "backToSettings": "Back to Settings",
+    "backToMedia": "Back to Media",
+    "fileNotFound": "File not found",
+    "fileLoadError": "Error loading file",
+    "fileLoadErrorGeneric": "Could not load the file",
+    "sort": {
+      "name": "Name",
+      "modified": "Modified",
+      "size": "Size",
+      "type": "Type",
+      "order": "Order",
+      "sortBy": "Sort by",
+      "modifiedDate": "Modified date",
+      "ascending": "Ascending",
+      "descending": "Descending",
+      "folders": "Folders",
+      "foldersOnTop": "On top",
+      "foldersMixed": "Combined with files",
+      "nameAZ": "Name (A-Z)",
+      "nameZA": "Name (Z-A)",
+      "newest": "Newest",
+      "oldest": "Oldest",
+      "largestSize": "Largest size",
+      "smallestSize": "Smallest size",
+      "byType": "By type"
+    },
+    "filter": {
+      "filterType": "Filter type",
+      "all": "All",
+      "folders": "Folders",
+      "images": "Images",
+      "videos": "Videos",
+      "audio": "Audio",
+      "pdf": "PDF",
+      "spreadsheets": "Spreadsheets",
+      "presentations": "Presentations",
+      "documents": "Documents",
+      "archives": "Archives"
+    },
+    "toolbar": {
+      "newFolder": "New folder",
+      "createFolder": "Create new folder",
+      "createFolderDescription": "The folder will be created inside the current folder in Google Drive.",
+      "folderNamePlaceholder": "Folder name",
+      "cancel": "Cancel",
+      "create": "Create",
+      "creating": "Creating...",
+      "uploadFiles": "Upload files",
+      "openInDrive": "Open in Drive",
+      "searchPlaceholder": "Search files...",
+      "searchResultsFor": "Search results for:"
+    },
+    "grid": {
+      "emptyFolder": "This folder is empty",
+      "emptyFolderHint": "Upload files or create a folder to get started",
+      "foldersSection": "Folders",
+      "filesSection": "Files"
+    },
+    "fileActions": {
+      "actions": "Actions",
+      "openInDrive": "Open in Drive",
+      "download": "Download",
+      "rename": "Rename",
+      "delete": "Delete",
+      "renameTitle": "Rename",
+      "renameDescription": "Enter the new name for \"{name}\"",
+      "newNamePlaceholder": "New name",
+      "cancel": "Cancel",
+      "renaming": "Renaming...",
+      "deleteTitle": "Delete file",
+      "deleteDescription": "Are you sure you want to delete \"{name}\"? The file will be moved to Google Drive trash.",
+      "deleting": "Deleting..."
+    },
+    "preview": {
+      "imageLoadError": "Could not load the image",
+      "accessRequired": "You may need access to this file in Google Drive.",
+      "requestAccess": "Request access",
+      "previewAccessHint": "Can't see the preview? You may need access to this file in Google Drive.",
+      "noPreview": "Preview not available",
+      "noPreviewHint": "This file type does not support preview",
+      "modified": "Modified",
+      "download": "Download",
+      "openInDrive": "Open in Drive"
+    },
+    "breadcrumb": {
+      "home": "Media",
+      "toggleMenu": "Toggle menu"
+    },
+    "toast": {
+      "uploadSuccess": "Files uploaded successfully",
+      "folderCreated": "Folder created",
+      "folderCreateError": "Error creating folder",
+      "fileDeleted": "File deleted",
+      "fileDeleteError": "Error deleting file",
+      "fileRenamed": "File renamed",
+      "fileRenameError": "Error renaming file",
+      "fileMoved": "File moved",
+      "fileMoveError": "Error moving file",
+      "loadError": "Error loading files"
+    },
+    "upload": {
+      "noPermission": "You do not have permission to upload files",
+      "tooLarge": "is too large",
+      "maxSize": "Maximum: 1GB.",
+      "someExcluded": "Some files were excluded:",
+      "dropHere": "Drop your files here!",
+      "readyToReceive": "Ready to receive your files in:",
+      "uploadFiles": "Upload Files",
+      "dragOrClick": "Drag files here or click to select",
+      "destination": "Destination",
+      "maxPerFile": "Maximum 1GB per file",
+      "resumableHint": "Files >3MB use resumable upload",
+      "allFormats": "All formats supported",
+      "filesToUpload": "Files to Upload",
+      "addMore": "Add More",
+      "more": "More",
+      "clearAll": "Clear All",
+      "clear": "Clear",
+      "total": "Total",
+      "pending": "pending",
+      "uploading": "uploading",
+      "completed": "completed",
+      "withError": "with error",
+      "largeFilesWarning": "Large files detected.",
+      "largeFilesHint": "May take longer to upload. Consider using direct mode for better performance.",
+      "filesFailed": "file(s) failed.",
+      "retryOrRemove": "You can retry or remove them from the list.",
+      "allUploaded": "All files uploaded successfully!",
+      "statusPending": "Pending",
+      "statusUploading": "Uploading",
+      "statusCompleted": "Completed",
+      "statusError": "Error",
+      "resumable": "Resumable",
+      "large": "Large",
+      "retry": "Retry",
+      "remove": "Remove",
+      "del": "Del",
+      "nameInDrive": "Name in Google Drive:",
+      "fileNamePlaceholder": "File name",
+      "save": "Save",
+      "edit": "Edit",
+      "uploadingFile": "Uploading file...",
+      "uploadComplete": "Upload completed successfully!",
+      "filesReady": "file(s) ready to upload",
+      "cancelUpload": "Cancel Upload",
+      "uploadCount": "Upload {count} File(s)",
+      "uploadedSuccessfully": "Uploaded successfully",
+      "tooLargeServer": "File too large. The server has a size limit.",
+      "timeoutError": "Timeout uploading large file. Try again."
     }
   }
 }

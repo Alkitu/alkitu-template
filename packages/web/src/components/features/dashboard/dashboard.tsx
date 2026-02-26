@@ -24,6 +24,7 @@ import {
   HelpCircle,
   ShoppingBag,
   Folder,
+  FolderOpen,
   Wrench,
   Hash,
   ClipboardList,
@@ -45,6 +46,7 @@ import { Progress } from '../../primitives/ui/progress';
 import { useTranslations } from '@/context/TranslationsContext';
 import { getCurrentLocalizedRoute } from '@/lib/locale';
 import { useFeatureFlag } from '@/hooks/useFeatureFlag';
+import { useSyncUserPreferences } from '@/hooks/use-sync-user-preferences';
 
 // Navigation structure with improved UX/UI organization
 const getTransformedData = (
@@ -57,6 +59,8 @@ const getTransformedData = (
     analyticsEnabled?: boolean;
     notificationsEnabled?: boolean;
     emailTemplatesEnabled?: boolean;
+    mediaManagerEnabled?: boolean;
+    fileUploadEnabled?: boolean;
   }
 ) => {
   // Client navigation
@@ -222,6 +226,15 @@ const getTransformedData = (
             },
           ],
         },
+
+        // MEDIA SECTION - conditionally rendered based on feature flag
+        ...(featureFlags?.mediaManagerEnabled !== false ? [{
+          title: t?.('nav.media') || 'Media Manager',
+          url: '/admin/media',
+          icon: FolderOpen,
+          section: 'management' as const,
+          items: [],
+        }] : []),
 
         // COMUNICACIÓN SECTION
         // Support Chat - conditionally rendered based on feature flag
@@ -394,12 +407,17 @@ function Dashboard({ children, showWelcome = false, userRole = 'admin' }: Dashbo
     { enabled: !!sessionUser?.email }
   );
 
+  // Sync DB preferences (theme, language) to local UI systems on first load
+  useSyncUserPreferences(sessionUser);
+
   // Feature flags for conditional navigation
   const { isEnabled: supportChatEnabled } = useFeatureFlag('support-chat');
   const { isEnabled: teamChannelsEnabled } = useFeatureFlag('team-channels');
   const { isEnabled: analyticsEnabled } = useFeatureFlag('analytics');
   const { isEnabled: notificationsEnabled } = useFeatureFlag('notifications');
   const { isEnabled: emailTemplatesEnabled } = useFeatureFlag('email-templates');
+  const { isEnabled: mediaManagerEnabled } = useFeatureFlag('media-manager');
+  const { isEnabled: fileUploadEnabled } = useFeatureFlag('file-upload');
 
   const transformedData = getTransformedData(t, pathname, userRole, {
     supportChatEnabled,
@@ -407,6 +425,8 @@ function Dashboard({ children, showWelcome = false, userRole = 'admin' }: Dashbo
     analyticsEnabled,
     notificationsEnabled,
     emailTemplatesEnabled,
+    mediaManagerEnabled,
+    fileUploadEnabled,
   });
 
   const currentUser = fullUser || sessionUser;

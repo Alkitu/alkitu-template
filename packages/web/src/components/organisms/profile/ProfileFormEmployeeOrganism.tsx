@@ -1,3 +1,7 @@
+/**
+ * @deprecated Use UserProfileForm from '@/components/molecules-alianza/UserProfileForm' instead.
+ * Will be removed in a future cleanup.
+ */
 'use client';
 
 import React, { useState, useEffect } from 'react';

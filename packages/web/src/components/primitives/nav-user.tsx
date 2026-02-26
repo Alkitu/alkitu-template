@@ -41,6 +41,8 @@ import { useThemeEditor } from '@/components/features/theme-editor-3.0/core/cont
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { useCallback } from 'react';
+import { trpc } from '@/lib/trpc';
+import { useTranslationContext } from '@/context/TranslationsContext';
 
 // import { LanguageSwitcher } from './language-switcher';
 import { NotificationBadge } from './notification-badge';
@@ -53,14 +55,32 @@ export function NavUser({ user }: { user: User }) {
   const { setThemeMode } = useThemeEditor();
   const router = useRouter();
   const pathname = usePathname();
+  const { setLocale } = useTranslationContext();
+  const updatePreferencesMutation = trpc.user.updateMyPreferences.useMutation();
   const { count: unreadCount } = useNotificationCount({
     userId: user.id,
     enabled: !!user.id,
   });
 
   const handleLanguageChange = (lang: string) => {
+    // Persist to DB
+    const currentTheme = (localStorage.getItem('theme-mode') as 'light' | 'dark' | 'system') || 'system';
+    updatePreferencesMutation.mutate({ theme: currentTheme, language: lang as 'es' | 'en' });
+
+    setLocale(lang as 'es' | 'en');
     const newPath = `/${lang}${pathname.substring(3)}`;
     router.push(newPath);
+  };
+
+  const handleThemeChange = (mode: 'light' | 'dark' | 'system') => {
+    setTheme(mode);
+    setThemeMode(mode as any);
+    // Also update localStorage for consistency
+    localStorage.setItem('theme-mode', mode);
+
+    // Persist to DB
+    const currentLang = pathname.split('/').filter(Boolean)[0] || 'es';
+    updatePreferencesMutation.mutate({ theme: mode, language: currentLang as 'es' | 'en' });
   };
 
   const handleSignOut = useCallback(async () => {
@@ -185,15 +205,15 @@ export function NavUser({ user }: { user: User }) {
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem onClick={() => { setTheme('light'); setThemeMode('light'); }}>
+              <DropdownMenuItem onClick={() => handleThemeChange('light')}>
                 <Sun className="mr-2 h-4 w-4" />
                 <span>Light</span>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => { setTheme('dark'); setThemeMode('dark'); }}>
+              <DropdownMenuItem onClick={() => handleThemeChange('dark')}>
                 <Moon className="mr-2 h-4 w-4" />
                 <span>Dark</span>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => { setTheme('system'); setThemeMode('system' as any); }}>
+              <DropdownMenuItem onClick={() => handleThemeChange('system')}>
                 <Laptop className="mr-2 h-4 w-4" />
                 <span>System</span>
               </DropdownMenuItem>

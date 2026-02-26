@@ -12,3 +12,5 @@ export * from './ThemeEditorOrganism';
 export * from './RequestTemplateRenderer';
 export * from './ThemeSwitcher';
 export * from './SonnerOrganism';
+export * from './NotificationsPageOrganism';
+export * from './ProfilePageOrganism';

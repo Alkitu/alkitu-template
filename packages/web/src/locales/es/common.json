@@ -545,7 +545,9 @@
             "active": "Activo",
             "inactive": "Inactivo",
             "activeDescription": "El servicio será visible en el catálogo",
-            "inactiveDescription": "El servicio estará oculto en el catálogo"
+            "inactiveDescription": "El servicio estará oculto en el catálogo",
+            "serviceCode": "Código del Servicio",
+            "serviceCodeDescription": "3-6 caracteres alfanuméricos en mayúsculas. Se usa para generar IDs de solicitudes (ej: REQ-LIMP-202602-0001)"
           },
           "buttons": {
             "next": "Siguiente: Diseñar Formulario",
@@ -626,7 +628,8 @@
       "clientDashboard": "Panel de Cliente",
       "employeeDashboard": "Panel de Empleado",
       "analyticsOverview": "Resumen",
-      "analyticsReports": "Reportes"
+      "analyticsReports": "Reportes",
+      "media": "Gestor de Medios"
     },
     "projects": {
       "alkitu": "Plataforma Alkitu"
@@ -1398,6 +1401,76 @@
       "security": "Seguridad",
       "preferences": "Preferencias",
       "locations": "Ubicaciones"
+    },
+    "sections": {
+      "profileDescription": "Actualiza tu información personal y de contacto.",
+      "securityDescription": "Cambia tu contraseña para mantener tu cuenta segura.",
+      "preferencesDescription": "Personaliza el tema y el idioma de la interfaz.",
+      "locationsDescription": "Administra tus ubicaciones de trabajo para solicitudes de servicio."
+    },
+    "form": {
+      "email": "Correo electrónico",
+      "firstname": "Nombre",
+      "lastname": "Apellido",
+      "phone": "Teléfono",
+      "company": "Empresa",
+      "address": "Dirección",
+      "contactPerson": {
+        "toggle": "Persona de contacto",
+        "name": "Nombre del contacto",
+        "lastname": "Apellido del contacto",
+        "phone": "Teléfono del contacto",
+        "email": "Email del contacto"
+      },
+      "save": "Guardar cambios",
+      "saving": "Guardando..."
+    },
+    "password": {
+      "current": "Contraseña actual",
+      "currentPlaceholder": "Ingresa tu contraseña actual",
+      "new": "Nueva contraseña",
+      "newPlaceholder": "Ingresa tu nueva contraseña",
+      "confirm": "Confirmar contraseña",
+      "confirmPlaceholder": "Repite tu nueva contraseña",
+      "change": "Cambiar contraseña",
+      "changing": "Cambiando...",
+      "mismatch": "Las contraseñas no coinciden",
+      "requirementsTitle": "Requisitos de contraseña",
+      "requirements": {
+        "minLength": "Mínimo 8 caracteres",
+        "maxLength": "Máximo 50 caracteres",
+        "uppercase": "Una letra mayúscula",
+        "lowercase": "Una letra minúscula",
+        "number": "Un número",
+        "specialChar": "Un carácter especial"
+      }
+    },
+    "preferences": {
+      "save": "Guardar preferencias",
+      "saving": "Guardando...",
+      "theme": {
+        "label": "Tema",
+        "light": "Claro",
+        "dark": "Oscuro",
+        "system": "Sistema"
+      },
+      "language": {
+        "label": "Idioma",
+        "es": "Español",
+        "en": "Inglés"
+      }
+    },
+    "toast": {
+      "profileUpdated": "Perfil actualizado correctamente",
+      "profileError": "Error al actualizar el perfil",
+      "passwordChanged": "Contraseña cambiada correctamente",
+      "passwordError": "Error al cambiar la contraseña",
+      "wrongPassword": "La contraseña actual es incorrecta",
+      "preferencesUpdated": "Preferencias actualizadas correctamente",
+      "preferencesError": "Error al actualizar las preferencias"
+    },
+    "error": {
+      "loadFailed": "No se pudo cargar la información del perfil. Inténtalo de nuevo."
     }
   },
   "locations": {
@@ -1410,6 +1483,165 @@
       "cannotEditHasRequests": "Esta ubicación no se puede editar porque tiene solicitudes de servicio asociadas.",
       "cannotDeleteHasRequests": "Esta ubicación no se puede eliminar porque tiene solicitudes de servicio asociadas.",
       "employeeCannotEdit": "Los empleados no pueden modificar las ubicaciones de los clientes."
+    }
+  },
+  "media": {
+    "title": "Gestor de Medios",
+    "description": "Explora, sube y gestiona archivos de Google Drive",
+    "notConfigured": "Media Manager no configurado",
+    "notConfiguredDescription": "Configura la variable de entorno",
+    "notConfiguredOrGoTo": "o ve a",
+    "driveSettings": "Configuración de Drive",
+    "notConfiguredSetRoot": "para establecer la carpeta raíz.",
+    "backToSettings": "Volver a Configuración",
+    "backToMedia": "Volver a Media",
+    "fileNotFound": "Archivo no encontrado",
+    "fileLoadError": "Error al cargar archivo",
+    "fileLoadErrorGeneric": "No se pudo cargar el archivo",
+    "sort": {
+      "name": "Nombre",
+      "modified": "Modificado",
+      "size": "Tamaño",
+      "type": "Tipo",
+      "order": "Orden",
+      "sortBy": "Ordenar por",
+      "modifiedDate": "Fecha de modificación",
+      "ascending": "Ascendente",
+      "descending": "Descendente",
+      "folders": "Carpetas",
+      "foldersOnTop": "En la parte superior",
+      "foldersMixed": "Combinadas con archivos",
+      "nameAZ": "Nombre (A-Z)",
+      "nameZA": "Nombre (Z-A)",
+      "newest": "Más recientes",
+      "oldest": "Más antiguos",
+      "largestSize": "Mayor tamaño",
+      "smallestSize": "Menor tamaño",
+      "byType": "Por tipo"
+    },
+    "filter": {
+      "filterType": "Filtrar tipo",
+      "all": "Todos",
+      "folders": "Carpetas",
+      "images": "Imágenes",
+      "videos": "Videos",
+      "audio": "Audio",
+      "pdf": "PDF",
+      "spreadsheets": "Hojas de cálculo",
+      "presentations": "Presentaciones",
+      "documents": "Documentos",
+      "archives": "Comprimidos"
+    },
+    "toolbar": {
+      "newFolder": "Nueva carpeta",
+      "createFolder": "Crear nueva carpeta",
+      "createFolderDescription": "La carpeta se creará dentro de la carpeta actual en Google Drive.",
+      "folderNamePlaceholder": "Nombre de la carpeta",
+      "cancel": "Cancelar",
+      "create": "Crear",
+      "creating": "Creando...",
+      "uploadFiles": "Subir archivos",
+      "openInDrive": "Abrir en Drive",
+      "searchPlaceholder": "Buscar archivos...",
+      "searchResultsFor": "Resultados de búsqueda para:"
+    },
+    "grid": {
+      "emptyFolder": "Esta carpeta está vacía",
+      "emptyFolderHint": "Sube archivos o crea una carpeta para comenzar",
+      "foldersSection": "Carpetas",
+      "filesSection": "Archivos"
+    },
+    "fileActions": {
+      "actions": "Acciones",
+      "openInDrive": "Abrir en Drive",
+      "download": "Descargar",
+      "rename": "Renombrar",
+      "delete": "Eliminar",
+      "renameTitle": "Renombrar",
+      "renameDescription": "Ingresa el nuevo nombre para \"{name}\"",
+      "newNamePlaceholder": "Nuevo nombre",
+      "cancel": "Cancelar",
+      "renaming": "Renombrando...",
+      "deleteTitle": "Eliminar archivo",
+      "deleteDescription": "¿Estás seguro de que deseas eliminar \"{name}\"? El archivo se moverá a la papelera de Google Drive.",
+      "deleting": "Eliminando..."
+    },
+    "preview": {
+      "imageLoadError": "No se pudo cargar la imagen",
+      "accessRequired": "Es posible que necesites acceso al archivo en Google Drive.",
+      "requestAccess": "Solicitar acceso",
+      "previewAccessHint": "¿No puedes ver la vista previa? Es posible que necesites acceso al archivo en Google Drive.",
+      "noPreview": "Vista previa no disponible",
+      "noPreviewHint": "Este tipo de archivo no soporta vista previa",
+      "modified": "Modificado",
+      "download": "Descargar",
+      "openInDrive": "Abrir en Drive"
+    },
+    "breadcrumb": {
+      "home": "Media",
+      "toggleMenu": "Alternar menú"
+    },
+    "toast": {
+      "uploadSuccess": "Archivos subidos correctamente",
+      "folderCreated": "Carpeta creada",
+      "folderCreateError": "Error al crear carpeta",
+      "fileDeleted": "Archivo eliminado",
+      "fileDeleteError": "Error al eliminar archivo",
+      "fileRenamed": "Archivo renombrado",
+      "fileRenameError": "Error al renombrar archivo",
+      "fileMoved": "Archivo movido",
+      "fileMoveError": "Error al mover archivo",
+      "loadError": "Error al cargar archivos"
+    },
+    "upload": {
+      "noPermission": "No tienes permisos para subir archivos",
+      "tooLarge": "es demasiado grande",
+      "maxSize": "Máximo: 1GB.",
+      "someExcluded": "Algunos archivos fueron excluidos:",
+      "dropHere": "¡Suelta los archivos aquí!",
+      "readyToReceive": "Listo para recibir tus archivos en:",
+      "uploadFiles": "Subir Archivos",
+      "dragOrClick": "Arrastra archivos aquí o haz clic para seleccionar",
+      "destination": "Destino",
+      "maxPerFile": "Máximo 1GB por archivo",
+      "resumableHint": "Archivos >3MB usan subida resumible",
+      "allFormats": "Todos los formatos soportados",
+      "filesToUpload": "Archivos para Subir",
+      "addMore": "Añadir Más",
+      "more": "Más",
+      "clearAll": "Limpiar Todo",
+      "clear": "Limpiar",
+      "total": "Total",
+      "pending": "pendientes",
+      "uploading": "subiendo",
+      "completed": "completados",
+      "withError": "con error",
+      "largeFilesWarning": "Archivos grandes detectados.",
+      "largeFilesHint": "Pueden tardar más tiempo en subirse. Considera usar el modo directo para mejor rendimiento.",
+      "filesFailed": "archivo(s) fallaron.",
+      "retryOrRemove": "Puedes reintentar o eliminarlos de la lista.",
+      "allUploaded": "¡Todos los archivos se subieron correctamente!",
+      "statusPending": "Pendiente",
+      "statusUploading": "Subiendo",
+      "statusCompleted": "Completado",
+      "statusError": "Error",
+      "resumable": "Resumible",
+      "large": "Grande",
+      "retry": "Reintentar",
+      "remove": "Eliminar",
+      "del": "Del",
+      "nameInDrive": "Nombre en Google Drive:",
+      "fileNamePlaceholder": "Nombre del archivo",
+      "save": "Guardar",
+      "edit": "Editar",
+      "uploadingFile": "Subiendo archivo...",
+      "uploadComplete": "¡Carga completada exitosamente!",
+      "filesReady": "archivo(s) listo(s) para subir",
+      "cancelUpload": "Cancelar Subida",
+      "uploadCount": "Subir {count} Archivo(s)",
+      "uploadedSuccessfully": "Subido exitosamente",
+      "tooLargeServer": "Archivo demasiado grande. El servidor tiene un límite de tamaño.",
+      "timeoutError": "Timeout al subir archivo grande. Intenta de nuevo."
     }
   }
 }

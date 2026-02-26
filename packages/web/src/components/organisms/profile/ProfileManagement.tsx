@@ -1,3 +1,8 @@
+/**
+ * @deprecated Use ProfilePageOrganism from '@/components/organisms-alianza/ProfilePageOrganism' instead.
+ * This component uses broken REST endpoints and duplicated form logic.
+ * Will be removed in a future cleanup.
+ */
 'use client';
 
 import React, { useState, useEffect } from 'react';

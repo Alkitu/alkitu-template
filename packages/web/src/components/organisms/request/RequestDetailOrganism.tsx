@@ -18,7 +18,6 @@ import {
   RefreshCw,
   Save,
   X,
-  XCircle,
   ClipboardList,
 } from 'lucide-react';
 import { RequestStatus, UserRole } from '@alkitu/shared';
@@ -30,7 +29,6 @@ import {
   type TimelineEvent,
   QuickAssignModal,
   QuickStatusModal,
-  CancelRequestModal,
   RequestCancellationModal,
 } from '@/components/molecules/request';
 import { FormResponsesPreview } from '@/components/features/form-builder/organisms/FormResponsesPreview';
@@ -67,7 +65,6 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
 }) => {
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
-  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [isCancellationRequestModalOpen, setIsCancellationRequestModalOpen] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
@@ -83,7 +80,6 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
   // tRPC mutations
   const assignMutation = trpc.request.assignRequest.useMutation();
   const updateStatusMutation = trpc.request.updateRequestStatus.useMutation();
-  const cancelMutation = trpc.request.cancelRequest.useMutation();
   const requestCancellationMutation = trpc.request.requestCancellation.useMutation();
 
   // Feature flags
@@ -110,7 +106,6 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
   const canAssign = isAdmin && isActive;
   const canChangeStatus = (isAdmin || isEmployee) && isNotCancelled;
   const canEdit = isAdmin && isActive;
-  const canDirectCancel = (isAdmin || isEmployee) && isActive;
   const canRequestCancellation = isClient && isActive;
 
   // --- Handlers ---
@@ -142,20 +137,6 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
     }
   };
 
-  const handleDirectCancel = async (reqId: string, reason: string) => {
-    setActionLoading('cancel');
-    try {
-      await cancelMutation.mutateAsync({ id: reqId, reason });
-      toast.success('La solicitud ha sido cancelada.');
-      refetch();
-      if (onUpdate) onUpdate();
-    } catch {
-      toast.error('No se pudo cancelar la solicitud.');
-    } finally {
-      setActionLoading(null);
-    }
-  };
-
   const handleRequestCancellation = async (reqId: string, reason: string) => {
     setActionLoading('requestCancellation');
     try {
@@ -174,7 +155,7 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
     if (!request) return;
     setActionLoading('approveCancellation');
     try {
-      await cancelMutation.mutateAsync({ id: request.id, reason: 'Aprobada por el equipo' });
+      await updateStatusMutation.mutateAsync({ id: request.id, status: RequestStatus.CANCELLED });
       toast.success('La cancelación ha sido aprobada.');
       refetch();
       if (onUpdate) onUpdate();
@@ -344,16 +325,6 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
                 >
                   <Pencil className="mr-2 h-3 w-3" />
                   Editar
-                </Button>
-              )}
-              {canDirectCancel && (
-                <Button
-                  variant="outline"
-                  onClick={() => setIsCancelModalOpen(true)}
-                  className="h-10 !px-6 border-red-300 text-red-600 hover:bg-red-50 font-bold uppercase tracking-wider text-xs"
-                >
-                  <XCircle className="mr-2 h-4 w-4" />
-                  Cancelar Solicitud
                 </Button>
               )}
               {canRequestCancellation && (
@@ -718,14 +689,6 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
         currentStatus={request.status as RequestStatus}
         onConfirm={handleChangeStatus}
         isLoading={actionLoading === 'status'}
-      />
-
-      <CancelRequestModal
-        open={isCancelModalOpen}
-        onClose={() => setIsCancelModalOpen(false)}
-        request={request as any}
-        onConfirm={handleDirectCancel}
-        isLoading={actionLoading === 'cancel'}
       />
 
       <RequestCancellationModal

@@ -240,6 +240,7 @@ export function createRequestRouter(
             service: {
               include: {
                 category: true,
+                formTemplates: true,
               },
             },
             location: true,

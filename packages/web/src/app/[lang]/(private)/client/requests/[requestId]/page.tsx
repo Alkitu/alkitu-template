@@ -1,290 +1,326 @@
 'use client';
 
-import { useState, use } from 'react';
-import { Card } from '@/components/primitives/Card';
-import { Button } from '@/components/primitives/Button';
+import { use } from 'react';
 import {
   ArrowLeft,
-  Clock,
-  MapPin,
-  User,
   Calendar,
+  MapPin,
+  Briefcase,
+  FileText,
+  Wrench,
+  CheckCircle,
   AlertCircle,
-  CheckCircle2,
-  XCircle,
+  Loader2,
+  ClipboardList,
 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
+import { RequestStatus } from '@alkitu/shared';
+import type { FormSettings } from '@alkitu/shared';
+import { trpc } from '@/lib/trpc';
+import {
+  RequestTimelineMolecule,
+  type TimelineEvent,
+} from '@/components/molecules/request';
+import { FormResponsesPreview } from '@/components/features/form-builder/organisms/FormResponsesPreview';
+import { Button } from '@/components/primitives/ui/button';
 
 /**
  * Request Detail Page - CLIENT View
  *
- * Displays detailed information about a specific service request.
- * Allows clients to view status, timeline, and cancel requests if needed.
+ * Displays detailed information about a specific service request,
+ * including service details and the client's form responses.
+ *
+ * @route /[lang]/client/requests/[requestId]
  */
 
 interface RequestDetailPageProps {
   params: Promise<{
     requestId: string;
+    lang: string;
   }>;
 }
 
 export default function RequestDetailPage({ params }: RequestDetailPageProps) {
   const router = useRouter();
-  const { requestId } = use(params);
+  const { requestId, lang } = use(params);
 
-  // Mock data - will be replaced with API call
-  const [request] = useState({
-    id: requestId,
-    title: 'Reparación de aire acondicionado',
-    description: 'El aire acondicionado de la sala de juntas no enfría correctamente. Se escucha un ruido extraño al encenderlo.',
-    status: 'ONGOING',
-    priority: 'HIGH',
-    service: {
-      name: 'Mantenimiento General',
-      category: 'Reparaciones',
-    },
-    location: {
-      name: 'Oficina Central',
-      address: 'Av. Principal 123, Torre A, Piso 5',
-    },
-    assignedTo: {
-      name: 'Juan Pérez',
-      role: 'Técnico Senior',
-    },
-    createdAt: '2025-12-01T10:00:00Z',
-    updatedAt: '2025-12-02T14:30:00Z',
-    timeline: [
-      {
-        date: '2025-12-01T10:00:00Z',
-        status: 'PENDING',
-        description: 'Solicitud creada',
-      },
-      {
-        date: '2025-12-01T14:00:00Z',
-        status: 'ONGOING',
-        description: 'Asignada a Juan Pérez',
-      },
-      {
-        date: '2025-12-02T14:30:00Z',
-        status: 'ONGOING',
-        description: 'Técnico en camino',
-      },
-    ],
-  });
+  const {
+    data: request,
+    isLoading,
+    isError,
+    error,
+  } = trpc.request.getRequestById.useQuery({ id: requestId });
 
-  const getStatusBadge = (status: string) => {
-    const badges = {
-      PENDING: {
-        icon: Clock,
-        text: 'Pendiente',
-        className: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400',
-      },
-      ONGOING: {
-        icon: AlertCircle,
-        text: 'En Proceso',
-        className: 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400',
-      },
-      COMPLETED: {
-        icon: CheckCircle2,
-        text: 'Completada',
-        className: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400',
-      },
-      CANCELLED: {
-        icon: XCircle,
-        text: 'Cancelada',
-        className: 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400',
-      },
-    };
-
-    const badge = badges[status as keyof typeof badges] || badges.PENDING;
-    const Icon = badge.icon;
-
+  if (isLoading) {
     return (
-      <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${badge.className}`}>
-        <Icon className="h-4 w-4" />
-        {badge.text}
-      </span>
+      <div className="flex items-center justify-center py-24">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
     );
-  };
+  }
 
-  const getPriorityBadge = (priority: string) => {
-    const badges = {
-      LOW: { text: 'Baja', className: 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400' },
-      MEDIUM: { text: 'Media', className: 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400' },
-      HIGH: { text: 'Alta', className: 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400' },
-    };
-
-    const badge = badges[priority as keyof typeof badges] || badges.MEDIUM;
-
+  if (isError || !request) {
     return (
-      <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${badge.className}`}>
-        {badge.text}
-      </span>
-    );
-  };
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleString('es-ES', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
-
-  const handleCancelRequest = () => {
-    // TODO: Implement cancel request functionality
-    if (confirm('¿Estás seguro de que deseas cancelar esta solicitud?')) {
-      console.log('Cancelling request:', requestId);
-      // Call API to cancel request
-    }
-  };
-
-  return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-5xl mx-auto">
-        {/* Header */}
-        <div className="mb-6">
-          <Button
-            variant="ghost"
-            onClick={() => router.back()}
-            className="mb-4"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Volver
-          </Button>
-
-          <div className="flex items-start justify-between">
-            <div>
-              <h1 className="text-3xl font-bold mb-2">{request.title}</h1>
-              <p className="text-muted-foreground">Solicitud #{request.id}</p>
-            </div>
-            <div className="flex flex-col gap-2 items-end">
-              {getStatusBadge(request.status)}
-              {getPriorityBadge(request.priority)}
+      <div className="p-6 max-w-5xl mx-auto">
+        <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-6">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-destructive" />
+            <div className="flex-1">
+              <h3 className="font-semibold text-destructive">Error</h3>
+              <p className="mt-1 text-sm text-destructive/80">
+                {error?.message || 'Solicitud no encontrada'}
+              </p>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => router.push(`/${lang}/client/requests`)}
+                className="mt-4"
+              >
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Volver
+              </Button>
             </div>
           </div>
         </div>
+      </div>
+    );
+  }
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Description */}
-            <Card className="p-6">
-              <h2 className="text-xl font-semibold mb-4">Descripción</h2>
-              <p className="text-muted-foreground">{request.description}</p>
-            </Card>
+  const executionDate = new Date(request.executionDateTime);
+  // @ts-expect-error - TS2589: Prisma/tRPC type instantiation too deep, runtime types are correct
+  const templateResponses = (request.templateResponses as Record<string, unknown>) || {};
+  const firstTemplate = (request.service as any)?.formTemplates?.[0];
+  const formSettings = firstTemplate?.formSettings as FormSettings | undefined;
 
-            {/* Timeline */}
-            <Card className="p-6">
-              <h2 className="text-xl font-semibold mb-4">Historial</h2>
-              <div className="space-y-4">
-                {request.timeline.map((event, index) => (
-                  <div key={index} className="flex gap-4">
-                    <div className="relative">
-                      <div className="h-10 w-10 bg-primary/10 rounded-full flex items-center justify-center">
-                        <div className="h-3 w-3 bg-primary rounded-full" />
-                      </div>
-                      {index < request.timeline.length - 1 && (
-                        <div className="absolute top-10 left-1/2 -translate-x-1/2 w-0.5 h-full bg-border" />
-                      )}
-                    </div>
-                    <div className="flex-1 pb-6">
-                      <p className="font-medium">{event.description}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {formatDate(event.date)}
-                      </p>
-                    </div>
-                  </div>
-                ))}
+  // Build timeline events
+  const timelineEvents: TimelineEvent[] = [
+    {
+      status: RequestStatus.PENDING,
+      label: 'Pendiente',
+      date: new Date(request.createdAt),
+      isCompleted:
+        request.status !== RequestStatus.PENDING &&
+        request.status !== RequestStatus.CANCELLED,
+      isActive: request.status === RequestStatus.PENDING,
+    },
+  ];
+
+  if (
+    request.status === RequestStatus.ONGOING ||
+    request.status === RequestStatus.COMPLETED
+  ) {
+    timelineEvents.push({
+      status: RequestStatus.ONGOING,
+      label: 'En Proceso',
+      date: request.updatedAt ? new Date(request.updatedAt) : new Date(),
+      isCompleted: request.status === RequestStatus.COMPLETED,
+      isActive: request.status === RequestStatus.ONGOING,
+    });
+  }
+
+  if (request.status === RequestStatus.COMPLETED) {
+    timelineEvents.push({
+      status: RequestStatus.COMPLETED,
+      label: 'Completada',
+      date: request.completedAt ? new Date(request.completedAt) : new Date(),
+      isCompleted: true,
+      isActive: true,
+    });
+  }
+
+  if (request.status === RequestStatus.CANCELLED) {
+    timelineEvents.push({
+      status: RequestStatus.CANCELLED,
+      label: 'Cancelada',
+      date: request.updatedAt ? new Date(request.updatedAt) : new Date(),
+      isCompleted: true,
+      isActive: true,
+    });
+  }
+
+  return (
+    <div className="space-y-8 p-6 pb-20 max-w-5xl mx-auto">
+      {/* Top Header */}
+      <div>
+        <button
+          onClick={() => router.push(`/${lang}/client/requests`)}
+          className="group flex items-center gap-2 text-sm font-bold text-primary transition-all pr-4 py-2"
+        >
+          <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
+          <span className="uppercase tracking-widest text-[10px]">Volver</span>
+        </button>
+      </div>
+
+      {/* Service Title + ID */}
+      <div className="space-y-1">
+        <h1 className="text-3xl font-black text-foreground tracking-tight leading-none">
+          {request.service?.name?.toUpperCase() || 'SERVICIO'}
+        </h1>
+        <p className="text-sm font-bold text-primary tracking-widest">
+          #{request.customId || requestId.slice(-8).toUpperCase()}
+        </p>
+      </div>
+
+      <div className="grid gap-8 lg:grid-cols-3">
+        {/* Left Column - Details */}
+        <div className="space-y-8 lg:col-span-2">
+          {/* Service Details Card */}
+          <div className="bg-white border border-border shadow-sm rounded-xl p-8 space-y-8">
+            <h2 className="flex items-center gap-4 text-sm font-black uppercase tracking-widest text-foreground">
+              <Briefcase className="h-5 w-5 text-primary" />
+              Detalles del Servicio
+              <span className="flex-1 h-px bg-border" />
+            </h2>
+
+            <div className="grid gap-8 md:grid-cols-2">
+              {/* Location */}
+              <div className="flex gap-4">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center">
+                  <MapPin className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <h4 className="text-[10px] uppercase font-black text-muted-foreground/60 tracking-widest mb-1">
+                    Ubicación
+                  </h4>
+                  <p className="font-bold text-sm text-foreground">
+                    {request.location?.building || request.location?.city || 'Ubicación'}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {request.location?.street}
+                  </p>
+                </div>
               </div>
-            </Card>
+
+              {/* Service Type */}
+              <div className="flex gap-4">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center">
+                  <Wrench className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <h4 className="text-[10px] uppercase font-black text-muted-foreground/60 tracking-widest mb-1">
+                    Tipo de Servicio
+                  </h4>
+                  <p className="font-bold text-sm text-foreground">
+                    {request.service?.name || 'Servicio'}
+                  </p>
+                </div>
+              </div>
+
+              {/* Date/Time */}
+              <div className="flex gap-4">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center">
+                  <Calendar className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <h4 className="text-[10px] uppercase font-black text-muted-foreground/60 tracking-widest mb-1">
+                    Fecha y Hora
+                  </h4>
+                  <p className="font-bold text-sm text-foreground">
+                    {executionDate.toLocaleDateString('es-ES', {
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric',
+                    })}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {executionDate.toLocaleTimeString('es-ES', {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                  </p>
+                </div>
+              </div>
+
+              {/* Created Date */}
+              <div className="flex gap-4">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center">
+                  <FileText className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <h4 className="text-[10px] uppercase font-black text-muted-foreground/60 tracking-widest mb-1">
+                    Solicitado el
+                  </h4>
+                  <p className="font-bold text-sm text-foreground">
+                    {new Date(request.createdAt).toLocaleDateString('es-ES', {
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric',
+                    })}
+                  </p>
+                </div>
+              </div>
+
+              {/* Notes */}
+              {request.note && (
+                <div className="flex gap-4 col-span-2">
+                  <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center">
+                    <FileText className="h-5 w-5 text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="text-[10px] uppercase font-black text-muted-foreground/60 tracking-widest mb-1">
+                      Notas
+                    </h4>
+                    <p className="text-xs text-foreground/80 leading-relaxed">
+                      {typeof request.note === 'string'
+                        ? request.note
+                        : JSON.stringify(request.note)}
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Service Info */}
-            <Card className="p-6">
-              <h3 className="font-semibold mb-4">Información del Servicio</h3>
-              <div className="space-y-3">
-                <div>
-                  <p className="text-sm text-muted-foreground">Servicio</p>
-                  <p className="font-medium">{request.service.name}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Categoría</p>
-                  <p className="font-medium">{request.service.category}</p>
-                </div>
-              </div>
-            </Card>
+          {/* Client Form Responses Card */}
+          {formSettings && Object.keys(templateResponses).length > 0 && (
+            <div className="bg-white border border-border shadow-sm rounded-xl p-8 space-y-6">
+              <h2 className="flex items-center gap-4 text-sm font-black uppercase tracking-widest text-foreground">
+                <ClipboardList className="h-5 w-5 text-primary" />
+                Respuestas del Formulario
+                <span className="flex-1 h-px bg-border" />
+              </h2>
 
-            {/* Location Info */}
-            <Card className="p-6">
-              <h3 className="font-semibold mb-4 flex items-center gap-2">
-                <MapPin className="h-4 w-4" />
-                Ubicación
-              </h3>
-              <div>
-                <p className="font-medium">{request.location.name}</p>
-                <p className="text-sm text-muted-foreground mt-1">
-                  {request.location.address}
-                </p>
-              </div>
-            </Card>
+              <FormResponsesPreview
+                formSettings={formSettings}
+                responses={templateResponses}
+                locale={(lang as 'es' | 'en') || 'es'}
+              />
+            </div>
+          )}
+        </div>
 
-            {/* Assigned Technician */}
+        {/* Right Column - Timeline & Assigned */}
+        <div className="space-y-8">
+          {/* Status Timeline */}
+          <div className="bg-white border border-border shadow-sm rounded-xl p-6">
+            <h2 className="flex items-center gap-3 text-sm font-black uppercase tracking-widest text-foreground mb-8">
+              <CheckCircle className="h-5 w-5 text-primary" />
+              Estado de la Solicitud
+            </h2>
+            <RequestTimelineMolecule events={timelineEvents} />
+
             {request.assignedTo && (
-              <Card className="p-6">
-                <h3 className="font-semibold mb-4 flex items-center gap-2">
-                  <User className="h-4 w-4" />
-                  Técnico Asignado
+              <div className="mt-6 pt-6 border-t border-border">
+                <h3 className="text-[10px] uppercase font-black text-muted-foreground/60 tracking-widest mb-3">
+                  Empleado Asignado
                 </h3>
-                <div>
-                  <p className="font-medium">{request.assignedTo.name}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {request.assignedTo.role}
-                  </p>
-                </div>
-              </Card>
-            )}
-
-            {/* Dates */}
-            <Card className="p-6">
-              <h3 className="font-semibold mb-4 flex items-center gap-2">
-                <Calendar className="h-4 w-4" />
-                Fechas
-              </h3>
-              <div className="space-y-3">
-                <div>
-                  <p className="text-sm text-muted-foreground">Creada</p>
-                  <p className="text-sm font-medium">
-                    {formatDate(request.createdAt)}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Última actualización</p>
-                  <p className="text-sm font-medium">
-                    {formatDate(request.updatedAt)}
-                  </p>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                    <span className="font-bold text-green-700 text-xs">
+                      {request.assignedTo.firstname[0]}
+                      {request.assignedTo.lastname[0]}
+                    </span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-foreground">
+                      {request.assignedTo.firstname} {request.assignedTo.lastname}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {request.assignedTo.email}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </Card>
-
-            {/* Actions */}
-            {request.status !== 'COMPLETED' && request.status !== 'CANCELLED' && (
-              <Card className="p-6">
-                <h3 className="font-semibold mb-4">Acciones</h3>
-                <Button
-                  variant="destructive"
-                  className="w-full"
-                  onClick={handleCancelRequest}
-                >
-                  <XCircle className="h-4 w-4 mr-2" />
-                  Cancelar Solicitud
-                </Button>
-              </Card>
             )}
           </div>
         </div>

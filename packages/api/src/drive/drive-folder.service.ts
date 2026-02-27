@@ -41,9 +41,11 @@ export class DriveFolderService {
     const folder = await this.driveService.createFolder('users', rootFolderId);
     this.usersRootFolderId = folder.id;
 
-    // Persist to DB
-    await this.prisma.systemConfig.create({
-      data: { key: 'drive_users_folder_id', value: folder.id },
+    // Persist to DB (upsert to handle race conditions)
+    await this.prisma.systemConfig.upsert({
+      where: { key: 'drive_users_folder_id' },
+      update: { value: folder.id },
+      create: { key: 'drive_users_folder_id', value: folder.id },
     });
 
     this.logger.log(`Created users root folder: ${folder.id}`);
@@ -205,9 +207,11 @@ export class DriveFolderService {
     // Create the service-code subfolder
     const folder = await this.driveService.createFolder(serviceCode, requestsFolderId);
 
-    // Persist to DB
-    await this.prisma.systemConfig.create({
-      data: { key: configKey, value: folder.id },
+    // Persist to DB (upsert to handle race conditions)
+    await this.prisma.systemConfig.upsert({
+      where: { key: configKey },
+      update: { value: folder.id },
+      create: { key: configKey, value: folder.id },
     });
 
     this.logger.log(
@@ -244,9 +248,11 @@ export class DriveFolderService {
     const folder = await this.driveService.createFolder('services', rootFolderId);
     this.servicesRootFolderId = folder.id;
 
-    // Persist to DB
-    await this.prisma.systemConfig.create({
-      data: { key: 'drive_services_folder_id', value: folder.id },
+    // Persist to DB (upsert to handle race conditions)
+    await this.prisma.systemConfig.upsert({
+      where: { key: 'drive_services_folder_id' },
+      update: { value: folder.id },
+      create: { key: 'drive_services_folder_id', value: folder.id },
     });
 
     this.logger.log(`Created services root folder: ${folder.id}`);

@@ -84,6 +84,7 @@ export default function EditServicePage() {
   const [initialBasicData, setInitialBasicData] = useState<BasicServiceData | null>(null);
   const [initialFormSettingsJson, setInitialFormSettingsJson] = useState<string>('');
   const [isIconSelectorOpen, setIsIconSelectorOpen] = useState(false);
+  const [serviceDriveFolderId, setServiceDriveFolderId] = useState<string | null>(null);
 
   // tRPC queries
   const { data: service, isLoading: loadingService } = trpc.service.getServiceById.useQuery(
@@ -97,6 +98,27 @@ export default function EditServicePage() {
   const updateFormTemplateMutation = trpc.formTemplate.update.useMutation();
   const createFormTemplateMutation = trpc.formTemplate.create.useMutation();
   const deleteServiceMutation = trpc.service.deleteService.useMutation();
+  const ensureFolderMutation = trpc.service.ensureServiceDriveFolder.useMutation();
+
+  // Lazy-create Drive folder for this service
+  useEffect(() => {
+    if (!service || !(service as any).code) return;
+
+    // If service already has a driveFolderId, use it directly
+    if ((service as any).driveFolderId) {
+      setServiceDriveFolderId((service as any).driveFolderId);
+      return;
+    }
+
+    // Otherwise, create one via the API
+    ensureFolderMutation.mutate(
+      { serviceId },
+      {
+        onSuccess: (data) => setServiceDriveFolderId(data.folderId),
+      },
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [service, serviceId]);
 
   // Initialize form data when BOTH service and categories are loaded
   useEffect(() => {
@@ -499,6 +521,7 @@ export default function EditServicePage() {
             onChange={setFormSettings}
             supportedLocales={['en', 'es']}
             defaultLocale="en"
+            driveFolderId={serviceDriveFolderId ?? undefined}
           />
 
           {/* Action Bar */}

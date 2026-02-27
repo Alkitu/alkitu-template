@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/primitives/ui/button';
 import { Loader2, Filter, X, Plus, AlertCircle } from 'lucide-react';
 import { RequestStatus } from '@alkitu/shared';
+import type { RequestListItem } from '@alkitu/shared';
 import { trpc } from '@/lib/trpc';
 import {
   RequestCardMolecule,
@@ -70,7 +71,7 @@ export const RequestListOrganism: React.FC<RequestListOrganismProps> = ({
     sortOrder: 'desc',
   });
 
-  const requests = requestsData?.requests || [];
+  const requests = (requestsData?.requests ?? []) as RequestListItem[];
 
   // Handle assign request
   const handleAssign = async (request: any) => {
@@ -326,7 +327,7 @@ export const RequestListOrganism: React.FC<RequestListOrganismProps> = ({
           {requests.map((request) => (
             <RequestCardMolecule
               key={request.id}
-              request={request as any}
+              request={request}
               showViewDetails
               showCancel={userRole !== 'CLIENT' || request.status === RequestStatus.PENDING}
               showAssign={userRole !== 'CLIENT' && request.status === RequestStatus.PENDING}

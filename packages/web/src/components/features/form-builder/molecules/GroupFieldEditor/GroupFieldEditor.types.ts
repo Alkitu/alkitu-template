@@ -8,4 +8,5 @@ export interface GroupFieldEditorProps {
   defaultLocale?: SupportedLocale;
   editingLocale?: SupportedLocale;
   onLocaleChange?: (locale: SupportedLocale) => void;
+  driveFolderId?: string;
 }

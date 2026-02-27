@@ -32,6 +32,7 @@ export function ImageSelectMultiFieldEditor({
   onChange,
   editingLocale = 'en',
   defaultLocale = 'en',
+  driveFolderId,
 }: ImageSelectMultiFieldEditorProps) {
   const isDefaultLocale = editingLocale === defaultLocale;
 
@@ -220,6 +221,7 @@ export function ImageSelectMultiFieldEditor({
         translations={optionTranslations}
         onTranslationChange={handleOptionTranslationChange}
         enableImageUpload
+        driveFolderId={driveFolderId}
       />
 
       {/* Show Description Toggle */}

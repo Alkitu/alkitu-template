@@ -163,6 +163,7 @@ export function FormBuilder({
   onChange,
   supportedLocales = ['en'],
   defaultLocale = 'en',
+  driveFolderId,
 }: FormBuilderProps) {
   // Merge provided settings with defaults
   const formSettings = React.useMemo(
@@ -557,6 +558,7 @@ export function FormBuilder({
                         }
                         editingLocale={editingLocale}
                         onLocaleChange={setEditingLocale}
+                        driveFolderId={driveFolderId}
                       />
                     ))}
                   </div>
@@ -646,6 +648,7 @@ interface SortableFieldItemProps {
   defaultLocale: SupportedLocale;
   editingLocale: SupportedLocale;
   onLocaleChange: (locale: SupportedLocale) => void;
+  driveFolderId?: string;
 }
 
 function SortableFieldItem({
@@ -660,6 +663,7 @@ function SortableFieldItem({
   defaultLocale,
   editingLocale,
   onLocaleChange,
+  driveFolderId,
 }: SortableFieldItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: field.id });
@@ -753,6 +757,7 @@ function SortableFieldItem({
             defaultLocale={defaultLocale}
             editingLocale={editingLocale}
             onLocaleChange={onLocaleChange}
+            driveFolderId={driveFolderId}
           />
         </div>
       )}

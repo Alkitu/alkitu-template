@@ -58,6 +58,7 @@ export function GroupFieldEditor({
   defaultLocale = 'en',
   editingLocale = 'en',
   onLocaleChange,
+  driveFolderId,
 }: GroupFieldEditorProps) {
   const [collapsedFields, setCollapsedFields] = React.useState<Set<string>>(
     new Set()
@@ -293,6 +294,7 @@ export function GroupFieldEditor({
                       defaultLocale={defaultLocale}
                       editingLocale={editingLocale}
                       onLocaleChange={onLocaleChange}
+                      driveFolderId={driveFolderId}
                     />
                   </div>
                 )}

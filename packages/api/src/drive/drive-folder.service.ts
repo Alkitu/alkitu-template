@@ -6,6 +6,7 @@ import { DriveService } from './drive.service';
 export class DriveFolderService {
   private readonly logger = new Logger(DriveFolderService.name);
   private usersRootFolderId: string | null = null;
+  private servicesRootFolderId: string | null = null;
 
   constructor(
     private readonly prisma: PrismaService,
@@ -123,6 +124,9 @@ export class DriveFolderService {
 
   /**
    * Ensure a request has its Drive folder:
+   *   users/{email}/requests/{serviceCode}/{customId}/
+   *
+   * If the service has no code, falls back to:
    *   users/{email}/requests/{customId}/
    *
    * Idempotent: if folderId already exists on the request, returns without creating.
@@ -135,6 +139,7 @@ export class DriveFolderService {
         customId: true,
         folderId: true,
         userId: true,
+        service: { select: { code: true } },
       },
     });
 
@@ -150,9 +155,21 @@ export class DriveFolderService {
     // Ensure user folders exist first
     const { requestsFolderId } = await this.ensureUserFolders(request.userId);
 
+    // Determine the parent folder: if service has a code, create/get a service subfolder
+    let parentFolderId = requestsFolderId;
+    const serviceCode = request.service?.code;
+
+    if (serviceCode) {
+      parentFolderId = await this.ensureServiceCodeFolder(
+        request.userId,
+        serviceCode,
+        requestsFolderId,
+      );
+    }
+
     // Use customId as folder name, or fallback to request ID
     const folderName = request.customId || request.id;
-    const folder = await this.driveService.createFolder(folderName, requestsFolderId);
+    const folder = await this.driveService.createFolder(folderName, parentFolderId);
 
     // Update request with folder ID
     await this.prisma.request.update({
@@ -161,6 +178,121 @@ export class DriveFolderService {
     });
 
     this.logger.log(`Created folder for request ${folderName}: ${folder.id}`);
+    return folder.id;
+  }
+
+  /**
+   * Get or create a service-code subfolder inside a user's requests/ folder:
+   *   users/{email}/requests/{serviceCode}/
+   *
+   * Persists the folder ID in SystemConfig for idempotency.
+   */
+  private async ensureServiceCodeFolder(
+    userId: string,
+    serviceCode: string,
+    requestsFolderId: string,
+  ): Promise<string> {
+    const configKey = `drive_user_svc_${userId}_${serviceCode}`;
+
+    // Check SystemConfig DB
+    const config = await this.prisma.systemConfig.findUnique({
+      where: { key: configKey },
+    });
+    if (config) {
+      return config.value;
+    }
+
+    // Create the service-code subfolder
+    const folder = await this.driveService.createFolder(serviceCode, requestsFolderId);
+
+    // Persist to DB
+    await this.prisma.systemConfig.create({
+      data: { key: configKey, value: folder.id },
+    });
+
+    this.logger.log(
+      `Created service subfolder ${serviceCode} for user ${userId}: ${folder.id}`,
+    );
+    return folder.id;
+  }
+
+  /**
+   * Get or create the root "services/" folder inside GOOGLE_DRIVE_ROOT_FOLDER_ID.
+   * Caches the result in memory and persists to SystemConfig.
+   */
+  async getServicesRootFolderId(): Promise<string> {
+    // 1. In-memory cache
+    if (this.servicesRootFolderId) return this.servicesRootFolderId;
+
+    // 2. Check SystemConfig DB
+    const config = await this.prisma.systemConfig.findUnique({
+      where: { key: 'drive_services_folder_id' },
+    });
+    if (config) {
+      this.servicesRootFolderId = config.value;
+      return config.value;
+    }
+
+    // 3. Create "services" folder in Drive
+    const rootFolderId = process.env.GOOGLE_DRIVE_ROOT_FOLDER_ID;
+    if (!rootFolderId) {
+      throw new Error(
+        'GOOGLE_DRIVE_ROOT_FOLDER_ID environment variable is not set',
+      );
+    }
+
+    const folder = await this.driveService.createFolder('services', rootFolderId);
+    this.servicesRootFolderId = folder.id;
+
+    // Persist to DB
+    await this.prisma.systemConfig.create({
+      data: { key: 'drive_services_folder_id', value: folder.id },
+    });
+
+    this.logger.log(`Created services root folder: ${folder.id}`);
+    return folder.id;
+  }
+
+  /**
+   * Ensure a service has its Drive folder:
+   *   services/{code}/
+   *
+   * Idempotent: if driveFolderId already exists on the service, returns without creating.
+   */
+  async ensureServiceFolder(serviceId: string): Promise<string> {
+    const service = await this.prisma.service.findUnique({
+      where: { id: serviceId },
+      select: {
+        id: true,
+        code: true,
+        driveFolderId: true,
+      },
+    });
+
+    if (!service) {
+      throw new Error(`Service ${serviceId} not found`);
+    }
+
+    // Already has a folder
+    if (service.driveFolderId) {
+      return service.driveFolderId;
+    }
+
+    // Need a code to name the folder
+    if (!service.code) {
+      throw new Error(`Service ${serviceId} has no code — cannot create Drive folder`);
+    }
+
+    const servicesRoot = await this.getServicesRootFolderId();
+    const folder = await this.driveService.createFolder(service.code, servicesRoot);
+
+    // Update service with folder ID
+    await this.prisma.service.update({
+      where: { id: serviceId },
+      data: { driveFolderId: folder.id },
+    });
+
+    this.logger.log(`Created folder for service ${service.code}: ${folder.id}`);
     return folder.id;
   }
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import type { DriveFile } from '@alkitu/shared';
 import { useRouter, usePathname } from 'next/navigation';
 import { useDraggable, useDroppable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
@@ -47,6 +48,10 @@ import type { FileItemBaseProps } from '../types';
 interface FileListItemProps extends FileItemBaseProps {
   isDragTarget?: boolean;
   compactFolder?: boolean;
+  /** When true, clicking a file calls onSelect instead of navigating */
+  selectable?: boolean;
+  /** Callback when a file is selected in picker mode */
+  onSelect?: (file: DriveFile) => void;
 }
 
 /**
@@ -65,6 +70,8 @@ export function FileListItem({
   onDelete,
   isDragTarget = false,
   compactFolder = false,
+  selectable = false,
+  onSelect,
 }: FileListItemProps) {
   const router = useRouter();
   const currentPathname = usePathname();
@@ -149,6 +156,8 @@ export function FileListItem({
   const handleClick = () => {
     if (isFolder) {
       onFolderClick(file.id, file.name);
+    } else if (selectable && onSelect) {
+      onSelect(file);
     } else {
       // Navigate to in-app preview page (preserves locale prefix)
       const basePath = currentPathname.split('?')[0];
@@ -247,6 +256,55 @@ export function FileListItem({
     </>
   );
 
+  // ─── Selectable mode: simplified rendering without context menu/dialogs ───
+  if (selectable) {
+    const selectableHover = 'hover:ring-2 hover:ring-primary/50 hover:border-primary';
+
+    if (viewMode === 'grid') {
+      if (isFolder && compactFolder) {
+        return (
+          <div className={`group flex items-center gap-3 rounded-xl border bg-card px-4 py-3 transition-colors hover:bg-accent/50 cursor-pointer ${selectableHover}`}>
+            <button onClick={handleClick} className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer text-left outline-hidden" title={file.name}>
+              <Icon className={`h-5 w-5 shrink-0 ${iconColor}`} />
+              <span className="text-sm font-medium truncate flex-1">{file.name}</span>
+            </button>
+          </div>
+        );
+      }
+
+      return (
+        <div className={`group flex flex-col rounded-xl border bg-card overflow-hidden transition-all hover:bg-accent/50 hover:border-accent cursor-pointer h-48 sm:h-56 ${selectableHover}`}>
+          <div className="flex items-center gap-2 px-3 py-2 w-full shrink-0 border-b bg-card/50">
+            <Icon className={`h-5 w-5 shrink-0 ${iconColor}`} />
+            <button onClick={handleClick} className="text-sm font-medium truncate flex-1 text-left outline-hidden" title={file.name}>
+              {file.name}
+            </button>
+          </div>
+          <button onClick={handleClick} className="flex-1 w-full flex items-center justify-center p-2 relative overflow-hidden bg-muted/20 hover:bg-muted/40 transition-colors outline-hidden" title={file.name}>
+            {!isFolder && !thumbnailError ? (
+              <img src={getThumbnailUrl(file.id)} alt={file.name} className="max-h-full max-w-full object-contain rounded-sm drop-shadow-sm" onError={() => setThumbnailError(true)} />
+            ) : (
+              <Icon className={`h-16 w-16 sm:h-20 sm:w-20 ${iconColor} opacity-70`} />
+            )}
+          </button>
+        </div>
+      );
+    }
+
+    // List view — selectable
+    return (
+      <div className={`group flex items-center gap-3 rounded-md border bg-card px-4 py-3 transition-colors hover:bg-accent/50 cursor-pointer ${selectableHover}`}>
+        <button onClick={handleClick} className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer text-left">
+          <Icon className={`h-5 w-5 shrink-0 ${iconColor}`} />
+          <span className="text-sm font-medium truncate flex-1">{file.name}</span>
+          <span className="text-xs text-muted-foreground shrink-0 hidden sm:block">{formatDate(file.modifiedTime)}</span>
+          <span className="text-xs text-muted-foreground shrink-0 w-20 text-right hidden md:block">{isFolder ? '-' : formatFileSize(file.size)}</span>
+        </button>
+      </div>
+    );
+  }
+
+  // ─── Normal mode: full context menu + drag-and-drop ───
   if (viewMode === 'grid') {
     if (isFolder && compactFolder) {
       return (

@@ -61,7 +61,7 @@ export class TrpcRouter {
       theme: createThemeRouter(this.themeService), // Incluir el router de temas
       emailTemplate: createEmailTemplateRouter(this.emailTemplateService), // ALI-121: Router de email templates
       request: createRequestRouter(this.prisma, this.notificationService, this.emailTemplateService, this.counterService, this.driveFolderService, this.driveService), // ALI-119: Router de solicitudes (requests)
-      service: createServiceRouter(this.prisma), // Service catalog router
+      service: createServiceRouter(this.prisma, this.driveFolderService), // Service catalog router
       category: createCategoryRouter(this.prisma), // Category catalog router with stats
       location: createLocationRouter(this.prisma), // Work location router
       featureFlags: createFeatureFlagsRouter(this.featureFlagsService), // Feature flags router

@@ -63,6 +63,11 @@ export interface FieldEditorProps {
    * Callback when field type changes
    */
   onTypeChange?: (newType: FormField['type']) => void;
+
+  /**
+   * Google Drive folder ID for uploading service images
+   */
+  driveFolderId?: string;
 }
 
 /**

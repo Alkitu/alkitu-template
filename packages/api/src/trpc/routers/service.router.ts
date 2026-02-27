@@ -13,6 +13,8 @@ import {
   deleteServiceSchema,
   getServiceRequestStatsSchema,
 } from '../schemas/service.schemas';
+import { z } from 'zod';
+import type { DriveFolderService } from '../../drive/drive-folder.service';
 
 /**
  * Service tRPC Router
@@ -21,7 +23,7 @@ import {
  * Security:
  * - All endpoints require authentication
  */
-export function createServiceRouter(prisma: PrismaClient) {
+export function createServiceRouter(prisma: PrismaClient, driveFolderService: DriveFolderService) {
   return t.router({
     /**
      * Get all active services with pagination
@@ -425,6 +427,18 @@ export function createServiceRouter(prisma: PrismaClient) {
         } catch (error) {
           handlePrismaError(error, 'fetch service request stats');
         }
+      }),
+
+    /**
+     * Ensure a service has its Drive folder (services/{code}/)
+     * Creates the folder lazily if it doesn't exist.
+     * Security: Requires admin role
+     */
+    ensureServiceDriveFolder: adminProcedure
+      .input(z.object({ serviceId: z.string() }))
+      .mutation(async ({ input }) => {
+        const folderId = await driveFolderService.ensureServiceFolder(input.serviceId);
+        return { folderId };
       }),
   });
 }

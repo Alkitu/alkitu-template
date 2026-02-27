@@ -44,6 +44,15 @@ export function FormPreview({
   // File upload state: maps fieldId → File[]
   const [filesByField, setFilesByField] = React.useState<Record<string, File[]>>({});
 
+  // Notify parent of file changes after state settles (avoids setState-during-render)
+  const filesByFieldRef = React.useRef(filesByField);
+  React.useEffect(() => {
+    if (filesByFieldRef.current !== filesByField) {
+      filesByFieldRef.current = filesByField;
+      onFilesChanged?.(filesByField);
+    }
+  }, [filesByField, onFilesChanged]);
+
   const { register, control, watch, getValues, handleSubmit } = useForm({
     mode: 'onChange',
   });
@@ -457,7 +466,6 @@ export function FormPreview({
               setFilesByField((prev) => {
                 const next = { ...prev, [fieldId]: newFiles };
                 if (!next[fieldId].length) delete next[fieldId];
-                onFilesChanged?.(next);
                 return next;
               });
             }}

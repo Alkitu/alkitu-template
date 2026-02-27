@@ -653,6 +653,66 @@
       }
     }
   },
+  "client": {
+    "requests": {
+      "create": {
+        "title": "New Service Request",
+        "back": "Back",
+        "steps": {
+          "location": "Location",
+          "service": "Service",
+          "details": "Details",
+          "dateTime": "Date/Time"
+        },
+        "step1": {
+          "title": "Select Location",
+          "description": "Choose where the service will be performed",
+          "next": "Next: Select Service",
+          "required": "Please select a location",
+          "noLocations": "You have no registered locations",
+          "addLocation": "Add New Location",
+          "addLocationSuccess": "Location created successfully"
+        },
+        "step2": {
+          "title": "Select Service",
+          "description": "Choose the service to request",
+          "searchPlaceholder": "Search services...",
+          "noResults": "No services match your search",
+          "empty": "No services available",
+          "selected": "Selected service:",
+          "fieldsInForm": "fields in form",
+          "next": "Next: Service Details",
+          "required": "Please select a service"
+        },
+        "step3": {
+          "title": "Service Details",
+          "description": "Complete the required information for",
+          "noCustomFields": "This service has no custom fields configured.",
+          "nextDateTime": "Next: Date and Time",
+          "submitText": "Next: Date and Time",
+          "uploadingFiles": "Uploading attached files...",
+          "uploadError": "Some files could not be uploaded"
+        },
+        "step4": {
+          "title": "Execution Date and Time",
+          "description": "Schedule when the service should be performed",
+          "summary": "Summary:",
+          "fieldsCompleted": "Fields completed:",
+          "dateLabel": "Execution Date *",
+          "timeLabel": "Execution Time *",
+          "dateTimeRequired": "Please select execution date and time",
+          "futureRequired": "Execution date must be in the future",
+          "creating": "Creating...",
+          "submit": "Create Request"
+        },
+        "success": "Request created successfully",
+        "labels": {
+          "location": "Location:",
+          "service": "Service:"
+        }
+      }
+    }
+  },
   "navigation": {
     "platform": "Platform",
     "user": {
@@ -1642,6 +1702,30 @@
       "uploadedSuccessfully": "Uploaded successfully",
       "tooLargeServer": "File too large. The server has a size limit.",
       "timeoutError": "Timeout uploading large file. Try again."
+    }
+  },
+  "imagePicker": {
+    "title": "Select Image",
+    "description": "Upload, paste a URL, or browse Drive",
+    "tabs": {
+      "upload": "Upload",
+      "url": "URL",
+      "drive": "Drive"
+    },
+    "upload": {
+      "dropzone": "Drop image here or click to browse",
+      "hint": "JPG, PNG, WebP, SVG, GIF",
+      "uploading": "Uploading...",
+      "compressing": "Compressing..."
+    },
+    "url": {
+      "placeholder": "https://example.com/image.png",
+      "confirm": "Use this image",
+      "loadError": "Could not load image"
+    },
+    "drive": {
+      "notConfigured": "Drive not configured",
+      "selectHint": "Click an image to select it"
     }
   }
 }

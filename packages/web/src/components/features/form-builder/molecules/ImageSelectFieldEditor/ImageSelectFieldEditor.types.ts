@@ -8,4 +8,5 @@ export interface ImageSelectFieldEditorProps {
   supportedLocales?: SupportedLocale[];
   defaultLocale?: SupportedLocale;
   editingLocale?: SupportedLocale;
+  driveFolderId?: string;
 }

@@ -77,6 +77,7 @@ export function FieldEditor({
   onLocaleChange,
   showTypeSelector = false,
   onTypeChange,
+  driveFolderId,
 }: FieldEditorProps) {
   // ============================================================================
   // LOCALE STATE MANAGEMENT
@@ -402,6 +403,7 @@ export function FieldEditor({
       supportedLocales,
       defaultLocale,
       editingLocale,
+      driveFolderId,
     };
 
     switch (field.type) {

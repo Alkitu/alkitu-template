@@ -5,8 +5,9 @@ import { FormFieldOption, SupportedLocale } from '@/components/features/form-bui
 import { Label } from '@/components/primitives/ui/label';
 import { Input } from '@/components/primitives/ui/input';
 import { Button } from '@/components/primitives/ui/button';
-import { Plus, Trash2, Copy } from 'lucide-react';
+import { Plus, Trash2, Copy, Upload } from 'lucide-react';
 import { generateOptionId, duplicateOption } from '@/components/features/form-builder/lib/field-helpers';
+import { ImagePickerModal } from '../ImagePickerModal';
 
 interface OptionsEditorProps {
   options: FormFieldOption[];
@@ -16,6 +17,10 @@ interface OptionsEditorProps {
   translations?: Record<string, string>;
   onTranslationChange?: (optionId: string, label: string) => void;
   enableImageUpload?: boolean;
+  /** Upload handler for option images. Returns the public URL. */
+  onImageUpload?: (file: File) => Promise<string>;
+  /** Google Drive folder ID for uploading images */
+  driveFolderId?: string;
 }
 
 /**
@@ -44,7 +49,11 @@ export function OptionsEditor({
   translations = {},
   onTranslationChange,
   enableImageUpload = false,
+  onImageUpload,
+  driveFolderId,
 }: OptionsEditorProps) {
+  const [pickerOpenForIndex, setPickerOpenForIndex] = React.useState<number | null>(null);
+
   const isDefaultLocale = editingLocale === defaultLocale;
   const [duplicateValues, setDuplicateValues] = React.useState<Set<string>>(new Set());
 
@@ -162,9 +171,14 @@ export function OptionsEditor({
 
               return (
                 <div key={option.id} className="flex items-start gap-2">
-                  {/* Image thumbnail */}
+                  {/* Image thumbnail — click to open picker */}
                   {enableImageUpload && isDefaultLocale && (
-                    <div className="w-10 h-10 rounded border bg-muted flex items-center justify-center overflow-hidden flex-shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => setPickerOpenForIndex(index)}
+                      className="w-10 h-10 rounded border bg-muted flex items-center justify-center overflow-hidden flex-shrink-0 hover:border-primary/50 transition-colors cursor-pointer"
+                      title="Select image"
+                    >
                       {option.images?.[0]?.url ? (
                         <img
                           src={option.images[0].url}
@@ -172,9 +186,9 @@ export function OptionsEditor({
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <span className="text-xs text-muted-foreground">IMG</span>
+                        <Upload className="h-3.5 w-3.5 text-muted-foreground" />
                       )}
-                    </div>
+                    </button>
                   )}
                   {/* Inputs */}
                   <div className="flex-1 grid grid-cols-2 gap-2">
@@ -244,6 +258,30 @@ export function OptionsEditor({
             </p>
           )}
         </div>
+      )}
+
+      {/* Image Picker Modal — shared across all options */}
+      {enableImageUpload && (
+        <ImagePickerModal
+          open={pickerOpenForIndex !== null}
+          onOpenChange={(open) => {
+            if (!open) setPickerOpenForIndex(null);
+          }}
+          onImageSelected={(url) => {
+            if (pickerOpenForIndex !== null) {
+              const opt = options[pickerOpenForIndex];
+              const newOptions = [...options];
+              newOptions[pickerOpenForIndex] = {
+                ...newOptions[pickerOpenForIndex],
+                images: [{ id: `img-${opt.id}`, url }],
+              };
+              onChange(newOptions);
+              setPickerOpenForIndex(null);
+            }
+          }}
+          onImageUpload={onImageUpload}
+          driveFolderId={driveFolderId}
+        />
       )}
     </div>
   );

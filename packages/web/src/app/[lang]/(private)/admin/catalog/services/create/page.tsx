@@ -73,6 +73,7 @@ export default function CreateServicePage() {
   const { data: categories, isLoading: loadingCategories } = trpc.category.getAllCategories.useQuery();
   const createFormTemplateMutation = trpc.formTemplate.create.useMutation();
   const createServiceMutation = trpc.service.createService.useMutation();
+  const ensureFolderMutation = trpc.service.ensureServiceDriveFolder.useMutation();
 
   const handleBasicNext = (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,7 +107,7 @@ export default function CreateServicePage() {
       });
 
       // 2. Create service linked to the form template
-      await createServiceMutation.mutateAsync({
+      const createdService = await createServiceMutation.mutateAsync({
         name: basicData.name,
         categoryId: basicData.categoryId,
         formTemplateIds: [template.id],
@@ -115,6 +116,11 @@ export default function CreateServicePage() {
         iconColor: basicData.iconColor || '#000000',
         code: basicData.code || undefined,
       });
+
+      // 3. Fire-and-forget: create Drive folder for new service
+      if (createdService?.id && basicData.code) {
+        ensureFolderMutation.mutate({ serviceId: createdService.id });
+      }
 
       toast.success(t('admin.catalog.services.create.success'));
       router.push(`/${lang}/admin/catalog/services`);

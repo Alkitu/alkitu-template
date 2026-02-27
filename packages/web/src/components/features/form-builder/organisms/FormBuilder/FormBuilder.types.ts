@@ -30,6 +30,12 @@ export interface FormBuilderProps {
    * Default locale for the form (default: 'en')
    */
   defaultLocale?: SupportedLocale;
+
+  /**
+   * Google Drive folder ID for uploading service images.
+   * When provided, ImagePickerModal uploads to this folder instead of the root.
+   */
+  driveFolderId?: string;
 }
 
 /**

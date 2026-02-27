@@ -14,6 +14,10 @@ interface FileGridProps extends FileActionHandlers {
   onFolderClick: (folderId: string, folderName: string) => void;
   dragOverFolderId?: string | null;
   foldersOnTop?: boolean;
+  /** When true, clicking a file calls onFileSelect instead of navigating */
+  selectable?: boolean;
+  /** Callback when a file is selected in picker mode */
+  onFileSelect?: (file: DriveFile) => void;
 }
 
 /**
@@ -31,6 +35,8 @@ export function FileGrid({
   onDelete,
   dragOverFolderId,
   foldersOnTop = true,
+  selectable = false,
+  onFileSelect,
 }: FileGridProps) {
   const t = useTranslations('media');
 
@@ -88,6 +94,8 @@ export function FileGrid({
               onRename={onRename}
               onDelete={onDelete}
               isDragTarget={file.id === dragOverFolderId}
+              selectable={selectable}
+              onSelect={onFileSelect}
             />
           ))}
         </div>
@@ -119,6 +127,8 @@ export function FileGrid({
                   onDelete={onDelete}
                   isDragTarget={file.id === dragOverFolderId}
                   compactFolder={true}
+                  selectable={selectable}
+                  onSelect={onFileSelect}
                 />
               ))}
             </div>
@@ -140,6 +150,8 @@ export function FileGrid({
                   onRename={onRename}
                   onDelete={onDelete}
                   isDragTarget={false}
+                  selectable={selectable}
+                  onSelect={onFileSelect}
                 />
               ))}
             </div>

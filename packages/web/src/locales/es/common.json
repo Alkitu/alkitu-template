@@ -570,6 +570,66 @@
       }
     }
   },
+  "client": {
+    "requests": {
+      "create": {
+        "title": "Nueva Solicitud de Servicio",
+        "back": "Volver",
+        "steps": {
+          "location": "Ubicación",
+          "service": "Servicio",
+          "details": "Detalles",
+          "dateTime": "Fecha/Hora"
+        },
+        "step1": {
+          "title": "Seleccionar Ubicación",
+          "description": "Elige dónde se realizará el servicio",
+          "next": "Siguiente: Seleccionar Servicio",
+          "required": "Por favor seleccione una ubicación",
+          "noLocations": "No tienes ubicaciones registradas",
+          "addLocation": "Agregar Nueva Ubicación",
+          "addLocationSuccess": "Ubicación creada exitosamente"
+        },
+        "step2": {
+          "title": "Seleccionar Servicio",
+          "description": "Elige el servicio a solicitar",
+          "searchPlaceholder": "Buscar servicios...",
+          "noResults": "Ningún servicio coincide con tu búsqueda",
+          "empty": "No hay servicios disponibles",
+          "selected": "Servicio seleccionado:",
+          "fieldsInForm": "campos en el formulario",
+          "next": "Siguiente: Detalles del Servicio",
+          "required": "Por favor seleccione un servicio"
+        },
+        "step3": {
+          "title": "Detalles del Servicio",
+          "description": "Complete la información requerida para",
+          "noCustomFields": "Este servicio no tiene campos personalizados configurados.",
+          "nextDateTime": "Siguiente: Fecha y Hora",
+          "submitText": "Siguiente: Fecha y Hora",
+          "uploadingFiles": "Subiendo archivos adjuntos...",
+          "uploadError": "Algunos archivos no se pudieron subir"
+        },
+        "step4": {
+          "title": "Fecha y Hora de Ejecución",
+          "description": "Programar cuándo se debe realizar el servicio",
+          "summary": "Resumen:",
+          "fieldsCompleted": "Campos completados:",
+          "dateLabel": "Fecha de Ejecución *",
+          "timeLabel": "Hora de Ejecución *",
+          "dateTimeRequired": "Por favor seleccione fecha y hora de ejecución",
+          "futureRequired": "La fecha de ejecución debe ser futura",
+          "creating": "Creando...",
+          "submit": "Crear Solicitud"
+        },
+        "success": "Solicitud creada exitosamente",
+        "labels": {
+          "location": "Ubicación:",
+          "service": "Servicio:"
+        }
+      }
+    }
+  },
   "dashboard": {
     "nav": {
       "overview": "Dashboard",
@@ -1642,6 +1702,30 @@
       "uploadedSuccessfully": "Subido exitosamente",
       "tooLargeServer": "Archivo demasiado grande. El servidor tiene un límite de tamaño.",
       "timeoutError": "Timeout al subir archivo grande. Intenta de nuevo."
+    }
+  },
+  "imagePicker": {
+    "title": "Seleccionar Imagen",
+    "description": "Sube, pega una URL o navega en Drive",
+    "tabs": {
+      "upload": "Subir",
+      "url": "URL",
+      "drive": "Drive"
+    },
+    "upload": {
+      "dropzone": "Arrastra una imagen o haz clic para buscar",
+      "hint": "JPG, PNG, WebP, SVG, GIF",
+      "uploading": "Subiendo...",
+      "compressing": "Comprimiendo..."
+    },
+    "url": {
+      "placeholder": "https://ejemplo.com/imagen.png",
+      "confirm": "Usar esta imagen",
+      "loadError": "No se pudo cargar la imagen"
+    },
+    "drive": {
+      "notConfigured": "Drive no configurado",
+      "selectHint": "Haz clic en una imagen para seleccionarla"
     }
   }
 }

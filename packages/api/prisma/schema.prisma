@@ -675,6 +675,7 @@ model Service {
   thumbnail       String?
   iconColor       String?   @default("#000000") // Hex color for service icon
   code            String?  // "LIMP", "ELEC" — 3-6 chars uppercase, used for customId generation. Uniqueness enforced at app level (sparse index)
+  driveFolderId   String?  // Google Drive folder ID for this service's assets (e.g., services/LIMP/)
 
   // FormTemplate relation (replaces old requestTemplate JSON field)
   formTemplateIds String[]       @db.ObjectId
@@ -770,6 +771,10 @@ model Request {
   @@index([status])
   @@index([executionDateTime])
   @@index([createdAt])
+  @@index([userId, status])
+  @@index([status, createdAt])
+  @@index([serviceId, status])
+  @@index([deletedAt])
   @@map("requests")
 }
 

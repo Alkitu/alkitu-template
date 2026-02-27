@@ -4,7 +4,9 @@ import * as React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/primitives/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/primitives/ui/select';
 import { Button } from '@/components/primitives/ui/button';
-import { Globe, RefreshCw, Upload, Image as ImageIcon, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Globe, RefreshCw, Image as ImageIcon, ChevronLeft, ChevronRight } from 'lucide-react';
+import { FormFileDropZone } from '../../molecules/FormFileDropZone';
+import { GOOGLE_DRIVE_ALL_TYPES, FORM_UPLOAD_MAX_TOTAL_MB } from '@/lib/utils/file-types';
 import type { FormPreviewProps } from './FormPreview.types';
 import type { SupportedLocale } from '../../types';
 import { useForm, Controller } from 'react-hook-form';
@@ -31,12 +33,16 @@ export function FormPreview({
   onCancel,
   submitButtonText: submitButtonTextProp,
   hideHeader = false,
+  onFilesChanged,
 }: FormPreviewProps) {
   const [previewLocale, setPreviewLocale] = React.useState<SupportedLocale>(defaultLocale);
   const [key, setKey] = React.useState(0);
   const [currentStep, setCurrentStep] = React.useState(0);
 
   const isInteractive = !!onSubmit;
+
+  // File upload state: maps fieldId → File[]
+  const [filesByField, setFilesByField] = React.useState<Record<string, File[]>>({});
 
   const { register, control, watch, getValues, handleSubmit } = useForm({
     mode: 'onChange',
@@ -441,36 +447,28 @@ export function FormPreview({
 
       case 'fileUpload': {
         const fileOpts = field.fileUploadOptions || {};
-        const displayStyle = fileOpts.displayStyle || 'dropzone';
-        return displayStyle === 'dropzone' ? (
-          <div className="border-2 border-dashed rounded-lg p-8 text-center hover:border-primary/50 transition-colors cursor-pointer">
-            <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
-            <p className="text-sm text-muted-foreground">
-              {placeholder || 'Drop files here or click to upload'}
-            </p>
-            {fileOpts.maxSizeMB && (
-              <p className="text-xs text-muted-foreground mt-1">
-                Max size: {fileOpts.maxSizeMB}MB
-              </p>
-            )}
-            {fileOpts.accept && fileOpts.accept.length > 0 && (
-              <p className="text-xs text-muted-foreground mt-1">
-                Accepted: {fileOpts.accept.join(', ')}
-              </p>
-            )}
-          </div>
-        ) : (
-          <div>
-            <Button type="button" variant="outline" disabled>
-              <Upload className="h-4 w-4 mr-2" />
-              {placeholder || 'Choose file'}
-            </Button>
-            {fileOpts.maxSizeMB && (
-              <p className="text-xs text-muted-foreground mt-1">
-                Max size: {fileOpts.maxSizeMB}MB
-              </p>
-            )}
-          </div>
+        const fieldId: string = field.id;
+        const selectedFiles = filesByField[fieldId] || [];
+        return (
+          <FormFileDropZone
+            fieldId={fieldId}
+            files={selectedFiles}
+            onFilesChanged={(newFiles) => {
+              setFilesByField((prev) => {
+                const next = { ...prev, [fieldId]: newFiles };
+                if (!next[fieldId].length) delete next[fieldId];
+                onFilesChanged?.(next);
+                return next;
+              });
+            }}
+            maxFiles={fileOpts.maxFiles || 10}
+            maxSizeMB={fileOpts.maxSizeMB}
+            maxTotalMB={FORM_UPLOAD_MAX_TOTAL_MB}
+            accept={fileOpts.accept?.length ? fileOpts.accept : GOOGLE_DRIVE_ALL_TYPES}
+            displayStyle={fileOpts.displayStyle || 'dropzone'}
+            placeholder={placeholder}
+            disabled={!isInteractive}
+          />
         );
       }
 
@@ -579,10 +577,16 @@ export function FormPreview({
                 </h4>
                 {groupFieldsList.map((field: any) => {
                   const fieldLabel = getLocalizedFieldValue(field, 'label', previewLocale);
-                  const fieldValue = getValues(field.id);
-                  const displayValue = Array.isArray(fieldValue)
-                    ? fieldValue.join(', ')
-                    : fieldValue || '-';
+                  let displayValue: string;
+                  if (field.type === 'fileUpload') {
+                    const files = filesByField[field.id] || [];
+                    displayValue = files.length > 0 ? files.map(f => f.name).join(', ') : '-';
+                  } else {
+                    const fieldValue = getValues(field.id);
+                    displayValue = Array.isArray(fieldValue)
+                      ? fieldValue.join(', ')
+                      : fieldValue || '-';
+                  }
 
                   return (
                     <div key={field.id} className="flex justify-between py-1 border-b border-dashed last:border-0">
@@ -675,7 +679,19 @@ export function FormPreview({
   const formContent = (
     <form
       className="space-y-6"
-      onSubmit={isInteractive ? handleSubmit((data) => onSubmit!(data)) : (e) => e.preventDefault()}
+      onSubmit={isInteractive ? handleSubmit((data) => {
+        // Include file metadata in the form data
+        const filesMeta: Record<string, Array<{ name: string; size: number; type: string }>> = {};
+        for (const [fieldId, files] of Object.entries(filesByField)) {
+          if (files.length > 0) {
+            filesMeta[fieldId] = files.map(f => ({ name: f.name, size: f.size, type: f.type }));
+          }
+        }
+        if (Object.keys(filesMeta).length > 0) {
+          data.__filesMeta__ = filesMeta;
+        }
+        onSubmit!(data);
+      }) : (e) => e.preventDefault()}
     >
       {/* Empty State */}
       {formSettings.fields.length === 0 && (

@@ -1,537 +1,567 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Card } from '@/components/primitives/Card';
-import { Button } from '@/components/primitives/Button';
+import React, { useState, useMemo } from 'react';
+import { useRouter, useParams } from 'next/navigation';
+import { trpc } from '@/lib/trpc';
+import { ArrowLeft, ArrowRight, Save, Briefcase, MapPin, Calendar, Plus } from 'lucide-react';
+import { toast } from 'sonner';
+import { handleApiError } from '@/lib/trpc-error-handler';
+import { useTranslations } from '@/context/TranslationsContext';
+import { compressToWebP } from '@/lib/utils/image-compression';
 import {
-  ArrowLeft,
-  ArrowRight,
-  Check,
-  ClipboardList,
-  MapPin,
-  FileText,
-  Search,
-} from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import type { ServiceListItem } from '@alkitu/shared/types/service';
-import type { WorkLocation } from '@alkitu/shared/types/location';
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '@/components/primitives/Card';
+import { Badge } from '@/components/primitives/ui/badge';
+import { Button } from '@/components/molecules-alianza/Button';
+import { FormInput } from '@/components/molecules-alianza/FormInput';
+import dynamic from 'next/dynamic';
+import { Heading } from '@/components/atoms-alianza/Typography';
+import { CategorizedServiceSelector } from '@/components/organisms-alianza/CategorizedServiceSelector';
 
-/**
- * Request Creation Wizard - CLIENT Role
- *
- * Multi-step wizard for creating service requests:
- * Step 1: Select service
- * Step 2: Fill request form (dynamic fields based on service)
- * Step 3: Select work location
- * Step 4: Review and confirm
- */
+const FormPreview = dynamic(
+  () => import('@/components/features/form-builder/organisms/FormPreview').then((mod) => mod.FormPreview),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex items-center justify-center h-48">
+        <p className="text-muted-foreground">Loading form...</p>
+      </div>
+    ),
+  },
+);
+import type { SelectableService } from '@/components/organisms-alianza/CategorizedServiceSelector';
+import { LocationCardMolecule } from '@/components/molecules/location/LocationCardMolecule';
+import { LocationFormOrganism } from '@/components/organisms/location/LocationFormOrganism';
+import type { FormSettings, WorkLocation } from '@alkitu/shared';
 
-type WizardStep = 1 | 2 | 3 | 4;
+type Step = 1 | 2 | 3 | 4;
 
-interface RequestFormData {
-  serviceId: string | null;
-  serviceName: string;
-  title: string;
-  description: string;
-  priority: 'LOW' | 'MEDIUM' | 'HIGH';
-  locationId: string | null;
-  locationName: string;
+interface SelectedService {
+  id: string;
+  name: string;
+  description?: string;
+  formSettings?: FormSettings;
 }
 
+interface SelectedLocation {
+  id: string;
+  address: string;
+}
+
+/**
+ * Client Create Request Page - Multi-step wizard
+ *
+ * Mirrors the admin create request flow but skips the client selection step,
+ * since the current user is automatically the client.
+ *
+ * Step 1: Select Location
+ * Step 2: Select Service (categorized + searchable)
+ * Step 3: Fill Service Details (dynamic form)
+ * Step 4: Select Date/Time
+ */
 export default function NewRequestWizardPage() {
   const router = useRouter();
-  const [currentStep, setCurrentStep] = useState<WizardStep>(1);
-  const [formData, setFormData] = useState<RequestFormData>({
-    serviceId: null,
-    serviceName: '',
-    title: '',
-    description: '',
-    priority: 'MEDIUM',
-    locationId: null,
-    locationName: '',
+  const { lang } = useParams();
+  const t = useTranslations('client.requests.create');
+  const [step, setStep] = useState<Step>(1);
+
+  // Form state
+  const [selectedLocation, setSelectedLocation] = useState<SelectedLocation | null>(null);
+  const [selectedService, setSelectedService] = useState<SelectedService | null>(null);
+  const [templateResponses, setTemplateResponses] = useState<Record<string, unknown>>({});
+  const [executionDate, setExecutionDate] = useState('');
+  const [executionTime, setExecutionTime] = useState('');
+  const [showCreateLocationForm, setShowCreateLocationForm] = useState(false);
+  const [pendingFiles, setPendingFiles] = useState<Record<string, File[]>>({});
+
+  // Get current user (the client themselves)
+  const { data: currentUser } = trpc.user.me.useQuery(undefined, {
+    retry: false,
+    refetchOnWindowFocus: false,
   });
 
-  // API data states
-  const [services, setServices] = useState<ServiceListItem[]>([]);
-  const [locations, setLocations] = useState<WorkLocation[]>([]);
-  const [isLoadingServices, setIsLoadingServices] = useState(false);
-  const [isLoadingLocations, setIsLoadingLocations] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  // tRPC queries
+  const { data: servicesData, isLoading: loadingServices } = trpc.service.getAllServices.useQuery();
 
-  // Fetch services on component mount
-  useEffect(() => {
-    const fetchServices = async () => {
-      setIsLoadingServices(true);
-      setError(null);
-      try {
-        const response = await fetch('/api/services');
-        if (!response.ok) throw new Error('Failed to fetch services');
-        const data = await response.json();
-        setServices(data);
-      } catch (err) {
-        console.error('Error fetching services:', err);
-        setError('Error al cargar los servicios. Por favor, recarga la página.');
-      } finally {
-        setIsLoadingServices(false);
+  const { data: locationsData, isLoading: loadingLocations, refetch: refetchLocations } = trpc.location.getAllLocations.useQuery(
+    { userId: currentUser?.id || '' },
+    { enabled: !!currentUser?.id }
+  );
+
+  const createRequestMutation = (trpc.request.createRequest as any).useMutation({
+    onSuccess: async (data: { id: string }) => {
+      toast.success(t('success'));
+
+      // Upload pending files to the request's Drive folder (non-blocking)
+      const allFiles = Object.values(pendingFiles).flat();
+      if (allFiles.length > 0) {
+        toast.info(t('step3.uploadingFiles'));
+        uploadFilesToRequest(data.id, allFiles).catch(() => {
+          toast.error(t('step3.uploadError'));
+        });
       }
-    };
-    fetchServices();
-  }, []);
 
-  // Fetch locations when reaching step 3
-  useEffect(() => {
-    if (currentStep === 3 && locations.length === 0) {
-      const fetchLocations = async () => {
-        setIsLoadingLocations(true);
-        setError(null);
-        try {
-          const response = await fetch('/api/locations');
-          if (!response.ok) throw new Error('Failed to fetch locations');
-          const data = await response.json();
-          setLocations(data);
-        } catch (err) {
-          console.error('Error fetching locations:', err);
-          setError('Error al cargar las ubicaciones. Por favor, intenta nuevamente.');
-        } finally {
-          setIsLoadingLocations(false);
-        }
+      router.push(`/${lang}/client/requests`);
+    },
+    onError: (error: any) => handleApiError(error, router),
+  });
+
+  // Upload files to the request's Drive folder via tRPC (stores metadata in request.attachments)
+  const uploadFilesMutation = trpc.request.uploadRequestFiles.useMutation();
+  const uploadFilesToRequest = async (requestId: string, files: File[]) => {
+    // Compress images to WebP before upload
+    const processedFiles = await Promise.all(files.map((f) => compressToWebP(f)));
+
+    const filePayloads = await Promise.all(
+      processedFiles.map(
+        (file) =>
+          new Promise<{ name: string; data: string; mimeType: string; size: number }>(
+            (resolve, reject) => {
+              const reader = new FileReader();
+              reader.onload = () => {
+                const result = reader.result as string;
+                resolve({
+                  name: file.name,
+                  data: result.split(',')[1],
+                  mimeType: file.type || 'application/octet-stream',
+                  size: file.size,
+                });
+              };
+              reader.onerror = reject;
+              reader.readAsDataURL(file);
+            },
+          ),
+      ),
+    );
+    await uploadFilesMutation.mutateAsync({ requestId, files: filePayloads });
+  };
+
+  // Transform services into SelectableService[] for the CategorizedServiceSelector
+  const selectableServices: SelectableService[] = useMemo(() => {
+    if (!servicesData?.items) return [];
+    return servicesData.items.map((service: any) => {
+      const firstTemplate = service.formTemplates?.[0];
+      const rawSettings = firstTemplate?.formSettings as unknown as FormSettings | undefined;
+      const formSettings: FormSettings | undefined =
+        rawSettings?.fields && rawSettings.fields.length > 0 ? rawSettings : undefined;
+
+      return {
+        id: service.id,
+        name: service.name,
+        description: service.description,
+        thumbnail: service.thumbnail,
+        iconColor: service.iconColor,
+        categoryId: service.category?.id || 'uncategorized',
+        categoryName: service.category?.name || 'Other',
+        formSettings,
+        fieldCount: service.fieldCount ?? 0,
       };
-      fetchLocations();
-    }
-  }, [currentStep, locations.length]);
+    });
+  }, [servicesData]);
 
-  const handleNext = () => {
-    if (currentStep < 4) {
-      setCurrentStep((currentStep + 1) as WizardStep);
-    }
+  // Step 1: Select Location
+  const handleLocationCardSelect = (location: WorkLocation) => {
+    setSelectedLocation({
+      id: location.id,
+      address: `${location.street}, ${location.city}`,
+    });
   };
 
-  const handlePrevious = () => {
-    if (currentStep > 1) {
-      setCurrentStep((currentStep - 1) as WizardStep);
-    }
+  const handleLocationCreated = async (location: WorkLocation) => {
+    setShowCreateLocationForm(false);
+    toast.success(t('step1.addLocationSuccess'));
+    await refetchLocations();
+    setSelectedLocation({
+      id: location.id,
+      address: `${location.street}, ${location.city}`,
+    });
   };
 
-  const handleSubmit = async () => {
-    setIsSubmitting(true);
-    setError(null);
+  const handleStep1Next = () => {
+    if (!selectedLocation) {
+      toast.error(t('step1.required'));
+      return;
+    }
+    setStep(2);
+  };
+
+  // Step 2: Select Service (categorized)
+  const handleServiceSelect = (service: SelectableService) => {
+    setSelectedService({
+      id: service.id,
+      name: service.name,
+      description: service.description,
+      formSettings: service.formSettings,
+    });
+  };
+
+  const handleStep2Next = () => {
+    if (!selectedService) {
+      toast.error(t('step2.required'));
+      return;
+    }
+    setStep(3);
+  };
+
+  // Step 3: Fill Template
+  const handleTemplateSubmit = (data: Record<string, unknown>) => {
+    setTemplateResponses(data);
+    setStep(4);
+  };
+
+  // Step 4: Date/Time and Final Submit
+  const handleFinalSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!executionDate || !executionTime) {
+      toast.error(t('step4.dateTimeRequired'));
+      return;
+    }
+
+    const executionDateTime = new Date(`${executionDate}T${executionTime}`);
+
+    if (executionDateTime < new Date()) {
+      toast.error(t('step4.futureRequired'));
+      return;
+    }
+
     try {
-      // Default execution date to tomorrow at 9 AM
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      tomorrow.setHours(9, 0, 0, 0);
-
-      const response = await fetch('/api/requests', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          serviceId: formData.serviceId,
-          locationId: formData.locationId,
-          executionDateTime: tomorrow.toISOString(),
-          templateResponses: {
-            title: formData.title,
-            description: formData.description,
-            priority: formData.priority,
-          },
-        }),
+      await createRequestMutation.mutateAsync({
+        userId: currentUser!.id,
+        serviceId: selectedService!.id,
+        locationId: selectedLocation!.id,
+        executionDateTime: executionDateTime.toISOString(),
+        templateResponses,
+        note: undefined,
       });
+    } catch (error) {
+      // Error handled by mutation callbacks
+    }
+  };
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to create request');
+  const handleBack = () => {
+    if (step > 1) {
+      const prevStep = (step - 1) as Step;
+      // Clear dependent state when going back
+      if (step === 2) {
+        // Going back from Service to Location — clear service selection
+        setSelectedService(null);
+        setTemplateResponses({});
       }
-
-      const data = await response.json();
-      // Redirect to success page with requestId
-      router.push(`/client/requests/new/success?requestId=${data.id}`);
-    } catch (err) {
-      console.error('Error creating request:', err);
-      setError(err instanceof Error ? err.message : 'Error al crear la solicitud. Por favor, intenta nuevamente.');
-      setIsSubmitting(false);
+      if (step === 3) {
+        // Going back from Details to Service — clear template responses
+        setTemplateResponses({});
+      }
+      setStep(prevStep);
+    } else {
+      router.push(`/${lang}/client/requests`);
     }
   };
 
-  const isStepValid = (): boolean => {
-    switch (currentStep) {
-      case 1:
-        return formData.serviceId !== null;
-      case 2:
-        return formData.title.trim() !== '' && formData.description.trim() !== '';
-      case 3:
-        return formData.locationId !== null;
-      case 4:
-        return true;
-      default:
-        return false;
-    }
-  };
-
-  const renderStepIndicator = () => {
-    const steps = [
-      { number: 1, label: 'Servicio', icon: ClipboardList },
-      { number: 2, label: 'Detalles', icon: FileText },
-      { number: 3, label: 'Ubicación', icon: MapPin },
-      { number: 4, label: 'Confirmar', icon: Check },
-    ];
-
-    return (
-      <div className="flex items-center justify-between mb-8">
-        {steps.map((step, index) => (
-          <div key={step.number} className="flex items-center flex-1">
-            <div className="flex flex-col items-center flex-1">
-              <div
-                className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors ${
-                  currentStep >= step.number
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-muted text-muted-foreground'
-                }`}
-              >
-                {currentStep > step.number ? (
-                  <Check className="h-6 w-6" />
-                ) : (
-                  <step.icon className="h-6 w-6" />
-                )}
-              </div>
-              <p
-                className={`text-sm mt-2 ${
-                  currentStep >= step.number
-                    ? 'text-foreground font-medium'
-                    : 'text-muted-foreground'
-                }`}
-              >
-                {step.label}
-              </p>
-            </div>
-            {index < steps.length - 1 && (
-              <div
-                className={`h-1 flex-1 mx-2 transition-colors ${
-                  currentStep > step.number ? 'bg-primary' : 'bg-muted'
-                }`}
-              />
-            )}
-          </div>
-        ))}
-      </div>
-    );
-  };
-
-  const renderStep1 = () => (
-    <div className="space-y-4">
-      <h2 className="text-2xl font-bold mb-4">Selecciona un Servicio</h2>
-      <p className="text-muted-foreground mb-6">
-        Elige el tipo de servicio que necesitas solicitar
-      </p>
-
-      {isLoadingServices ? (
-        <div className="text-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Cargando servicios...</p>
-        </div>
-      ) : services.length === 0 ? (
-        <Card className="p-12 text-center">
-          <ClipboardList className="h-12 w-12 text-muted-foreground/40 mx-auto mb-4" />
-          <p className="text-muted-foreground">No hay servicios disponibles</p>
-        </Card>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {services.map((service) => (
-            <Card
-              key={service.id}
-              data-testid="service-card"
-              className={`p-6 cursor-pointer transition-all hover:shadow-lg ${
-                formData.serviceId === service.id
-                  ? 'border-primary ring-2 ring-primary/20'
-                  : 'border-muted'
-              }`}
-              onClick={() =>
-                setFormData({ ...formData, serviceId: service.id, serviceName: service.name })
-              }
-            >
-              <div className="flex items-start gap-4">
-                <div className="h-12 w-12 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
-                  <ClipboardList className="h-6 w-6 text-primary" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-semibold mb-1">{service.name}</h3>
-                  {service.category && (
-                    <p className="text-sm text-muted-foreground">
-                      {service.category.name}
-                    </p>
-                  )}
-                </div>
-                {formData.serviceId === service.id && (
-                  <Check className="h-5 w-5 text-primary shrink-0" />
-                )}
-              </div>
-            </Card>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-
-  const renderStep2 = () => (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold mb-4">Detalles de la Solicitud</h2>
-      <p className="text-muted-foreground mb-6">
-        Proporciona los detalles específicos de tu solicitud
-      </p>
-
-      <div className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium mb-2">
-            Título de la Solicitud *
-          </label>
-          <input
-            type="text"
-            value={formData.title}
-            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-            placeholder="Ej: Reparación de aire acondicionado"
-            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-2">
-            Descripción Detallada *
-          </label>
-          <textarea
-            value={formData.description}
-            onChange={(e) =>
-              setFormData({ ...formData, description: e.target.value })
-            }
-            placeholder="Describe el problema o servicio que necesitas..."
-            rows={6}
-            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-2">Prioridad</label>
-          <select
-            value={formData.priority}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                priority: e.target.value as RequestFormData['priority'],
-              })
-            }
-            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
-          >
-            <option value="LOW">Baja</option>
-            <option value="MEDIUM">Media</option>
-            <option value="HIGH">Alta</option>
-          </select>
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderStep3 = () => {
-    // Helper to format full address from WorkLocation
-    const formatAddress = (loc: WorkLocation) => {
-      const parts = [loc.street];
-      if (loc.building) parts.push(`Edificio ${loc.building}`);
-      if (loc.tower) parts.push(`Torre ${loc.tower}`);
-      if (loc.floor) parts.push(`Piso ${loc.floor}`);
-      if (loc.unit) parts.push(`Unidad ${loc.unit}`);
-      parts.push(`${loc.city}, ${loc.state} ${loc.zip}`);
-      return parts.join(', ');
-    };
-
-    return (
-      <div className="space-y-4">
-        <h2 className="text-2xl font-bold mb-4">Ubicación del Servicio</h2>
-        <p className="text-muted-foreground mb-6">
-          Selecciona dónde se realizará el servicio
-        </p>
-
-        {isLoadingLocations ? (
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Cargando ubicaciones...</p>
-          </div>
-        ) : locations.length === 0 ? (
-          <Card className="p-12 text-center">
-            <MapPin className="h-12 w-12 text-muted-foreground/40 mx-auto mb-4" />
-            <p className="text-muted-foreground mb-4">No tienes ubicaciones registradas</p>
-            <Button
-              variant="outline"
-              onClick={() => router.push('/client/locations')}
-            >
-              <MapPin className="h-4 w-4 mr-2" />
-              Agregar Primera Ubicación
-            </Button>
-          </Card>
-        ) : (
-          <>
-            <div className="grid grid-cols-1 gap-4">
-              {locations.map((location) => (
-                <Card
-                  key={location.id}
-                  data-testid="location-card"
-                  className={`p-6 cursor-pointer transition-all hover:shadow-lg ${
-                    formData.locationId === location.id
-                      ? 'border-primary ring-2 ring-primary/20'
-                      : 'border-muted'
-                  }`}
-                  onClick={() =>
-                    setFormData({
-                      ...formData,
-                      locationId: location.id,
-                      locationName: `${location.street}, ${location.city}`,
-                    })
-                  }
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="h-12 w-12 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center shrink-0">
-                      <MapPin className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-semibold mb-1">{location.street}</h3>
-                      <p className="text-sm text-muted-foreground">{formatAddress(location)}</p>
-                    </div>
-                    {formData.locationId === location.id && (
-                      <Check className="h-5 w-5 text-primary shrink-0" />
-                    )}
-                  </div>
-                </Card>
-              ))}
-            </div>
-
-            <div className="mt-6">
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={() => router.push('/client/locations')}
-              >
-                <MapPin className="h-4 w-4 mr-2" />
-                Agregar Nueva Ubicación
-              </Button>
-            </div>
-          </>
-        )}
-      </div>
-    );
-  };
-
-  const renderStep4 = () => (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold mb-4">Confirmar Solicitud</h2>
-      <p className="text-muted-foreground mb-6">
-        Revisa los detalles antes de enviar tu solicitud
-      </p>
-
-      <div className="space-y-4">
-        <Card className="p-6">
-          <h3 className="font-semibold text-sm text-muted-foreground mb-2">
-            SERVICIO
-          </h3>
-          <p className="text-lg font-medium">{formData.serviceName}</p>
-        </Card>
-
-        <Card className="p-6">
-          <h3 className="font-semibold text-sm text-muted-foreground mb-2">
-            DETALLES
-          </h3>
-          <div className="space-y-2">
-            <div>
-              <p className="text-sm text-muted-foreground">Título</p>
-              <p className="font-medium">{formData.title}</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Descripción</p>
-              <p className="text-sm">{formData.description}</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Prioridad</p>
-              <p className="font-medium">
-                {formData.priority === 'LOW' && 'Baja'}
-                {formData.priority === 'MEDIUM' && 'Media'}
-                {formData.priority === 'HIGH' && 'Alta'}
-              </p>
-            </div>
-          </div>
-        </Card>
-
-        <Card className="p-6">
-          <h3 className="font-semibold text-sm text-muted-foreground mb-2">
-            UBICACIÓN
-          </h3>
-          <p className="font-medium">{formData.locationName}</p>
-        </Card>
-      </div>
-    </div>
-  );
+  // Step indicators — Location, Service, Details, Date/Time (no Client step)
+  const steps = [
+    { number: 1, label: t('steps.location'), icon: MapPin },
+    { number: 2, label: t('steps.service'), icon: Briefcase },
+    { number: 3, label: t('steps.details'), icon: Briefcase },
+    { number: 4, label: t('steps.dateTime'), icon: Calendar },
+  ];
 
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <Button
-            variant="ghost"
-            onClick={() => router.back()}
-            className="mb-4"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Volver
-          </Button>
-          <h1 className="text-3xl font-bold">Nueva Solicitud</h1>
-        </div>
-
-        {/* Step Indicator */}
-        {renderStepIndicator()}
-
-        {/* Error Message */}
-        {error && (
-          <Card className="p-4 mb-6 border-destructive bg-destructive/10">
-            <p className="text-destructive text-sm">{error}</p>
-          </Card>
-        )}
-
-        {/* Step Content */}
-        <Card className="p-8 mb-6">
-          {currentStep === 1 && renderStep1()}
-          {currentStep === 2 && renderStep2()}
-          {currentStep === 3 && renderStep3()}
-          {currentStep === 4 && renderStep4()}
-        </Card>
-
-        {/* Navigation Buttons */}
-        <div className="flex items-center justify-between">
-          <Button
-            variant="outline"
-            onClick={handlePrevious}
-            disabled={currentStep === 1 || isSubmitting}
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Anterior
-          </Button>
-
-          {currentStep < 4 ? (
-            <Button onClick={handleNext} disabled={!isStepValid() || isSubmitting}>
-              Siguiente
-              <ArrowRight className="h-4 w-4 ml-2" />
-            </Button>
-          ) : (
-            <Button onClick={handleSubmit} disabled={!isStepValid() || isSubmitting}>
-              {isSubmitting ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
-                  Creando solicitud...
-                </>
-              ) : (
-                <>
-                  <Check className="h-4 w-4 mr-2" />
-                  Enviar Solicitud
-                </>
-              )}
-            </Button>
-          )}
-        </div>
+    <div className="flex flex-col gap-6 p-6">
+      {/* Header */}
+      <div className="flex items-center gap-4">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleBack}
+          iconLeft={<ArrowLeft className="h-4 w-4" />}
+        >
+          {t('back')}
+        </Button>
+        <Heading level={1} className="text-foreground">
+          {t('title')}
+        </Heading>
       </div>
+
+      {/* Step Indicators */}
+      <Card className="p-6">
+        <div className="flex items-center justify-between">
+          {steps.map((s, index) => {
+            const Icon = s.icon;
+            const isActive = step === s.number;
+            const isCompleted = step > s.number;
+
+            return (
+              <React.Fragment key={s.number}>
+                <div className="flex flex-col items-center gap-2">
+                  <div
+                    className={`
+                      flex items-center justify-center w-10 h-10 rounded-full
+                      ${isActive ? 'bg-primary text-primary-foreground' : ''}
+                      ${isCompleted ? 'bg-green-500 text-white' : ''}
+                      ${!isActive && !isCompleted ? 'bg-muted text-muted-foreground' : ''}
+                    `}
+                  >
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <span
+                    className={`text-xs ${isActive ? 'font-semibold' : 'text-muted-foreground'}`}
+                  >
+                    {s.label}
+                  </span>
+                </div>
+                {index < steps.length - 1 && (
+                  <div
+                    className={`flex-1 h-px mx-2 ${isCompleted ? 'bg-green-500' : 'bg-border'}`}
+                  />
+                )}
+              </React.Fragment>
+            );
+          })}
+        </div>
+      </Card>
+
+      {/* Step 1: Select Location */}
+      {step === 1 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>{t('step1.title')}</CardTitle>
+            <CardDescription>{t('step1.description')}</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Location cards */}
+            {loadingLocations || !currentUser ? (
+              <div className="space-y-3">
+                {[1, 2].map((i) => (
+                  <div key={i} className="h-16 animate-pulse rounded-lg bg-muted" />
+                ))}
+              </div>
+            ) : locationsData?.items && locationsData.items.length > 0 ? (
+              <div className="space-y-3">
+                {locationsData.items.map((loc) => {
+                  const location = loc as unknown as WorkLocation;
+                  return (
+                    <div
+                      key={location.id}
+                      onClick={() => handleLocationCardSelect(location)}
+                      className={`cursor-pointer rounded-lg transition-all ${
+                        selectedLocation?.id === location.id
+                          ? 'ring-2 ring-primary ring-offset-2'
+                          : 'hover:ring-1 hover:ring-primary/30'
+                      }`}
+                    >
+                      <LocationCardMolecule
+                        location={location}
+                        showEdit={false}
+                        showDelete={false}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-8 text-center">
+                <MapPin className="mb-3 h-10 w-10 text-muted-foreground/50" />
+                <p className="text-muted-foreground">{t('step1.noLocations')}</p>
+              </div>
+            )}
+
+            {/* Add Location Inline */}
+            {showCreateLocationForm ? (
+              <div className="rounded-lg border border-dashed border-primary/30 bg-muted/30 p-4">
+                <LocationFormOrganism
+                  onSuccess={handleLocationCreated}
+                  onCancel={() => setShowCreateLocationForm(false)}
+                  showCancel
+                  userId={currentUser?.id}
+                />
+              </div>
+            ) : (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowCreateLocationForm(true)}
+                className="w-full border-dashed"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                {t('step1.addLocation')}
+              </Button>
+            )}
+
+            <div className="flex justify-end pt-4">
+              <Button onClick={handleStep1Next} disabled={!selectedLocation}>
+                {t('step1.next')}
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Step 2: Select Service (categorized) */}
+      {step === 2 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>{t('step2.title')}</CardTitle>
+            <CardDescription>{t('step2.description')}</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="p-4 bg-muted/50 rounded-lg mb-4">
+              <p className="text-sm">
+                <strong>{t('labels.location')}</strong> {selectedLocation?.address}
+              </p>
+            </div>
+
+            <CategorizedServiceSelector
+              services={selectableServices}
+              selectedServiceId={selectedService?.id || null}
+              onServiceSelect={handleServiceSelect}
+              isLoading={loadingServices}
+              searchPlaceholder={t('step2.searchPlaceholder')}
+              noResultsText={t('step2.noResults')}
+              emptyText={t('step2.empty')}
+            />
+
+            {selectedService && (
+              <div className="p-4 bg-muted rounded-lg">
+                <p className="text-sm">
+                  <strong>{t('step2.selected')}</strong> {selectedService.name}
+                </p>
+                {selectedService.formSettings && (
+                  <Badge variant="outline" className="mt-2">
+                    {selectedService.formSettings.fields.length} {t('step2.fieldsInForm')}
+                  </Badge>
+                )}
+              </div>
+            )}
+
+            <div className="flex justify-end gap-2 pt-4">
+              <Button variant="outline" onClick={handleBack}>
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                {t('back')}
+              </Button>
+              <Button onClick={handleStep2Next} disabled={!selectedService}>
+                {t('step2.next')}
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Step 3: Fill Template */}
+      {step === 3 && selectedService && (
+        <Card>
+          <CardHeader>
+            <CardTitle>{t('step3.title')}</CardTitle>
+            <CardDescription>{t('step3.description')} {selectedService.name}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="p-4 bg-muted/50 rounded-lg mb-6">
+              <p className="text-sm">
+                <strong>{t('labels.location')}</strong> {selectedLocation?.address} |{' '}
+                <strong>{t('labels.service')}</strong> {selectedService.name}
+              </p>
+            </div>
+
+            {selectedService.formSettings ? (
+              <FormPreview
+                formSettings={selectedService.formSettings}
+                onSubmit={handleTemplateSubmit}
+                onCancel={handleBack}
+                submitButtonText={t('step3.submitText')}
+                hideHeader
+                onFilesChanged={setPendingFiles}
+              />
+            ) : (
+              <div className="space-y-4">
+                <p className="text-muted-foreground">
+                  {t('step3.noCustomFields')}
+                </p>
+                <div className="flex justify-end gap-2">
+                  <Button variant="outline" onClick={handleBack}>
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    {t('back')}
+                  </Button>
+                  <Button onClick={() => setStep(4)}>
+                    {t('step3.nextDateTime')}
+                    <ArrowRight className="h-4 w-4 ml-2" />
+                  </Button>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Step 4: Date/Time and Submit */}
+      {step === 4 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>{t('step4.title')}</CardTitle>
+            <CardDescription>{t('step4.description')}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleFinalSubmit} className="space-y-6">
+              <div className="p-4 bg-muted/50 rounded-lg">
+                <p className="text-sm mb-2">
+                  <strong>{t('step4.summary')}</strong>
+                </p>
+                <ul className="text-xs space-y-1 text-muted-foreground">
+                  <li>{t('labels.location')} {selectedLocation?.address}</li>
+                  <li>{t('labels.service')} {selectedService?.name}</li>
+                  {Object.keys(templateResponses).length > 0 && (
+                    <li>{t('step4.fieldsCompleted')} {Object.keys(templateResponses).length}</li>
+                  )}
+                </ul>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormInput
+                  label={t('step4.dateLabel')}
+                  id="execution-date"
+                  type="date"
+                  value={executionDate}
+                  onChange={(e) => setExecutionDate(e.target.value)}
+                  min={new Date().toISOString().split('T')[0]}
+                />
+                <FormInput
+                  label={t('step4.timeLabel')}
+                  id="execution-time"
+                  type="time"
+                  value={executionTime}
+                  onChange={(e) => setExecutionTime(e.target.value)}
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 pt-4">
+                <Button type="button" variant="outline" onClick={handleBack}>
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  {t('back')}
+                </Button>
+                <Button
+                  type="submit"
+                  variant="active"
+                  disabled={createRequestMutation.isPending || !executionDate || !executionTime}
+                >
+                  {createRequestMutation.isPending ? (
+                    t('step4.creating')
+                  ) : (
+                    <>
+                      <Save className="h-4 w-4 mr-2" />
+                      {t('step4.submit')}
+                    </>
+                  )}
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

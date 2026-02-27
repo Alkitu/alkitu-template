@@ -55,7 +55,7 @@ export const RequestManagementTable: React.FC<RequestManagementTableProps> = ({
   const searchParams = useSearchParams();
 
   // State management
-  const [activeFilter, setActiveFilter] = useState<RequestFilterType>(isClient ? 'ongoing' : 'pending');
+  const [activeFilter, setActiveFilter] = useState<RequestFilterType>('pending');
   const [searchValue, setSearchValue] = useState('');
   const [selectedServiceId, setSelectedServiceId] = useState<string>(
     searchParams.get('serviceId') || '',
@@ -101,7 +101,7 @@ export const RequestManagementTable: React.FC<RequestManagementTableProps> = ({
     if (!servicesData?.items) return [];
     return servicesData.items.map((s: any) => ({
       id: s.id,
-      label: s.name,
+      label: s.code ? `${s.code} - ${s.name}` : s.name,
       value: s.id,
       badge: s.deletedAt
         ? { text: 'Inactivo', variant: 'outline' as const }

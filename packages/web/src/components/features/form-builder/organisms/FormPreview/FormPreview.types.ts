@@ -46,4 +46,10 @@ export interface FormPreviewProps {
    * Useful when embedding inside another Card.
    */
   hideHeader?: boolean;
+
+  /**
+   * Callback when files are selected/removed for file upload fields.
+   * Receives a map of fieldId → File[] with all pending files.
+   */
+  onFilesChanged?: (filesByField: Record<string, File[]>) => void;
 }

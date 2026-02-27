@@ -1,9 +1,9 @@
 'use client';
 
 import { use } from 'react';
-import { useRouter } from 'next/navigation';
 import { UserRole } from '@alkitu/shared';
 import { RequestDetailOrganism } from '@/components/organisms/request';
+import { AdminPageHeader } from '@/components/molecules-alianza/AdminPageHeader';
 
 /**
  * Request Detail Page - CLIENT View
@@ -18,15 +18,20 @@ export default function ClientRequestDetailPage({
   params: Promise<{ requestId: string; lang: string }>;
 }) {
   const { requestId, lang } = use(params);
-  const router = useRouter();
 
   return (
-    <div className="p-6">
+    <div className="p-6 space-y-6">
+      <AdminPageHeader
+        title="Detalles de la Solicitud"
+        description="Visualiza y gestiona tu solicitud de servicio"
+        backHref={`/${lang}/client/requests`}
+        backLabel="Volver a Solicitudes"
+      />
+
       <RequestDetailOrganism
         requestId={requestId}
         userRole={UserRole.CLIENT}
         lang={lang}
-        onBack={() => router.push(`/${lang}/client/requests`)}
       />
     </div>
   );

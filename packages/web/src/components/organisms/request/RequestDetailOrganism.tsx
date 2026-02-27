@@ -61,11 +61,11 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
   lang = 'es',
   className = '',
   onUpdate,
-  onBack,
 }) => {
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
-  const [isCancellationRequestModalOpen, setIsCancellationRequestModalOpen] = useState(false);
+  const [isCancellationRequestModalOpen, setIsCancellationRequestModalOpen] =
+    useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
   // Fetch request details
@@ -80,7 +80,8 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
   // tRPC mutations
   const assignMutation = trpc.request.assignRequest.useMutation();
   const updateStatusMutation = trpc.request.updateRequestStatus.useMutation();
-  const requestCancellationMutation = trpc.request.requestCancellation.useMutation();
+  const requestCancellationMutation =
+    trpc.request.requestCancellation.useMutation();
 
   // Feature flags
   const { isEnabled: chatEnabled } = useFeatureFlag('request-collaboration');
@@ -155,7 +156,10 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
     if (!request) return;
     setActionLoading('approveCancellation');
     try {
-      await updateStatusMutation.mutateAsync({ id: request.id, status: RequestStatus.CANCELLED });
+      await updateStatusMutation.mutateAsync({
+        id: request.id,
+        status: RequestStatus.CANCELLED,
+      });
       toast.success('La cancelación ha sido aprobada.');
       refetch();
       if (onUpdate) onUpdate();
@@ -185,12 +189,6 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
             <p className="mt-1 text-sm text-destructive/80">
               {error?.message || 'Solicitud no encontrada'}
             </p>
-            {onBack && (
-              <Button variant="outline" size="sm" onClick={onBack} className="mt-4">
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Volver
-              </Button>
-            )}
           </div>
         </div>
       </div>
@@ -200,14 +198,22 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
   // --- Derived data ---
   const executionDate = new Date(request.executionDateTime);
   // @ts-expect-error - TS2589: Prisma/tRPC type instantiation too deep, runtime types are correct
-  const requestNote: string = typeof request.note === 'string' ? request.note : (request.note ? JSON.stringify(request.note) : '');
+  const requestNote: string =
+    typeof request.note === 'string'
+      ? request.note
+      : request.note
+        ? JSON.stringify(request.note)
+        : '';
 
-  const templateResponses = (request.templateResponses as Record<string, unknown>) || {};
+  const templateResponses =
+    (request.templateResponses as Record<string, unknown>) || {};
   const firstTemplate = (request.service as any)?.formTemplates?.[0];
   const formSettings = firstTemplate?.formSettings as FormSettings | undefined;
-  const driveAttachments = (Array.isArray((request as any).attachments)
-    ? (request as any).attachments
-    : []) as DriveAttachment[];
+  const driveAttachments = (
+    Array.isArray((request as any).attachments)
+      ? (request as any).attachments
+      : []
+  ) as DriveAttachment[];
 
   // Build timeline events
   const timelineEvents: TimelineEvent[] = [
@@ -257,20 +263,8 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
 
   return (
     <div className={`max-w-3xl mx-auto space-y-8 pb-20 ${className}`}>
-      {/* ── Header: Back + Action Buttons ── */}
-      <div className="flex items-center justify-between">
-        {onBack ? (
-          <button
-            onClick={onBack}
-            className="group flex items-center gap-2 text-sm font-bold text-primary transition-all pr-4 py-2"
-          >
-            <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
-            <span className="uppercase tracking-widest text-[10px]">Volver</span>
-          </button>
-        ) : (
-          <div />
-        )}
-
+      {/* ── Header: Action Buttons ── */}
+      <div className="flex items-center justify-end">
         <div className="flex gap-3 flex-wrap justify-end">
           {editHook.isEditing ? (
             <>
@@ -342,43 +336,55 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
         </div>
       </div>
 
-      {/* ── Client Info + Status Badge ── */}
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex-1">
-          <h2 className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] font-black text-muted-foreground/60 mb-4">
-            <span className="w-4 h-0.5 bg-primary/20" />
-            Información del Cliente
-          </h2>
-          <RequestClientCardMolecule client={request.user} />
+      {/* ── Service Title, ID & Status Badge ── */}
+      <div className="relative flex flex-col md:flex-row items-start justify-between gap-6 p-6 sm:p-8 rounded-2xl bg-gradient-to-br from-background to-muted/30 border border-border shadow-sm overflow-hidden">
+        {/* Subtle decorative background blur */}
+        <div className="absolute top-0 right-0 -mt-16 -mr-16 w-64 h-64 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="relative space-y-3 flex-1">
+          {editHook.isEditing ? (
+            <div className="max-w-md">
+              <Combobox
+                options={editHook.serviceOptions}
+                value={editHook.formData.serviceId}
+                onChange={(value) =>
+                  editHook.updateField('serviceId', value as string)
+                }
+                placeholder="Seleccionar servicio..."
+                searchPlaceholder="Buscar servicio..."
+                emptyMessage="No se encontraron servicios."
+                className="w-full"
+              />
+            </div>
+          ) : (
+            <h1 className="text-3xl md:text-4xl font-black text-foreground tracking-tight leading-none">
+              {request.service?.name?.toUpperCase() || 'SERVICIO'}
+            </h1>
+          )}
+          <div className="flex items-center gap-3 text-xs font-bold tracking-widest uppercase">
+            <span className="text-muted-foreground w-12">ID</span>
+            <span className="text-primary bg-primary/10 px-2 py-1 rounded-md">
+              #{(request as any).customId || requestId.slice(-8).toUpperCase()}
+            </span>
+          </div>
         </div>
-        <RequestStatusBadgeMolecule
-          status={request.status as RequestStatus}
-          size="lg"
-        />
+        <div className="relative flex-shrink-0">
+          <RequestStatusBadgeMolecule
+            status={request.status as RequestStatus}
+            size="lg"
+          />
+        </div>
       </div>
 
-      {/* ── Service Title + ID ── */}
-      <div className="space-y-1">
-        {editHook.isEditing ? (
-          <div className="max-w-md">
-            <Combobox
-              options={editHook.serviceOptions}
-              value={editHook.formData.serviceId}
-              onChange={(value) => editHook.updateField('serviceId', value as string)}
-              placeholder="Seleccionar servicio..."
-              searchPlaceholder="Buscar servicio..."
-              emptyMessage="No se encontraron servicios."
-              className="w-full"
-            />
-          </div>
-        ) : (
-          <h1 className="text-3xl font-black text-foreground tracking-tight leading-none">
-            {request.service?.name?.toUpperCase() || 'SERVICIO'}
-          </h1>
-        )}
-        <p className="text-sm font-bold text-primary tracking-widest">
-          #{(request as any).customId || requestId.slice(-8).toUpperCase()}
-        </p>
+      {/* ── Client Info ── */}
+      <div className="pt-2">
+        <h2 className="flex items-center gap-3 text-[10px] uppercase tracking-[0.2em] font-black text-muted-foreground/60 mb-5">
+          <span className="w-6 h-0.5 bg-primary/20 rounded-full" />
+          Información del Cliente
+        </h2>
+        <div className="p-1">
+          <RequestClientCardMolecule client={request.user} />
+        </div>
       </div>
 
       {/* ── Service Details Card ── */}
@@ -403,59 +409,92 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
                 <div className="space-y-3">
                   <FormSelect
                     label="Ubicación"
-                    value={editHook.formData.useNewLocation ? 'new' : editHook.formData.locationId}
+                    value={
+                      editHook.formData.useNewLocation
+                        ? 'new'
+                        : editHook.formData.locationId
+                    }
                     onValueChange={editHook.handleLocationChange}
                     options={editHook.locationOptions}
                   />
-                  {(editHook.formData.useNewLocation || editHook.formData.locationId) && (
+                  {(editHook.formData.useNewLocation ||
+                    editHook.formData.locationId) && (
                     <>
                       <div className="grid grid-cols-2 gap-3">
                         <FormInput
                           label="Edificio"
                           value={editHook.formData.locationBuilding}
-                          onChange={(e) => editHook.updateField('locationBuilding', e.target.value)}
+                          onChange={(e) =>
+                            editHook.updateField(
+                              'locationBuilding',
+                              e.target.value,
+                            )
+                          }
                         />
                         <FormInput
                           label="Torre"
                           value={editHook.formData.locationTower}
-                          onChange={(e) => editHook.updateField('locationTower', e.target.value)}
+                          onChange={(e) =>
+                            editHook.updateField(
+                              'locationTower',
+                              e.target.value,
+                            )
+                          }
                         />
                       </div>
                       <div className="grid grid-cols-2 gap-3">
                         <FormInput
                           label="Piso"
                           value={editHook.formData.locationFloor}
-                          onChange={(e) => editHook.updateField('locationFloor', e.target.value)}
+                          onChange={(e) =>
+                            editHook.updateField(
+                              'locationFloor',
+                              e.target.value,
+                            )
+                          }
                         />
                         <FormInput
                           label="Unidad"
                           value={editHook.formData.locationUnit}
-                          onChange={(e) => editHook.updateField('locationUnit', e.target.value)}
+                          onChange={(e) =>
+                            editHook.updateField('locationUnit', e.target.value)
+                          }
                         />
                       </div>
                       <FormInput
                         label="Calle"
                         value={editHook.formData.locationStreet}
-                        onChange={(e) => editHook.updateField('locationStreet', e.target.value)}
+                        onChange={(e) =>
+                          editHook.updateField('locationStreet', e.target.value)
+                        }
                         required
                       />
                       <div className="grid grid-cols-3 gap-3">
                         <FormInput
                           label="Ciudad"
                           value={editHook.formData.locationCity}
-                          onChange={(e) => editHook.updateField('locationCity', e.target.value)}
+                          onChange={(e) =>
+                            editHook.updateField('locationCity', e.target.value)
+                          }
                           required
                         />
                         <FormInput
                           label="Estado"
                           value={editHook.formData.locationState}
-                          onChange={(e) => editHook.updateField('locationState', e.target.value)}
+                          onChange={(e) =>
+                            editHook.updateField(
+                              'locationState',
+                              e.target.value,
+                            )
+                          }
                           required
                         />
                         <FormInput
                           label="C.P."
                           value={editHook.formData.locationZip}
-                          onChange={(e) => editHook.updateField('locationZip', e.target.value)}
+                          onChange={(e) =>
+                            editHook.updateField('locationZip', e.target.value)
+                          }
                           required
                         />
                       </div>
@@ -465,7 +504,9 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
               ) : (
                 <>
                   <p className="font-bold text-sm text-foreground">
-                    {request.location?.building || request.location?.city || 'Ubicación'}
+                    {request.location?.building ||
+                      request.location?.city ||
+                      'Ubicación'}
                   </p>
                   <p className="text-xs text-muted-foreground mt-0.5">
                     {request.location?.street}
@@ -506,7 +547,9 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
                   label=""
                   type="datetime-local"
                   value={editHook.formData.executionDateTime}
-                  onChange={(e) => editHook.updateField('executionDateTime', e.target.value)}
+                  onChange={(e) =>
+                    editHook.updateField('executionDateTime', e.target.value)
+                  }
                   required
                 />
               ) : (
@@ -562,7 +605,9 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
                   <FormTextarea
                     label=""
                     value={editHook.formData.note}
-                    onChange={(e) => editHook.updateField('note', e.target.value)}
+                    onChange={(e) =>
+                      editHook.updateField('note', e.target.value)
+                    }
                     rows={3}
                     placeholder="Agregar notas..."
                   />
@@ -642,11 +687,15 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
                   El cliente ha solicitado la cancelación de esta solicitud.
                   {(request as any).cancellationRequestedAt && (
                     <span className="ml-1 text-amber-600">
-                      ({new Date((request as any).cancellationRequestedAt).toLocaleDateString('es-ES', {
+                      (
+                      {new Date(
+                        (request as any).cancellationRequestedAt,
+                      ).toLocaleDateString('es-ES', {
                         day: 'numeric',
                         month: 'long',
                         year: 'numeric',
-                      })})
+                      })}
+                      )
                     </span>
                   )}
                 </p>

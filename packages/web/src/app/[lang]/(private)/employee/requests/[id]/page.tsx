@@ -1,9 +1,9 @@
 'use client';
 
 import { use } from 'react';
-import { useRouter } from 'next/navigation';
 import { UserRole } from '@alkitu/shared';
 import { RequestDetailOrganism } from '@/components/organisms/request';
+import { AdminPageHeader } from '@/components/molecules-alianza/AdminPageHeader';
 
 /**
  * Employee Service Request Detail Page
@@ -18,15 +18,20 @@ export default function EmployeeRequestDetailPage({
   params: Promise<{ id: string; lang: string }>;
 }) {
   const { id, lang } = use(params);
-  const router = useRouter();
 
   return (
-    <div className="p-6">
+    <div className="p-6 space-y-6">
+      <AdminPageHeader
+        title="Detalles de la Solicitud"
+        description="Visualiza y gestiona esta solicitud de servicio"
+        backHref={`/${lang}/employee/requests`}
+        backLabel="Volver a Solicitudes"
+      />
+
       <RequestDetailOrganism
         requestId={id}
         userRole={UserRole.EMPLOYEE}
         lang={lang}
-        onBack={() => router.push(`/${lang}/employee/requests`)}
       />
     </div>
   );

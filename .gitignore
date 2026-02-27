@@ -126,4 +126,6 @@ storybook-static
 
 # Google Cloud service account keys
 *.json.key
-alkitu-drive-key.json
+
+# Secrets folder
+secrets/

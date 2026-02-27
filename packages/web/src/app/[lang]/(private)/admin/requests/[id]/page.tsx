@@ -34,7 +34,6 @@ export default function AdminRequestDetailPage({
         requestId={id}
         userRole={UserRole.ADMIN}
         lang={lang}
-        onBack={() => router.push(`/${lang}/admin/requests`)}
       />
     </div>
   );

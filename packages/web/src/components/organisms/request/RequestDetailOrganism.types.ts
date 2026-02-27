@@ -29,9 +29,4 @@ export interface RequestDetailOrganismProps {
    * Callback when request is updated (assign, status change, inline edit)
    */
   onUpdate?: () => void;
-
-  /**
-   * Callback when back button is clicked
-   */
-  onBack?: () => void;
 }

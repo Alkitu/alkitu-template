@@ -14,3 +14,5 @@ export * from './RequestClientCardMolecule';
 export * from './RequestClientCardMolecule.types';
 export * from './QuickAssignModal';
 export * from './QuickStatusModal';
+export * from './RequestCancellationModal';
+export * from './RequestCancellationModal.types';

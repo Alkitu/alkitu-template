@@ -93,6 +93,18 @@ export const cancelRequestSchema = z.object({
 export type CancelRequestInput = z.infer<typeof cancelRequestSchema>;
 
 /**
+ * Schema for requesting cancellation (CLIENT only — does NOT change status)
+ */
+export const requestCancellationSchema = z.object({
+  id: z.string(),
+  reason: z.string().min(1),
+});
+
+export type RequestCancellationInput = z.infer<
+  typeof requestCancellationSchema
+>;
+
+/**
  * Schema for getting request stats
  */
 export const getRequestStatsSchema = z.object({}).optional();

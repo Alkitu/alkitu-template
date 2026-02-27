@@ -15,6 +15,12 @@ export interface RequestDetailOrganismProps {
   userRole: UserRole;
 
   /**
+   * Current locale for i18n
+   * @default 'es'
+   */
+  lang?: string;
+
+  /**
    * Additional CSS classes
    */
   className?: string;

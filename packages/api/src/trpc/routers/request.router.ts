@@ -14,6 +14,7 @@ import {
   updateRequestStatusSchema,
   assignRequestSchema,
   cancelRequestSchema,
+  requestCancellationSchema,
   getRequestStatsSchema,
   getRequestByIdSchema,
   deleteRequestSchema,
@@ -579,6 +580,62 @@ export function createRequestRouter(
           oldStatus,
           RequestStatus.CANCELLED,
         );
+
+        return updatedRequest;
+      }),
+
+    /**
+     * Request cancellation (CLIENT only)
+     * Security: User must own the request. Does NOT change status —
+     * sets cancellationRequested flag so ADMIN/EMPLOYEE can approve.
+     */
+    requestCancellation: protectedProcedure
+      .input(requestCancellationSchema)
+      .mutation(async ({ input, ctx }) => {
+        const request = await prisma.request.findUnique({
+          where: { id: input.id },
+          select: { userId: true, status: true },
+        });
+
+        if (!request) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Request not found',
+          });
+        }
+
+        // Only the request owner can request cancellation
+        if (ctx.user.id !== request.userId) {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'Only the request owner can request cancellation',
+          });
+        }
+
+        // Cannot request cancellation for already cancelled/completed requests
+        if (
+          request.status === RequestStatus.CANCELLED ||
+          request.status === RequestStatus.COMPLETED
+        ) {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'Cannot request cancellation for this request',
+          });
+        }
+
+        const updatedRequest = await prisma.request.update({
+          where: { id: input.id },
+          data: {
+            cancellationRequested: true,
+            cancellationRequestedAt: new Date(),
+          },
+          include: {
+            service: { include: { category: true } },
+            user: true,
+            assignedTo: true,
+            location: true,
+          },
+        });
 
         return updatedRequest;
       }),

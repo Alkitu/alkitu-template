@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { Select, SelectOption } from '../../../design-system/atoms/Select';
+import { Select } from '@/components/atoms-alianza/Select';
+import type { SelectOption } from '@/components/atoms-alianza/Select';
 import { ShowcaseContainer } from './ShowcaseContainer';
 import { Settings, User, Globe, Palette, Shield, Bell } from 'lucide-react';
 

@@ -30,7 +30,7 @@ import {
   DropdownMenuShortcut
 } from '@/components/primitives/ui/dropdown-menu';
 import { Badge } from '@/components/atoms-alianza/Badge';
-import { Avatar } from '../atoms/Avatar';
+import { Avatar } from '@/components/atoms-alianza/Avatar';
 import { useThemeEditor } from '../../core/context/ThemeEditorContext';
 
 export interface DropdownMenuItem {

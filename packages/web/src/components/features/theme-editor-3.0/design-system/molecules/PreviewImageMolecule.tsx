@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Icon } from '../atoms/Icon';
+import { Icon } from '@/components/atoms-alianza/Icon';
 import { Image, ImageOff, Loader2 } from 'lucide-react';
 
 export interface PreviewImageMoleculeProps {
@@ -279,7 +279,7 @@ export function PreviewImageMolecule({
           {loading || imageLoading ? (
             <div className="flex flex-col items-center gap-2">
               <Icon 
-                icon={Loader2} 
+                component={Loader2} 
                 variant="muted" 
                 size="lg"
                 className="animate-spin"
@@ -296,7 +296,7 @@ export function PreviewImageMolecule({
           ) : imageError ? (
             <div className="flex flex-col items-center gap-2">
               <Icon 
-                icon={ImageOff} 
+                component={ImageOff} 
                 variant="muted" 
                 size="lg"
               />
@@ -313,7 +313,7 @@ export function PreviewImageMolecule({
             placeholder || (
               <div className="flex flex-col items-center gap-2">
                 <Icon 
-                  icon={Image} 
+                  component={Image} 
                   variant="muted" 
                   size="lg"
                 />

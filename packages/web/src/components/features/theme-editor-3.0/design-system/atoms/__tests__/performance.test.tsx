@@ -7,9 +7,9 @@
 
 import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
-import { Button, MemoizedButton } from '../Button';
-import { Input, MemoizedInput } from '../Input';
-import { Select, MemoizedSelect } from '../Select';
+import { Button, MemoizedButton } from '@/components/primitives/ui/button';
+import { Input } from '@/components/atoms-alianza/Input';
+import { Select, MemoizedSelect } from '@/components/atoms-alianza/Select';
 import {
   performanceMonitor,
   usePerformanceMonitor,
@@ -75,30 +75,6 @@ describe('Performance Optimizations - ETAPA 3', () => {
         Object.keys(props).forEach(key => {
           expect((memoizedButton.props as any)[key]).toBe(props[key as keyof typeof props]);
         });
-      });
-    });
-
-    describe('MemoizedInput', () => {
-      it('should export MemoizedInput variant', () => {
-        expect(MemoizedInput).toBeDefined();
-        expect(typeof MemoizedInput).toBe('object');
-        expect(MemoizedInput.displayName).toBe('MemoizedInput');
-      });
-
-      it('should preserve all Input functionality', () => {
-        const props = {
-          type: 'email' as const,
-          placeholder: 'Enter email',
-          isInvalid: true,
-          isValid: false,
-          showPasswordToggle: false,
-          'aria-label': 'Email input'
-        };
-
-        const memoizedInput = React.createElement(MemoizedInput, props);
-        expect(memoizedInput.props.type).toBe('email');
-        expect(memoizedInput.props.placeholder).toBe('Enter email');
-        expect(memoizedInput.props.isInvalid).toBe(true);
       });
     });
 
@@ -250,7 +226,6 @@ describe('Performance Optimizations - ETAPA 3', () => {
 
       // Verificar que las versiones optimizadas también están disponibles
       expect(MemoizedButton).toBeDefined();
-      expect(MemoizedInput).toBeDefined();
       expect(MemoizedSelect).toBeDefined();
     });
 

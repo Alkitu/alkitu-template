@@ -25,8 +25,19 @@ export interface UserAvatarProps {
   /**
    * URL of the user's profile image.
    * When provided, displays the image instead of initials.
+   * Takes priority over `image` prop.
    */
   imageUrl?: string;
+
+  /**
+   * Raw DB image value: can be an icon name, emoji character, or URL.
+   * Detected automatically:
+   * - Emoji → renders emoji character
+   * - Icon name (from Icons map) → renders icon component
+   * - URL (http/https or /api/) → renders as image
+   * - Otherwise → falls back to initials
+   */
+  image?: string;
 
   /**
    * Size variant

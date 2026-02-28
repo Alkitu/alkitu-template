@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Button } from '@/components/primitives/ui/button';
-import { Icon } from '../../../design-system/atoms/Icon';
+import { Icon } from '@/components/atoms-alianza/Icon';
 import { RotateCcw } from 'lucide-react';
 
 interface ResetButtonProps {
@@ -26,7 +26,7 @@ export function ResetButton({
       title="Reset theme to original values"
     >
       <Icon
-        icon={RotateCcw}
+        component={RotateCcw}
         size="sm"
         variant={!hasChanges ? 'muted' : 'default'}
         className={!hasChanges ? 'text-muted-foreground/50' : 'text-current'}

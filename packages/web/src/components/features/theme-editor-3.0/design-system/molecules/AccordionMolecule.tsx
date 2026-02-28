@@ -9,7 +9,7 @@ import {
   AccordionContent 
 } from '@/components/primitives/ui/accordion';
 import { Badge } from '@/components/atoms-alianza/Badge';
-import { Button } from '../atoms/Button';
+import { Button } from '@/components/primitives/ui/button';
 import { useThemeEditor } from '../../core/context/ThemeEditorContext';
 
 export interface AccordionMoleculeProps {

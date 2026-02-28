@@ -8,9 +8,9 @@ import {
   ChevronsRight, 
   MoreHorizontal 
 } from 'lucide-react';
-import { Button } from '../atoms/Button';
+import { Button } from '@/components/primitives/ui/button';
 import { Badge } from '@/components/atoms-alianza/Badge';
-import { Select } from '../atoms/Select';
+import { Select } from '@/components/atoms-alianza/Select';
 import { 
   Pagination,
   PaginationContent,

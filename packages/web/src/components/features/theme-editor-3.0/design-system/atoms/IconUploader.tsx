@@ -3,8 +3,8 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { Upload, X, Check, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/primitives/ui/button';
-import { Input } from './Input';
-import { CustomIcon } from './CustomIcon';
+import { Input } from '@/components/atoms-alianza/Input';
+import { CustomIcon } from '@/components/atoms-alianza/CustomIcon';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/primitives/ui/dialog';
 
 interface IconUploaderProps {

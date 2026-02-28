@@ -195,6 +195,7 @@ export const UserManagementTable = React.forwardRef<
     lastName: user.lastname || user.lastName,
     phone: user.phone || user.contactNumber,
     role: user.role,
+    image: user.image || null,
   }));
 
   const pagination = usersData?.pagination;

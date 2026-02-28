@@ -8,7 +8,7 @@ import {
   TabsTrigger,
   TabsContent
 } from '@/components/primitives/ui/tabs';
-import { Button } from '../atoms/Button';
+import { Button } from '@/components/primitives/ui/button';
 import { Badge } from '@/components/atoms-alianza/Badge';
 import { useThemeEditor } from '../../core/context/ThemeEditorContext';
 

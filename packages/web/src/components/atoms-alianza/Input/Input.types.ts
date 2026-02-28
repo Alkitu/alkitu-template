@@ -49,6 +49,23 @@ export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
   state?: InputState;
 
   /**
+   * Icon element to display on the left side of the input
+   */
+  leftIcon?: React.ReactNode;
+
+  /**
+   * Icon element to display on the right side of the input
+   */
+  rightIcon?: React.ReactNode;
+
+  /**
+   * Show a password visibility toggle button on the right side
+   * Only applicable when type="password"
+   * @default false
+   */
+  showPasswordToggle?: boolean;
+
+  /**
    * Custom className for additional styling
    */
   className?: string;

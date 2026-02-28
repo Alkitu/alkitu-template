@@ -57,9 +57,10 @@ const sizeMap: IconSizeMap = {
 };
 
 const variantClasses: IconVariantMap = {
-  default: 'text-foreground', // Changed from 'text-current' to ensure icons are always visible
+  default: 'text-foreground',
   primary: 'text-primary',
   secondary: 'text-muted-foreground',
+  muted: 'text-muted-foreground',
   success: 'text-green-600 dark:text-green-400',
   warning: 'text-yellow-600 dark:text-yellow-400',
   error: 'text-red-600 dark:text-red-400',
@@ -69,6 +70,7 @@ export const Icon = React.forwardRef<HTMLElement, IconProps>(
   (
     {
       name,
+      component,
       size = 'md',
       variant = 'default',
       color,
@@ -106,19 +108,28 @@ export const Icon = React.forwardRef<HTMLElement, IconProps>(
       );
     }
 
-    // Handle both "iconName" and "iconNameIcon" formats
-    // Convert to camelCase if needed (e.g., "BarChart" → "barChartIcon")
-    let normalizedName = name.endsWith('Icon') ? name : `${name}Icon`;
-    // Ensure first letter is lowercase for camelCase
-    normalizedName = normalizedName.charAt(0).toLowerCase() + normalizedName.slice(1);
-    const iconKey = normalizedName as IconKeys;
-    const LucideIcon = Icons[iconKey];
+    // Resolve the icon: either from direct component or name lookup
+    let LucideIcon: React.ComponentType<any> | undefined = component;
+
+    if (!LucideIcon && name) {
+      let normalizedName = name.endsWith('Icon') ? name : `${name}Icon`;
+      normalizedName = normalizedName.charAt(0).toLowerCase() + normalizedName.slice(1);
+      const iconKey = normalizedName as IconKeys;
+      LucideIcon = Icons[iconKey];
+
+      if (!LucideIcon) {
+        if (process.env.NODE_ENV !== 'production') {
+          console.warn(
+            `Icon "${name}" (looking for "${iconKey}") not found in Icons collection. Available icons: ${Object.keys(Icons).join(', ')}`
+          );
+        }
+        return null;
+      }
+    }
 
     if (!LucideIcon) {
       if (process.env.NODE_ENV !== 'production') {
-        console.warn(
-          `Icon "${name}" (looking for "${iconKey}") not found in Icons collection. Available icons: ${Object.keys(Icons).join(', ')}`
-        );
+        console.warn('Icon: either "name" or "component" prop must be provided');
       }
       return null;
     }
@@ -149,7 +160,7 @@ export const Icon = React.forwardRef<HTMLElement, IconProps>(
               onClick();
             }
           }}
-          aria-label={ariaLabel || name}
+          aria-label={ariaLabel || name || 'icon'}
           aria-hidden={ariaHidden as boolean | undefined}
           data-testid={dataTestId}
           className="inline-flex items-center justify-center outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-[var(--radius-tooltip)]"

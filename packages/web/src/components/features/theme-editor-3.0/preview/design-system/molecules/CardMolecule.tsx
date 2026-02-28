@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Card } from '@/components/primitives/ui/card';
-import { Button } from '../../../design-system/atoms/Button';
+import { Button } from '@/components/primitives/ui/button';
 import { Badge } from '@/components/atoms-alianza/Badge';
 import { useThemeEditor } from '../../../core/context/ThemeEditorContext';
 

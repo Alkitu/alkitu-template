@@ -65,9 +65,7 @@ export const themeEditorLazyComponents = {
   'ColorHistory': () => import('../theme-editor/editor/ColorHistory'),
 
   // Stories de Storybook (solo development)
-  'ButtonStories': () => import('../design-system/atoms/Button.stories'),
-  'InputStories': () => import('../design-system/atoms/Input.stories'),
-  'SelectStories': () => import('../design-system/atoms/Select.stories')
+  'InputStories': () => import('../design-system/atoms/Input.stories')
 };
 
 /**
@@ -79,9 +77,7 @@ export const preloadCriticalComponents = () => {
   // Precargar solo componentes críticos
   const criticalComponents = [
     '../core/context/ThemeEditorContext',
-    '../design-system/atoms/Button',
-    '../design-system/atoms/Input',
-    '../design-system/atoms/Select'
+    '../design-system/atoms/Input'
   ];
 
   criticalComponents.forEach(component => {

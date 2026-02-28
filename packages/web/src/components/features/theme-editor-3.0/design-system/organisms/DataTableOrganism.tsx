@@ -3,9 +3,9 @@
 import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/primitives/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/primitives/ui/table';
-import { Button } from '../atoms/Button';
+import { Button } from '@/components/primitives/ui/button';
 import { Badge } from '@/components/atoms-alianza/Badge';
-import { Input } from '../atoms/Input';
+import { Input } from '@/components/atoms-alianza/Input';
 import { useThemeEditor } from '../../core/context/ThemeEditorContext';
 import { 
   Search, 

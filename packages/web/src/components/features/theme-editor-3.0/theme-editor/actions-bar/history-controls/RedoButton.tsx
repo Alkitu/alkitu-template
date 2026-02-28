@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Button } from '@/components/primitives/ui/button';
-import { Icon } from '../../../design-system/atoms/Icon';
+import { Icon } from '@/components/atoms-alianza/Icon';
 import { Redo } from 'lucide-react';
 
 interface RedoButtonProps {
@@ -28,7 +28,7 @@ export function RedoButton({
       title={`Redo ${redoCount > 0 ? `(${redoCount} available)` : '(no changes)'}`}
     >
       <Icon
-        icon={Redo}
+        component={Redo}
         size="sm"
         variant={!canRedo ? 'muted' : 'default'}
         className={!canRedo ? 'text-muted-foreground/50' : 'text-current'}

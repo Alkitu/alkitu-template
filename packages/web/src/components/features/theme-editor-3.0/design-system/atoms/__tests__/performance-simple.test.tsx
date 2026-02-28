@@ -7,20 +7,15 @@
 
 import React from 'react';
 import { describe, it, expect } from 'vitest';
-import { Button, MemoizedButton } from '../Button';
-import { Input, MemoizedInput } from '../Input';
-import { Select, MemoizedSelect } from '../Select';
+import { Button, MemoizedButton } from '@/components/primitives/ui/button';
+import { Input } from '@/components/atoms-alianza/Input';
+import { Select, MemoizedSelect } from '@/components/atoms-alianza/Select';
 
 describe('Performance Optimizations - Core Functionality', () => {
   describe('React.memo() Wrappers Export Correctly', () => {
     it('should export MemoizedButton', () => {
       expect(MemoizedButton).toBeDefined();
       expect(MemoizedButton.displayName).toBe('MemoizedButton');
-    });
-
-    it('should export MemoizedInput', () => {
-      expect(MemoizedInput).toBeDefined();
-      expect(MemoizedInput.displayName).toBe('MemoizedInput');
     });
 
     it('should export MemoizedSelect', () => {
@@ -47,20 +42,19 @@ describe('Performance Optimizations - Core Functionality', () => {
       expect(originalButton.props.children).toBe(memoizedButton.props.children);
     });
 
-    it('MemoizedInput should accept same props as Input', () => {
+    it('Input should accept alianza Input props', () => {
       const inputProps = {
         type: 'email' as const,
         placeholder: 'Enter email',
-        isInvalid: true,
+        state: 'error' as const,
         showPasswordToggle: false
       };
 
-      const originalInput = React.createElement(Input, inputProps);
-      const memoizedInput = React.createElement(MemoizedInput, inputProps);
+      const input = React.createElement(Input, inputProps);
 
-      expect(originalInput.props.type).toBe(memoizedInput.props.type);
-      expect(originalInput.props.placeholder).toBe(memoizedInput.props.placeholder);
-      expect(originalInput.props.isInvalid).toBe(memoizedInput.props.isInvalid);
+      expect(input.props.type).toBe('email');
+      expect(input.props.placeholder).toBe('Enter email');
+      expect(input.props.state).toBe('error');
     });
 
     it('MemoizedSelect should accept same props as Select', () => {
@@ -99,11 +93,10 @@ describe('Performance Optimizations - Core Functionality', () => {
       // Original components (React.forwardRef returns object)
       expect(typeof Button).toBe('object');
       expect(typeof Input).toBe('object');
-      expect(typeof Select).toBe('function');
+      expect(typeof Select).toBe('object');
 
       // Memoized versions (React.memo wraps in object)
       expect(typeof MemoizedButton).toBe('object');
-      expect(typeof MemoizedInput).toBe('object');
       expect(typeof MemoizedSelect).toBe('object');
     });
   });

@@ -11,9 +11,9 @@
 
 import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
-import { Button } from '../Button';
-import { Input } from '../Input';
-import { Select } from '../Select';
+import { Button } from '@/components/primitives/ui/button';
+import { Input } from '@/components/atoms-alianza/Input';
+import { Select } from '@/components/atoms-alianza/Select';
 import { Badge } from '@/components/atoms-alianza/Badge';
 import { Checkbox } from '../Checkbox';
 
@@ -56,12 +56,12 @@ describe('Accessibility Enhancements - Critical Components', () => {
   describe('Input Accessibility', () => {
     it('should have proper validation accessibility', () => {
       const input = React.createElement(Input, {
-        isInvalid: true,
+        state: 'error',
         'aria-describedby': 'error-message',
         'aria-required': true
       });
 
-      expect(input.props.isInvalid).toBe(true);
+      expect(input.props.state).toBe('error');
       expect(input.props['aria-describedby']).toBe('error-message');
       expect(input.props['aria-required']).toBe(true);
     });

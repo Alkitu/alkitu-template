@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { ChevronDown, ChevronRight, Search, X } from 'lucide-react';
-import { Input } from '../../../design-system/atoms/Input';
+import { Input } from '@/components/atoms-alianza/Input';
 import { Button } from '@/components/primitives/ui/button';
 import { Badge } from '@/components/primitives/ui/badge';
 import { ButtonShowcase } from './ButtonShowcase';

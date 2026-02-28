@@ -2,9 +2,9 @@
 
 import React, { useState } from 'react';
 import { ShowcaseContainer } from './ShowcaseContainer';
-import { Icon } from '../../../design-system/atoms/Icon';
+import { Icon } from '@/components/atoms-alianza/Icon';
 import { SystemIcons } from '../../../design-system/atoms/IconLibrary';
-import { CustomIcon } from '../../../design-system/atoms/CustomIcon';
+import { CustomIcon } from '@/components/atoms-alianza/CustomIcon';
 import { IconUploader } from '../../../design-system/atoms/IconUploader';
 import { useCustomIcons } from '../../../hooks/useCustomIcons';
 import { Upload, Trash2 } from 'lucide-react';
@@ -136,7 +136,7 @@ export function IconShowcase() {
                 className="aspect-square flex items-center justify-center p-1.5 rounded hover:bg-primary/10 transition-colors cursor-pointer"
               >
                 <Icon
-                  icon={IconComponent as any}
+                  component={IconComponent as any}
                   size="sm"
                   variant="primary"
                 />

@@ -15,6 +15,7 @@ export interface UserTableItem {
   lastName: string | null;
   phone: string | null;
   role: string;
+  image?: string | null;
 }
 
 /**

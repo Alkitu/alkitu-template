@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Input } from '../../../design-system/atoms/Input';
+import { Input } from '@/components/atoms-alianza/Input';
 import { ShowcaseContainer } from './ShowcaseContainer';
 import { Search, Mail, Lock, User, Phone, Calendar } from 'lucide-react';
 
@@ -73,7 +73,7 @@ export function InputShowcase() {
           <ShowcaseContainer name="Error Input" tokenId="input-error">
             <Input 
               placeholder="Invalid input..."
-              isInvalid={true}
+              state="error"
               leftIcon={<User className="h-4 w-4" />}
             />
           </ShowcaseContainer>
@@ -84,7 +84,7 @@ export function InputShowcase() {
           <ShowcaseContainer name="Success Input" tokenId="input-success">
             <Input 
               placeholder="Valid input..."
-              isValid={true}
+              state="success"
               leftIcon={<User className="h-4 w-4" />}
             />
           </ShowcaseContainer>
@@ -94,7 +94,7 @@ export function InputShowcase() {
         <div className="flex-1 min-w-[280px] max-w-[350px]">
           <ShowcaseContainer name="Ghost Input" tokenId="input-ghost">
             <Input 
-              variant="ghost"
+              variant="outline"
               placeholder="Ghost variant..."
             />
           </ShowcaseContainer>
@@ -114,7 +114,7 @@ export function InputShowcase() {
         <div className="flex-1 min-w-[280px] max-w-[350px]">
           <ShowcaseContainer name="Small Input" tokenId="input-small">
             <Input 
-              inputSize="sm"
+              size="sm"
               placeholder="Small size..."
               leftIcon={<Phone className="h-3 w-3" />}
             />
@@ -125,7 +125,7 @@ export function InputShowcase() {
         <div className="flex-1 min-w-[280px] max-w-[350px]">
           <ShowcaseContainer name="Large Input" tokenId="input-large">
             <Input 
-              inputSize="lg"
+              size="lg"
               placeholder="Large size..."
               leftIcon={<Calendar className="h-5 w-5" />}
             />

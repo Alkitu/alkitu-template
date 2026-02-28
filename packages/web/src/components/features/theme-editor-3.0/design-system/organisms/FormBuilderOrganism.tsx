@@ -24,11 +24,11 @@ import {
   Search
 } from 'lucide-react';
 
-import { Button } from '../atoms/Button';
-import { Input } from '../atoms/Input';
+import { Button } from '@/components/primitives/ui/button';
+import { Input } from '@/components/atoms-alianza/Input';
 import { Checkbox } from '../atoms/Checkbox';
 import { RadioButton } from '@/components/atoms-alianza/RadioButton';
-import { Select } from '../atoms/Select';
+import { Select } from '@/components/atoms-alianza/Select';
 import { Toggle } from '@/components/atoms-alianza/Toggle';
 import { Badge } from '@/components/atoms-alianza/Badge';
 import { Separator } from '@/components/atoms-alianza/Separator';

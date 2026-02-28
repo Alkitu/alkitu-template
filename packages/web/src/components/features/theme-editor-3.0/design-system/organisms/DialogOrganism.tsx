@@ -2,9 +2,9 @@
 
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/primitives/ui/dialog';
-import { Button } from '../atoms/Button';
+import { Button } from '@/components/primitives/ui/button';
 import { Badge } from '@/components/atoms-alianza/Badge';
-import { Input } from '../atoms/Input';
+import { Input } from '@/components/atoms-alianza/Input';
 import { useThemeEditor } from '../../core/context/ThemeEditorContext';
 import { 
   Plus,

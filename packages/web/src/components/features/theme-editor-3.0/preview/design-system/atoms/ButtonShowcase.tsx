@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Button } from '../../../design-system/atoms/Button';
+import { Button } from '@/components/primitives/ui/button';
 import { ShowcaseContainer } from './ShowcaseContainer';
 
 export function ButtonShowcase() {

@@ -169,6 +169,7 @@ export const updateMyProfileSchema = z.object({
   phone: z.string().optional(),
   company: z.string().optional(),
   address: z.string().optional(),
+  image: z.string().optional(),
   contactPerson: z
     .object({
       name: z.string().min(1, 'Name is required'),

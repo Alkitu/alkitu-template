@@ -109,6 +109,7 @@ export function UsersTableAlianza({
                   <UserAvatar
                     name={user.name || user.email}
                     lastName={user.lastName || undefined}
+                    image={user.image || undefined}
                     size="md"
                   />
                   <div className="flex flex-col">

@@ -24,12 +24,12 @@ import {
 } from 'lucide-react';
 
 // Import our design system components
-import { Button } from '../atoms/Button';
-import { Input } from '../atoms/Input';
+import { Button } from '@/components/primitives/ui/button';
+import { Input } from '@/components/atoms-alianza/Input';
 import { Textarea } from '@/components/primitives/ui/textarea';
 import { Checkbox } from '../atoms/Checkbox';
 import { RadioButton } from '@/components/atoms-alianza/RadioButton';
-import { Select } from '../atoms/Select';
+import { Select } from '@/components/atoms-alianza/Select';
 import { Toggle } from '@/components/atoms-alianza/Toggle';
 import { Badge } from '@/components/atoms-alianza/Badge';
 import { Separator } from '@/components/atoms-alianza/Separator';
@@ -412,7 +412,7 @@ function FormFieldPreview({ field }: { field: FormField }) {
     case 'number':
     case 'url':
     case 'tel':
-      return <Input type={field.type} label={field.label} placeholder={field.placeholder} disabled />;
+      return <Input type={field.type} placeholder={field.placeholder} disabled />;
     
     case 'textarea':
       return (
@@ -459,7 +459,7 @@ function FormFieldPreview({ field }: { field: FormField }) {
       return <Toggle label={field.label} disabled />;
     
     case 'file':
-      return <Input type="file" label={field.label} placeholder={field.placeholder} disabled />;
+      return <Input type="file" placeholder={field.placeholder} disabled />;
     
     case 'divider':
       return <Separator />;
@@ -511,15 +511,15 @@ function BasicProperties({ field, onUpdate }: { field: FormField; onUpdate: (upd
   return (
     <div className="flex flex-col gap-3">
       <Input
-        label="Label"
+        placeholder="Label"
         value={field.label}
         onChange={(e) => onUpdate({ label: e.target.value })}
       />
-      
+
       {field.type !== 'divider' && (
         <>
           <Input
-            label="Placeholder"
+            placeholder="Placeholder"
             value={field.placeholder || ''}
             onChange={(e) => onUpdate({ placeholder: e.target.value })}
           />
@@ -677,18 +677,18 @@ function ValidationProperties({ field, onUpdate }: { field: FormField; onUpdate:
             <div className="grid grid-cols-2 gap-2">
               <Input
                 type="number"
-                label="Min Length"
+                placeholder="Min Length"
                 value={field.validation?.minLength || ''}
-                onChange={(e) => onUpdate({ 
-                  validation: { ...field.validation, minLength: parseInt(e.target.value) || undefined } 
+                onChange={(e) => onUpdate({
+                  validation: { ...field.validation, minLength: parseInt(e.target.value) || undefined }
                 })}
               />
               <Input
                 type="number"
-                label="Max Length"
+                placeholder="Max Length"
                 value={field.validation?.maxLength || ''}
-                onChange={(e) => onUpdate({ 
-                  validation: { ...field.validation, maxLength: parseInt(e.target.value) || undefined } 
+                onChange={(e) => onUpdate({
+                  validation: { ...field.validation, maxLength: parseInt(e.target.value) || undefined }
                 })}
               />
             </div>
@@ -699,26 +699,25 @@ function ValidationProperties({ field, onUpdate }: { field: FormField; onUpdate:
           <div className="grid grid-cols-2 gap-2">
             <Input
               type="number"
-              label="Minimum Value"
+              placeholder="Minimum Value"
               value={field.validation?.min || ''}
-              onChange={(e) => onUpdate({ 
-                validation: { ...field.validation, min: parseInt(e.target.value) || undefined } 
+              onChange={(e) => onUpdate({
+                validation: { ...field.validation, min: parseInt(e.target.value) || undefined }
               })}
             />
             <Input
               type="number"
-              label="Maximum Value"
+              placeholder="Maximum Value"
               value={field.validation?.max || ''}
-              onChange={(e) => onUpdate({ 
-                validation: { ...field.validation, max: parseInt(e.target.value) || undefined } 
+              onChange={(e) => onUpdate({
+                validation: { ...field.validation, max: parseInt(e.target.value) || undefined }
               })}
             />
           </div>
         ) : null}
         
         <Input
-          label="Regex Pattern"
-          placeholder="e.g., ^[A-Za-z]+$"
+          placeholder="Regex Pattern (e.g., ^[A-Za-z]+$)"
           value={field.validation?.pattern || ''}
           onChange={(e) => onUpdate({ 
             validation: { ...field.validation, pattern: e.target.value } 
@@ -726,7 +725,6 @@ function ValidationProperties({ field, onUpdate }: { field: FormField; onUpdate:
         />
         
         <Input
-          label="Error Message"
           placeholder="Custom validation error message"
           value={field.validation?.message || ''}
           onChange={(e) => onUpdate({ 
@@ -840,7 +838,6 @@ function InteractivePreviewField({ field, value, onChange }: { field: FormField;
       return (
         <Input
           type={field.type}
-          label={field.label}
           placeholder={field.placeholder}
           required={field.required}
           value={value || ''}
@@ -936,7 +933,6 @@ function InteractivePreviewField({ field, value, onChange }: { field: FormField;
       return (
         <Input
           type="file"
-          label={field.label}
           required={field.required}
           onChange={(e) => onChange((e.target as HTMLInputElement).files?.[0] || null)}
         />
@@ -1032,8 +1028,8 @@ function EnhancedToolbox({ onAddField, searchQuery, onSearchChange, activeCatego
           placeholder="Search elements..."
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
-          variant="ghost"
-          inputSize="sm"
+          variant="outline"
+          size="sm"
         />
       </div>
       

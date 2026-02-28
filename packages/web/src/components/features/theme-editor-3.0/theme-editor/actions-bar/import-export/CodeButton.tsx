@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/primitives/ui/button';
-import { Icon } from '../../../design-system/atoms/Icon';
+import { Icon } from '@/components/atoms-alianza/Icon';
 import { Code } from 'lucide-react';
 import { ThemeWithCurrentColors, ThemeExportFormat } from '../../../core/types/theme.types';
 import { ThemeCodeModal } from './ThemeCodeModal';
@@ -34,7 +34,7 @@ export function CodeButton({ theme, onExport, className = "" }: CodeButtonProps)
         title="Export theme code"
       >
         <Icon
-          icon={Code}
+          component={Code}
           size="sm"
           variant="default"
           className="text-current"

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Button } from '@/components/primitives/ui/button';
-import { Icon } from '../../../design-system/atoms/Icon';
+import { Icon } from '@/components/atoms-alianza/Icon';
 import { Undo } from 'lucide-react';
 
 interface UndoButtonProps {
@@ -28,7 +28,7 @@ export function UndoButton({
       title={`Undo ${undoCount > 0 ? `(${undoCount} available)` : '(no changes)'}`}
     >
       <Icon
-        icon={Undo}
+        component={Undo}
         size="sm"
         variant={!canUndo ? 'muted' : 'default'}
         className={!canUndo ? 'text-muted-foreground/50' : 'text-current'}

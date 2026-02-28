@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { Separator } from '@/components/primitives/ui/separator';
+import { Separator } from '@/components/atoms-alianza/Separator';
 import { ThemeShadows } from '../../../core/types/theme.types';
 import { ShadowController } from './ShadowController';
 import { applyShadowElements } from '../../../lib/utils/css/css-variables';

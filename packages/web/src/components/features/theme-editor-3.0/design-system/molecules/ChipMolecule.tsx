@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Icon } from '../atoms/Icon';
+import { Icon } from '@/components/atoms-alianza/Icon';
 import { X } from 'lucide-react';
 
 export interface ChipMoleculeProps {
@@ -295,9 +295,9 @@ export function ChipMolecule({
       {/* Start Icon */}
       {StartIcon && (
         <Icon
-          icon={StartIcon as import('lucide-react').LucideIcon}
+          component={StartIcon as import('lucide-react').LucideIcon}
           size={iconSize}
-          style={{ color: 'currentColor' }}
+          color="currentColor"
         />
       )}
 
@@ -309,9 +309,9 @@ export function ChipMolecule({
       {/* End Icon */}
       {EndIcon && (
         <Icon
-          icon={EndIcon as import('lucide-react').LucideIcon}
+          component={EndIcon as import('lucide-react').LucideIcon}
           size={iconSize}
-          style={{ color: 'currentColor' }}
+          color="currentColor"
         />
       )}
 
@@ -333,10 +333,10 @@ export function ChipMolecule({
           }}
           aria-label="Remove"
         >
-          <Icon 
-            icon={X} 
+          <Icon
+            component={X}
             size={iconSize}
-            style={{ color: 'currentColor' }}
+            color="currentColor"
           />
         </button>
       )}

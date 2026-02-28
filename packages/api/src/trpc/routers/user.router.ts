@@ -320,6 +320,7 @@ export const createUserRouter = (
             phone: input.phone,
             company: input.company,
             address: input.address,
+            image: input.image,
             ...(input.contactPerson && {
               contactPerson: {
                 name: input.contactPerson.name,

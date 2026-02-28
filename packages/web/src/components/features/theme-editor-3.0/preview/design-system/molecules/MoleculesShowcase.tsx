@@ -25,7 +25,7 @@ import { TabsMolecule } from '../../../design-system/molecules/TabsMolecule';
 import { ComboboxMolecule } from '../../../design-system/molecules/ComboboxMolecule';
 import { NavigationMenuMolecule } from '../../../design-system/molecules/NavigationMenuMolecule';
 import { SonnerMolecule, useToast } from '../../../design-system/molecules/SonnerMolecule';
-import { Button } from '../../../design-system/atoms/Button';
+import { Button } from '@/components/primitives/ui/button';
 import { useThemeEditor } from '../../../core/context/ThemeEditorContext';
 import { ComponentSearchFilter, SearchableItem, CategoryMapping } from '../../../design-system/components/ComponentSearchFilter';
 

@@ -2,8 +2,8 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Check, ChevronDown, Search, X } from 'lucide-react';
-import { Button } from '../atoms/Button';
-import { Input } from '../atoms/Input';
+import { Button } from '@/components/primitives/ui/button';
+import { Input } from '@/components/atoms-alianza/Input';
 import { Badge } from '@/components/atoms-alianza/Badge';
 import { 
   Popover,

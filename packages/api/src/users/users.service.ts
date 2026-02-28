@@ -215,6 +215,7 @@ export class UsersService {
         createdAt: true,
         lastLogin: true,
         emailVerified: true,
+        image: true,
       },
       orderBy: {
         [sortBy]: sortOrder,
@@ -263,6 +264,7 @@ export class UsersService {
         emailVerified: true,
         theme: true,
         language: true,
+        image: true,
       },
     });
 
@@ -369,6 +371,9 @@ export class UsersService {
     if (updateProfileDto.role !== undefined) {
       updateData.role = updateProfileDto.role;
     }
+    if (updateProfileDto.image !== undefined) {
+      updateData.image = updateProfileDto.image;
+    }
 
     // Only CLIENT can update address and contactPerson
     if (user.role === UserRole.CLIENT) {
@@ -398,6 +403,7 @@ export class UsersService {
         createdAt: true,
         updatedAt: true,
         emailVerified: true,
+        image: true,
       },
     });
   }

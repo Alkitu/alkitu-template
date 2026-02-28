@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/primitives/ui/button';
-import { Icon } from '../../../design-system/atoms/Icon';
+import { Icon } from '@/components/atoms-alianza/Icon';
 import { Upload } from 'lucide-react';
 import { ThemeData } from '../../../core/types/theme.types';
 import { ImportCustomCSSModal } from './ImportCustomCSSModal';
@@ -40,7 +40,7 @@ export function ImportButton({ onImport, onError, existingThemes, className = ""
         title="Import theme from CSS"
       >
         <Icon
-          icon={Upload}
+          component={Upload}
           size="sm"
           variant="default"
           className="text-current"

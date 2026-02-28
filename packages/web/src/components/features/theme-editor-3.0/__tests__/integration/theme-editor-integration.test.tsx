@@ -7,9 +7,9 @@
 
 import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
-import { Button, MemoizedButton } from '../../design-system/atoms/Button';
-import { Input, MemoizedInput } from '../../design-system/atoms/Input';
-import { Select, MemoizedSelect } from '../../design-system/atoms/Select';
+import { Button, MemoizedButton } from '@/components/primitives/ui/button';
+import { Input } from '@/components/atoms-alianza/Input';
+import { Select, MemoizedSelect } from '@/components/atoms-alianza/Select';
 import { Badge } from '@/components/atoms-alianza/Badge';
 import { Checkbox } from '../../design-system/atoms/Checkbox';
 
@@ -58,24 +58,22 @@ describe('Theme Editor Integration Tests', () => {
           type: 'text',
           placeholder: 'Enter theme name',
           value: 'a',
-          variant: 'error',
-          isInvalid: true,
+          state: 'error',
           'aria-describedby': 'theme-name-error'
         }),
         valid: React.createElement(Input, {
           type: 'text',
           placeholder: 'Enter theme name',
           value: 'My Custom Theme',
-          variant: 'success',
-          isValid: true,
+          state: 'success',
           'aria-describedby': 'theme-name-success'
         })
       };
 
       // Verificar flujo de validación
       expect(validationFlow.initial.props.variant).toBe('default');
-      expect(validationFlow.invalid.props.isInvalid).toBe(true);
-      expect(validationFlow.valid.props.isValid).toBe(true);
+      expect(validationFlow.invalid.props.state).toBe('error');
+      expect(validationFlow.valid.props.state).toBe('success');
     });
 
     it('should integrate Select with theme options workflow', () => {
@@ -123,7 +121,7 @@ describe('Theme Editor Integration Tests', () => {
           onClick: vi.fn(),
           children: 'Pick Color'
         }),
-        colorInput: React.createElement(MemoizedInput, {
+        colorInput: React.createElement(Input, {
           type: 'color',
           value: '#3b82f6',
           onChange: vi.fn(),
@@ -282,7 +280,7 @@ describe('Theme Editor Integration Tests', () => {
             children: 'Retry'
           }),
           input: React.createElement(Input, {
-            isInvalid: true,
+            state: 'error',
             'aria-describedby': 'theme-error'
           }),
           select: React.createElement(Select, {
@@ -307,7 +305,7 @@ describe('Theme Editor Integration Tests', () => {
       expect(themeStates.loading.button.props.loading).toBe(true);
       expect(themeStates.loading.input.props.disabled).toBe(true);
       expect(themeStates.error.button.props.variant).toBe('destructive');
-      expect(themeStates.error.input.props.isInvalid).toBe(true);
+      expect(themeStates.error.input.props.state).toBe('error');
       expect(themeStates.success.badge.props.variant).toBe('success');
     });
 
@@ -321,7 +319,7 @@ describe('Theme Editor Integration Tests', () => {
             children: 'Mobile Action'
           }),
           input: React.createElement(Input, {
-            inputSize: 'sm',
+            size: 'sm',
             className: 'mobile-input'
           })
         },
@@ -332,7 +330,7 @@ describe('Theme Editor Integration Tests', () => {
             children: 'Tablet Action'
           }),
           input: React.createElement(Input, {
-            inputSize: 'default',
+            size: 'md',
             className: 'tablet-input'
           })
         },
@@ -343,7 +341,7 @@ describe('Theme Editor Integration Tests', () => {
             children: 'Desktop Action'
           }),
           input: React.createElement(Input, {
-            inputSize: 'lg',
+            size: 'lg',
             className: 'desktop-input'
           })
         }
@@ -362,14 +360,14 @@ describe('Theme Editor Integration Tests', () => {
       const errorFlow = {
         validation: {
           nameInput: React.createElement(Input, {
-            isInvalid: true,
+            state: 'error',
             'aria-describedby': 'name-error',
             value: '',
             placeholder: 'Theme name required'
           }),
           colorInput: React.createElement(Input, {
             type: 'color',
-            isInvalid: true,
+            state: 'error',
             'aria-describedby': 'color-error',
             value: '#invalid'
           }),
@@ -405,8 +403,8 @@ describe('Theme Editor Integration Tests', () => {
       };
 
       // Verificar manejo de errores integrado
-      expect(errorFlow.validation.nameInput.props.isInvalid).toBe(true);
-      expect(errorFlow.validation.colorInput.props.isInvalid).toBe(true);
+      expect(errorFlow.validation.nameInput.props.state).toBe('error');
+      expect(errorFlow.validation.colorInput.props.state).toBe('error');
       expect(errorFlow.recovery.retryButton.props.variant).toBe('outline');
       expect(errorFlow.feedback.errorBadge.props.variant).toBe('error');
     });

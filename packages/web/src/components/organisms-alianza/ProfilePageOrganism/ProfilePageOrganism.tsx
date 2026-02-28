@@ -1,9 +1,12 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
-import { useTranslations, useTranslationContext } from '@/context/TranslationsContext';
+import {
+  useTranslations,
+  useTranslationContext,
+} from '@/context/TranslationsContext';
 import { useRouter, usePathname } from 'next/navigation';
 import { AdminPageHeader } from '@/components/molecules-alianza/AdminPageHeader';
 import {
@@ -21,9 +24,11 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/primitives/ui/card';
-import { User, Shield, Settings, MapPin } from 'lucide-react';
+import { User, Shield, Settings, MapPin, Pencil } from 'lucide-react';
 import { useGlobalTheme } from '@/hooks/useGlobalTheme';
 import { applyThemePreference } from '@/hooks/use-sync-user-preferences';
+import { UserAvatar } from '@/components/molecules-alianza/UserAvatar';
+import { IconSelector } from '@/components/primitives/ui/icon-selector';
 import type { ProfilePageOrganismProps } from './ProfilePageOrganism.types';
 import type { UserPreferencesFormValues } from '@/components/molecules-alianza/UserPreferencesForm/UserPreferencesForm.types';
 
@@ -45,14 +50,9 @@ export const ProfilePageOrganism: React.FC<ProfilePageOrganismProps> = ({
   const utils = trpc.useUtils();
   const { setThemeMode } = useGlobalTheme();
 
-  const {
-    data: user,
-    isLoading,
-    isError,
-    refetch,
-  } = trpc.user.me.useQuery();
+  const [iconSelectorOpen, setIconSelectorOpen] = useState(false);
 
-
+  const { data: user, isLoading, isError, refetch } = trpc.user.me.useQuery();
 
   const updateProfileMutation = trpc.user.updateMyProfile.useMutation({
     onSuccess: () => {
@@ -84,9 +84,13 @@ export const ProfilePageOrganism: React.FC<ProfilePageOrganismProps> = ({
 
       // Apply theme immediately (localStorage + CSS class + React state)
       applyThemePreference(values.theme);
-      setThemeMode(values.theme === 'system'
-        ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
-        : values.theme as 'light' | 'dark');
+      setThemeMode(
+        values.theme === 'system'
+          ? window.matchMedia('(prefers-color-scheme: dark)').matches
+            ? 'dark'
+            : 'light'
+          : (values.theme as 'light' | 'dark'),
+      );
 
       // Invalidate cache so the new page loads fresh data from DB
       await utils.user.me.invalidate();
@@ -108,6 +112,11 @@ export const ProfilePageOrganism: React.FC<ProfilePageOrganismProps> = ({
     } catch {
       toast.error(t('toast.preferencesError'));
     }
+  };
+
+  const handleAvatarSelect = (value: string) => {
+    setIconSelectorOpen(false);
+    updateProfileMutation.mutate({ image: value });
   };
 
   if (isLoading) {
@@ -145,7 +154,9 @@ export const ProfilePageOrganism: React.FC<ProfilePageOrganismProps> = ({
               <User className="h-5 w-5" />
               {t('tabs.info')}
             </CardTitle>
-            <CardDescription>{t('sections.profileDescription')}</CardDescription>
+            <CardDescription>
+              {t('sections.profileDescription')}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <UserProfileForm
@@ -178,7 +189,9 @@ export const ProfilePageOrganism: React.FC<ProfilePageOrganismProps> = ({
               <Shield className="h-5 w-5" />
               {t('tabs.security')}
             </CardTitle>
-            <CardDescription>{t('sections.securityDescription')}</CardDescription>
+            <CardDescription>
+              {t('sections.securityDescription')}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <ChangePasswordForm
@@ -208,7 +221,9 @@ export const ProfilePageOrganism: React.FC<ProfilePageOrganismProps> = ({
           <CardContent>
             <UserPreferencesForm
               defaultValues={{
-                theme: ((user as any).theme as 'light' | 'dark' | 'system') || 'system',
+                theme:
+                  ((user as any).theme as 'light' | 'dark' | 'system') ||
+                  'system',
                 language: ((user as any).language as 'es' | 'en') || 'es',
               }}
               onSubmit={handlePreferencesSubmit}
@@ -248,10 +263,42 @@ export const ProfilePageOrganism: React.FC<ProfilePageOrganismProps> = ({
 
   return (
     <div className="p-6 space-y-6">
-      <AdminPageHeader
-        title={t('title')}
-        description={t('description')}
+      <AdminPageHeader title={t('title')} description={t('description')} />
+
+      {/* Avatar Picker */}
+      <div className="flex items-center gap-4">
+        <button
+          type="button"
+          className="relative group cursor-pointer rounded-full"
+          onClick={() => setIconSelectorOpen(true)}
+        >
+          <UserAvatar
+            name={user.firstname || user.email}
+            lastName={user.lastname || undefined}
+            image={(user as any).image || undefined}
+            size="lg"
+          />
+          {/* Hover overlay */}
+          <div className="absolute inset-0 rounded-full bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+            <Pencil className="h-4 w-4 text-white" />
+          </div>
+        </button>
+        <div className="flex flex-col">
+          <span className="font-medium text-foreground">
+            {`${user.firstname || ''} ${user.lastname || ''}`.trim() ||
+              user.email}
+          </span>
+          <span className="text-sm text-muted-foreground">{user.email}</span>
+        </div>
+      </div>
+
+      <IconSelector
+        open={iconSelectorOpen}
+        onClose={() => setIconSelectorOpen(false)}
+        onSelect={handleAvatarSelect}
+        title={t('avatar.selectorTitle') || 'Choose avatar'}
       />
+
       <TabsAlianza tabs={tabs} />
     </div>
   );

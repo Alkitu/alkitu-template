@@ -1,0 +1,520 @@
+- generic [ref=e1]:
+  - generic [ref=e6] [cursor=pointer]:
+    - button "Open Next.js Dev Tools" [ref=e7]:
+      - img [ref=e8]
+    - generic [ref=e11]:
+      - button "Open issues overlay" [ref=e12]:
+        - generic [ref=e13]:
+          - generic [ref=e14]: "0"
+          - generic [ref=e15]: "1"
+        - generic [ref=e16]: Issue
+      - button "Collapse issues badge" [ref=e17]:
+        - img [ref=e18]
+  - main [ref=e20]:
+    - generic [ref=e21]:
+      - generic [ref=e24]:
+        - generic [ref=e26]:
+          - generic [ref=e27]:
+            - generic [ref=e28]: RESUMEN
+            - list [ref=e29]:
+              - listitem [ref=e30]:
+                - link "Dashboard" [ref=e31] [cursor=pointer]:
+                  - /url: /admin/dashboard
+                  - img [ref=e32]
+                  - generic: Dashboard
+          - generic [ref=e35]:
+            - generic [ref=e36]: GESTIÓN
+            - list [ref=e37]:
+              - listitem [ref=e38]:
+                - button "Requests" [ref=e39]:
+                  - img [ref=e40]
+                  - generic [ref=e43]: Requests
+                  - img [ref=e44]
+              - listitem [ref=e46]:
+                - button "Users" [ref=e47]:
+                  - img [ref=e48]
+                  - generic [ref=e53]: Users
+                  - img [ref=e54]
+              - listitem [ref=e56]:
+                - button "Catalog" [ref=e57]:
+                  - img [ref=e58]
+                  - generic [ref=e61]: Catalog
+                  - img [ref=e62]
+              - listitem [ref=e64]:
+                - link "Media Manager" [ref=e65] [cursor=pointer]:
+                  - /url: /admin/media
+                  - img [ref=e66]
+                  - generic: Media Manager
+          - generic [ref=e68]:
+            - generic [ref=e69]: COMUNICACIÓN
+            - list [ref=e70]:
+              - listitem [ref=e71]:
+                - button "Notifications" [ref=e72]:
+                  - img [ref=e73]
+                  - generic [ref=e76]: Notifications
+                  - img [ref=e77]
+          - generic [ref=e79]:
+            - generic [ref=e80]: CONFIGURACIÓN
+            - list [ref=e81]:
+              - listitem [ref=e82]:
+                - link "My Profile" [ref=e83] [cursor=pointer]:
+                  - /url: /admin/profile
+                  - img [ref=e84]
+                  - generic: My Profile
+              - listitem [ref=e87]:
+                - button "Settings" [ref=e88]:
+                  - img [ref=e89]
+                  - generic [ref=e92]: Settings
+                  - img [ref=e93]
+        - list [ref=e96]:
+          - listitem [ref=e97]:
+            - button "CN Screenshot Admin screenshot-admin@alkitu.test" [ref=e98]:
+              - generic [ref=e101]: CN
+              - generic:
+                - generic: Screenshot Admin
+                - generic: screenshot-admin@alkitu.test
+              - img [ref=e102]
+        - button "Toggle Sidebar" [ref=e105]
+      - main [ref=e106]:
+        - generic [ref=e107]:
+          - button "Toggle Sidebar" [ref=e108] [cursor=pointer]:
+            - generic [ref=e110]: Toggle Sidebar
+          - generic [ref=e112]:
+            - navigation "breadcrumb" [ref=e115]:
+              - list [ref=e116]:
+                - listitem [ref=e117]:
+                  - link "Dashboard" [ref=e118] [cursor=pointer]:
+                    - /url: /
+                - listitem [ref=e119]:
+                  - img [ref=e120]
+                - listitem [ref=e122]:
+                  - button "menú desplegable" [ref=e123]:
+                    - generic [ref=e124]:
+                      - img [ref=e125]
+                      - generic [ref=e129]: More
+                    - generic [ref=e130]: menú desplegable
+                - listitem [ref=e131]:
+                  - img [ref=e132]
+                - listitem:
+                  - link "themes" [disabled]
+            - button [ref=e135] [cursor=pointer]:
+              - img [ref=e136]
+        - generic [ref=e148]:
+          - generic [ref=e150]:
+            - generic [ref=e152]:
+              - 'button "Color 1: oklch(0.7620 0.1387 72.52) Color 2: oklch(0.9588 0.0086 84.57) Color 3: oklch(0.9133 0.1318 94.11) Alianza" [ref=e154] [cursor=pointer]':
+                - generic [ref=e155]:
+                  - generic [ref=e156]:
+                    - 'generic "Color 1: oklch(0.7620 0.1387 72.52)" [ref=e157]'
+                    - 'generic "Color 2: oklch(0.9588 0.0086 84.57)" [ref=e158]'
+                    - 'generic "Color 3: oklch(0.9133 0.1318 94.11)" [ref=e159]'
+                  - generic [ref=e161]: Alianza
+              - generic [ref=e163]:
+                - button "Random theme" [ref=e164] [cursor=pointer]:
+                  - img [ref=e165]
+                - separator
+                - button "Previous theme" [ref=e171] [cursor=pointer]:
+                  - img [ref=e172]
+                - button "Next theme" [ref=e174] [cursor=pointer]:
+                  - img [ref=e175]
+            - generic [ref=e180]:
+              - tablist [ref=e181]:
+                - tab "Colors" [selected] [ref=e182]:
+                  - img
+                  - generic [ref=e183]: Colors
+                - tab "Typography" [ref=e184]:
+                  - img
+                  - generic [ref=e185]: Typography
+                - tab "Brand" [ref=e186]:
+                  - img
+                  - generic [ref=e187]: Brand
+                - tab "Borders" [ref=e188]:
+                  - img
+                  - generic [ref=e189]: Borders
+                - tab "Spacing" [ref=e190]:
+                  - img
+                  - generic [ref=e191]: Spacing
+                - tab "Shadows" [ref=e192]:
+                  - img
+                  - generic [ref=e193]: Shadows
+                - tab "Scroll" [ref=e194]:
+                  - img
+                  - generic [ref=e195]: Scroll
+              - tabpanel "Colors" [ref=e196]:
+                - generic [ref=e199]:
+                  - generic [ref=e200]:
+                    - heading "Primary Colors Main brand colors used for primary actions and emphasis" [level=3] [ref=e201]:
+                      - button "Primary Colors Main brand colors used for primary actions and emphasis" [expanded] [ref=e202]:
+                        - generic [ref=e203]:
+                          - heading "Primary Colors" [level=5] [ref=e204]
+                          - generic [ref=e205]: Main brand colors used for primary actions and emphasis
+                        - img
+                    - region "Primary Colors Main brand colors used for primary actions and emphasis" [ref=e206]:
+                      - generic [ref=e208]:
+                        - generic [ref=e209]:
+                          - heading "Primary" [level=5] [ref=e210]
+                          - generic [ref=e211]:
+                            - button "Pick color" [ref=e212] [cursor=pointer]:
+                              - generic [ref=e213]: Pick color
+                            - textbox "Color hex value" [ref=e214]: "#e7a23e"
+                            - button "Link colors" [ref=e215] [cursor=pointer]:
+                              - img [ref=e216]
+                              - generic [ref=e219]: Link colors
+                        - generic [ref=e220]:
+                          - heading "Primary Foreground" [level=5] [ref=e221]
+                          - generic [ref=e222]:
+                            - button "Pick color" [ref=e223] [cursor=pointer]:
+                              - generic [ref=e224]: Pick color
+                            - textbox "Color hex value" [ref=e225]: "#fafafa"
+                            - button "Link colors" [ref=e226] [cursor=pointer]:
+                              - img [ref=e227]
+                              - generic [ref=e230]: Link colors
+                  - heading "Secondary Colors Secondary brand colors for supporting elements" [level=3] [ref=e232]:
+                    - button "Secondary Colors Secondary brand colors for supporting elements" [ref=e233]:
+                      - generic [ref=e234]:
+                        - heading "Secondary Colors" [level=5] [ref=e235]
+                        - generic [ref=e236]: Secondary brand colors for supporting elements
+                      - img
+                  - heading "Accent Colors Accent colors for highlights and special elements" [level=3] [ref=e238]:
+                    - button "Accent Colors Accent colors for highlights and special elements" [ref=e239]:
+                      - generic [ref=e240]:
+                        - heading "Accent Colors" [level=5] [ref=e241]
+                        - generic [ref=e242]: Accent colors for highlights and special elements
+                      - img
+                  - heading "Base Colors Foundation colors for backgrounds and text" [level=3] [ref=e244]:
+                    - button "Base Colors Foundation colors for backgrounds and text" [ref=e245]:
+                      - generic [ref=e246]:
+                        - heading "Base Colors" [level=5] [ref=e247]
+                        - generic [ref=e248]: Foundation colors for backgrounds and text
+                      - img
+                  - heading "Card Colors Colors for card containers and their content" [level=3] [ref=e250]:
+                    - button "Card Colors Colors for card containers and their content" [ref=e251]:
+                      - generic [ref=e252]:
+                        - heading "Card Colors" [level=5] [ref=e253]
+                        - generic [ref=e254]: Colors for card containers and their content
+                      - img
+                  - heading "Popover Colors Colors for popovers, dropdowns, and floating elements" [level=3] [ref=e256]:
+                    - button "Popover Colors Colors for popovers, dropdowns, and floating elements" [ref=e257]:
+                      - generic [ref=e258]:
+                        - heading "Popover Colors" [level=5] [ref=e259]
+                        - generic [ref=e260]: Colors for popovers, dropdowns, and floating elements
+                      - img
+                  - heading "Muted Colors Subdued colors for less prominent content" [level=3] [ref=e262]:
+                    - button "Muted Colors Subdued colors for less prominent content" [ref=e263]:
+                      - generic [ref=e264]:
+                        - heading "Muted Colors" [level=5] [ref=e265]
+                        - generic [ref=e266]: Subdued colors for less prominent content
+                      - img
+                  - heading "Alert Colors Colors for alerts, errors, warnings, and success states" [level=3] [ref=e268]:
+                    - button "Alert Colors Colors for alerts, errors, warnings, and success states" [ref=e269]:
+                      - generic [ref=e270]:
+                        - heading "Alert Colors" [level=5] [ref=e271]
+                        - generic [ref=e272]: Colors for alerts, errors, warnings, and success states
+                      - img
+                  - heading "Border & Input Colors Colors for borders, inputs, and focus rings" [level=3] [ref=e274]:
+                    - button "Border & Input Colors Colors for borders, inputs, and focus rings" [ref=e275]:
+                      - generic [ref=e276]:
+                        - heading "Border & Input Colors" [level=5] [ref=e277]
+                        - generic [ref=e278]: Colors for borders, inputs, and focus rings
+                      - img
+                  - heading "Chart Colors Color palette for data visualization and charts" [level=3] [ref=e280]:
+                    - button "Chart Colors Color palette for data visualization and charts" [ref=e281]:
+                      - generic [ref=e282]:
+                        - heading "Chart Colors" [level=5] [ref=e283]
+                        - generic [ref=e284]: Color palette for data visualization and charts
+                      - img
+                  - heading "Sidebar Colors Colors specifically for sidebar navigation" [level=3] [ref=e286]:
+                    - button "Sidebar Colors Colors specifically for sidebar navigation" [ref=e287]:
+                      - generic [ref=e288]:
+                        - heading "Sidebar Colors" [level=5] [ref=e289]
+                        - generic [ref=e290]: Colors specifically for sidebar navigation
+                      - img
+                  - heading "Scrollbar Colors Colors for scrollbar track and thumb elements" [level=3] [ref=e292]:
+                    - button "Scrollbar Colors Colors for scrollbar track and thumb elements" [ref=e293]:
+                      - generic [ref=e294]:
+                        - heading "Scrollbar Colors" [level=5] [ref=e295]
+                        - generic [ref=e296]: Colors for scrollbar track and thumb elements
+                      - img
+          - generic [ref=e300]:
+            - generic [ref=e302]:
+              - generic [ref=e304]:
+                - button "Switch to TV view" [ref=e305] [cursor=pointer]:
+                  - img [ref=e306]
+                - button "Switch to Desktop view" [ref=e309] [cursor=pointer]:
+                  - img [ref=e310]
+                - button "Switch to Tablet view" [ref=e312] [cursor=pointer]:
+                  - img [ref=e313]
+                - button "Switch to Phone view" [ref=e315] [cursor=pointer]:
+                  - img [ref=e316]
+              - generic [ref=e318]:
+                - generic [ref=e319]:
+                  - img [ref=e320]
+                  - generic "Switch to dark mode" [ref=e326] [cursor=pointer]
+                  - img [ref=e328]
+                - generic [ref=e330]:
+                  - button "Undo (no changes)" [disabled]:
+                    - img
+                  - button "Redo (no changes)" [disabled]:
+                    - img
+                - button "Reset theme to original values" [disabled]:
+                  - img
+                - generic [ref=e331]:
+                  - generic [ref=e332]:
+                    - button "Import theme from CSS" [ref=e333] [cursor=pointer]:
+                      - img [ref=e334]
+                    - button "Export theme code" [ref=e337] [cursor=pointer]:
+                      - img [ref=e338]
+                  - generic [ref=e342]:
+                    - button "Update" [ref=e343] [cursor=pointer]:
+                      - img [ref=e344]
+                      - generic [ref=e348]: Update
+                    - button [ref=e349] [cursor=pointer]:
+                      - img [ref=e350]
+            - generic [ref=e353]:
+              - generic [ref=e356]:
+                - generic [ref=e357]: Desktop
+                - generic [ref=e358]: 1440 × 900
+              - generic [ref=e361]:
+                - tablist [ref=e362]:
+                  - tab "Colors" [ref=e363]:
+                    - img
+                    - generic [ref=e364]: Colors
+                  - tab "Typography" [ref=e365]:
+                    - img
+                    - generic [ref=e366]: Typography
+                  - tab "Brand" [ref=e367]:
+                    - img
+                    - generic [ref=e368]: Brand
+                  - tab "Átomos" [ref=e369]:
+                    - img
+                    - generic [ref=e370]: Átomos
+                  - tab "Moléculas" [selected] [ref=e371]:
+                    - img
+                    - generic [ref=e372]: Moléculas
+                  - tab "Organismos" [ref=e373]:
+                    - img
+                    - generic [ref=e374]: Organismos
+                - tabpanel "Moléculas" [ref=e4898]:
+                  - generic [ref=e4903]:
+                    - generic [ref=e4904]:
+                      - generic [ref=e4906]:
+                        - generic:
+                          - img
+                        - textbox "Buscar moléculas por nombre o características..." [ref=e4907]
+                      - generic [ref=e4908]:
+                        - button "Todas las categorías" [ref=e4909] [cursor=pointer]
+                        - button "Recolección de Datos" [ref=e4910] [cursor=pointer]
+                        - button "Visualización de Datos" [ref=e4911] [cursor=pointer]
+                        - button "Navegación" [ref=e4912] [cursor=pointer]
+                        - button "Feedback y Notificaciones" [ref=e4913] [cursor=pointer]
+                        - button "Diseño y Estructura" [ref=e4914] [cursor=pointer]
+                    - generic [ref=e4915]:
+                      - generic [ref=e4916]: 9 tipos de componentes encontrados
+                      - generic [ref=e4917]:
+                        - button "Abrir todos" [ref=e4918] [cursor=pointer]
+                        - button "Cerrar todos" [ref=e4919] [cursor=pointer]
+                    - generic [ref=e4920]:
+                      - generic [ref=e4921]:
+                        - button "Accordion" [ref=e4922]:
+                          - generic [ref=e4923]:
+                            - img [ref=e4925]
+                            - heading "Accordion" [level=3] [ref=e4927]
+                        - generic [ref=e4933]:
+                          - 'heading "Características del Producto Badge: Nuevo" [level=3] [ref=e4935]':
+                            - 'button "Características del Producto Badge: Nuevo" [ref=e4936] [cursor=pointer]':
+                              - generic [ref=e4937]:
+                                - img [ref=e4940]
+                                - generic [ref=e4943]: Características del Producto
+                                - 'status "Badge: Nuevo" [ref=e4944]': Nuevo
+                              - img
+                          - 'heading "Planes y Precios Badge: Popular" [level=3] [ref=e4946]':
+                            - 'button "Planes y Precios Badge: Popular" [ref=e4947] [cursor=pointer]':
+                              - generic [ref=e4948]:
+                                - img [ref=e4950]
+                                - generic [ref=e4953]: Planes y Precios
+                                - 'status "Badge: Popular" [ref=e4954]': Popular
+                              - img
+                          - generic [ref=e4959]:
+                            - heading "Soporte Técnico" [level=3] [ref=e4960]:
+                              - button "Soporte Técnico" [expanded] [ref=e4961] [cursor=pointer]:
+                                - generic [ref=e4962]:
+                                  - img [ref=e4964]
+                                  - generic [ref=e4967]: Soporte Técnico
+                                - img
+                            - region "Soporte Técnico" [ref=e5024]:
+                              - paragraph [ref=e5027]: Nuestro equipo de soporte está disponible 24/7 para ayudarte con cualquier duda o problema que puedas tener.
+                      - generic [ref=e4968]:
+                        - button "Card" [ref=e4969]:
+                          - generic [ref=e4970]:
+                            - img [ref=e5028]
+                            - heading "Card" [level=3] [ref=e4974]
+                        - generic [ref=e5034]:
+                          - generic [ref=e5036]:
+                            - generic [ref=e5039]:
+                              - heading "Card Básica" [level=4] [ref=e5041]
+                              - paragraph [ref=e5042]: Esta es una card básica con título y descripción
+                            - generic [ref=e5044]: El contenido de la card puede incluir cualquier elemento React o texto simple.
+                            - generic [ref=e5045]:
+                              - button "Acción Principal" [ref=e5046] [cursor=pointer]
+                              - button "Secundaria" [ref=e5047] [cursor=pointer]
+                          - generic [ref=e5049] [cursor=pointer]:
+                            - img "Preview image" [ref=e5051]
+                            - generic [ref=e5054]:
+                              - generic [ref=e5055]:
+                                - heading "Card con Imagen" [level=4] [ref=e5056]
+                                - 'status "Badge: Nuevo" [ref=e5057]': Nuevo
+                              - paragraph [ref=e5058]: Card interactiva con imagen
+                            - generic [ref=e5060]: Las cards con imágenes son perfectas para mostrar contenido visual.
+                            - button "Ver más" [ref=e5062]:
+                              - img [ref=e5064]
+                              - text: Ver más
+                      - generic [ref=e4975]:
+                        - button "Date Picker" [ref=e4976]:
+                          - generic [ref=e4977]:
+                            - img [ref=e5068]
+                            - heading "Date Picker" [level=3] [ref=e4981]
+                        - generic [ref=e5074]:
+                          - generic [ref=e5075]:
+                            - generic [ref=e5076]: Fecha básica
+                            - generic [ref=e5077]:
+                              - button "Selecciona una fecha" [ref=e5078] [cursor=pointer]:
+                                - generic [ref=e5079]:
+                                  - img [ref=e5080]
+                                  - generic [ref=e5082]: Selecciona una fecha
+                              - textbox "dd/mm/yyyy" [ref=e5084]
+                          - generic [ref=e5085]:
+                            - generic [ref=e5086]: Fecha y hora
+                            - generic [ref=e5087]:
+                              - button "Selecciona fecha y hora" [ref=e5088] [cursor=pointer]:
+                                - generic [ref=e5089]:
+                                  - img [ref=e5090]
+                                  - generic [ref=e5092]: Selecciona fecha y hora
+                              - textbox "dd/mm/yyyy" [ref=e5094]
+                      - generic [ref=e4982]:
+                        - button "Pagination" [ref=e4983]:
+                          - generic [ref=e4984]:
+                            - img [ref=e5095]
+                            - heading "Pagination" [level=3] [ref=e4988]
+                        - generic [ref=e5101]:
+                          - generic [ref=e5102]:
+                            - generic [ref=e5104]: 1-25 de 250
+                            - navigation "pagination" [ref=e5105]:
+                              - list [ref=e5106]:
+                                - listitem [ref=e5107]:
+                                  - generic "Go to previous page" [ref=e5108]:
+                                    - img [ref=e5109]
+                                    - generic [ref=e5111]: Previous
+                                - listitem [ref=e5112]:
+                                  - generic [ref=e5113]: "1"
+                                - listitem [ref=e5114]:
+                                  - generic [ref=e5115]: "2"
+                                - listitem [ref=e5116]:
+                                  - generic [ref=e5117]:
+                                    - img [ref=e5118]
+                                    - generic [ref=e5122]: More pages
+                                - listitem [ref=e5123]:
+                                  - generic [ref=e5124]: "10"
+                                - listitem [ref=e5125]:
+                                  - generic "Go to next page" [ref=e5126]:
+                                    - generic [ref=e5127]: Next
+                                    - img [ref=e5128]
+                                - listitem [ref=e5130]:
+                                  - button [ref=e5131] [cursor=pointer]:
+                                    - img [ref=e5132]
+                            - combobox [ref=e5136]:
+                              - option "5" [selected]
+                              - option "10"
+                              - option "20"
+                              - option "50"
+                              - option "100"
+                            - generic [ref=e5137]:
+                              - status "Badge" [ref=e5138]: "Total: 250"
+                              - status "Badge" [ref=e5139]: "Páginas: 10"
+                          - generic [ref=e5141]:
+                            - button [disabled] [ref=e5142]:
+                              - img [ref=e5143]
+                            - status "Badge" [ref=e5145]:
+                              - generic [ref=e5146]: "1"
+                              - generic [ref=e5147]: /
+                              - generic [ref=e5148]: "10"
+                            - button [ref=e5149] [cursor=pointer]:
+                              - img [ref=e5150]
+                      - generic [ref=e4989]:
+                        - button "Dropdown Menu" [ref=e4990]:
+                          - generic [ref=e4991]:
+                            - img [ref=e5164]
+                            - heading "Dropdown Menu" [level=3] [ref=e4995]
+                        - generic [ref=e5170]:
+                          - generic [ref=e5172] [cursor=pointer]:
+                            - img [ref=e5173]
+                            - generic [ref=e5176]: Usuario
+                            - img [ref=e5177]
+                          - img [ref=e5181] [cursor=pointer]
+                      - generic [ref=e4996]:
+                        - button "Tabs" [ref=e4997]:
+                          - generic [ref=e4998]:
+                            - img [ref=e5185]
+                            - heading "Tabs" [level=3] [ref=e5002]
+                        - generic [ref=e5192]:
+                          - generic [ref=e5193]:
+                            - tablist [ref=e5194]:
+                              - tab "Resumen" [selected] [ref=e5195] [cursor=pointer]:
+                                - generic [ref=e5197]:
+                                  - img
+                                - generic [ref=e5198]: Resumen
+                              - 'tab "Analytics Badge: Beta" [ref=e5199] [cursor=pointer]':
+                                - generic [ref=e5201]:
+                                  - img
+                                - generic [ref=e5202]: Analytics
+                                - 'status "Badge: Beta" [ref=e5203]': Beta
+                              - tab "Configuración" [ref=e5204] [cursor=pointer]:
+                                - generic [ref=e5206]:
+                                  - img
+                                - generic [ref=e5207]: Configuración
+                                - generic [ref=e5208]:
+                                  - img
+                            - button [ref=e5209] [cursor=pointer]:
+                              - img [ref=e5210]
+                          - tabpanel "Resumen" [ref=e5212]:
+                            - generic [ref=e5213]:
+                              - heading "Resumen del Proyecto" [level=3] [ref=e5214]
+                              - paragraph [ref=e5215]: Este es el contenido del tab de resumen donde puedes mostrar información general sobre tu proyecto o aplicación.
+                      - generic [ref=e5003]:
+                        - button "Combobox" [ref=e5004]:
+                          - generic [ref=e5005]:
+                            - img [ref=e5216]
+                            - heading "Combobox" [level=3] [ref=e5009]
+                        - generic [ref=e5222]:
+                          - button "Selecciona un framework..." [ref=e5224] [cursor=pointer]:
+                            - generic [ref=e5225]: Selecciona un framework...
+                            - img [ref=e5227]
+                          - button "Selecciona múltiples..." [ref=e5230] [cursor=pointer]:
+                            - generic [ref=e5231]: Selecciona múltiples...
+                            - img [ref=e5233]
+                      - generic [ref=e5010]:
+                        - button "Navigation Menu" [ref=e5011]:
+                          - generic [ref=e5012]:
+                            - img [ref=e5290]
+                            - heading "Navigation Menu" [level=3] [ref=e5016]
+                        - navigation "Main" [ref=e5297]:
+                          - list [ref=e5299]:
+                            - listitem [ref=e5300]:
+                              - button "Productos" [active] [ref=e5301]:
+                                - generic [ref=e5302]: Productos
+                                - img [ref=e5303]
+                                - img [ref=e5305]
+                            - listitem [ref=e5307]:
+                              - link "Documentación" [ref=e5308] [cursor=pointer]:
+                                - /url: "#docs"
+                                - generic [ref=e5309]: Documentación
+                            - listitem [ref=e5310]:
+                              - 'link "Soporte Badge: Nuevo" [ref=e5311] [cursor=pointer]':
+                                - /url: "#support"
+                                - generic [ref=e5312]: Soporte
+                                - 'status "Badge: Nuevo" [ref=e5313]': Nuevo
+                      - button "Toast (Sonner)" [ref=e5018]:
+                        - generic [ref=e5019]:
+                          - img [ref=e5021]
+                          - heading "Toast (Sonner)" [level=3] [ref=e5023]
+    - region "Notifications alt+T"
+  - alert [ref=e1721]

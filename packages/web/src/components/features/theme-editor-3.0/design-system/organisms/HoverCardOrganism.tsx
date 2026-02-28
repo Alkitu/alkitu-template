@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/primitives/ui/hover-card';
-import { Button } from '../atoms/Button';
+import { Button } from '@/components/primitives/ui/button';
 import { Badge } from '@/components/atoms-alianza/Badge';
 import { useThemeEditor } from '../../core/context/ThemeEditorContext';
 import { 

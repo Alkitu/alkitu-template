@@ -2,9 +2,9 @@
 
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader } from '@/components/primitives/ui/card';
-import { Button } from '../atoms/Button';
+import { Button } from '@/components/primitives/ui/button';
 import { Badge } from '@/components/atoms-alianza/Badge';
-import { Separator } from '@/components/primitives/ui/separator';
+import { Separator } from '@/components/atoms-alianza/Separator';
 import { useThemeEditor } from '../../core/context/ThemeEditorContext';
 import { 
   Home, 
@@ -294,7 +294,7 @@ export function SidebarOrganism({
       {/* Footer */}
       {showFooter && (
         <>
-          <Separator style={{ background: colors?.border?.value || 'var(--color-border)' }} />
+          <Separator customStyle={{ background: colors?.border?.value || 'var(--color-border)' }} />
           <div 
             className="flex items-center gap-3"
             style={{ padding: mediumSpacing }}

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/primitives/ui/button';
-import { Icon } from '../../../design-system/atoms/Icon';
+import { Icon } from '@/components/atoms-alianza/Icon';
 import { Save, Heart, Check, ChevronDown, Copy } from 'lucide-react';
 import { ThemeData } from '../../../core/types/theme.types';
 import { SaveThemeDialog } from './SaveThemeDialog';
@@ -116,13 +116,13 @@ export function SaveButton({
 
   const getIcon = () => {
     if (justSaved) return (
-      <Icon icon={Check} size="sm" variant="default" className="text-primary-foreground" />
+      <Icon component={Check} size="sm" variant="default" className="text-primary-foreground" />
     );
     if (theme.isFavorite) return (
-      <Icon icon={Heart} size="sm" variant="default" className="fill-current text-current" />
+      <Icon component={Heart} size="sm" variant="default" className="fill-current text-current" />
     );
     return (
-      <Icon icon={Save} size="sm" variant="default" className="text-current" />
+      <Icon component={Save} size="sm" variant="default" className="text-current" />
     );
   };
 

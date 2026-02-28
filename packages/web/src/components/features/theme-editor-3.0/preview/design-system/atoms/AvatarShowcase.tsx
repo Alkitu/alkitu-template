@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Avatar } from '../../../design-system/atoms/Avatar';
+import { Avatar } from '@/components/atoms-alianza/Avatar';
 import { ShowcaseContainer } from './ShowcaseContainer';
 
 export function AvatarShowcase() {
@@ -19,7 +19,7 @@ export function AvatarShowcase() {
       {/* With Initials */}
       <div className="flex-1 min-w-[280px] max-w-[350px]">
         <ShowcaseContainer name="With Initials" tokenId="avatar-initials">
-          <Avatar fallback="John Doe" />
+          <Avatar fallback="John Doe" alt="John Doe" />
         </ShowcaseContainer>
       </div>
 

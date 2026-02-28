@@ -118,4 +118,12 @@ export class UpdateProfileDto {
   @IsOptional()
   @IsEnum(UserRole, { message: 'Role must be a valid UserRole' })
   role?: UserRole;
+
+  @ApiPropertyOptional({
+    description: 'Profile image (icon name, emoji, or URL)',
+    example: 'UserCircle',
+  })
+  @IsOptional()
+  @IsString()
+  image?: string;
 }

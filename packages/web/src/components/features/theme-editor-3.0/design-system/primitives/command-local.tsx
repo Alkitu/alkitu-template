@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Search } from 'lucide-react';
-import { Input } from '../atoms/Input';
+import { Input } from '@/components/atoms-alianza/Input';
 
 export interface CommandProps {
   children?: React.ReactNode;

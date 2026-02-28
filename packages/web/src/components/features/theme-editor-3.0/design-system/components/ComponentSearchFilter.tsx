@@ -2,7 +2,7 @@
 
 import React, { useMemo } from 'react';
 import { ChevronDown, ChevronRight, Search, X } from 'lucide-react';
-import { Input } from '../atoms/Input';
+import { Input } from '@/components/atoms-alianza/Input';
 import { Button } from '@/components/primitives/ui/button';
 
 // Generic interface for searchable items

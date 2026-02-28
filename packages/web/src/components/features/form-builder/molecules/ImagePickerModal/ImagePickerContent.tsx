@@ -17,6 +17,7 @@ import { compressToWebP } from '@/lib/utils/image-compression';
 import { getThumbnailUrl } from '@/components/features/media-manager/lib/file-utils';
 import { MediaBrowserPicker } from '@/components/features/media-manager/organisms/MediaBrowserPicker';
 import { useTranslations } from '@/context/TranslationsContext';
+import { useUserRole } from '@/hooks/useUserRole';
 
 /**
  * ImagePickerContent - Headless image picker with Upload/URL/Drive tabs.
@@ -32,6 +33,7 @@ export function ImagePickerContent({
   isVisible = true,
 }: ImagePickerContentProps) {
   const t = useTranslations('imagePicker');
+  const { isAdmin } = useUserRole();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Upload tab state
@@ -203,10 +205,12 @@ export function ImagePickerContent({
           <Link className="h-4 w-4" />
           {t('tabs.url')}
         </TabsTrigger>
-        <TabsTrigger value="drive" className="flex-1 gap-1.5">
-          <HardDrive className="h-4 w-4" />
-          {t('tabs.drive')}
-        </TabsTrigger>
+        {isAdmin && (
+          <TabsTrigger value="drive" className="flex-1 gap-1.5">
+            <HardDrive className="h-4 w-4" />
+            {t('tabs.drive')}
+          </TabsTrigger>
+        )}
       </TabsList>
 
       {/* ─── Upload Tab ──────────────────────────────────────────── */}
@@ -295,22 +299,24 @@ export function ImagePickerContent({
         </Button>
       </TabsContent>
 
-      {/* ─── Drive Tab ───────────────────────────────────────────── */}
-      <TabsContent value="drive" className="mt-4">
-        {isDriveConfigured ? (
-          <div className="h-[50vh] overflow-auto">
-            <MediaBrowserPicker
-              rootFolderId={driveRootId}
-              onFileSelect={handleDriveSelect}
-            />
-          </div>
-        ) : (
-          <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
-            <HardDrive className="h-12 w-12 mb-3 opacity-30" />
-            <p className="text-sm">{t('drive.notConfigured')}</p>
-          </div>
-        )}
-      </TabsContent>
+      {/* ─── Drive Tab (admin only) ────────────────────────────── */}
+      {isAdmin && (
+        <TabsContent value="drive" className="mt-4">
+          {isDriveConfigured ? (
+            <div className="h-[50vh] overflow-auto">
+              <MediaBrowserPicker
+                rootFolderId={driveRootId}
+                onFileSelect={handleDriveSelect}
+              />
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
+              <HardDrive className="h-12 w-12 mb-3 opacity-30" />
+              <p className="text-sm">{t('drive.notConfigured')}</p>
+            </div>
+          )}
+        </TabsContent>
+      )}
     </Tabs>
   );
 }

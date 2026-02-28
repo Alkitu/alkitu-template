@@ -5,6 +5,7 @@ export interface UserTableItem {
   lastName: string | null;
   phone: string | null;
   role: string;
+  image?: string | null;
 }
 
 export interface UsersTableAlianzaProps {

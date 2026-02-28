@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Button } from '@/components/primitives/ui/button';
-import { Icon } from '../../design-system/atoms/Icon';
+import { Icon } from '@/components/atoms-alianza/Icon';
 import { ChevronLeft, ChevronRight, Shuffle } from 'lucide-react';
 import { Separator } from '@/components/atoms-alianza/Separator';
 
@@ -34,7 +34,7 @@ export function ThemeNavigation({
         title="Random theme"
       >
         <Icon
-          icon={Shuffle}
+          component={Shuffle}
           size="sm"
           variant="muted"
           className="group-hover:text-foreground transition-colors"
@@ -53,7 +53,7 @@ export function ThemeNavigation({
         title="Previous theme"
       >
         <Icon
-          icon={ChevronLeft}
+          component={ChevronLeft}
           size="sm"
           variant={!canGoPrevious ? 'muted' : 'default'}
           className={!canGoPrevious ? '' : 'group-hover:text-foreground transition-colors'}
@@ -70,7 +70,7 @@ export function ThemeNavigation({
         title="Next theme"
       >
         <Icon
-          icon={ChevronRight}
+          component={ChevronRight}
           size="sm"
           variant={!canGoNext ? 'muted' : 'default'}
           className={!canGoNext ? '' : 'group-hover:text-foreground transition-colors'}

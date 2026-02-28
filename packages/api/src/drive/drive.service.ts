@@ -262,6 +262,45 @@ export class DriveService implements OnModuleInit {
     }
   }
 
+  /**
+   * Find an existing folder by name inside a parent, or create it if it doesn't exist.
+   * Prevents duplicate folders in Google Drive (which allows duplicate names).
+   */
+  async findOrCreateFolder(
+    name: string,
+    parentId: string,
+  ): Promise<DriveFile> {
+    try {
+      const escapedName = name.replace(/'/g, "\\'");
+      const q = `'${parentId}' in parents AND name = '${escapedName}' AND mimeType = 'application/vnd.google-apps.folder' AND trashed = false`;
+
+      const response = await this.drive.files.list({
+        q,
+        pageSize: 1,
+        fields:
+          'files(id, name, mimeType, parents, createdTime, modifiedTime)',
+        supportsAllDrives: true,
+        includeItemsFromAllDrives: true,
+        ...this.getSharedDriveListParams(),
+      });
+
+      const existing = response.data.files?.[0];
+      if (existing) {
+        this.logger.log(
+          `Found existing folder "${name}" in ${parentId}: ${existing.id}`,
+        );
+        return this.convertToFile(existing);
+      }
+    } catch (error) {
+      this.logger.warn(
+        `Error searching for folder "${name}" in ${parentId}, falling back to create:`,
+        error,
+      );
+    }
+
+    return this.createFolder(name, parentId);
+  }
+
   async deleteFile(fileId: string): Promise<{
     success: boolean;
     alreadyDeleted?: boolean;

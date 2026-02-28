@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Separator } from '@/components/primitives/ui/separator';
+import { Separator } from '@/components/atoms-alianza/Separator';
 import { ThemeBorders } from '../../../core/types/theme.types';
 import { BorderRadiusController } from './BorderRadiusController';
 import { 

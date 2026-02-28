@@ -32,7 +32,8 @@
  * ```
  */
 
-import React, { forwardRef } from 'react';
+import React, { forwardRef, useState } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { InputProps, InputVariant, InputSize, InputState } from './Input.types';
 
@@ -69,12 +70,22 @@ const baseClasses =
 /**
  * Input atom component - Pure input element without label/description composition
  */
+// Padding adjustments when icons are present
+const iconPaddingClasses = {
+  sm: { left: 'pl-8', right: 'pr-8' },
+  md: { left: 'pl-10', right: 'pr-10' },
+  lg: { left: 'pl-12', right: 'pr-12' },
+};
+
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   (
     {
       variant = 'default',
       size = 'md',
       state = 'default',
+      leftIcon,
+      rightIcon,
+      showPasswordToggle = false,
       className,
       themeOverride,
       useSystemColors = true,
@@ -83,19 +94,69 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     },
     ref,
   ) => {
+    const [showPassword, setShowPassword] = useState(false);
+
+    const finalType = showPasswordToggle
+      ? (showPassword ? 'text' : 'password')
+      : type;
+
+    const hasLeftIcon = !!leftIcon;
+    const hasRightIcon = !!(rightIcon || showPasswordToggle);
+
     // Build class names based on props
     const variantClass = useSystemColors ? variantClasses[variant] : '';
     const sizeClass = sizeClasses[size];
     const stateClass = stateClasses[state];
 
-    return (
+    const inputElement = (
       <input
         ref={ref}
-        type={type}
-        className={cn(baseClasses, variantClass, sizeClass, stateClass, className)}
+        type={finalType}
+        className={cn(
+          baseClasses,
+          variantClass,
+          sizeClass,
+          stateClass,
+          hasLeftIcon && iconPaddingClasses[size].left,
+          hasRightIcon && iconPaddingClasses[size].right,
+          className,
+        )}
         style={themeOverride}
         {...props}
       />
+    );
+
+    // No icons — render input directly without wrapper
+    if (!hasLeftIcon && !hasRightIcon) {
+      return inputElement;
+    }
+
+    const finalRightIcon = showPasswordToggle ? (
+      <button
+        type="button"
+        onClick={() => setShowPassword(!showPassword)}
+        className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+        aria-label={showPassword ? 'Hide password' : 'Show password'}
+        tabIndex={-1}
+      >
+        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+      </button>
+    ) : rightIcon;
+
+    return (
+      <div className="relative w-full">
+        {hasLeftIcon && (
+          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
+            {leftIcon}
+          </div>
+        )}
+        {inputElement}
+        {finalRightIcon && (
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+            {finalRightIcon}
+          </div>
+        )}
+      </div>
     );
   },
 );

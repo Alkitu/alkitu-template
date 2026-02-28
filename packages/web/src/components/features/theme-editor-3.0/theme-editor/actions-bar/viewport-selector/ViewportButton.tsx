@@ -3,7 +3,7 @@
 import React from 'react';
 import { Button } from '@/components/primitives/ui/button';
 import { ViewportSize } from '../../../core/types/viewport.types';
-import { Icon } from '../../../design-system/atoms/Icon';
+import { Icon } from '@/components/atoms-alianza/Icon';
 import { Monitor, Tv, Tablet, Smartphone } from 'lucide-react';
 
 interface ViewportButtonProps {
@@ -48,7 +48,7 @@ export function ViewportButton({ viewport, isActive, onClick, className = '' }: 
       title={`Switch to ${label} view`}
     >
       <Icon
-        icon={IconComponent}
+        component={IconComponent}
         size="sm"
         variant={isActive ? 'default' : 'muted'}
         className={isActive ? 'text-primary-foreground' : ''}

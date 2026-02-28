@@ -6,7 +6,8 @@ export type IconVariant =
   | 'secondary'
   | 'success'
   | 'warning'
-  | 'error';
+  | 'error'
+  | 'muted';
 
 export type IconSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
 
@@ -16,8 +17,15 @@ export interface IconProps {
   /**
    * Icon name (without 'Icon' suffix) - supports all Lucide icons
    * Examples: 'heart', 'star', 'check', 'chevronDown', etc.
+   * Provide either `name` or `component` (at least one required)
    */
-  name: string;
+  name?: string;
+
+  /**
+   * Lucide icon component passed directly
+   * Provide either `name` or `component` (at least one required)
+   */
+  component?: LucideIcon;
 
   /**
    * Size of the icon
@@ -115,4 +123,5 @@ export interface IconVariantMap {
   success: string;
   warning: string;
   error: string;
+  muted: string;
 }

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { MoreHorizontal, X, ExternalLink, Share2, Heart } from 'lucide-react';
-import { Button } from '../atoms/Button';
+import { Button } from '@/components/primitives/ui/button';
 import { Badge } from '@/components/atoms-alianza/Badge';
 import { 
   Card,

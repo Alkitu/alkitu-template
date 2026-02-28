@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { Separator } from '@/components/primitives/ui/separator';
+import { Separator } from '@/components/atoms-alianza/Separator';
 import { ThemeSpacing } from '../../../core/types/theme.types';
 import { SpacingController } from './SpacingController';
 import { applySpacingElements } from '../../../lib/utils/css/css-variables';

@@ -84,6 +84,12 @@ function generateColorCSS(colors: ThemeColors, mode: 'light' | 'dark'): string {
 import { DEFAULT_TYPOGRAPHY } from '@/components/features/theme-editor-3.0/theme-editor/editor/typography/types';
 
 /**
+ * Valid TypographyElement keys — filters out non-element keys
+ * (e.g. fontFamilies, trackingNormal) that come from ThemeTypography merge.
+ */
+const TYPOGRAPHY_ELEMENT_KEYS = ['h1', 'h2', 'h3', 'h4', 'h5', 'paragraph', 'quote', 'emphasis'];
+
+/**
  * Generate inline CSS from typography settings
  */
 function generateTypographyCSS(typography: any): string {
@@ -91,6 +97,7 @@ function generateTypographyCSS(typography: any): string {
   const mergedTypography = { ...DEFAULT_TYPOGRAPHY, ...(typography || {}) };
 
   return Object.entries(mergedTypography)
+    .filter(([key]) => TYPOGRAPHY_ELEMENT_KEYS.includes(key))
     .map(([elementKey, element]: [string, any]) => {
       const prefix = `--typography-${elementKey}`;
       return `    ${prefix}-font-family: ${element.fontFamily};\n    ${prefix}-font-size: ${element.fontSize};\n    ${prefix}-font-weight: ${element.fontWeight};\n    ${prefix}-line-height: ${element.lineHeight};\n    ${prefix}-letter-spacing: ${element.letterSpacing};\n    ${prefix}-word-spacing: ${element.wordSpacing};\n    ${prefix}-text-decoration: ${element.textDecoration};\n    ${prefix}-font-style: ${element.fontStyle};`;

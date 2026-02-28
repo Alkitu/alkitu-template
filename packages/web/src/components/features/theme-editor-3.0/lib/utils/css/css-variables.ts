@@ -113,6 +113,14 @@ export function applyThemeToRoot(theme: ThemeData, mode: 'light' | 'dark' = 'lig
 }
 
 /**
+ * Valid TypographyElement keys — used to filter out non-element keys
+ * (e.g. fontFamilies, trackingNormal) that come from ThemeTypography merge.
+ */
+const TYPOGRAPHY_ELEMENT_KEYS: (keyof TypographyElements)[] = [
+  'h1', 'h2', 'h3', 'h4', 'h5', 'paragraph', 'quote', 'emphasis',
+];
+
+/**
  * Applies typography elements to CSS root variables
  */
 export function applyTypographyElements(typography: TypographyElements): void {
@@ -120,6 +128,9 @@ export function applyTypographyElements(typography: TypographyElements): void {
 
   // Apply each typography element as CSS variables
   Object.entries(typography).forEach(([elementKey, element]) => {
+    // Skip non-element keys (fontFamilies, trackingNormal) that come from ThemeTypography merge
+    if (!TYPOGRAPHY_ELEMENT_KEYS.includes(elementKey as keyof TypographyElements)) return;
+
     const prefix = `--typography-${elementKey}`;
 
     root.style.setProperty(`${prefix}-font-family`, element.fontFamily);
@@ -434,6 +445,18 @@ export function resetThemeVariables(): void {
   // Remove all color variables
   Object.values(CSS_VARIABLE_MAP).forEach(variable => {
     root.style.removeProperty(variable);
+  });
+
+  // Remove polluted typography variables from non-element keys (fontFamilies, trackingNormal)
+  const pollutedTypographyPrefixes = ['--typography-fontFamilies', '--typography-trackingNormal'];
+  const typographySuffixes = [
+    '-font-family', '-font-size', '-font-weight', '-line-height',
+    '-letter-spacing', '-word-spacing', '-text-decoration', '-font-style',
+  ];
+  pollutedTypographyPrefixes.forEach(prefix => {
+    typographySuffixes.forEach(suffix => {
+      root.style.removeProperty(`${prefix}${suffix}`);
+    });
   });
 
   // Remove other theme variables

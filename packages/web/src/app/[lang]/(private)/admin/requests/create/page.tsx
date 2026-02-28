@@ -3,10 +3,21 @@
 import React, { useState, useMemo } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { trpc } from '@/lib/trpc';
-import { ArrowLeft, ArrowRight, Save, User, Briefcase, MapPin, Calendar, Plus } from 'lucide-react';
+import {
+  ArrowLeft,
+  ArrowRight,
+  Save,
+  User,
+  Briefcase,
+  MapPin,
+  Calendar,
+  Plus,
+} from 'lucide-react';
 import { toast } from 'sonner';
 import { handleApiError } from '@/lib/trpc-error-handler';
 import { useTranslations } from '@/context/TranslationsContext';
+import { format } from 'date-fns';
+import { CalendarAppointment } from '@/components/shadcn-studio/calendar/calendar-appointment';
 import {
   Card,
   CardContent,
@@ -62,46 +73,66 @@ export default function AdminCreateRequestPage() {
   const [step, setStep] = useState<Step>(1);
 
   // Form state
-  const [selectedClient, setSelectedClient] = useState<SelectedClient | null>(null);
-  const [selectedLocation, setSelectedLocation] = useState<SelectedLocation | null>(null);
-  const [selectedService, setSelectedService] = useState<SelectedService | null>(null);
-  const [templateResponses, setTemplateResponses] = useState<Record<string, unknown>>({});
-  const [executionDate, setExecutionDate] = useState('');
-  const [executionTime, setExecutionTime] = useState('');
+  const [selectedClient, setSelectedClient] = useState<SelectedClient | null>(
+    null,
+  );
+  const [selectedLocation, setSelectedLocation] =
+    useState<SelectedLocation | null>(null);
+  const [selectedService, setSelectedService] =
+    useState<SelectedService | null>(null);
+  const [templateResponses, setTemplateResponses] = useState<
+    Record<string, unknown>
+  >({});
+  const [executionDate, setExecutionDate] = useState<Date | undefined>(
+    undefined,
+  );
+  const [executionTime, setExecutionTime] = useState<string | null>(null);
   const [showCreateLocationForm, setShowCreateLocationForm] = useState(false);
 
   // tRPC queries
-  const { data: usersData, isLoading: loadingUsers } = trpc.user.getFilteredUsers.useQuery({
-    page: 1,
-    limit: 100,
-    role: 'CLIENT',
-    sortBy: 'firstname',
-    sortOrder: 'asc',
-  });
+  const { data: usersData, isLoading: loadingUsers } =
+    trpc.user.getFilteredUsers.useQuery({
+      page: 1,
+      limit: 100,
+      role: 'CLIENT',
+      sortBy: 'firstname',
+      sortOrder: 'asc',
+    });
 
-  const { data: servicesData, isLoading: loadingServices } = trpc.service.getAllServices.useQuery();
+  const { data: servicesData, isLoading: loadingServices } =
+    trpc.service.getAllServices.useQuery();
 
-  const { data: locationsData, isLoading: loadingLocations, refetch: refetchLocations } = trpc.location.getAllLocations.useQuery(
+  const {
+    data: locationsData,
+    isLoading: loadingLocations,
+    refetch: refetchLocations,
+  } = trpc.location.getAllLocations.useQuery(
     { userId: selectedClient?.id || '' },
-    { enabled: !!selectedClient }
+    { enabled: !!selectedClient },
   );
 
-  const createRequestMutation = (trpc.request.createRequest as any).useMutation({
-    onSuccess: () => {
-      toast.success(t('success'));
-      router.push(`/${lang}/admin/requests`);
+  const createRequestMutation = (trpc.request.createRequest as any).useMutation(
+    {
+      onSuccess: () => {
+        toast.success(t('success'));
+        router.push(`/${lang}/admin/requests`);
+      },
+      onError: (error: any) => handleApiError(error, router),
     },
-    onError: (error: any) => handleApiError(error, router),
-  });
+  );
 
   // Transform services into SelectableService[] for the CategorizedServiceSelector
   const selectableServices: SelectableService[] = useMemo(() => {
     if (!servicesData?.items) return [];
     return servicesData.items.map((service: any) => {
       const firstTemplate = service.formTemplates?.[0];
-      const rawSettings = firstTemplate?.formSettings as unknown as FormSettings | undefined;
+      const rawSettings = firstTemplate?.formSettings as unknown as
+        | FormSettings
+        | undefined;
       const formSettings: FormSettings | undefined =
-        rawSettings?.fields && rawSettings.fields.length > 0 ? rawSettings : undefined;
+        rawSettings?.fields && rawSettings.fields.length > 0
+          ? rawSettings
+          : undefined;
 
       return {
         id: service.id,
@@ -119,7 +150,7 @@ export default function AdminCreateRequestPage() {
 
   // Step 1: Select Client
   const handleClientSelect = (clientId: string) => {
-    const client = usersData?.users.find((u) => u.id === clientId);
+    const client = usersData?.users.find((u: any) => u.id === clientId);
     if (client) {
       setSelectedClient({
         id: client.id,
@@ -196,7 +227,10 @@ export default function AdminCreateRequestPage() {
       return;
     }
 
-    const executionDateTime = new Date(`${executionDate}T${executionTime}`);
+    const executionDateString = format(executionDate, 'yyyy-MM-dd');
+    const executionDateTime = new Date(
+      `${executionDateString}T${executionTime}`,
+    );
 
     if (executionDateTime < new Date()) {
       toast.error(t('step5.futureRequired'));
@@ -313,12 +347,14 @@ export default function AdminCreateRequestPage() {
               value={selectedClient?.id || ''}
               onValueChange={handleClientSelect}
               options={
-                usersData?.users.map((user) => ({
+                usersData?.users.map((user: any) => ({
                   value: user.id,
                   label: `${user.firstname} ${user.lastname} (${user.email})`,
                 })) || []
               }
-              placeholder={loadingUsers ? t('step1.loading') : t('step1.placeholder')}
+              placeholder={
+                loadingUsers ? t('step1.loading') : t('step1.placeholder')
+              }
               disabled={loadingUsers}
             />
 
@@ -327,7 +363,9 @@ export default function AdminCreateRequestPage() {
                 <p className="text-sm">
                   <strong>{t('step1.selected')}</strong> {selectedClient.name}
                 </p>
-                <p className="text-xs text-muted-foreground">{selectedClient.email}</p>
+                <p className="text-xs text-muted-foreground">
+                  {selectedClient.email}
+                </p>
               </div>
             )}
 
@@ -359,12 +397,15 @@ export default function AdminCreateRequestPage() {
             {loadingLocations ? (
               <div className="space-y-3">
                 {[1, 2].map((i) => (
-                  <div key={i} className="h-16 animate-pulse rounded-lg bg-muted" />
+                  <div
+                    key={i}
+                    className="h-16 animate-pulse rounded-lg bg-muted"
+                  />
                 ))}
               </div>
             ) : locationsData?.items && locationsData.items.length > 0 ? (
               <div className="space-y-3">
-                {locationsData.items.map((loc) => {
+                {locationsData.items.map((loc: any) => {
                   const location = loc as unknown as WorkLocation;
                   return (
                     <div
@@ -388,7 +429,9 @@ export default function AdminCreateRequestPage() {
             ) : (
               <div className="flex flex-col items-center justify-center py-8 text-center">
                 <MapPin className="mb-3 h-10 w-10 text-muted-foreground/50" />
-                <p className="text-muted-foreground">{t('step2.noLocations')}</p>
+                <p className="text-muted-foreground">
+                  {t('step2.noLocations')}
+                </p>
               </div>
             )}
 
@@ -439,7 +482,8 @@ export default function AdminCreateRequestPage() {
             <div className="p-4 bg-muted/50 rounded-lg mb-4">
               <p className="text-sm">
                 <strong>{t('labels.client')}</strong> {selectedClient?.name} |{' '}
-                <strong>{t('labels.location')}</strong> {selectedLocation?.address}
+                <strong>{t('labels.location')}</strong>{' '}
+                {selectedLocation?.address}
               </p>
             </div>
 
@@ -460,7 +504,8 @@ export default function AdminCreateRequestPage() {
                 </p>
                 {selectedService.formSettings && (
                   <Badge variant="outline" className="mt-2">
-                    {selectedService.formSettings.fields.length} {t('step3.fieldsInForm')}
+                    {selectedService.formSettings.fields.length}{' '}
+                    {t('step3.fieldsInForm')}
                   </Badge>
                 )}
               </div>
@@ -485,13 +530,16 @@ export default function AdminCreateRequestPage() {
         <Card>
           <CardHeader>
             <CardTitle>{t('step4.title')}</CardTitle>
-            <CardDescription>{t('step4.description')} {selectedService.name}</CardDescription>
+            <CardDescription>
+              {t('step4.description')} {selectedService.name}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="p-4 bg-muted/50 rounded-lg mb-6">
               <p className="text-sm">
                 <strong>{t('labels.client')}</strong> {selectedClient?.name} |{' '}
-                <strong>{t('labels.location')}</strong> {selectedLocation?.address} |{' '}
+                <strong>{t('labels.location')}</strong>{' '}
+                {selectedLocation?.address} |{' '}
                 <strong>{t('labels.service')}</strong> {selectedService.name}
               </p>
             </div>
@@ -539,30 +587,31 @@ export default function AdminCreateRequestPage() {
                   <strong>{t('step5.summary')}</strong>
                 </p>
                 <ul className="text-xs space-y-1 text-muted-foreground">
-                  <li>{t('labels.client')} {selectedClient?.name}</li>
-                  <li>{t('labels.location')} {selectedLocation?.address}</li>
-                  <li>{t('labels.service')} {selectedService?.name}</li>
+                  <li>
+                    {t('labels.client')} {selectedClient?.name}
+                  </li>
+                  <li>
+                    {t('labels.location')} {selectedLocation?.address}
+                  </li>
+                  <li>
+                    {t('labels.service')} {selectedService?.name}
+                  </li>
                   {Object.keys(templateResponses).length > 0 && (
-                    <li>{t('step5.fieldsCompleted')} {Object.keys(templateResponses).length}</li>
+                    <li>
+                      {t('step5.fieldsCompleted')}{' '}
+                      {Object.keys(templateResponses).length}
+                    </li>
                   )}
                 </ul>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormInput
-                  label={t('step5.dateLabel')}
-                  id="execution-date"
-                  type="date"
-                  value={executionDate}
-                  onChange={(e) => setExecutionDate(e.target.value)}
-                  min={new Date().toISOString().split('T')[0]}
-                />
-                <FormInput
-                  label={t('step5.timeLabel')}
-                  id="execution-time"
-                  type="time"
-                  value={executionTime}
-                  onChange={(e) => setExecutionTime(e.target.value)}
+              <div className="flex justify-center py-4">
+                <CalendarAppointment
+                  date={executionDate}
+                  setDate={setExecutionDate}
+                  time={executionTime}
+                  setTime={setExecutionTime}
+                  lang={lang as 'en' | 'es'}
                 />
               </div>
 
@@ -574,7 +623,11 @@ export default function AdminCreateRequestPage() {
                 <Button
                   type="submit"
                   variant="active"
-                  disabled={createRequestMutation.isPending || !executionDate || !executionTime}
+                  disabled={
+                    createRequestMutation.isPending ||
+                    !executionDate ||
+                    !executionTime
+                  }
                 >
                   {createRequestMutation.isPending ? (
                     t('step5.creating')

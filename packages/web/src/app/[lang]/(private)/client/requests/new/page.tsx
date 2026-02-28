@@ -3,11 +3,21 @@
 import React, { useState, useMemo } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { trpc } from '@/lib/trpc';
-import { ArrowLeft, ArrowRight, Save, Briefcase, MapPin, Calendar, Plus } from 'lucide-react';
+import {
+  ArrowLeft,
+  ArrowRight,
+  Save,
+  Briefcase,
+  MapPin,
+  Calendar,
+  Plus,
+} from 'lucide-react';
 import { toast } from 'sonner';
 import { handleApiError } from '@/lib/trpc-error-handler';
 import { useTranslations } from '@/context/TranslationsContext';
 import { compressToWebP } from '@/lib/utils/image-compression';
+import { format } from 'date-fns';
+import { CalendarAppointment } from '@/components/shadcn-studio/calendar/calendar-appointment';
 import {
   Card,
   CardContent,
@@ -23,7 +33,10 @@ import { Heading } from '@/components/atoms-alianza/Typography';
 import { CategorizedServiceSelector } from '@/components/organisms-alianza/CategorizedServiceSelector';
 
 const FormPreview = dynamic(
-  () => import('@/components/features/form-builder/organisms/FormPreview').then((mod) => mod.FormPreview),
+  () =>
+    import('@/components/features/form-builder/organisms/FormPreview').then(
+      (mod) => mod.FormPreview,
+    ),
   {
     ssr: false,
     loading: () => (
@@ -70,11 +83,17 @@ export default function NewRequestWizardPage() {
   const [step, setStep] = useState<Step>(1);
 
   // Form state
-  const [selectedLocation, setSelectedLocation] = useState<SelectedLocation | null>(null);
-  const [selectedService, setSelectedService] = useState<SelectedService | null>(null);
-  const [templateResponses, setTemplateResponses] = useState<Record<string, unknown>>({});
-  const [executionDate, setExecutionDate] = useState('');
-  const [executionTime, setExecutionTime] = useState('');
+  const [selectedLocation, setSelectedLocation] =
+    useState<SelectedLocation | null>(null);
+  const [selectedService, setSelectedService] =
+    useState<SelectedService | null>(null);
+  const [templateResponses, setTemplateResponses] = useState<
+    Record<string, unknown>
+  >({});
+  const [executionDate, setExecutionDate] = useState<Date | undefined>(
+    undefined,
+  );
+  const [executionTime, setExecutionTime] = useState<string | null>(null);
   const [showCreateLocationForm, setShowCreateLocationForm] = useState(false);
   const [pendingFiles, setPendingFiles] = useState<Record<string, File[]>>({});
 
@@ -85,56 +104,68 @@ export default function NewRequestWizardPage() {
   });
 
   // tRPC queries
-  const { data: servicesData, isLoading: loadingServices } = trpc.service.getAllServices.useQuery();
+  const { data: servicesData, isLoading: loadingServices } =
+    trpc.service.getAllServices.useQuery();
 
-  const { data: locationsData, isLoading: loadingLocations, refetch: refetchLocations } = trpc.location.getAllLocations.useQuery(
+  const {
+    data: locationsData,
+    isLoading: loadingLocations,
+    refetch: refetchLocations,
+  } = trpc.location.getAllLocations.useQuery(
     { userId: currentUser?.id || '' },
-    { enabled: !!currentUser?.id }
+    { enabled: !!currentUser?.id },
   );
 
-  const createRequestMutation = (trpc.request.createRequest as any).useMutation({
-    onSuccess: async (data: { id: string }) => {
-      toast.success(t('success'));
+  const createRequestMutation = (trpc.request.createRequest as any).useMutation(
+    {
+      onSuccess: async (data: { id: string }) => {
+        toast.success(t('success'));
 
-      // Upload pending files to the request's Drive folder (non-blocking)
-      const allFiles = Object.values(pendingFiles).flat();
-      if (allFiles.length > 0) {
-        toast.info(t('step3.uploadingFiles'));
-        uploadFilesToRequest(data.id, allFiles).catch(() => {
-          toast.error(t('step3.uploadError'));
-        });
-      }
+        // Upload pending files to the request's Drive folder (non-blocking)
+        const allFiles = Object.values(pendingFiles).flat();
+        if (allFiles.length > 0) {
+          toast.info(t('step3.uploadingFiles'));
+          uploadFilesToRequest(data.id, allFiles).catch(() => {
+            toast.error(t('step3.uploadError'));
+          });
+        }
 
-      router.push(`/${lang}/client/requests`);
+        router.push(`/${lang}/client/requests`);
+      },
+      onError: (error: any) => handleApiError(error, router),
     },
-    onError: (error: any) => handleApiError(error, router),
-  });
+  );
 
   // Upload files to the request's Drive folder via tRPC (stores metadata in request.attachments)
   const uploadFilesMutation = trpc.request.uploadRequestFiles.useMutation();
   const uploadFilesToRequest = async (requestId: string, files: File[]) => {
     // Compress images to WebP before upload
-    const processedFiles = await Promise.all(files.map((f) => compressToWebP(f)));
+    const processedFiles = await Promise.all(
+      files.map((f) => compressToWebP(f)),
+    );
 
     const filePayloads = await Promise.all(
       processedFiles.map(
         (file) =>
-          new Promise<{ name: string; data: string; mimeType: string; size: number }>(
-            (resolve, reject) => {
-              const reader = new FileReader();
-              reader.onload = () => {
-                const result = reader.result as string;
-                resolve({
-                  name: file.name,
-                  data: result.split(',')[1],
-                  mimeType: file.type || 'application/octet-stream',
-                  size: file.size,
-                });
-              };
-              reader.onerror = reject;
-              reader.readAsDataURL(file);
-            },
-          ),
+          new Promise<{
+            name: string;
+            data: string;
+            mimeType: string;
+            size: number;
+          }>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+              const result = reader.result as string;
+              resolve({
+                name: file.name,
+                data: result.split(',')[1],
+                mimeType: file.type || 'application/octet-stream',
+                size: file.size,
+              });
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+          }),
       ),
     );
     await uploadFilesMutation.mutateAsync({ requestId, files: filePayloads });
@@ -145,9 +176,13 @@ export default function NewRequestWizardPage() {
     if (!servicesData?.items) return [];
     return servicesData.items.map((service: any) => {
       const firstTemplate = service.formTemplates?.[0];
-      const rawSettings = firstTemplate?.formSettings as unknown as FormSettings | undefined;
+      const rawSettings = firstTemplate?.formSettings as unknown as
+        | FormSettings
+        | undefined;
       const formSettings: FormSettings | undefined =
-        rawSettings?.fields && rawSettings.fields.length > 0 ? rawSettings : undefined;
+        rawSettings?.fields && rawSettings.fields.length > 0
+          ? rawSettings
+          : undefined;
 
       return {
         id: service.id,
@@ -222,7 +257,10 @@ export default function NewRequestWizardPage() {
       return;
     }
 
-    const executionDateTime = new Date(`${executionDate}T${executionTime}`);
+    const executionDateString = format(executionDate, 'yyyy-MM-dd');
+    const executionDateTime = new Date(
+      `${executionDateString}T${executionTime}`,
+    );
 
     if (executionDateTime < new Date()) {
       toast.error(t('step4.futureRequired'));
@@ -337,7 +375,10 @@ export default function NewRequestWizardPage() {
             {loadingLocations || !currentUser ? (
               <div className="space-y-3">
                 {[1, 2].map((i) => (
-                  <div key={i} className="h-16 animate-pulse rounded-lg bg-muted" />
+                  <div
+                    key={i}
+                    className="h-16 animate-pulse rounded-lg bg-muted"
+                  />
                 ))}
               </div>
             ) : locationsData?.items && locationsData.items.length > 0 ? (
@@ -366,7 +407,9 @@ export default function NewRequestWizardPage() {
             ) : (
               <div className="flex flex-col items-center justify-center py-8 text-center">
                 <MapPin className="mb-3 h-10 w-10 text-muted-foreground/50" />
-                <p className="text-muted-foreground">{t('step1.noLocations')}</p>
+                <p className="text-muted-foreground">
+                  {t('step1.noLocations')}
+                </p>
               </div>
             )}
 
@@ -412,7 +455,8 @@ export default function NewRequestWizardPage() {
           <CardContent className="space-y-4">
             <div className="p-4 bg-muted/50 rounded-lg mb-4">
               <p className="text-sm">
-                <strong>{t('labels.location')}</strong> {selectedLocation?.address}
+                <strong>{t('labels.location')}</strong>{' '}
+                {selectedLocation?.address}
               </p>
             </div>
 
@@ -433,7 +477,8 @@ export default function NewRequestWizardPage() {
                 </p>
                 {selectedService.formSettings && (
                   <Badge variant="outline" className="mt-2">
-                    {selectedService.formSettings.fields.length} {t('step2.fieldsInForm')}
+                    {selectedService.formSettings.fields.length}{' '}
+                    {t('step2.fieldsInForm')}
                   </Badge>
                 )}
               </div>
@@ -458,12 +503,15 @@ export default function NewRequestWizardPage() {
         <Card>
           <CardHeader>
             <CardTitle>{t('step3.title')}</CardTitle>
-            <CardDescription>{t('step3.description')} {selectedService.name}</CardDescription>
+            <CardDescription>
+              {t('step3.description')} {selectedService.name}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="p-4 bg-muted/50 rounded-lg mb-6">
               <p className="text-sm">
-                <strong>{t('labels.location')}</strong> {selectedLocation?.address} |{' '}
+                <strong>{t('labels.location')}</strong>{' '}
+                {selectedLocation?.address} |{' '}
                 <strong>{t('labels.service')}</strong> {selectedService.name}
               </p>
             </div>
@@ -512,29 +560,28 @@ export default function NewRequestWizardPage() {
                   <strong>{t('step4.summary')}</strong>
                 </p>
                 <ul className="text-xs space-y-1 text-muted-foreground">
-                  <li>{t('labels.location')} {selectedLocation?.address}</li>
-                  <li>{t('labels.service')} {selectedService?.name}</li>
+                  <li>
+                    {t('labels.location')} {selectedLocation?.address}
+                  </li>
+                  <li>
+                    {t('labels.service')} {selectedService?.name}
+                  </li>
                   {Object.keys(templateResponses).length > 0 && (
-                    <li>{t('step4.fieldsCompleted')} {Object.keys(templateResponses).length}</li>
+                    <li>
+                      {t('step4.fieldsCompleted')}{' '}
+                      {Object.keys(templateResponses).length}
+                    </li>
                   )}
                 </ul>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormInput
-                  label={t('step4.dateLabel')}
-                  id="execution-date"
-                  type="date"
-                  value={executionDate}
-                  onChange={(e) => setExecutionDate(e.target.value)}
-                  min={new Date().toISOString().split('T')[0]}
-                />
-                <FormInput
-                  label={t('step4.timeLabel')}
-                  id="execution-time"
-                  type="time"
-                  value={executionTime}
-                  onChange={(e) => setExecutionTime(e.target.value)}
+              <div className="flex justify-center py-4">
+                <CalendarAppointment
+                  date={executionDate}
+                  setDate={setExecutionDate}
+                  time={executionTime}
+                  setTime={setExecutionTime}
+                  lang={lang as 'en' | 'es'}
                 />
               </div>
 
@@ -546,7 +593,11 @@ export default function NewRequestWizardPage() {
                 <Button
                   type="submit"
                   variant="active"
-                  disabled={createRequestMutation.isPending || !executionDate || !executionTime}
+                  disabled={
+                    createRequestMutation.isPending ||
+                    !executionDate ||
+                    !executionTime
+                  }
                 >
                   {createRequestMutation.isPending ? (
                     t('step4.creating')

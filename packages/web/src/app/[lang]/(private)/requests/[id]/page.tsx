@@ -76,7 +76,9 @@ export default function RequestDetailPage({
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-muted-foreground">Loading request details...</p>
+          <p className="mt-4 text-muted-foreground">
+            Loading request details...
+          </p>
         </div>
       </div>
     );
@@ -105,9 +107,7 @@ export default function RequestDetailPage({
             Back to Requests
           </button>
 
-          <h1 className="text-3xl font-bold tracking-tight">
-            Request Details
-          </h1>
+          <h1 className="text-3xl font-bold tracking-tight">Request Details</h1>
           <p className="mt-2 text-muted-foreground">
             View and manage this service request
           </p>
@@ -118,7 +118,6 @@ export default function RequestDetailPage({
           requestId={id}
           userRole={userRole}
           onUpdate={handleUpdate}
-          onBack={handleBack}
         />
       </div>
     </div>

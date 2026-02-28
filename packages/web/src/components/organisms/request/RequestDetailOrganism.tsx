@@ -183,7 +183,7 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
     return (
       <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-6">
         <div className="flex items-start gap-3">
-          <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-destructive" />
+          <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-destructive" />
           <div className="flex-1">
             <h3 className="font-semibold text-destructive">Error</h3>
             <p className="mt-1 text-sm text-destructive/80">
@@ -197,7 +197,6 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
 
   // --- Derived data ---
   const executionDate = new Date(request.executionDateTime);
-  // @ts-expect-error - TS2589: Prisma/tRPC type instantiation too deep, runtime types are correct
   const requestNote: string =
     typeof request.note === 'string'
       ? request.note
@@ -272,7 +271,7 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
                 variant="outline"
                 onClick={editHook.cancelEditMode}
                 disabled={editHook.isSaving}
-                className="h-10 !px-6 font-bold uppercase tracking-wider text-xs"
+                className="h-10 px-6! font-bold uppercase tracking-wider text-xs"
               >
                 <X className="mr-2 h-4 w-4" />
                 Cancelar
@@ -280,7 +279,7 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
               <Button
                 onClick={editHook.handleSave}
                 disabled={editHook.isSaving}
-                className="bg-primary text-primary-foreground font-bold h-10 !px-6 rounded-lg uppercase tracking-wider text-xs shadow-md shadow-primary/20 hover:shadow-lg transition-all"
+                className="bg-primary text-primary-foreground font-bold h-10 px-6! rounded-lg uppercase tracking-wider text-xs shadow-md shadow-primary/20 hover:shadow-lg transition-all"
               >
                 {editHook.isSaving ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -295,7 +294,7 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
               {canAssign && (
                 <Button
                   onClick={() => setIsAssignModalOpen(true)}
-                  className="bg-primary text-primary-foreground font-bold h-10 !px-6 rounded-lg uppercase tracking-wider text-xs shadow-md shadow-primary/20 hover:shadow-lg transition-all"
+                  className="bg-primary text-primary-foreground font-bold h-10 px-6! rounded-lg uppercase tracking-wider text-xs shadow-md shadow-primary/20 hover:shadow-lg transition-all"
                 >
                   <UserPlus className="mr-2 h-4 w-4" />
                   {request.assignedToId ? 'Reasignar' : 'Asignar'}
@@ -305,7 +304,7 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
                 <Button
                   variant="secondary"
                   onClick={() => setIsStatusModalOpen(true)}
-                  className="font-bold h-10 !px-6 rounded-lg uppercase tracking-wider text-xs"
+                  className="font-bold h-10 px-6! rounded-lg uppercase tracking-wider text-xs"
                 >
                   <RefreshCw className="mr-2 h-4 w-4" />
                   Cambiar Estado
@@ -315,7 +314,7 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
                 <Button
                   variant="outline"
                   onClick={editHook.enterEditMode}
-                  className="h-10 !px-6 border-primary text-primary hover:bg-primary/5 font-bold uppercase tracking-wider text-xs"
+                  className="h-10 px-6! border-primary text-primary hover:bg-primary/5 font-bold uppercase tracking-wider text-xs"
                 >
                   <Pencil className="mr-2 h-3 w-3" />
                   Editar
@@ -325,7 +324,7 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
                 <Button
                   variant="outline"
                   onClick={() => setIsCancellationRequestModalOpen(true)}
-                  className="h-10 !px-6 border-amber-300 text-amber-600 hover:bg-amber-50 font-bold uppercase tracking-wider text-xs"
+                  className="h-10 px-6! border-amber-300 text-amber-600 hover:bg-amber-50 font-bold uppercase tracking-wider text-xs"
                 >
                   <AlertTriangle className="mr-2 h-4 w-4" />
                   Solicitar Cancelación
@@ -337,7 +336,7 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
       </div>
 
       {/* ── Service Title, ID & Status Badge ── */}
-      <div className="relative flex flex-col md:flex-row items-start justify-between gap-6 p-6 sm:p-8 rounded-2xl bg-gradient-to-br from-background to-muted/30 border border-border shadow-sm overflow-hidden">
+      <div className="relative flex flex-col md:flex-row items-start justify-between gap-6 p-6 sm:p-8 rounded-2xl bg-linear-to-br from-background to-muted/30 border border-border shadow-sm overflow-hidden">
         {/* Subtle decorative background blur */}
         <div className="absolute top-0 right-0 -mt-16 -mr-16 w-64 h-64 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
 
@@ -368,7 +367,7 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
             </span>
           </div>
         </div>
-        <div className="relative flex-shrink-0">
+        <div className="relative shrink-0">
           <RequestStatusBadgeMolecule
             status={request.status as RequestStatus}
             size="lg"
@@ -398,7 +397,7 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
         <div className="grid gap-8 md:grid-cols-2">
           {/* Location */}
           <div className="flex gap-4">
-            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center">
+            <div className="shrink-0 w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center">
               <MapPin className="h-5 w-5 text-primary" />
             </div>
             <div className="flex-1">
@@ -518,7 +517,7 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
 
           {/* Service Type */}
           <div className="flex gap-4">
-            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center">
+            <div className="shrink-0 w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center">
               <Wrench className="h-5 w-5 text-primary" />
             </div>
             <div>
@@ -535,7 +534,7 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
 
           {/* Date/Time */}
           <div className="flex gap-4">
-            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center">
+            <div className="shrink-0 w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center">
               <Calendar className="h-5 w-5 text-primary" />
             </div>
             <div className="flex-1">
@@ -574,7 +573,7 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
 
           {/* Created Date */}
           <div className="flex gap-4">
-            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center">
+            <div className="shrink-0 w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center">
               <FileText className="h-5 w-5 text-primary" />
             </div>
             <div>
@@ -594,7 +593,7 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
           {/* Notes */}
           {(editHook.isEditing || requestNote) && (
             <div className="flex gap-4 col-span-2">
-              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center">
+              <div className="shrink-0 w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center">
                 <FileText className="h-5 w-5 text-primary" />
               </div>
               <div className="flex-1">
@@ -678,7 +677,7 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
         request.status !== RequestStatus.CANCELLED && (
           <div className="rounded-xl border border-amber-200 bg-amber-50 p-6">
             <div className="flex items-start gap-3">
-              <AlertTriangle className="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-600" />
+              <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
               <div className="flex-1">
                 <h3 className="font-bold text-amber-800">
                   Cancelación Solicitada

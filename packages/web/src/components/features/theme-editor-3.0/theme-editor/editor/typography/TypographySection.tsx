@@ -2,8 +2,8 @@
 
 import React, { useState } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
-import { Button } from '../../../design-system/primitives/Button';
-import { Card } from '../../../design-system/primitives/card';
+import { Button } from '@/components/primitives/ui/button';
+import { Card } from '@/components/primitives/ui/card';
 import { TypographyElementEditor } from './TypographyElementEditor';
 import { useTypographyState } from './useTypographyState';
 import { TypographyElement, TypographyElements } from './types';

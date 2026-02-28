@@ -2,10 +2,10 @@
 
 import React, { useState, useRef, useCallback } from 'react';
 import { Upload, X, Check, AlertCircle } from 'lucide-react';
-import { Button } from '../primitives/Button';
+import { Button } from '@/components/primitives/ui/button';
 import { Input } from './Input';
 import { CustomIcon } from './CustomIcon';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../primitives/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/primitives/ui/dialog';
 
 interface IconUploaderProps {
   isOpen: boolean;

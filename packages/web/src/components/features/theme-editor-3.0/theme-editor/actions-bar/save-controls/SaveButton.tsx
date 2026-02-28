@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Button } from '../../../design-system/primitives/Button';
+import { Button } from '@/components/primitives/ui/button';
 import { Icon } from '../../../design-system/atoms/Icon';
 import { Save, Heart, Check, ChevronDown, Copy } from 'lucide-react';
 import { ThemeData } from '../../../core/types/theme.types';
@@ -13,7 +13,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '../../../design-system/primitives/dropdown-menu';
+} from '@/components/primitives/ui/dropdown-menu';
 
 interface SaveButtonProps {
   theme: ThemeData;

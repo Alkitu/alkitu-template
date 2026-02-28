@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { RadioButton } from '../../../design-system/atoms/RadioButton';
+import { RadioButton } from '@/components/atoms-alianza/RadioButton';
 import { ShowcaseContainer } from './ShowcaseContainer';
 
 export function RadioButtonShowcase() {

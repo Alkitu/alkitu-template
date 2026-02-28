@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef, useCallback, useEffect } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../design-system/primitives/tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/primitives/ui/tabs';
 import { useThemeEditor } from '../../core/context/ThemeEditorContext';
 import { useThemeUpdates } from '../../core/hooks/useThemeUpdates';
 import { EditorSection } from '../../core/types';

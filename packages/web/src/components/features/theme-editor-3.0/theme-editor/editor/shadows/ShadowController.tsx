@@ -1,13 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Label } from '../../../design-system/primitives/label';
-import { Slider } from '../../../design-system/primitives/slider';
-import { Input } from '../../../design-system/primitives/input';
-import { Button } from '../../../design-system/primitives/Button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../design-system/primitives/select';
+import { Label } from '@/components/primitives/ui/label';
+import { Slider } from '@/components/primitives/ui/slider';
+import { Input } from '@/components/primitives/ui/input';
+import { Button } from '@/components/primitives/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/primitives/ui/select';
 import { RotateCcw, Eye, EyeOff } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../../../design-system/primitives/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/primitives/ui/tooltip';
 
 interface ShadowControllerProps {
   label: string;

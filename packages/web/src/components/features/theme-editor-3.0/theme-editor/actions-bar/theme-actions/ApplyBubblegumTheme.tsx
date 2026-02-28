@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Button } from '../../../design-system/primitives/Button';
+import { Button } from '@/components/primitives/ui/button';
 import { Palette } from 'lucide-react';
 import { useThemeEditor } from '../../../core/context/ThemeEditorContext';
 import { BUBBLEGUM_THEME } from '../../../core/constants/bubblegum-theme';

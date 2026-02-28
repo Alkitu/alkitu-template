@@ -26,18 +26,18 @@ import {
 // Import our design system components
 import { Button } from '../atoms/Button';
 import { Input } from '../atoms/Input';
-import { Textarea } from '../primitives/textarea';
+import { Textarea } from '@/components/primitives/ui/textarea';
 import { Checkbox } from '../atoms/Checkbox';
-import { RadioButton } from '../atoms/RadioButton';
+import { RadioButton } from '@/components/atoms-alianza/RadioButton';
 import { Select } from '../atoms/Select';
-import { Toggle } from '../atoms/Toggle';
-import { Badge } from '../atoms/Badge';
-import { Separator } from '../atoms/Separator';
+import { Toggle } from '@/components/atoms-alianza/Toggle';
+import { Badge } from '@/components/atoms-alianza/Badge';
+import { Separator } from '@/components/atoms-alianza/Separator';
 import { DatePickerMolecule } from '../molecules/DatePickerMolecule';
 import { CardMolecule } from '../molecules/CardMolecule';
 import { TabsMolecule } from '../molecules/TabsMolecule';
-import { ScrollArea } from '../primitives/scroll-area';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../primitives/dialog';
+import { ScrollArea } from '@/components/primitives/ui/scroll-area';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/primitives/ui/dialog';
 
 // Import typography system
 import { getTypographyClass } from '../../core/constants/typography-classes';

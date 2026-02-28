@@ -9,9 +9,16 @@ export type ButtonVariant =
   | 'ghost'     // Alias for 'nude' (backward compat)
   | 'destructive' // Danger/delete actions
   | 'primary'   // Standard compat
-  | 'secondary'; // Standard compat
+  | 'secondary' // Standard compat
+  | 'default'   // Legacy compat → main
+  | 'link'      // Legacy compat → nude
+  | 'loading'   // Legacy compat → main (loading handled via loading prop)
+  | 'icon'      // Legacy compat → main (icon-only handled via iconOnly prop)
+  | 'warning'   // Legacy compat → main
+  | 'error'     // Legacy compat → destructive
+  | 'success';  // Legacy compat → main
 
-export type ButtonSize = 'sm' | 'md' | 'lg';
+export type ButtonSize = 'sm' | 'md' | 'lg' | 'default' | 'icon';
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {

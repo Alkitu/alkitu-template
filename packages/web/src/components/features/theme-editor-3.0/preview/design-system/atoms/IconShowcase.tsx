@@ -8,7 +8,7 @@ import { CustomIcon } from '../../../design-system/atoms/CustomIcon';
 import { IconUploader } from '../../../design-system/atoms/IconUploader';
 import { useCustomIcons } from '../../../hooks/useCustomIcons';
 import { Upload, Trash2 } from 'lucide-react';
-import { Button } from '../../../design-system/primitives/Button';
+import { Button } from '@/components/primitives/ui/button';
 
 /**
  * Icon Showcase Component

@@ -1,13 +1,13 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { Button } from '../../../design-system/primitives/Button';
-import { Popover, PopoverContent, PopoverTrigger } from '../../../design-system/primitives/popover';
+import { Button } from '@/components/primitives/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/primitives/ui/popover';
 import { Link, Check } from 'lucide-react';
 import { ColorToken, ThemeColors } from '../../../core/types/theme.types';
-import { Label } from '../../../design-system/primitives/label';
-import { Badge } from '../../../design-system/primitives/badge';
-import { ScrollArea } from '../../../design-system/primitives/scroll-area';
+import { Label } from '@/components/primitives/ui/label';
+import { Badge } from '@/components/primitives/ui/badge';
+import { ScrollArea } from '@/components/primitives/ui/scroll-area';
 
 interface ColorLinkButtonProps {
   currentColor: ColorToken;

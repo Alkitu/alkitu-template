@@ -3,7 +3,7 @@
 import React from 'react';
 import { MoreHorizontal, X, ExternalLink, Share2, Heart } from 'lucide-react';
 import { Button } from '../atoms/Button';
-import { Badge } from '../atoms/Badge';
+import { Badge } from '@/components/atoms-alianza/Badge';
 import { 
   Card,
   CardContent,
@@ -11,7 +11,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle 
-} from '../primitives/card';
+} from '@/components/primitives/ui/card';
 import { useThemeEditor } from '../../core/context/ThemeEditorContext';
 
 export interface CardAction {

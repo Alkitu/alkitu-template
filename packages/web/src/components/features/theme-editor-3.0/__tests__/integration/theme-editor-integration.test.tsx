@@ -10,7 +10,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { Button, MemoizedButton } from '../../design-system/atoms/Button';
 import { Input, MemoizedInput } from '../../design-system/atoms/Input';
 import { Select, MemoizedSelect } from '../../design-system/atoms/Select';
-import { Badge } from '../../design-system/atoms/Badge';
+import { Badge } from '@/components/atoms-alianza/Badge';
 import { Checkbox } from '../../design-system/atoms/Checkbox';
 
 describe('Theme Editor Integration Tests', () => {

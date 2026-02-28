@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../primitives/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/primitives/ui/dialog';
 import { Button } from '../atoms/Button';
-import { Badge } from '../atoms/Badge';
+import { Badge } from '@/components/atoms-alianza/Badge';
 import { Input } from '../atoms/Input';
 import { useThemeEditor } from '../../core/context/ThemeEditorContext';
 import { 

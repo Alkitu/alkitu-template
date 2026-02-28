@@ -28,8 +28,8 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuCheckboxItem,
   DropdownMenuShortcut
-} from '../primitives/dropdown-menu';
-import { Badge } from '../atoms/Badge';
+} from '@/components/primitives/ui/dropdown-menu';
+import { Badge } from '@/components/atoms-alianza/Badge';
 import { Avatar } from '../atoms/Avatar';
 import { useThemeEditor } from '../../core/context/ThemeEditorContext';
 

@@ -1,15 +1,15 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../../design-system/primitives/dialog';
-import { Button } from '../../../design-system/primitives/Button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../design-system/primitives/tabs';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/primitives/ui/dialog';
+import { Button } from '@/components/primitives/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/primitives/ui/tabs';
 import { Copy, Check } from 'lucide-react';
 import { ThemeWithCurrentColors } from '../../../core/types/theme.types';
 import { generateThemeCSS } from '../../../lib/utils/css/css-variables';
 import { oklchToHex, oklchToRgb } from '../../../lib/utils/color/color-conversions';
 import { CSS_VARIABLE_MAP } from '../../../core/types/color-sections.types';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../design-system/primitives/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/primitives/ui/select';
 
 interface ThemeCodeModalProps {
   theme: ThemeWithCurrentColors;

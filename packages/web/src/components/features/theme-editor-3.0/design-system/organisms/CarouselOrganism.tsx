@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../primitives/card';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '../primitives/carousel';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/primitives/ui/card';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/primitives/ui/carousel';
 import { Button } from '../atoms/Button';
-import { Badge } from '../atoms/Badge';
+import { Badge } from '@/components/atoms-alianza/Badge';
 import { useThemeEditor } from '../../core/context/ThemeEditorContext';
 import { Play, Pause, SkipBack, SkipForward, Heart, Share2, Star, Eye } from 'lucide-react';
 

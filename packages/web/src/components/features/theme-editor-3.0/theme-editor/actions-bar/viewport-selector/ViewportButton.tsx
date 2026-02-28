@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Button } from '../../../design-system/primitives/Button';
+import { Button } from '@/components/primitives/ui/button';
 import { ViewportSize } from '../../../core/types/viewport.types';
 import { Icon } from '../../../design-system/atoms/Icon';
 import { Monitor, Tv, Tablet, Smartphone } from 'lucide-react';

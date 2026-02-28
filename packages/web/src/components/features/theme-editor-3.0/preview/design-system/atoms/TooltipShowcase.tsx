@@ -2,9 +2,9 @@
 
 import React from 'react';
 import { ShowcaseContainer } from './ShowcaseContainer';
-import { Tooltip } from '../../../design-system/atoms/Tooltip';
-import { Button } from '../../../design-system/primitives/Button';
-import { Badge } from '../../../design-system/primitives/badge';
+import { Tooltip } from '@/components/atoms-alianza/Tooltip';
+import { Button } from '@/components/primitives/ui/button';
+import { Badge } from '@/components/primitives/ui/badge';
 
 /**
  * Tooltip Showcase Component

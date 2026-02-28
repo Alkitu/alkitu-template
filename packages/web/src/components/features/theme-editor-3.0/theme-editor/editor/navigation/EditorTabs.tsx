@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Tabs, TabsList, TabsTrigger } from '../../../design-system/primitives/tabs';
+import { Tabs, TabsList, TabsTrigger } from '@/components/primitives/ui/tabs';
 import { Palette, Type, Building, Square, Space, Layers, Scroll } from 'lucide-react';
 import { EditorSection } from '../../../core/types/editor.types';
 import { useThemeEditor } from '../../../core/context/ThemeEditorContext';

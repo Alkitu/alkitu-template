@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import { Card } from '../../design-system/primitives/card';
-import { Badge } from '../../design-system/primitives/badge';
+import { Card } from '@/components/primitives/ui/card';
+import { Badge } from '@/components/primitives/ui/badge';
 import { Check, AlertTriangle, X, Sun } from 'lucide-react';
 import { useThemeEditor } from '../../core/context/ThemeEditorContext';
 import { getContrastRatio, getContrastGrade } from '../../lib/utils/color/contrast';

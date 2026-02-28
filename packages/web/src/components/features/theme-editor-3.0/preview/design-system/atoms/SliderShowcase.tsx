@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { ShowcaseContainer } from './ShowcaseContainer';
-import { Slider } from '../../../design-system/atoms/Slider';
+import { Slider } from '@/components/atoms-alianza/Slider';
 
 /**
  * Slider Showcase Component

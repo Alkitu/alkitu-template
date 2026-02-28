@@ -1,10 +1,10 @@
 'use client';
 
 import React from 'react';
-import { Skeleton } from '../primitives/skeleton';
-import { Card, CardContent, CardHeader } from '../primitives/card';
+import { Skeleton } from '@/components/primitives/ui/skeleton';
+import { Card, CardContent, CardHeader } from '@/components/primitives/ui/card';
 import { Button } from '../atoms/Button';
-import { Badge } from '../atoms/Badge';
+import { Badge } from '@/components/atoms-alianza/Badge';
 import { useThemeEditor } from '../../core/context/ThemeEditorContext';
 
 export interface SkeletonOrganismProps {

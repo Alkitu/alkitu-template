@@ -1,12 +1,12 @@
 'use client';
 
 import React from 'react';
-import { Label } from '../../../design-system/primitives/label';
-import { Slider } from '../../../design-system/primitives/slider';
-import { Input } from '../../../design-system/primitives/input';
-import { Button } from '../../../design-system/primitives/Button';
+import { Label } from '@/components/primitives/ui/label';
+import { Slider } from '@/components/primitives/ui/slider';
+import { Input } from '@/components/primitives/ui/input';
+import { Button } from '@/components/primitives/ui/button';
 import { RotateCcw } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../../../design-system/primitives/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/primitives/ui/tooltip';
 
 interface SpacingControllerProps {
   label: string;

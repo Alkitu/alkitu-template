@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { ShowcaseContainer } from './ShowcaseContainer';
-import { Separator } from '../../../design-system/atoms/Separator';
+import { Separator } from '@/components/atoms-alianza/Separator';
 
 /**
  * Separator Showcase Component
@@ -80,15 +80,15 @@ export function SeparatorShowcase() {
         <div className="w-full space-y-4">
           <div>
             <p className="text-xs text-muted-foreground mb-2">Solid (default)</p>
-            <Separator style="solid" size="medium" />
+            <Separator borderStyle="solid" size="medium" />
           </div>
           <div>
             <p className="text-xs text-muted-foreground mb-2">Dashed</p>
-            <Separator style="dashed" size="medium" />
+            <Separator borderStyle="dashed" size="medium" />
           </div>
           <div>
             <p className="text-xs text-muted-foreground mb-2">Dotted</p>
-            <Separator style="dotted" size="thick" />
+            <Separator borderStyle="dotted" size="thick" />
           </div>
         </div>
       </ShowcaseContainer>

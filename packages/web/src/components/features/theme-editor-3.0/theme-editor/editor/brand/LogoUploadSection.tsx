@@ -1,16 +1,16 @@
 'use client';
 
 import React, { useRef, useState, useEffect } from 'react';
-import { Card } from '../../../design-system/primitives/card';
-import { Button } from '../../../design-system/primitives/Button';
-import { Label } from '../../../design-system/primitives/label';
-import { Badge } from '../../../design-system/primitives/badge';
+import { Card } from '@/components/primitives/ui/card';
+import { Button } from '@/components/primitives/ui/button';
+import { Label } from '@/components/primitives/ui/label';
+import { Badge } from '@/components/primitives/ui/badge';
 import { Upload, X, AlertCircle, Info, RotateCcw, Lock, Unlock, Moon } from 'lucide-react';
 import { LogoVariant } from './types';
 import { detectColorsFromSVG, generateColorVariants, validateAspectRatio, readSVGContent, replaceColorInSVG, extractSVGMetadata, createDefaultModeConfig as createDefaultModeConfigUtil } from './utils';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../../../design-system/primitives/accordion';
-import { Input } from '../../../design-system/primitives/input';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../../../design-system/primitives/tooltip';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/primitives/ui/accordion';
+import { Input } from '@/components/primitives/ui/input';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/primitives/ui/tooltip';
 import { HsvColorPicker } from '../colors/HsvColorPicker';
 import { ColorToken } from '../../../core/types/theme.types';
 import { updateColorTokenFromHex } from '../../../lib/utils/color/color-conversions-v2';

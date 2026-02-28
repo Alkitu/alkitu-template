@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader } from '../primitives/card';
+import { Card, CardContent, CardHeader } from '@/components/primitives/ui/card';
 import { Button } from '../atoms/Button';
-import { Badge } from '../atoms/Badge';
-import { Separator } from '../primitives/separator';
+import { Badge } from '@/components/atoms-alianza/Badge';
+import { Separator } from '@/components/primitives/ui/separator';
 import { useThemeEditor } from '../../core/context/ThemeEditorContext';
 import { 
   Home, 

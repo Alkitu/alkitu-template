@@ -27,13 +27,13 @@ import {
 import { Button } from '../atoms/Button';
 import { Input } from '../atoms/Input';
 import { Checkbox } from '../atoms/Checkbox';
-import { RadioButton } from '../atoms/RadioButton';
+import { RadioButton } from '@/components/atoms-alianza/RadioButton';
 import { Select } from '../atoms/Select';
-import { Toggle } from '../atoms/Toggle';
-import { Badge } from '../atoms/Badge';
-import { Separator } from '../atoms/Separator';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../primitives/card';
-import { Textarea } from '../primitives/textarea';
+import { Toggle } from '@/components/atoms-alianza/Toggle';
+import { Badge } from '@/components/atoms-alianza/Badge';
+import { Separator } from '@/components/atoms-alianza/Separator';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/primitives/ui/card';
+import { Textarea } from '@/components/primitives/ui/textarea';
 import { useThemeEditor } from '../../core/context/ThemeEditorContext';
 
 export type FormFieldType = 

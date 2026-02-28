@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import { Card } from '../../design-system/primitives/card';
-import { Badge } from '../../design-system/primitives/badge';
+import { Card } from '@/components/primitives/ui/card';
+import { Badge } from '@/components/primitives/ui/badge';
 import { BookOpen, Monitor, Smartphone, Globe, Mail, FileText, Star, Palette } from 'lucide-react';
 import { LogoVariant, LOGO_SIZE_MAP, LogoSize } from '../../theme-editor/editor/brand/types';
 import { ThemeBrand } from '../../core/types/theme.types';

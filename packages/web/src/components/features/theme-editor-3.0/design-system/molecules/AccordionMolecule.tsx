@@ -7,8 +7,8 @@ import {
   AccordionItem,
   AccordionTrigger,
   AccordionContent 
-} from '../primitives/accordion';
-import { Badge } from '../atoms/Badge';
+} from '@/components/primitives/ui/accordion';
+import { Badge } from '@/components/atoms-alianza/Badge';
 import { Button } from '../atoms/Button';
 import { useThemeEditor } from '../../core/context/ThemeEditorContext';
 

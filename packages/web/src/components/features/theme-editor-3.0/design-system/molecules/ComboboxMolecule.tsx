@@ -4,12 +4,12 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Check, ChevronDown, Search, X } from 'lucide-react';
 import { Button } from '../atoms/Button';
 import { Input } from '../atoms/Input';
-import { Badge } from '../atoms/Badge';
+import { Badge } from '@/components/atoms-alianza/Badge';
 import { 
   Popover,
   PopoverContent,
   PopoverTrigger 
-} from '../primitives/popover';
+} from '@/components/primitives/ui/popover';
 import { 
   Command,
   CommandInput,

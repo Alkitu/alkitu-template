@@ -1,10 +1,10 @@
 'use client';
 
 import React from 'react';
-import { Button } from '../../design-system/primitives/Button';
+import { Button } from '@/components/primitives/ui/button';
 import { Icon } from '../../design-system/atoms/Icon';
 import { ChevronLeft, ChevronRight, Shuffle } from 'lucide-react';
-import { Separator } from '../../design-system/primitives/separator';
+import { Separator } from '@/components/atoms-alianza/Separator';
 
 interface ThemeNavigationProps {
   onPrevious: () => void;

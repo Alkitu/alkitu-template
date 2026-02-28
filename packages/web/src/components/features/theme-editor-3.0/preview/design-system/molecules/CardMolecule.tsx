@@ -1,9 +1,9 @@
 'use client';
 
 import React from 'react';
-import { Card } from '../../../design-system/primitives/card';
+import { Card } from '@/components/primitives/ui/card';
 import { Button } from '../../../design-system/atoms/Button';
-import { Badge } from '../../../design-system/atoms/Badge';
+import { Badge } from '@/components/atoms-alianza/Badge';
 import { useThemeEditor } from '../../../core/context/ThemeEditorContext';
 
 /**

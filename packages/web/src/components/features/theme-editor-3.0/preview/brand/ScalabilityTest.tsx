@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Card } from '../../design-system/primitives/card';
+import { Card } from '@/components/primitives/ui/card';
 import { useThemeEditor } from '../../core/context/ThemeEditorContext';
-import { Button } from '../../design-system/primitives/Button';
-import { Badge } from '../../design-system/primitives/badge';
+import { Button } from '@/components/primitives/ui/button';
+import { Badge } from '@/components/primitives/ui/badge';
 import { Ruler, RotateCcw, Eye, EyeOff } from 'lucide-react';
 import { LogoVariant, LOGO_SIZE_MAP, LogoSize } from '../../theme-editor/editor/brand/types';
 

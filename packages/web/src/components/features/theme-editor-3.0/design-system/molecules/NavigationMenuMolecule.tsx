@@ -10,8 +10,8 @@ import {
   NavigationMenuTrigger,
   NavigationMenuLink,
   navigationMenuTriggerStyle
-} from '../primitives/navigation-menu';
-import { Badge } from '../atoms/Badge';
+} from '@/components/primitives/ui/navigation-menu';
+import { Badge } from '@/components/atoms-alianza/Badge';
 import { useThemeEditor } from '../../core/context/ThemeEditorContext';
 
 export interface NavigationItem {

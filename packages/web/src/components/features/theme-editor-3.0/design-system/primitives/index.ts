@@ -1,43 +1,16 @@
 /**
  * Theme Editor 3.0 - Primitives Index
  *
- * PREPARACIÓN PRE-ETAPA 7: Local Components Export
- *
- * Centralized exports for all local UI components
+ * Only exports unique/custom primitives that don't exist in @/components/primitives/ui/.
+ * Standard primitives (Dialog, Tabs, Slider, etc.) should be imported from
+ * '@/components/primitives/ui/' directly.
  */
 
-// Dialog
-export * from './dialog-local';
-
-// Popover
-export * from './popover-local';
-
-// Tabs
-export * from './tabs-local';
-
-// Form components
-export * from './textarea';
-export * from './slider-local';
-export * from './switch-local';
-export * from './progress-local';
-export * from './radio-group';
-export * from './toggle';
-export * from './toggle-group';
-
-// Layout components
-export * from './table';
-export * from './separator-local';
-export * from './skeleton';
-
-// Interactive components
-export * from './tooltip-local';
-export * from './dropdown-menu';
-export * from './context-menu';
+// Custom command implementation
 export * from './command-local';
 
-// Toast system (Sonner only)
-export * from './sonner';
+// Custom pagination implementation
+export * from './pagination-local';
 
-// Color pickers
+// Color pickers (unique to theme editor)
 export * from './enhanced-color-picker-local';
-export * from './simple-color-picker';

@@ -14,7 +14,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { Button } from '../Button';
 import { Input } from '../Input';
 import { Select } from '../Select';
-import { Badge } from '../Badge';
+import { Badge } from '@/components/atoms-alianza/Badge';
 import { Checkbox } from '../Checkbox';
 
 describe('Accessibility Enhancements - Critical Components', () => {

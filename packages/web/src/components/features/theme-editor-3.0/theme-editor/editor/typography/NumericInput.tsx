@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useCallback, KeyboardEvent } from 'react';
-import { Input } from '../../../design-system/primitives/input';
+import { Input } from '@/components/primitives/ui/input';
 import { ChevronUp, ChevronDown } from 'lucide-react';
 
 interface NumericInputProps {

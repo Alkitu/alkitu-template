@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Badge } from '../../../design-system/atoms/Badge';
+import { Badge } from '@/components/atoms-alianza/Badge';
 import { ShowcaseContainer } from './ShowcaseContainer';
 import { 
   Star, 

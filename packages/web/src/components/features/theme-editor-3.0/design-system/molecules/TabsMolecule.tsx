@@ -7,9 +7,9 @@ import {
   TabsList,
   TabsTrigger,
   TabsContent
-} from '../primitives/tabs';
+} from '@/components/primitives/ui/tabs';
 import { Button } from '../atoms/Button';
-import { Badge } from '../atoms/Badge';
+import { Badge } from '@/components/atoms-alianza/Badge';
 import { useThemeEditor } from '../../core/context/ThemeEditorContext';
 
 export interface TabItem {

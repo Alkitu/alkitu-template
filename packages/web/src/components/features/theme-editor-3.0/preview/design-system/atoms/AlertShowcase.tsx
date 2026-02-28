@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { ShowcaseContainer } from './ShowcaseContainer';
-import { Alert } from '../../../design-system/atoms/Alert';
+import { Alert } from '@/components/atoms-alianza/Alert';
 import { Shield, Zap, Download, Mail } from 'lucide-react';
 
 /**

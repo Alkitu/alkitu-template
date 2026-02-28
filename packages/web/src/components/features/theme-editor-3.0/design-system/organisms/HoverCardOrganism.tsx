@@ -1,9 +1,9 @@
 'use client';
 
 import React from 'react';
-import { HoverCard, HoverCardContent, HoverCardTrigger } from '../primitives/hover-card';
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/primitives/ui/hover-card';
 import { Button } from '../atoms/Button';
-import { Badge } from '../atoms/Badge';
+import { Badge } from '@/components/atoms-alianza/Badge';
 import { useThemeEditor } from '../../core/context/ThemeEditorContext';
 import { 
   User, 

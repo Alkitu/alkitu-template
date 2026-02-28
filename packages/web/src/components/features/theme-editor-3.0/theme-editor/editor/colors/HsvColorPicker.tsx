@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Input } from '../../../design-system/primitives/input';
-import { Label } from '../../../design-system/primitives/label';
+import { Input } from '@/components/primitives/ui/input';
+import { Label } from '@/components/primitives/ui/label';
 import { ChevronDown, ChevronRight } from 'lucide-react';
-import { Button } from '../../../design-system/primitives/Button';
+import { Button } from '@/components/primitives/ui/button';
 import { ColorToken } from '../../../core/types/theme.types';
 import { 
   // Legacy imports (still needed for some functions)

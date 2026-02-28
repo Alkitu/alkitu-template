@@ -1,10 +1,10 @@
 'use client';
 
 import React from 'react';
-import { Button } from '../../design-system/primitives/Button';
+import { Button } from '@/components/primitives/ui/button';
 import { Check, Heart, Star } from 'lucide-react';
-import { Popover, PopoverContent, PopoverTrigger } from '../../design-system/primitives/popover';
-import { Badge } from '../../design-system/primitives/badge';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/primitives/ui/popover';
+import { Badge } from '@/components/primitives/ui/badge';
 import { ThemeData } from '../../core/types/theme.types';
 import { ThemePreview } from './ThemePreview';
 import { ThemeSearch } from './ThemeSearch';

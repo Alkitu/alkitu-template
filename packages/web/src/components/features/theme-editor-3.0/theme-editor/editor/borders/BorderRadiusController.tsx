@@ -1,13 +1,13 @@
 'use client';
 
 import React from 'react';
-import { Label } from '../../../design-system/primitives/label';
-import { Slider } from '../../../design-system/primitives/slider';
-import { Input } from '../../../design-system/primitives/input';
-import { Button } from '../../../design-system/primitives/Button';
-import { Badge } from '../../../design-system/primitives/badge';
+import { Label } from '@/components/primitives/ui/label';
+import { Slider } from '@/components/primitives/ui/slider';
+import { Input } from '@/components/primitives/ui/input';
+import { Button } from '@/components/primitives/ui/button';
+import { Badge } from '@/components/primitives/ui/badge';
 import { Lock, Unlock, RotateCcw } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../../../design-system/primitives/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/primitives/ui/tooltip';
 import { BorderRadiusController as BorderRadiusControllerType } from '../../../core/types/theme.types';
 
 interface BorderRadiusControllerProps {

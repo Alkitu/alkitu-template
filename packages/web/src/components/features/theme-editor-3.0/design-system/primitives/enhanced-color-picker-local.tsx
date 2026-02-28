@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { Label } from "./label";
-import { Input } from "./input";
-import { Button } from "./Button";
+import { Label } from "@/components/primitives/ui/label";
+import { Input } from "@/components/primitives/ui/input";
+import { Button } from "@/components/primitives/ui/button";
 import { ColorSelectorPopover } from './color-selector-popover';
 import { cn } from '@/lib/utils';
 import { oklchToHex, hexToOklch } from '@/lib/themeUtils';

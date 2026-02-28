@@ -1,12 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../../design-system/primitives/dialog';
-import { Button } from '../../../design-system/primitives/Button';
-import { Input } from '../../../design-system/primitives/input';
-import { Label } from '../../../design-system/primitives/label';
-import { Textarea } from '../../../design-system/primitives/textarea';
-import { Alert, AlertDescription } from '../../../design-system/primitives/alert';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/primitives/ui/dialog';
+import { Button } from '@/components/primitives/ui/button';
+import { Input } from '@/components/primitives/ui/input';
+import { Label } from '@/components/primitives/ui/label';
+import { Textarea } from '@/components/primitives/ui/textarea';
+import { Alert, AlertDescription } from '@/components/primitives/ui/alert';
 import { AlertCircle, Upload } from 'lucide-react';
 import { ThemeData } from '../../../core/types/theme.types';
 import { SaveThemeDialog } from '../save-controls/SaveThemeDialog';

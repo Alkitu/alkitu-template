@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useRef, useEffect, useCallback } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../design-system/primitives/tabs';
-import { Badge } from '../design-system/primitives/badge';
-import { Card } from '../design-system/primitives/card';
-import { Button } from '../design-system/primitives/Button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/primitives/ui/tabs';
+import { Badge } from '@/components/primitives/ui/badge';
+import { Card } from '@/components/primitives/ui/card';
+import { Button } from '@/components/primitives/ui/button';
 import { useThemeEditor } from '../core/context/ThemeEditorContext';
 import { PreviewSection } from '../core/types';
 import { VIEWPORT_CONFIGS } from '../core/types/viewport.types';

@@ -9,7 +9,7 @@ import {
   MoreHorizontal 
 } from 'lucide-react';
 import { Button } from '../atoms/Button';
-import { Badge } from '../atoms/Badge';
+import { Badge } from '@/components/atoms-alianza/Badge';
 import { Select } from '../atoms/Select';
 import { 
   Pagination,

@@ -1,10 +1,10 @@
 'use client';
 
 import React from 'react';
-import { Card } from '../../design-system/primitives/card';
-import { Badge } from '../../design-system/primitives/badge';
+import { Card } from '@/components/primitives/ui/card';
+import { Badge } from '@/components/primitives/ui/badge';
 import { Copy, CheckCircle } from 'lucide-react';
-import { Button } from '../../design-system/primitives/Button';
+import { Button } from '@/components/primitives/ui/button';
 import { ThemeColors } from '../../core/types/theme.types';
 import { CSS_VARIABLE_MAP } from '../../core/types/color-sections.types';
 import { oklchToHex } from '../../lib/utils/color/color-conversions';

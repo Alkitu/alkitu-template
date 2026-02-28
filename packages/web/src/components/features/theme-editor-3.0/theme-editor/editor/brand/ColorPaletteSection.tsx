@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Card } from '../../../design-system/primitives/card';
-import { Button } from '../../../design-system/primitives/Button';
+import { Card } from '@/components/primitives/ui/card';
+import { Button } from '@/components/primitives/ui/button';
 import { Palette, X, Eye, EyeOff } from 'lucide-react';
 import { LogoVariant } from './types';
 import { replaceColorInSVG } from './utils';

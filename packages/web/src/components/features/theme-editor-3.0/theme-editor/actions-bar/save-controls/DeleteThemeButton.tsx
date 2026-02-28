@@ -11,8 +11,8 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '../../../design-system/primitives/alert-dialog';
-import { Button } from '../../../design-system/primitives/Button';
+} from '@/components/primitives/ui/alert-dialog';
+import { Button } from '@/components/primitives/ui/button';
 
 interface DeleteThemeButtonProps {
   themeId: string;

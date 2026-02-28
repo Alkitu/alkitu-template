@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Badge } from '../../../design-system/primitives/badge';
+import { Badge } from '@/components/primitives/ui/badge';
 import type { ThemeMode as ThemeModeType } from '../../../core/types/theme.types';
 import { ModeToggle } from './ModeToggle';
 

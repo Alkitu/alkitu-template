@@ -1,16 +1,33 @@
 /**
- * MIGRATION NOTE: This file now re-exports from the unified design system
- * All Button functionality has been consolidated into design-system/primitives/Button
- * This re-export maintains backward compatibility with existing imports
+ * MIGRATION NOTE: This file re-exports from the alianza Button component.
+ * All Button functionality is provided by molecules-alianza/Button.
+ * This re-export maintains backward compatibility with existing imports.
+ *
+ * Legacy variant names (default, ghost, link, icon, loading, etc.)
+ * are mapped internally by the alianza Button's variantMap.
  */
 
+import React from 'react';
 import { cn } from '@/lib/utils';
 
-export {
-  Button,
-  MemoizedButton,
-} from '@/components/features/theme-editor-3.0/design-system/primitives/Button/Button';
-export type { ButtonProps } from '@/components/features/theme-editor-3.0/design-system/primitives/Button/Button.types';
+export { Button } from '@/components/molecules-alianza/Button';
+export type { ButtonProps } from '@/components/molecules-alianza/Button';
+
+// Performance optimization wrapper (backward compat)
+import { Button as AlianzaButton } from '@/components/molecules-alianza/Button';
+import type { ButtonProps as AlianzaButtonProps } from '@/components/molecules-alianza/Button';
+
+export const MemoizedButton = React.memo(AlianzaButton, (prevProps: AlianzaButtonProps, nextProps: AlianzaButtonProps) => {
+  if (prevProps.loading !== nextProps.loading) return false;
+  if (prevProps.disabled !== nextProps.disabled) return false;
+  if (prevProps.variant !== nextProps.variant) return false;
+  if (prevProps.size !== nextProps.size) return false;
+  if (prevProps.className !== nextProps.className) return false;
+  if (JSON.stringify(prevProps.children) !== JSON.stringify(nextProps.children)) return false;
+  return true;
+});
+
+MemoizedButton.displayName = 'MemoizedButton';
 
 /**
  * buttonVariants utility function for consistent button styling

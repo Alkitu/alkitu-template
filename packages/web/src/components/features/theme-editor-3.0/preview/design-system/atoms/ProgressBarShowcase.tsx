@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ProgressBar } from '../../../design-system/atoms/ProgressBar';
+import { ProgressBar } from '@/components/atoms-alianza/ProgressBar';
 import { ShowcaseContainer } from './ShowcaseContainer';
 
 export function ProgressBarShowcase() {

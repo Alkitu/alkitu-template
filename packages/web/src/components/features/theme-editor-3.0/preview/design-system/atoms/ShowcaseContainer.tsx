@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Card } from '../../../design-system/primitives/card';
+import { Card } from '@/components/primitives/ui/card';
 import { useThemeEditor } from '../../../core/context/ThemeEditorContext';
 
 interface ShowcaseContainerProps {

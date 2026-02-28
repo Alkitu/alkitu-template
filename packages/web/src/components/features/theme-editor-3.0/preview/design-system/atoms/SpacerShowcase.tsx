@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Spacer } from '../../../design-system/atoms/Spacer';
+import { Spacer } from '@/components/atoms-alianza/Spacer';
 import { ShowcaseContainer } from './ShowcaseContainer';
 
 export function SpacerShowcase() {

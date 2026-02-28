@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Badge } from '../../../design-system/primitives/badge';
+import { Badge } from '@/components/primitives/ui/badge';
 import { ViewportSize, VIEWPORT_CONFIGS } from '../../../core/types/viewport.types';
 
 interface ViewportIndicatorProps {

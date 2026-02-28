@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../design-system/primitives/tabs';
-import { Badge } from '../design-system/primitives/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/primitives/ui/tabs';
+import { Badge } from '@/components/primitives/ui/badge';
 import { useThemeEditor } from '../core/context/ThemeEditorContext';
 import { PREVIEW_TABS, getTabsForViewport } from './config/tabs.config';
 import { ViewportWrapper } from './layouts/ViewportWrapper';

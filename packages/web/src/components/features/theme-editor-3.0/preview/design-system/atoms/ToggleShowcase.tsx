@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Toggle } from '../../../design-system/atoms/Toggle';
+import { Toggle } from '@/components/atoms-alianza/Toggle';
 import { ShowcaseContainer } from './ShowcaseContainer';
 
 // Using universal ShowcaseContainer - no need for custom container

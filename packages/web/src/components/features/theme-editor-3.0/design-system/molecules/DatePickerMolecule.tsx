@@ -4,13 +4,13 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Calendar as CalendarIcon, Clock, X } from 'lucide-react';
 import { Button } from '../atoms/Button';
 import { Input } from '../atoms/Input';
-import { Badge } from '../atoms/Badge';
+import { Badge } from '@/components/atoms-alianza/Badge';
 import { 
   Popover,
   PopoverContent,
   PopoverTrigger 
-} from '../primitives/popover';
-import { Calendar } from '../primitives/calendar-local';
+} from '@/components/primitives/ui/popover';
+import { Calendar } from '@/components/primitives/ui/calendar';
 import { useThemeEditor } from '../../core/context/ThemeEditorContext';
 
 export interface DatePickerMoleculeProps {
@@ -519,13 +519,16 @@ export function DatePickerMolecule({
           </PopoverTrigger>
           
           <PopoverContent style={getPopoverContentStyles()}>
+            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
             <Calendar
-              mode={variant === 'range' ? 'range' : 'single'}
-              selected={value}
-              onSelect={handleDateSelect as any}
-              fromDate={minDate}
-              toDate={maxDate}
-              initialFocus
+              {...{
+                mode: variant === 'range' ? 'range' : 'single',
+                selected: value,
+                onSelect: handleDateSelect,
+                fromDate: minDate,
+                toDate: maxDate,
+                autoFocus: true,
+              } as any}
             />
             
             {renderTimeInputs()}

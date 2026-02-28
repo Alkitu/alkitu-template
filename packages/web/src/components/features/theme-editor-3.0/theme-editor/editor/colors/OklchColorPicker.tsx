@@ -1,10 +1,10 @@
 'use client';
 
 import React from 'react';
-import { Slider } from '../../../design-system/primitives/slider';
-import { Label } from '../../../design-system/primitives/label';
-import { Input } from '../../../design-system/primitives/input';
-import { Button } from '../../../design-system/primitives/Button';
+import { Slider } from '@/components/primitives/ui/slider';
+import { Label } from '@/components/primitives/ui/label';
+import { Input } from '@/components/primitives/ui/input';
+import { Button } from '@/components/primitives/ui/button';
 import { OklchColor } from '../../../core/types/theme.types';
 
 interface OklchColorPickerProps {

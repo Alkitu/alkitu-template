@@ -1,10 +1,10 @@
 'use client';
 
 import React from 'react';
-import { Card } from '../../design-system/primitives/card';
-import { Badge } from '../../design-system/primitives/badge';
+import { Card } from '@/components/primitives/ui/card';
+import { Badge } from '@/components/primitives/ui/badge';
 import { BookOpen, Download, Copy, Check } from 'lucide-react';
-import { Button } from '../../design-system/primitives/Button';
+import { Button } from '@/components/primitives/ui/button';
 import { LogoVariant, LOGO_SIZE_MAP, LogoSize } from '../../theme-editor/editor/brand/types';
 import { useThemeEditor } from '../../core/context/ThemeEditorContext';
 

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { ShowcaseContainer } from './ShowcaseContainer';
-import { Spinner } from '../../../design-system/atoms/Spinner';
+import { Spinner } from '@/components/atoms-alianza/Spinner';
 
 /**
  * Spinner Showcase Component

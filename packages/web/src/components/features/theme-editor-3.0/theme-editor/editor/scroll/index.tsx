@@ -1,12 +1,12 @@
 'use client';
 
 import React from 'react';
-import { Card } from '../../../design-system/primitives/card';
-import { Slider } from '../../../design-system/primitives/slider';
-import { Input } from '../../../design-system/primitives/input';
-import { Label } from '../../../design-system/primitives/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../design-system/primitives/select';
-import { Switch } from '../../../design-system/primitives/switch';
+import { Card } from '@/components/primitives/ui/card';
+import { Slider } from '@/components/primitives/ui/slider';
+import { Input } from '@/components/primitives/ui/input';
+import { Label } from '@/components/primitives/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/primitives/ui/select';
+import { Switch } from '@/components/primitives/ui/switch';
 import { ThemeScroll } from '../../../core/types/theme.types';
 
 interface ScrollEditorProps {

@@ -8,9 +8,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from './dialog';
-import { Button } from './Button/Button';
-import { Label } from './label';
+} from '@/components/primitives/ui/dialog';
+import { Button } from '@/components/primitives/ui/button';
+import { Label } from '@/components/primitives/ui/label';
 import { Checkbox } from '../atoms/Checkbox';
 import { RotateCcw } from 'lucide-react';
 

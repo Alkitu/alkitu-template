@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../primitives/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../primitives/table';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/primitives/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/primitives/ui/table';
 import { Button } from '../atoms/Button';
-import { Badge } from '../atoms/Badge';
+import { Badge } from '@/components/atoms-alianza/Badge';
 import { Input } from '../atoms/Input';
 import { useThemeEditor } from '../../core/context/ThemeEditorContext';
 import { 

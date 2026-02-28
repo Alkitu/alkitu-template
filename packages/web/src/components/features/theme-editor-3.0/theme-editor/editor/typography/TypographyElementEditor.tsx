@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import { Label } from '../../../design-system/primitives/label';
-import { SelectItem } from '../../../design-system/primitives/select';
+import { Label } from '@/components/primitives/ui/label';
+import { SelectItem } from '@/components/primitives/ui/select';
 import { NumericInput } from './NumericInput';
 import { KeyboardSelect } from './KeyboardSelect';
 import { TypographyElement } from './types';

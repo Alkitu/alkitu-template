@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Button } from '../../../design-system/primitives/Button';
+import { Button } from '@/components/primitives/ui/button';
 import { Icon } from '../../../design-system/atoms/Icon';
 import { Redo } from 'lucide-react';
 

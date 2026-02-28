@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Input } from '../../design-system/primitives/input';
+import { Input } from '@/components/primitives/ui/input';
 import { Search } from 'lucide-react';
 
 interface ThemeSearchProps {

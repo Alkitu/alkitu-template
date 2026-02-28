@@ -36,6 +36,13 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       outline: 'outline',
       nude: 'nude',
       destructive: 'destructive',
+      default: 'main',
+      link: 'nude',
+      loading: 'main',
+      icon: 'main',
+      warning: 'main',
+      error: 'destructive',
+      success: 'main',
     };
     const finalVariant = variantMap[variant] || 'main';
 
@@ -76,6 +83,16 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       ].join(' '),
     };
 
+    // Map legacy size values
+    const sizeMap: Record<string, string> = {
+      sm: 'sm',
+      md: 'md',
+      lg: 'lg',
+      default: 'md',
+      icon: 'md',
+    };
+    const finalSize = sizeMap[size] || 'md';
+
     // Size styles
     const sizeClasses: Record<string, string> = {
       sm: 'h-8 px-3 text-xs',
@@ -91,7 +108,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     };
 
     // Icon size for inline icons
-    const iconSizeClasses = size === 'sm' ? '[&>svg]:size-3.5' : '[&>svg]:size-4';
+    const iconSizeClasses = finalSize === 'sm' ? '[&>svg]:size-3.5' : '[&>svg]:size-4';
 
     const isDisabled = disabled || loading;
 
@@ -106,10 +123,10 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
       // Dynamic variant and size
       variantClasses[finalVariant],
-      sizeClasses[size],
+      sizeClasses[finalSize],
 
       // Icon only
-      iconOnly && iconOnlyClasses[size],
+      iconOnly && iconOnlyClasses[finalSize],
 
       // Full width
       fullWidth && 'w-full',

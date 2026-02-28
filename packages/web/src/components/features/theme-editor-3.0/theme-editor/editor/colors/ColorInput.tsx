@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Button } from '../../../design-system/primitives/Button';
-import { Input } from '../../../design-system/primitives/input';
-import { Popover, PopoverContent, PopoverTrigger } from '../../../design-system/primitives/popover';
+import { Button } from '@/components/primitives/ui/button';
+import { Input } from '@/components/primitives/ui/input';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/primitives/ui/popover';
 import { Shuffle } from 'lucide-react';
 import { ColorLinkButton } from './ColorLinkButton';
 import { ColorToken, OklchColor, ThemeColors } from '../../../core/types/theme.types';

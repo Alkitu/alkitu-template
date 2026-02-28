@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../../../design-system/primitives/accordion';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/primitives/ui/accordion';
 import { ThemeBrand } from '../../../core/types/theme.types';
 import { LogoUploadSection } from './LogoUploadSection';
 import { LogoVariant } from './types';

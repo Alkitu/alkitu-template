@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Calendar } from '../primitives/calendar-local';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../primitives/card';
+import { Calendar } from '@/components/primitives/ui/calendar';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/primitives/ui/card';
 import { Button } from '../atoms/Button';
-import { Badge } from '../atoms/Badge';
+import { Badge } from '@/components/atoms-alianza/Badge';
 import { useThemeEditor } from '../../core/context/ThemeEditorContext';
 
 export interface CalendarOrganismProps {

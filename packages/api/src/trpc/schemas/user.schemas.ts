@@ -190,6 +190,23 @@ export const updateMyPreferencesSchema = z.object({
 });
 
 /**
+ * Ensure User Drive Folders Schema
+ * Used for admin to ensure a user's Drive folders exist (or create them)
+ */
+export const ensureUserDriveFoldersSchema = z.object({
+  userId: z.string(),
+});
+
+/**
+ * Update User Drive Folder ID Schema
+ * Used for admin to manually link a user to a different Drive folder
+ */
+export const updateUserDriveFolderIdSchema = z.object({
+  userId: z.string(),
+  driveFolderId: z.string().min(1, 'Drive folder ID is required'),
+});
+
+/**
  * Type exports for TypeScript consumers
  * These can be used in services, controllers, etc.
  */
@@ -213,4 +230,10 @@ export type ChangeMyPasswordInput = z.infer<typeof changeMyPasswordSchema>;
 export type UpdateMyProfileInput = z.infer<typeof updateMyProfileSchema>;
 export type UpdateMyPreferencesInput = z.infer<
   typeof updateMyPreferencesSchema
+>;
+export type EnsureUserDriveFoldersInput = z.infer<
+  typeof ensureUserDriveFoldersSchema
+>;
+export type UpdateUserDriveFolderIdInput = z.infer<
+  typeof updateUserDriveFolderIdSchema
 >;

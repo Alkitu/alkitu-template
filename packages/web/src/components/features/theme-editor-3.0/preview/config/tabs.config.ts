@@ -4,15 +4,12 @@
  */
 
 import React from 'react';
-import { Palette, Type, Building, Atom, Layers, Layout, LucideIcon } from 'lucide-react';
+import { Palette, Type, Building, LucideIcon } from 'lucide-react';
 
 // Direct imports instead of lazy loading to avoid ChunkLoadError
 import ColorsTabContent from '../tabs/colors';
 import TypographyTabContent from '../tabs/typography';
 import BrandTabContent from '../tabs/brand';
-import AtomsTabContent from '../tabs/atoms';
-import MoleculesTabContent from '../tabs/molecules';
-import OrganismsTabContent from '../tabs/organisms';
 
 export interface TabConfig {
   id: string;
@@ -80,51 +77,6 @@ export const PREVIEW_TABS: TabConfig[] = [
       exportable: true,
       printable: true,
       shareable: true,
-      responsive: true
-    },
-    viewport: {
-      supportedSizes: ['smartphone', 'tablet', 'desktop', 'tv']
-    }
-  },
-  {
-    id: 'atoms',
-    label: 'Átomos',
-    icon: Atom,
-    component: AtomsTabContent,
-    description: 'Componentes atómicos del design system',
-    order: 4,
-    features: {
-      exportable: false,
-      responsive: true
-    },
-    viewport: {
-      supportedSizes: ['smartphone', 'tablet', 'desktop', 'tv']
-    }
-  },
-  {
-    id: 'molecules',
-    label: 'Moléculas',
-    icon: Layers,
-    component: MoleculesTabContent,
-    description: 'Componentes moleculares compuestos',
-    order: 5,
-    features: {
-      exportable: false,
-      responsive: true
-    },
-    viewport: {
-      supportedSizes: ['smartphone', 'tablet', 'desktop', 'tv']
-    }
-  },
-  {
-    id: 'organisms',
-    label: 'Organismos',
-    icon: Layout,
-    component: OrganismsTabContent,
-    description: 'Componentes complejos y secciones',
-    order: 6,
-    features: {
-      exportable: false,
       responsive: true
     },
     viewport: {

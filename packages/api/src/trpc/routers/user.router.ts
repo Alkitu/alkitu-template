@@ -29,6 +29,8 @@ import {
   changeMyPasswordSchema,
   updateMyProfileSchema,
   updateMyPreferencesSchema,
+  ensureUserDriveFoldersSchema,
+  updateUserDriveFolderIdSchema,
 } from '../schemas/user.schemas';
 import { FilterUsersDto } from '../../users/dto/filter-users.dto';
 
@@ -368,6 +370,64 @@ export const createUserRouter = (
           };
         } catch (error) {
           handlePrismaError(error, 'update preferences');
+        }
+      }),
+
+    /**
+     * Ensure a user's Drive folders exist (admin only)
+     * Creates users/{email}/, profile/, requests/ if missing
+     */
+    ensureUserDriveFolders: adminProcedure
+      .input(ensureUserDriveFoldersSchema)
+      .mutation(async ({ input }) => {
+        try {
+          const folders = await driveFolderService.ensureUserFolders(
+            input.userId,
+          );
+          return {
+            driveFolderId: folders.driveFolderId,
+            profileFolderId: folders.profileFolderId,
+            requestsFolderId: folders.requestsFolderId,
+          };
+        } catch (error) {
+          handlePrismaError(error, 'ensure user drive folders');
+        }
+      }),
+
+    /**
+     * Update a user's root Drive folder ID (admin only)
+     * Allows admin to manually link a user to a different Drive folder
+     */
+    updateUserDriveFolderId: adminProcedure
+      .input(updateUserDriveFolderIdSchema)
+      .mutation(async ({ input }) => {
+        try {
+          // Verify the folder exists in Drive before linking
+          const folder = await driveService.getFolder(input.driveFolderId);
+          if (!folder || !folder.id) {
+            throw new TRPCError({
+              code: 'BAD_REQUEST',
+              message: 'Drive folder not found or inaccessible',
+            });
+          }
+
+          await usersService['prisma'].user.update({
+            where: { id: input.userId },
+            data: {
+              driveFolderId: input.driveFolderId,
+              // Reset sub-folder IDs since they belong to the old root
+              driveProfileFolderId: null,
+              driveRequestsFolderId: null,
+            },
+          });
+
+          return {
+            driveFolderId: input.driveFolderId,
+            message: 'Drive folder updated. Sub-folders will be re-created on next use.',
+          };
+        } catch (error) {
+          if (error instanceof TRPCError) throw error;
+          handlePrismaError(error, 'update user drive folder ID');
         }
       }),
 

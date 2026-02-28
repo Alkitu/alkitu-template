@@ -59,10 +59,14 @@ import {
   Eye,
   EyeOff,
   MapPin,
+  FolderOpen,
+  Loader2,
+  Check,
 } from 'lucide-react';
 import { UserRole } from '@alkitu/shared';
 import { AdminPageHeader } from '@/components/molecules-alianza/AdminPageHeader';
 import { LocationListOrganism } from '@/components/organisms/location';
+import { MediaBrowser } from '@/components/features/media-manager';
 
 interface PasswordValidation {
   minLength: boolean;
@@ -122,6 +126,10 @@ const UserDetailPage = ({
   const [showAnonymizeDialog, setShowAnonymizeDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
+  // Files tab state
+  const [driveFolderIdInput, setDriveFolderIdInput] = useState('');
+  const [filesTabInitialized, setFilesTabInitialized] = useState(false);
+
   React.useEffect(() => {
     console.log('Original userEmail param:', userEmail);
     console.log('Decoded email:', decodedEmail);
@@ -142,6 +150,8 @@ const UserDetailPage = ({
   const sendMessageMutation = trpc.user.sendMessageToUser.useMutation();
   const anonymizeUserMutation = trpc.user.anonymizeUser.useMutation();
   const createImpersonationTokenMutation = trpc.user.createImpersonationToken.useMutation();
+  const ensureFoldersMutation = trpc.user.ensureUserDriveFolders.useMutation();
+  const updateDriveFolderMutation = trpc.user.updateUserDriveFolderId.useMutation();
 
   React.useEffect(() => {
     if (user) {
@@ -152,6 +162,7 @@ const UserDetailPage = ({
         phone: (user as any).phone || (user as any).contactNumber || '',
         role: user.role as keyof typeof UserRole,
       });
+      setDriveFolderIdInput((user as any).driveFolderId || '');
     }
   }, [user]);
 
@@ -292,6 +303,33 @@ const UserDetailPage = ({
     },
     [tags],
   );
+
+  const initializeFilesTab = useCallback(async () => {
+    if (!user || filesTabInitialized) return;
+    try {
+      const folders = await ensureFoldersMutation.mutateAsync({ userId: user.id });
+      setDriveFolderIdInput(folders.driveFolderId);
+      setFilesTabInitialized(true);
+      refetch();
+    } catch (error) {
+      handleApiError(error, router);
+    }
+  }, [user, filesTabInitialized, ensureFoldersMutation, refetch, router]);
+
+  const handleUpdateDriveFolderId = useCallback(async () => {
+    if (!user || !driveFolderIdInput.trim()) return;
+    try {
+      await updateDriveFolderMutation.mutateAsync({
+        userId: user.id,
+        driveFolderId: driveFolderIdInput.trim(),
+      });
+      toast.success('Drive folder updated');
+      setFilesTabInitialized(false);
+      refetch();
+    } catch (error) {
+      handleApiError(error, router);
+    }
+  }, [user, driveFolderIdInput, updateDriveFolderMutation, refetch, router]);
 
   const getRoleBadgeVariant = (role: string) => {
     switch (role) {
@@ -635,6 +673,76 @@ const UserDetailPage = ({
         </Card>
       )
     }] : []),
+    {
+      value: 'files',
+      label: 'Files',
+      content: (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <FolderOpen className="h-5 w-5" />
+              Google Drive Files
+            </CardTitle>
+            <CardDescription className='mb-4'>
+              Browse and manage this user&apos;s files in Google Drive.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Drive Folder ID field */}
+            <div className="flex items-end gap-2">
+              <div className="flex-1">
+                <FormInput
+                  label="Drive Folder ID"
+                  id="driveFolderId"
+                  value={driveFolderIdInput}
+                  onChange={(e) => setDriveFolderIdInput(e.target.value)}
+                  placeholder="Google Drive folder ID"
+                />
+              </div>
+              <Button
+                variant="outline"
+                onClick={handleUpdateDriveFolderId}
+                disabled={
+                  updateDriveFolderMutation.isPending ||
+                  driveFolderIdInput.trim() === ((user as any).driveFolderId || '')
+                }
+                iconLeft={updateDriveFolderMutation.isPending
+                  ? <Loader2 className="h-4 w-4 animate-spin" />
+                  : <Check className="h-4 w-4" />
+                }
+              >
+                Save
+              </Button>
+            </div>
+
+            {/* Media Browser */}
+            {(user as any).driveFolderId ? (
+              <div className="border rounded-lg overflow-hidden" style={{ minHeight: '500px' }}>
+                <MediaBrowser
+                  rootFolderId={(user as any).driveFolderId}
+                  rootFolderName={user.email}
+                />
+              </div>
+            ) : (
+              <div className="text-center py-12 text-muted-foreground">
+                <FolderOpen className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p className="mb-4">This user doesn&apos;t have Drive folders yet.</p>
+                <Button
+                  onClick={initializeFilesTab}
+                  disabled={ensureFoldersMutation.isPending}
+                  iconLeft={ensureFoldersMutation.isPending
+                    ? <Loader2 className="h-4 w-4 animate-spin" />
+                    : <Plus className="h-4 w-4" />
+                  }
+                >
+                  {ensureFoldersMutation.isPending ? 'Creating folders...' : 'Initialize Drive Folders'}
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )
+    },
     {
       value: 'actions',
       label: 'Actions',

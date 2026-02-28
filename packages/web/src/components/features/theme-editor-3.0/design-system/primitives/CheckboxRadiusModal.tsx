@@ -11,7 +11,7 @@ import {
 } from '@/components/primitives/ui/dialog';
 import { Button } from '@/components/primitives/ui/button';
 import { Label } from '@/components/primitives/ui/label';
-import { Checkbox } from '../atoms/Checkbox';
+import { Checkbox } from '@/components/primitives/ui/checkbox';
 import { RotateCcw } from 'lucide-react';
 
 interface CheckboxRadiusModalProps {
@@ -80,22 +80,18 @@ export function CheckboxRadiusModal({
             <Label className="text-sm font-medium">Preview</Label>
             <div className="flex items-center justify-center p-6 border rounded-lg bg-muted/30">
               <div className="flex flex-col gap-4">
-                <Checkbox
-                  id="preview-1"
-                  label="Unchecked checkbox"
-                  checked={false}
-                />
-                <Checkbox
-                  id="preview-2"
-                  label="Checked checkbox"
-                  checked={true}
-                />
-                <Checkbox
-                  id="preview-3"
-                  label="Error state"
-                  variant="error"
-                  checked={false}
-                />
+                <div className="flex items-center gap-2">
+                  <Checkbox id="preview-1" checked={false} />
+                  <Label htmlFor="preview-1" className="text-sm">Unchecked checkbox</Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Checkbox id="preview-2" checked={true} />
+                  <Label htmlFor="preview-2" className="text-sm">Checked checkbox</Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Checkbox id="preview-3" checked={false} aria-invalid={true} />
+                  <Label htmlFor="preview-3" className="text-sm text-destructive">Error state</Label>
+                </div>
               </div>
             </div>
           </div>

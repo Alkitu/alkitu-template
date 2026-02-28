@@ -11,7 +11,6 @@ import { Button, MemoizedButton } from '@/components/primitives/ui/button';
 import { Input } from '@/components/atoms-alianza/Input';
 import { Select, MemoizedSelect } from '@/components/atoms-alianza/Select';
 import { Badge } from '@/components/atoms-alianza/Badge';
-import { Checkbox } from '../../design-system/atoms/Checkbox';
 
 describe('Theme Editor Integration Tests', () => {
   describe('Component Integration Flows', () => {
@@ -204,18 +203,12 @@ describe('Theme Editor Integration Tests', () => {
           'aria-label': 'Select color preset',
           'aria-describedby': 'preset-help'
         }),
-        advancedToggle: React.createElement(Checkbox, {
-          id: 'advanced-options',
-          label: 'Show advanced color options',
-          'aria-describedby': 'advanced-help'
-        })
       };
 
       // Verificar propiedades de accesibilidad
       expect(accessibleFlow.themeToggle.props['aria-label']).toContain('Toggle');
       expect(accessibleFlow.colorPicker.props['aria-label']).toContain('Choose');
       expect(accessibleFlow.presetSelect.props['aria-label']).toContain('Select');
-      expect(accessibleFlow.advancedToggle.props.label).toContain('advanced');
     });
 
     it('should integrate keyboard navigation workflow', () => {

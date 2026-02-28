@@ -91,8 +91,8 @@ export function applyThemeToRoot(theme: ThemeData, mode: 'light' | 'dark' = 'lig
     root.style.setProperty('--radius-checkbox-inner', theme.borders.radiusCheckboxInner);
   }
 
-  // Apply spacing
-  root.style.setProperty('--spacing', theme.spacing.spacing);
+  // Apply spacing (use --theme-spacing-base to avoid overriding Tailwind v4's --spacing)
+  root.style.setProperty('--theme-spacing-base', theme.spacing.spacing);
 
   // Apply shadows
   Object.entries({
@@ -201,7 +201,7 @@ export function applySpacingElements(spacing: ThemeSpacing | Record<string, stri
   // Handle ThemeSpacing structure: { spacing: string, scale?: Record<string, string> }
   if ('spacing' in spacing && typeof (spacing as ThemeSpacing).spacing === 'string') {
     const themeSpacing = spacing as ThemeSpacing;
-    root.style.setProperty('--spacing', themeSpacing.spacing);
+    root.style.setProperty('--theme-spacing-base', themeSpacing.spacing);
     if (themeSpacing.scale && typeof themeSpacing.scale === 'object') {
       Object.entries(themeSpacing.scale).forEach(([key, value]) => {
         if (typeof value === 'string') {
@@ -439,7 +439,7 @@ export function resetThemeVariables(): void {
   // Remove other theme variables
   const themeVariables = [
     '--font-sans', '--font-serif', '--font-mono', '--tracking-normal',
-    '--radius', '--spacing',
+    '--radius', '--theme-spacing-base',
     '--shadow-2xs', '--shadow-xs', '--shadow-sm', '--shadow',
     '--shadow-md', '--shadow-lg', '--shadow-xl', '--shadow-2xl',
     '--scrollbar-width', '--scrollbar-track-radius', '--scrollbar-thumb-radius'
@@ -491,8 +491,8 @@ export function generateThemeCSS(theme: ThemeData, includeLight = true, includeD
     // Borders
     css += `  --radius: ${theme.borders.radius};\n`;
 
-    // Spacing
-    css += `  --spacing: ${theme.spacing.spacing};\n`;
+    // Spacing (use --theme-spacing-base to avoid overriding Tailwind v4's --spacing)
+    css += `  --theme-spacing-base: ${theme.spacing.spacing};\n`;
 
     // Shadows
     css += `  --shadow-2xs: ${theme.shadows.shadow2xs};\n`;

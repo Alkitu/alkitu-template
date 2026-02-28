@@ -168,7 +168,7 @@ function generateSpacingCSS(themeData: any): string {
   const spacing = themeData?.spacing;
   if (!spacing?.spacing) return '';
 
-  const properties: string[] = [`    --spacing: ${spacing.spacing};`];
+  const properties: string[] = [`    --theme-spacing-base: ${spacing.spacing};`];
 
   if (spacing.scale && typeof spacing.scale === 'object') {
     Object.entries(spacing.scale).forEach(([key, value]) => {

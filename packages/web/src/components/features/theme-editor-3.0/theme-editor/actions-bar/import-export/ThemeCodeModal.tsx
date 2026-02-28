@@ -104,7 +104,7 @@ export function ThemeCodeModal({ theme, isOpen, onClose }: ThemeCodeModalProps) 
     css += `  --border-width-8: 8px;\n`;
     
     /* ===== SPACING SYSTEM ===== */
-    css += `  --spacing: ${theme.spacing.spacing};\n`;
+    css += `  --theme-spacing-base: ${theme.spacing.spacing};\n`;
     css += `  --spacing-px: 1px;\n`;
     css += `  --spacing-0: 0px;\n`;
     css += `  --spacing-1: 0.25rem;\n`;

@@ -25,19 +25,19 @@ export function Providers({
   return (
     <ReactQueryProvider>
       <TrpcProvider>
-        <ThemeErrorBoundaryClass>
-          <GlobalThemeProvider initialTheme={initialTheme}>
-            <TooltipProvider>
-              <TranslationsProvider
-                initialLocale={initialLocale}
-                initialTranslations={initialTranslations}
-              >
+        <TranslationsProvider
+          initialLocale={initialLocale}
+          initialTranslations={initialTranslations}
+        >
+          <ThemeErrorBoundaryClass>
+            <GlobalThemeProvider initialTheme={initialTheme}>
+              <TooltipProvider>
                 <ServiceWorkerRegistration />
                 {children}
-              </TranslationsProvider>
-            </TooltipProvider>
-          </GlobalThemeProvider>
-        </ThemeErrorBoundaryClass>
+              </TooltipProvider>
+            </GlobalThemeProvider>
+          </ThemeErrorBoundaryClass>
+        </TranslationsProvider>
       </TrpcProvider>
     </ReactQueryProvider>
   );

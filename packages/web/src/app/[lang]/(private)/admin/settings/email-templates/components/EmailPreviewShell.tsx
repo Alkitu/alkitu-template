@@ -20,7 +20,12 @@ interface EmailPreviewShellProps {
   locale?: string;
 }
 
-export function EmailPreviewShell({ title, children, previewText, locale = 'es' }: EmailPreviewShellProps) {
+export function EmailPreviewShell({
+  title,
+  children,
+  previewText,
+  locale = 'es',
+}: EmailPreviewShellProps) {
   return (
     <Html lang={locale}>
       <Head />
@@ -41,7 +46,7 @@ export function EmailPreviewShell({ title, children, previewText, locale = 'es' 
             <Section className="mt-[32px]">
               <div style={{ textAlign: 'center', marginBottom: '32px' }}>
                 <Img
-                  src="/alianza-logo-light.png"
+                  src="/logo-light.png"
                   alt="Alianza Consulting Corp"
                   width={200}
                   height="auto"
@@ -49,19 +54,24 @@ export function EmailPreviewShell({ title, children, previewText, locale = 'es' 
                 />
               </div>
             </Section>
-            
-            <Section className="text-zinc-700">
-               {children}
-            </Section>
+
+            <Section className="text-zinc-700">{children}</Section>
 
             <Hr className="border-[#eaeaea] my-[26px] mx-0 w-full" />
-            
+
             <Section>
-               <Text className="text-[#666666] text-[12px] leading-[24px] text-center">
-                © {new Date().getFullYear()} Alianza Consulting Corp. All rights reserved.
+              <Text className="text-[#666666] text-[12px] leading-[24px] text-center">
+                © {new Date().getFullYear()} Alianza Consulting Corp. All rights
+                reserved.
               </Text>
               <Text className="text-[#666666] text-[12px] leading-[24px] text-center">
-                 <Link href="#" className="text-zinc-500 underline">Privacy Policy</Link> • <Link href="#" className="text-zinc-500 underline">Terms of Service</Link>
+                <Link href="#" className="text-zinc-500 underline">
+                  Privacy Policy
+                </Link>{' '}
+                •{' '}
+                <Link href="#" className="text-zinc-500 underline">
+                  Terms of Service
+                </Link>
               </Text>
             </Section>
           </Container>

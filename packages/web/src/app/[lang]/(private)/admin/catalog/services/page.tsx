@@ -10,8 +10,14 @@ import { useTranslations } from '@/context/TranslationsContext';
 import { ServiceStatsCard } from '@/components/atoms-alianza/ServiceStatsCard';
 import { Button } from '@/components/molecules-alianza/Button';
 import { InputGroup } from '@/components/molecules-alianza/InputGroup';
-import { ServiceFilterButtons, type ServiceFilterType } from '@/components/molecules-alianza/ServiceFilterButtons';
-import { ServicesTableAlianza, type ServiceTableItem } from '@/components/organisms-alianza/ServicesTableAlianza';
+import {
+  ServiceFilterButtons,
+  type ServiceFilterType,
+} from '@/components/molecules-alianza/ServiceFilterButtons';
+import {
+  ServicesTableAlianza,
+  type ServiceTableItem,
+} from '@/components/organisms-alianza/ServicesTableAlianza';
 import { UserPagination } from '@/components/molecules-alianza/UserPagination';
 import { AdminPageHeader } from '@/components/molecules-alianza/AdminPageHeader';
 import { BreadcrumbNavigation } from '@/components/molecules-alianza/Breadcrumb';
@@ -34,7 +40,11 @@ const ServicesPage = () => {
   });
 
   // tRPC queries - fetch services with server-side status filter
-  const { data: servicesData, isLoading, refetch } = trpc.service.getAllServices.useQuery({
+  const {
+    data: servicesData,
+    isLoading,
+    refetch,
+  } = trpc.service.getAllServices.useQuery({
     page: pagination.page,
     limit: pagination.limit,
     sortBy: 'name',
@@ -64,8 +74,11 @@ const ServicesPage = () => {
     return servicesData.items.map((service: any) => ({
       id: service.id,
       name: service.name,
-      category: service.category?.name || t('admin.catalog.services.table.noCategory'),
-      status: (service.deletedAt ? 'INACTIVE' : 'ACTIVE') as 'ACTIVE' | 'INACTIVE',
+      category:
+        service.category?.name || t('admin.catalog.services.table.noCategory'),
+      status: (service.deletedAt ? 'INACTIVE' : 'ACTIVE') as
+        | 'ACTIVE'
+        | 'INACTIVE',
       questionsCount: service.fieldCount || 0,
       thumbnail: service.thumbnail,
       iconColor: service.iconColor,
@@ -80,8 +93,8 @@ const ServicesPage = () => {
   // Client-side search filter (status is handled server-side via statusFilter)
   const filteredServices = useMemo(() => {
     if (!searchValue) return allServices;
-    return allServices.filter(service =>
-      service.name.toLowerCase().includes(searchValue.toLowerCase())
+    return allServices.filter((service) =>
+      service.name.toLowerCase().includes(searchValue.toLowerCase()),
     );
   }, [allServices, searchValue]);
 
@@ -98,20 +111,20 @@ const ServicesPage = () => {
   // Handlers
   const handleFilterChange = (filter: ServiceFilterType) => {
     setActiveFilter(filter);
-    setPagination(prev => ({ ...prev, page: 1 }));
+    setPagination((prev) => ({ ...prev, page: 1 }));
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(e.target.value);
-    setPagination(prev => ({ ...prev, page: 1 }));
+    setPagination((prev) => ({ ...prev, page: 1 }));
   };
 
   const handlePageChange = (newPage: number) => {
-    setPagination(prev => ({ ...prev, page: newPage }));
+    setPagination((prev) => ({ ...prev, page: newPage }));
   };
 
   const handlePageSizeChange = (newSize: number) => {
-    setPagination(prev => ({ ...prev, limit: newSize, page: 1 }));
+    setPagination((prev) => ({ ...prev, limit: newSize, page: 1 }));
   };
 
   const handleAddService = () => {
@@ -183,9 +196,18 @@ const ServicesPage = () => {
         breadcrumbs={
           <BreadcrumbNavigation
             items={[
-              { label: t('admin.catalog.services.breadcrumbs.dashboard'), href: `/${lang}/admin` },
-              { label: t('admin.catalog.services.breadcrumbs.catalog'), href: `/${lang}/admin/catalog` },
-              { label: t('admin.catalog.services.breadcrumbs.services'), current: true },
+              {
+                label: t('admin.catalog.services.breadcrumbs.dashboard'),
+                href: `/${lang}/admin`,
+              },
+              {
+                label: t('admin.catalog.services.breadcrumbs.catalog'),
+                href: `/${lang}/admin/catalog`,
+              },
+              {
+                label: t('admin.catalog.services.breadcrumbs.services'),
+                current: true,
+              },
             ]}
             separator="chevron"
             size="sm"
@@ -238,7 +260,9 @@ const ServicesPage = () => {
       <div className="bg-background border border-border rounded-lg overflow-hidden min-h-[400px]">
         {isLoading ? (
           <div className="flex items-center justify-center h-[400px]">
-            <p className="text-muted-foreground">{t('admin.catalog.services.loading')}</p>
+            <p className="text-muted-foreground">
+              {t('admin.catalog.services.loading')}
+            </p>
           </div>
         ) : (
           <ServicesTableAlianza

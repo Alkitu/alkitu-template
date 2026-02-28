@@ -49,9 +49,7 @@ describe('Logo - Atom (Alianza)', () => {
     it('renders light mode image with correct attributes', () => {
       const { container } = render(<Logo />);
 
-      const lightImage = container.querySelector(
-        'img[src="/alianza-logo-light.png"]'
-      );
+      const lightImage = container.querySelector('img[src="/logo-light.png"]');
       expect(lightImage).toBeInTheDocument();
       expect(lightImage).toHaveClass('absolute', 'inset-0', 'size-full');
       expect(lightImage).toHaveClass('object-contain');
@@ -60,9 +58,7 @@ describe('Logo - Atom (Alianza)', () => {
     it('renders dark mode image with correct attributes', () => {
       const { container } = render(<Logo />);
 
-      const darkImage = container.querySelector(
-        'img[src="/alianza-logo-dark.png"]'
-      );
+      const darkImage = container.querySelector('img[src="/logo-dark.png"]');
       expect(darkImage).toBeInTheDocument();
       expect(darkImage).toHaveClass('absolute', 'inset-0', 'size-full');
       expect(darkImage).toHaveClass('object-contain');
@@ -71,18 +67,14 @@ describe('Logo - Atom (Alianza)', () => {
     it('light mode image is visible by default (dark:hidden)', () => {
       const { container } = render(<Logo />);
 
-      const lightImage = container.querySelector(
-        'img[src="/alianza-logo-light.png"]'
-      );
+      const lightImage = container.querySelector('img[src="/logo-light.png"]');
       expect(lightImage).toHaveClass('dark:hidden');
     });
 
     it('dark mode image is hidden by default', () => {
       const { container } = render(<Logo />);
 
-      const darkImage = container.querySelector(
-        'img[src="/alianza-logo-dark.png"]'
-      );
+      const darkImage = container.querySelector('img[src="/logo-dark.png"]');
       expect(darkImage).toHaveClass('hidden', 'dark:block');
     });
 
@@ -118,9 +110,7 @@ describe('Logo - Atom (Alianza)', () => {
     it('light mode image is visible in light theme', () => {
       const { container } = render(<Logo />);
 
-      const lightImage = container.querySelector(
-        'img[src="/alianza-logo-light.png"]'
-      );
+      const lightImage = container.querySelector('img[src="/logo-light.png"]');
       // Has dark:hidden class, meaning it's visible in light mode
       expect(lightImage).toHaveClass('dark:hidden');
       expect(lightImage).not.toHaveClass('hidden');
@@ -129,9 +119,7 @@ describe('Logo - Atom (Alianza)', () => {
     it('dark mode image is hidden in light theme', () => {
       const { container } = render(<Logo />);
 
-      const darkImage = container.querySelector(
-        'img[src="/alianza-logo-dark.png"]'
-      );
+      const darkImage = container.querySelector('img[src="/logo-dark.png"]');
       // Has hidden class for light mode
       expect(darkImage).toHaveClass('hidden');
     });
@@ -139,24 +127,18 @@ describe('Logo - Atom (Alianza)', () => {
     it('dark mode image has dark:block class for dark theme', () => {
       const { container } = render(<Logo />);
 
-      const darkImage = container.querySelector(
-        'img[src="/alianza-logo-dark.png"]'
-      );
+      const darkImage = container.querySelector('img[src="/logo-dark.png"]');
       expect(darkImage).toHaveClass('dark:block');
     });
 
     it('uses different image sources for light and dark modes', () => {
       const { container } = render(<Logo />);
 
-      const lightImage = container.querySelector(
-        'img[src="/alianza-logo-light.png"]'
-      );
-      const darkImage = container.querySelector(
-        'img[src="/alianza-logo-dark.png"]'
-      );
+      const lightImage = container.querySelector('img[src="/logo-light.png"]');
+      const darkImage = container.querySelector('img[src="/logo-dark.png"]');
 
-      expect(lightImage?.getAttribute('src')).toBe('/alianza-logo-light.png');
-      expect(darkImage?.getAttribute('src')).toBe('/alianza-logo-dark.png');
+      expect(lightImage?.getAttribute('src')).toBe('/logo-light.png');
+      expect(darkImage?.getAttribute('src')).toBe('/logo-dark.png');
     });
   });
 
@@ -177,17 +159,21 @@ describe('Logo - Atom (Alianza)', () => {
         'relative',
         'shrink-0',
         'w-[130.943px]',
-        'h-[42.811px]'
+        'h-[42.811px]',
       );
     });
 
     it('applies multiple custom classes correctly', () => {
       const { container } = render(
-        <Logo className="class-one class-two class-three" />
+        <Logo className="class-one class-two class-three" />,
       );
 
       const logoContainer = container.querySelector('[data-name="Logo"]');
-      expect(logoContainer).toHaveClass('class-one', 'class-two', 'class-three');
+      expect(logoContainer).toHaveClass(
+        'class-one',
+        'class-two',
+        'class-three',
+      );
     });
 
     it('handles empty className prop', () => {
@@ -333,7 +319,8 @@ describe('Logo - Atom (Alianza)', () => {
     });
 
     it('handles alt prop with long text', () => {
-      const longAlt = 'This is a very long alternative text for the Alianza logo that describes the brand in detail for screen readers and accessibility purposes';
+      const longAlt =
+        'This is a very long alternative text for the Alianza logo that describes the brand in detail for screen readers and accessibility purposes';
       render(<Logo alt={longAlt} />);
 
       const images = screen.getAllByAltText(longAlt);
@@ -342,7 +329,7 @@ describe('Logo - Atom (Alianza)', () => {
 
     it('accepts only supported props', () => {
       const { container } = render(
-        <Logo className="test-class" alt="Test Alt" />
+        <Logo className="test-class" alt="Test Alt" />,
       );
 
       const logoContainer = container.querySelector('[data-name="Logo"]');
@@ -355,14 +342,14 @@ describe('Logo - Atom (Alianza)', () => {
       const { container } = render(<Logo />);
 
       const lightImage = container.querySelector('img.dark\\:hidden');
-      expect(lightImage?.getAttribute('src')).toBe('/alianza-logo-light.png');
+      expect(lightImage?.getAttribute('src')).toBe('/logo-light.png');
     });
 
     it('dark mode image points to correct file', () => {
       const { container } = render(<Logo />);
 
       const darkImage = container.querySelector('img.hidden.dark\\:block');
-      expect(darkImage?.getAttribute('src')).toBe('/alianza-logo-dark.png');
+      expect(darkImage?.getAttribute('src')).toBe('/logo-dark.png');
     });
 
     it('uses root-relative paths for images', () => {
@@ -378,15 +365,11 @@ describe('Logo - Atom (Alianza)', () => {
     it('image sources are distinct', () => {
       const { container } = render(<Logo />);
 
-      const lightImage = container.querySelector(
-        'img[src="/alianza-logo-light.png"]'
-      );
-      const darkImage = container.querySelector(
-        'img[src="/alianza-logo-dark.png"]'
-      );
+      const lightImage = container.querySelector('img[src="/logo-light.png"]');
+      const darkImage = container.querySelector('img[src="/logo-dark.png"]');
 
       expect(lightImage?.getAttribute('src')).not.toBe(
-        darkImage?.getAttribute('src')
+        darkImage?.getAttribute('src'),
       );
     });
   });
@@ -450,12 +433,8 @@ describe('Logo - Atom (Alianza)', () => {
     it('images are properly layered with absolute positioning', () => {
       const { container } = render(<Logo />);
 
-      const lightImage = container.querySelector(
-        'img[src="/alianza-logo-light.png"]'
-      );
-      const darkImage = container.querySelector(
-        'img[src="/alianza-logo-dark.png"]'
-      );
+      const lightImage = container.querySelector('img[src="/logo-light.png"]');
+      const darkImage = container.querySelector('img[src="/logo-dark.png"]');
 
       expect(lightImage).toHaveClass('absolute');
       expect(darkImage).toHaveClass('absolute');
@@ -502,7 +481,8 @@ describe('Logo - Atom (Alianza)', () => {
 
       rerender(<Logo className="different-class" alt="Different Alt" />);
 
-      const updatedLogoContainer = container.querySelector('[data-name="Logo"]');
+      const updatedLogoContainer =
+        container.querySelector('[data-name="Logo"]');
       expect(updatedLogoContainer?.children.length).toBe(initialChildCount);
     });
   });
@@ -518,9 +498,7 @@ describe('Logo - Atom (Alianza)', () => {
     it('light mode image is not marked as hidden by default', () => {
       const { container } = render(<Logo />);
 
-      const lightImage = container.querySelector(
-        'img[src="/alianza-logo-light.png"]'
-      );
+      const lightImage = container.querySelector('img[src="/logo-light.png"]');
       // Should have dark:hidden but not hidden
       expect(lightImage).toHaveClass('dark:hidden');
       expect(lightImage?.classList.contains('hidden')).toBe(false);
@@ -529,9 +507,7 @@ describe('Logo - Atom (Alianza)', () => {
     it('dark mode image has hidden class for light mode', () => {
       const { container } = render(<Logo />);
 
-      const darkImage = container.querySelector(
-        'img[src="/alianza-logo-dark.png"]'
-      );
+      const darkImage = container.querySelector('img[src="/logo-dark.png"]');
       expect(darkImage).toHaveClass('hidden');
     });
   });
@@ -541,7 +517,7 @@ describe('Logo - Atom (Alianza)', () => {
       const { container } = render(
         <div data-testid="parent">
           <Logo />
-        </div>
+        </div>,
       );
 
       const parent = container.querySelector('[data-testid="parent"]');
@@ -555,7 +531,7 @@ describe('Logo - Atom (Alianza)', () => {
         <>
           <Logo alt="First Logo" />
           <Logo alt="Second Logo" />
-        </>
+        </>,
       );
 
       const firstImages = screen.getAllByAltText('First Logo');
@@ -570,7 +546,7 @@ describe('Logo - Atom (Alianza)', () => {
         <>
           <Logo className="logo-one" alt="Logo One" />
           <Logo className="logo-two" alt="Logo Two" />
-        </>
+        </>,
       );
 
       const logoOne = container.querySelector('.logo-one');

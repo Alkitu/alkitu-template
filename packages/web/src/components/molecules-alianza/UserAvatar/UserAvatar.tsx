@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { Icons } from '@/lib/icons';
 import { isEmoji } from '@/lib/emojis';
@@ -46,6 +46,11 @@ export function UserAvatar({
   themeOverride
 }: UserAvatarProps) {
   const [imgError, setImgError] = useState(false);
+
+  // Reset error state when the image source changes
+  useEffect(() => {
+    setImgError(false);
+  }, [image, imageUrl]);
 
   // Generate initials
   const getInitials = (): string => {

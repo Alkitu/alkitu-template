@@ -1490,13 +1490,15 @@
       "info": "Profile Information",
       "security": "Security",
       "preferences": "Preferences",
-      "locations": "Locations"
+      "locations": "Locations",
+      "files": "Files"
     },
     "sections": {
       "profileDescription": "Update your personal and contact information.",
       "securityDescription": "Change your password to keep your account secure.",
       "preferencesDescription": "Customize the interface theme and language.",
-      "locationsDescription": "Manage your work locations for service requests."
+      "locationsDescription": "Manage your work locations for service requests.",
+      "filesDescription": "Your files stored in Google Drive."
     },
     "form": {
       "email": "Email",
@@ -1561,6 +1563,15 @@
     },
     "error": {
       "loadFailed": "Could not load profile information. Please try again."
+    },
+    "files": {
+      "noFolders": "No Drive folders yet.",
+      "initialize": "Initialize Drive Folders",
+      "creating": "Creating folders...",
+      "initError": "Failed to initialize folders"
+    },
+    "avatar": {
+      "selectorTitle": "Choose avatar"
     }
   },
   "locations": {

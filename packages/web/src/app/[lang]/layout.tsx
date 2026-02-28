@@ -48,6 +48,9 @@ export default async function RootLayout({ children, params }: LayoutProps) {
   return (
     <html lang={locale} suppressHydrationWarning>
       <head>
+        {/* Dynamic favicon from active theme */}
+        <link rel="icon" href="/api/favicon" type="image/svg+xml" />
+
         {/* PWA Manifest */}
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#000000" />

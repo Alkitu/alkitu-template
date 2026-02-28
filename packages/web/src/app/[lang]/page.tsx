@@ -1,6 +1,7 @@
 'use client';
 
 import { HeaderAlianza, FeatureGrid, PricingCard, Hero, Footer } from '@/components/organisms-alianza';
+import { Logo } from '@/components/atoms-alianza/Logo';
 import { useTranslations } from '@/context/TranslationsContext';
 
 export default function Home() {
@@ -100,6 +101,7 @@ export default function Home() {
   // Footer configuration
   const footerProps = {
     brand: {
+      logo: <Logo variant="icon" className="w-8 h-8" />,
       name: t('homepage.footer.title'),
       description: t('homepage.footer.description'),
     },

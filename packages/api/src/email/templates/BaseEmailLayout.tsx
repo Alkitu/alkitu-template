@@ -36,7 +36,7 @@ export function BaseEmailLayout({
             <Section className="mt-[32px]">
               <div style={{ textAlign: 'center', marginBottom: '32px' }}>
                 <Img
-                  src={`${process.env.NEXT_PUBLIC_APP_URL || 'https://app.alianzaconsultingcorp.com'}/alianza-logo-light.png`}
+                  src={`${process.env.NEXT_PUBLIC_APP_URL || 'https://app.alianzaconsultingcorp.com'}/logo-light.png`}
                   alt="Alianza Consulting Corp"
                   width={200}
                   height="auto"
@@ -48,7 +48,8 @@ export function BaseEmailLayout({
             <Hr className="border-[#eaeaea] my-[26px] mx-0 w-full" />
             <Section>
               <Text className="text-[#666666] text-[12px] leading-[24px] text-center">
-                &copy; {new Date().getFullYear()} Alianza Consulting Corp. All rights reserved.
+                &copy; {new Date().getFullYear()} Alianza Consulting Corp. All
+                rights reserved.
               </Text>
               <Text className="text-[#666666] text-[12px] leading-[24px] text-center">
                 <Link href="#" className="text-zinc-500 underline">

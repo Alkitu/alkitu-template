@@ -284,32 +284,31 @@ export function MediaToolbar({
       )}
 
       <Button
-        variant="ghost"
-        size="icon"
+        variant="nude"
+        size="sm"
+        iconOnly
+        iconLeft={<RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />}
         onClick={onRefresh}
         disabled={loading}
-        className="h-8 w-8"
-      >
-        <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-      </Button>
+      />
 
       <div className="flex items-center border rounded-md">
         <Button
-          variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
-          size="icon"
-          className="h-8 w-8 rounded-r-none"
+          variant={viewMode === 'grid' ? 'active' : 'nude'}
+          size="sm"
+          iconOnly
+          iconLeft={<LayoutGrid className="h-4 w-4" />}
+          className="rounded-r-none"
           onClick={() => onViewModeChange('grid')}
-        >
-          <LayoutGrid className="h-4 w-4" />
-        </Button>
+        />
         <Button
-          variant={viewMode === 'list' ? 'secondary' : 'ghost'}
-          size="icon"
-          className="h-8 w-8 rounded-l-none"
+          variant={viewMode === 'list' ? 'active' : 'nude'}
+          size="sm"
+          iconOnly
+          iconLeft={<List className="h-4 w-4" />}
+          className="rounded-l-none"
           onClick={() => onViewModeChange('list')}
-        >
-          <List className="h-4 w-4" />
-        </Button>
+        />
       </div>
     </div>
   );

@@ -265,6 +265,7 @@ export class UsersService {
         theme: true,
         language: true,
         image: true,
+        driveFolderId: true,
       },
     });
 

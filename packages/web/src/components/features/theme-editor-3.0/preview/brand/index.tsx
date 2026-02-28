@@ -8,65 +8,12 @@ import { LogoVariant, LOGO_SIZE_MAP, LogoSize } from '../../theme-editor/editor/
 import { ThemeBrand } from '../../core/types/theme.types';
 import { useThemeEditor } from '../../core/context/ThemeEditorContext';
 import { getCurrentModeVariants } from '../../theme-editor/editor/brand/utils';
+import { getDefaultBrandAssets } from '../../theme-editor/editor/brand/default-logos';
 
 interface BrandPreviewProps {
   brand: ThemeBrand;
   className?: string;
 }
-
-// SVG de ejemplo por defecto
-const DEFAULT_LOGO_SVG = `<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="50" cy="50" r="40" fill="#3b82f6"/>
-  <circle cx="35" cy="35" r="8" fill="#ffffff"/>
-  <circle cx="65" cy="35" r="8" fill="#ffffff"/>
-  <path d="M 30 65 Q 50 85 70 65" stroke="#ffffff" stroke-width="3" fill="none" stroke-linecap="round"/>
-</svg>`;
-
-const DEFAULT_HORIZONTAL_SVG = `<svg width="200" height="60" viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="30" cy="30" r="25" fill="#3b82f6"/>
-  <circle cx="20" cy="22" r="5" fill="#ffffff"/>
-  <circle cx="40" cy="22" r="5" fill="#ffffff"/>
-  <path d="M 15 40 Q 30 50 45 40" stroke="#ffffff" stroke-width="2" fill="none" stroke-linecap="round"/>
-  <text x="70" y="35" fill="#3b82f6" font-family="Arial, sans-serif" font-size="24" font-weight="bold">BRAND</text>
-</svg>`;
-
-const DEFAULT_VERTICAL_SVG = `<svg width="80" height="107" viewBox="0 0 80 107" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="40" cy="30" r="25" fill="#3b82f6"/>
-  <circle cx="32" cy="22" r="5" fill="#ffffff"/>
-  <circle cx="48" cy="22" r="5" fill="#ffffff"/>
-  <path d="M 25 40 Q 40 50 55 40" stroke="#ffffff" stroke-width="2" fill="none" stroke-linecap="round"/>
-  <text x="40" y="80" fill="#3b82f6" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle">BRAND</text>
-  <text x="40" y="97" fill="#3b82f6" font-family="Arial, sans-serif" font-size="12" text-anchor="middle">COMPANY</text>
-</svg>`;
-
-const createDefaultLogo = (type: 'icon' | 'horizontal' | 'vertical'): LogoVariant => {
-  const svgContent = type === 'icon' ? DEFAULT_LOGO_SVG : 
-                    type === 'horizontal' ? DEFAULT_HORIZONTAL_SVG : 
-                    DEFAULT_VERTICAL_SVG;
-  
-  return {
-    id: `default-${type}`,
-    name: `Default ${type}`,
-    type,
-    aspectRatio: type === 'icon' ? '1:1' : type === 'horizontal' ? '3:1' : '3:4',
-    svgContent,
-    detectedColors: ['#3b82f6', '#ffffff'],
-    variants: {
-      original: svgContent,
-      white: svgContent.replace(/#3b82f6/g, '#ffffff').replace(/fill="#ffffff"/g, 'fill="#000000"'),
-      black: svgContent.replace(/#3b82f6/g, '#000000'),
-      gray: svgContent.replace(/#3b82f6/g, '#d1d5db')
-    },
-    metadata: {
-      fileName: `default-${type}.svg`,
-      fileSize: '2.1 KB',
-      dimensions: type === 'icon' ? '100 × 100' : type === 'horizontal' ? '200 × 60' : '80 × 107',
-      viewBox: type === 'icon' ? '0 0 100 100' : type === 'horizontal' ? '0 0 200 60' : '0 0 80 107',
-      colorCount: 2,
-      hasGradients: false
-    }
-  };
-};
 
 const VARIANT_NAMES = {
   original: 'Original',
@@ -171,11 +118,13 @@ export function BrandPreview({ brand, className = "" }: BrandPreviewProps) {
   // Get variant backgrounds based on current theme mode
   const variantBackgrounds = getVariantBackgrounds(isDarkMode);
   
-  // Convertir objetos de brand.logos a array para usar logos por defecto si es necesario
-  const logos = brand.logos ? [brand.logos.icon, brand.logos.horizontal, brand.logos.vertical] : [];
-
-  // Filtrar solo logos que no son null (sin logos por defecto)
-  const validLogos = logos.filter((logo): logo is LogoVariant => logo !== null);
+  // Use real Alkitu defaults as fallback for any missing logo slot
+  const defaultAssets = getDefaultBrandAssets();
+  const validLogos: LogoVariant[] = [
+    brand.logos?.icon ?? defaultAssets.icon,
+    brand.logos?.horizontal ?? defaultAssets.horizontal,
+    brand.logos?.vertical ?? defaultAssets.vertical,
+  ];
 
   const getLogoForApplication = (app: typeof BRAND_APPLICATIONS[0]) => {
     return validLogos.find(logo => logo.type === app.preferredType) || validLogos[0];
@@ -238,30 +187,7 @@ export function BrandPreview({ brand, className = "" }: BrandPreviewProps) {
             </div>
 
             <div className="space-y-8">
-              {validLogos.length === 0 ? (
-                <div className="text-center py-12">
-                  <BookOpen className="h-16 w-16 mx-auto mb-4 text-muted-foreground/50" />
-                  <p style={{
-                    fontFamily: 'var(--typography-h4-font-family)',
-                    fontSize: 'var(--typography-h4-font-size)',
-                    fontWeight: 'var(--typography-h4-font-weight)',
-                    lineHeight: 'var(--typography-h4-line-height)',
-                    letterSpacing: 'var(--typography-h4-letter-spacing)'
-                  }} className="text-muted-foreground mb-2">
-                    Sube tus logos en el Theme Editor
-                  </p>
-                  <p style={{
-                    fontFamily: 'var(--typography-paragraph-font-family)',
-                    fontSize: 'var(--typography-paragraph-font-size)',
-                    fontWeight: 'var(--typography-paragraph-font-weight)',
-                    lineHeight: 'var(--typography-paragraph-line-height)',
-                    letterSpacing: 'var(--typography-paragraph-letter-spacing)'
-                  }} className="text-muted-foreground text-sm">
-                    Ve a la sección Brand para subir tus logos y ver todas las variantes aquí
-                  </p>
-                </div>
-              ) : (
-                validLogos.map((logo) => (
+              {validLogos.map((logo) => (
                 <div key={logo.id} className="border-b border-border pb-6 last:border-b-0">
                   {/* LOGO_TYPE_HEADER */}
                   <div className="flex items-center justify-between mb-6">
@@ -377,8 +303,7 @@ export function BrandPreview({ brand, className = "" }: BrandPreviewProps) {
                   </div>
 
                 </div>
-                ))
-              )}
+              ))}
             </div>
 
           </div>

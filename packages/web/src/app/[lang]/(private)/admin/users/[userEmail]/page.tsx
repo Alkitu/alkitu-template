@@ -717,7 +717,7 @@ const UserDetailPage = ({
 
             {/* Media Browser */}
             {(user as any).driveFolderId ? (
-              <div className="border rounded-lg overflow-hidden" style={{ minHeight: '500px' }}>
+              <div className="border rounded-lg overflow-hidden p-4" style={{ minHeight: '500px' }}>
                 <MediaBrowser
                   rootFolderId={(user as any).driveFolderId}
                   rootFolderName={user.email}

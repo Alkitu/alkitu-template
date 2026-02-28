@@ -24,11 +24,13 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/primitives/ui/card';
-import { User, Shield, Settings, MapPin, Pencil } from 'lucide-react';
+import { User, Shield, Settings, MapPin, Pencil, FolderOpen, Loader2, Plus } from 'lucide-react';
 import { useGlobalTheme } from '@/hooks/useGlobalTheme';
 import { applyThemePreference } from '@/hooks/use-sync-user-preferences';
 import { UserAvatar } from '@/components/molecules-alianza/UserAvatar';
 import { IconSelector } from '@/components/primitives/ui/icon-selector';
+import { MediaBrowser } from '@/components/features/media-manager';
+import { Button } from '@/components/molecules-alianza/Button';
 import type { ProfilePageOrganismProps } from './ProfilePageOrganism.types';
 import type { UserPreferencesFormValues } from '@/components/molecules-alianza/UserPreferencesForm/UserPreferencesForm.types';
 
@@ -42,6 +44,7 @@ import type { UserPreferencesFormValues } from '@/components/molecules-alianza/U
  */
 export const ProfilePageOrganism: React.FC<ProfilePageOrganismProps> = ({
   showLocations = false,
+  showFiles = false,
 }) => {
   const t = useTranslations('profile');
   const { setLocale } = useTranslationContext();
@@ -53,6 +56,7 @@ export const ProfilePageOrganism: React.FC<ProfilePageOrganismProps> = ({
   const [iconSelectorOpen, setIconSelectorOpen] = useState(false);
 
   const { data: user, isLoading, isError, refetch } = trpc.user.me.useQuery();
+  const ensureFoldersMutation = trpc.user.ensureUserDriveFolders.useMutation();
 
   const updateProfileMutation = trpc.user.updateMyProfile.useMutation({
     onSuccess: () => {
@@ -73,6 +77,16 @@ export const ProfilePageOrganism: React.FC<ProfilePageOrganismProps> = ({
         ? t('toast.wrongPassword')
         : t('toast.passwordError');
       toast.error(message);
+    },
+  });
+
+  const uploadAvatarMutation = trpc.user.uploadAvatar.useMutation({
+    onSuccess: () => {
+      toast.success(t('toast.profileUpdated'));
+      refetch();
+    },
+    onError: () => {
+      toast.error(t('toast.profileError'));
     },
   });
 
@@ -117,6 +131,26 @@ export const ProfilePageOrganism: React.FC<ProfilePageOrganismProps> = ({
   const handleAvatarSelect = (value: string) => {
     setIconSelectorOpen(false);
     updateProfileMutation.mutate({ image: value });
+  };
+
+  /** Upload image to Drive profile folder (ensureUserFolders runs on backend) */
+  const handleImageUpload = async (file: File): Promise<string> => {
+    const base64 = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const result = reader.result as string;
+        resolve(result.split(',')[1] || result);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+
+    const result = await uploadAvatarMutation.mutateAsync({
+      data: base64,
+      mimeType: file.type,
+      fileName: file.name,
+    });
+    return result.imageUrl;
   };
 
   if (isLoading) {
@@ -259,6 +293,63 @@ export const ProfilePageOrganism: React.FC<ProfilePageOrganismProps> = ({
           },
         ]
       : []),
+    ...(showFiles
+      ? [
+          {
+            value: 'files',
+            label: t('tabs.files'),
+            icon: <FolderOpen className="h-4 w-4" />,
+            content: (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FolderOpen className="h-5 w-5" />
+                    {t('tabs.files')}
+                  </CardTitle>
+                  <CardDescription>
+                    {t('sections.filesDescription')}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {(user as any).driveFolderId ? (
+                    <div className="border rounded-lg overflow-hidden" style={{ minHeight: '500px' }}>
+                      <MediaBrowser
+                        rootFolderId={(user as any).driveFolderId}
+                        rootFolderName={user.email}
+                      />
+                    </div>
+                  ) : (
+                    <div className="text-center py-12 text-muted-foreground">
+                      <FolderOpen className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                      <p className="mb-4">{t('files.noFolders')}</p>
+                      <Button
+                        onClick={async () => {
+                          try {
+                            await ensureFoldersMutation.mutateAsync({ userId: user.id });
+                            refetch();
+                          } catch {
+                            toast.error(t('files.initError'));
+                          }
+                        }}
+                        disabled={ensureFoldersMutation.isPending}
+                        iconLeft={ensureFoldersMutation.isPending
+                          ? <Loader2 className="h-4 w-4 animate-spin" />
+                          : <Plus className="h-4 w-4" />
+                        }
+                      >
+                        {ensureFoldersMutation.isPending
+                          ? t('files.creating')
+                          : t('files.initialize')
+                        }
+                      </Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            ),
+          },
+        ]
+      : []),
   ];
 
   return (
@@ -296,7 +387,9 @@ export const ProfilePageOrganism: React.FC<ProfilePageOrganismProps> = ({
         open={iconSelectorOpen}
         onClose={() => setIconSelectorOpen(false)}
         onSelect={handleAvatarSelect}
-        title={t('avatar.selectorTitle') || 'Choose avatar'}
+        title={t('avatar.selectorTitle')}
+        onImageUpload={handleImageUpload}
+        driveFolderId={(user as any).driveFolderId || undefined}
       />
 
       <TabsAlianza tabs={tabs} />

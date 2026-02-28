@@ -458,8 +458,8 @@ export const createUserRouter = (
           { parentId: profileFolderId },
         );
 
-        // Update user's image field with the web view link
-        const imageUrl = driveFile.webViewLink || `drive:${driveFile.id}`;
+        // Save thumbnail proxy URL — renderable as <img src>
+        const imageUrl = `/api/drive/files/${driveFile.id}/thumbnail`;
         await usersService['prisma'].user.update({
           where: { id: ctx.user.id },
           data: { image: imageUrl },

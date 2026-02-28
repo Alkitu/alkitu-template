@@ -8,4 +8,6 @@
 export interface ProfilePageOrganismProps {
   /** Whether to show the Locations tab (CLIENT role only) */
   showLocations?: boolean;
+  /** Whether to show the Files tab (ADMIN role — browse own Drive folder) */
+  showFiles?: boolean;
 }

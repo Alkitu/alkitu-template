@@ -1490,13 +1490,15 @@
       "info": "Información del Perfil",
       "security": "Seguridad",
       "preferences": "Preferencias",
-      "locations": "Ubicaciones"
+      "locations": "Ubicaciones",
+      "files": "Archivos"
     },
     "sections": {
       "profileDescription": "Actualiza tu información personal y de contacto.",
       "securityDescription": "Cambia tu contraseña para mantener tu cuenta segura.",
       "preferencesDescription": "Personaliza el tema y el idioma de la interfaz.",
-      "locationsDescription": "Administra tus ubicaciones de trabajo para solicitudes de servicio."
+      "locationsDescription": "Administra tus ubicaciones de trabajo para solicitudes de servicio.",
+      "filesDescription": "Tus archivos almacenados en Google Drive."
     },
     "form": {
       "email": "Correo electrónico",
@@ -1561,6 +1563,15 @@
     },
     "error": {
       "loadFailed": "No se pudo cargar la información del perfil. Inténtalo de nuevo."
+    },
+    "files": {
+      "noFolders": "Aún no tienes carpetas en Drive.",
+      "initialize": "Inicializar carpetas de Drive",
+      "creating": "Creando carpetas...",
+      "initError": "Error al inicializar las carpetas"
+    },
+    "avatar": {
+      "selectorTitle": "Elegir avatar"
     }
   },
   "locations": {

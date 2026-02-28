@@ -11,5 +11,5 @@ import { ProfilePageOrganism } from '@/components/organisms-alianza/ProfilePageO
  * @route /[lang]/admin/profile
  */
 export default function AdminProfilePage() {
-  return <ProfilePageOrganism />;
+  return <ProfilePageOrganism showFiles />;
 }

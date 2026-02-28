@@ -18,6 +18,10 @@ interface IconInputProps {
   onChange: (value: string) => void;
   label?: string;
   defaultIcon?: string;
+  /** Upload handler for Pictures tab — receives a compressed File and returns the public URL */
+  onImageUpload?: (file: File) => Promise<string>;
+  /** Root folder ID for Drive browsing in Pictures tab */
+  driveFolderId?: string;
 }
 
 export function IconInput({
@@ -25,6 +29,8 @@ export function IconInput({
   onChange,
   label,
   defaultIcon,
+  onImageUpload,
+  driveFolderId,
 }: IconInputProps) {
   const [showSelector, setShowSelector] = React.useState(false);
 
@@ -47,6 +53,14 @@ export function IconInput({
         <>
           <IconComponent className="h-4 w-4 shrink-0" />
           <span className="truncate">{value}</span>
+        </>
+      );
+    }
+    if (value && (value.startsWith('http') || value.startsWith('/api/'))) {
+      return (
+        <>
+          <img src={value} alt="" className="h-4 w-4 shrink-0 object-contain rounded-sm" />
+          <span className="truncate text-muted-foreground">Imagen</span>
         </>
       );
     }
@@ -89,6 +103,8 @@ export function IconInput({
         open={showSelector}
         onClose={() => setShowSelector(false)}
         onSelect={onChange}
+        onImageUpload={onImageUpload}
+        driveFolderId={driveFolderId}
       />
     </div>
   );

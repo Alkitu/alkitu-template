@@ -9,7 +9,7 @@ import type {
   SortConfig,
   FileTypeFilter,
 } from '../types';
-import { filterFiles, sortFiles } from '../lib/file-utils';
+import { filterFiles, sortFiles, FOLDER_MIME } from '../lib/file-utils';
 
 /**
  * useMediaManagerLocal - Read-only hook for browsing Drive files inside modals
@@ -36,7 +36,18 @@ export function useMediaManagerLocal(rootFolderId: string) {
   const [searchQuery, setSearchQueryState] = useState('');
 
   const displayFiles = useMemo(() => {
-    return sortFiles(filterFiles(files, typeFilter), sortConfig);
+    const filtered = filterFiles(files, typeFilter);
+    // Always preserve folders so users can navigate to subfolders,
+    // even when a non-'all' type filter (e.g. 'images') is active.
+    if (typeFilter !== 'all' && typeFilter !== 'folders') {
+      const folders = files.filter((f) => f.mimeType === FOLDER_MIME);
+      const withFolders = [
+        ...folders,
+        ...filtered.filter((f) => f.mimeType !== FOLDER_MIME),
+      ];
+      return sortFiles(withFolders, sortConfig);
+    }
+    return sortFiles(filtered, sortConfig);
   }, [files, typeFilter, sortConfig]);
 
   const fetchContents = useCallback(async (folderId: string) => {

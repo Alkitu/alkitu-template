@@ -2,11 +2,10 @@
 
 import React from 'react';
 import { Button } from '@/components/primitives/ui/button';
-import { MapPin, Building2, Edit, Trash2 } from 'lucide-react';
-import { Icons } from '@/lib/icons';
+import { Building2, Edit, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { LocationCardMoleculeProps } from './LocationCardMolecule.types';
-import { getDynamicBackgroundColor } from '@/lib/utils/color';
+import { LocationIconMolecule } from './LocationIconMolecule';
 
 /**
  * LocationCardMolecule - Molecule Component (ALI-117)
@@ -54,78 +53,60 @@ export const LocationCardMolecule: React.FC<LocationCardMoleculeProps> = ({
   const hasAddressLine1 = addressLine1Parts.length > 0;
 
   const iconColor = location.iconColor || '#2563eb';
-  const backgroundColor = getDynamicBackgroundColor(iconColor);
-
-  // Render Icon
-  const renderIcon = () => {
-    if (!location.icon) return <MapPin className="h-5 w-5" style={{ color: iconColor }} />;
-
-    const IconComponent = (Icons as any)[location.icon];
-
-    if (IconComponent) {
-      return <IconComponent className="h-5 w-5" style={{ color: iconColor }} />;
-    }
-
-    // Assume Emoji
-    return <span className="text-xl leading-none">{location.icon}</span>;
-  };
 
   return (
     <div
       className={cn(
-        "group flex items-center justify-between rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-all hover:bg-gray-50 hover:shadow-md",
-        location.isDefault && "border-blue-200 bg-blue-50/30",
-        className
+        'group flex items-center justify-between rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-all hover:bg-gray-50 hover:shadow-md',
+        location.isDefault && 'border-blue-200 bg-blue-50/30',
+        className,
       )}
       data-testid="location-card"
     >
       <div className="flex items-center gap-4">
         {/* Location Icon */}
-        <div 
-          className={cn(
-            "flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-colors",
-            location.isDefault && "ring-2 ring-blue-100 ring-offset-2"
-          )}
-          style={{ backgroundColor }}
-        >
-          {renderIcon()}
-        </div>
+        <LocationIconMolecule
+          icon={location.icon}
+          iconColor={iconColor}
+          size="md"
+          isDefault={location.isDefault}
+        />
 
         {/* Location Info */}
         <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2">
-                <h4 
-                    className="truncate font-medium text-gray-900" 
-                    data-testid="location-card-street"
-                >
-                    {location.street}
-                </h4>
-                {location.isDefault && (
-                    <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">
-                        Default
-                    </span>
-                 )}
-                {requestCount != null && requestCount > 0 && (
-                    <span className="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">
-                        {requestCount} {requestCount === 1 ? 'request' : 'requests'}
-                    </span>
-                )}
-            </div>
+          <div className="flex items-center gap-2">
+            <h4
+              className="truncate font-medium text-gray-900"
+              data-testid="location-card-street"
+            >
+              {location.street}
+            </h4>
+            {location.isDefault && (
+              <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">
+                Default
+              </span>
+            )}
+            {requestCount != null && requestCount > 0 && (
+              <span className="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">
+                {requestCount} {requestCount === 1 ? 'request' : 'requests'}
+              </span>
+            )}
+          </div>
 
-            <div className="mt-0.5 flex flex-wrap items-center gap-x-2 text-sm text-gray-500">
-                {hasAddressLine1 && (
-                    <>
-                        <span className="flex items-center gap-1">
-                            <Building2 className="h-3 w-3" />
-                            {addressLine1Parts.join(', ')}
-                        </span>
-                        <span className="text-gray-300">•</span>
-                    </>
-                )}
-                <span>
-                    {location.city}, {location.state} {location.zip}
+          <div className="mt-0.5 flex flex-wrap items-center gap-x-2 text-sm text-gray-500">
+            {hasAddressLine1 && (
+              <>
+                <span className="flex items-center gap-1">
+                  <Building2 className="h-3 w-3" />
+                  {addressLine1Parts.join(', ')}
                 </span>
-            </div>
+                <span className="text-gray-300">•</span>
+              </>
+            )}
+            <span>
+              {location.city}, {location.state} {location.zip}
+            </span>
+          </div>
         </div>
       </div>
 

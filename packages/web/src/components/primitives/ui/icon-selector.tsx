@@ -33,12 +33,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/primitives/ui/select';
+import { ImagePickerContent } from '@/components/features/form-builder/molecules/ImagePickerModal';
 
 interface IconSelectorProps {
   open: boolean;
   onClose: () => void;
   onSelect: (iconName: string) => void;
   title?: string;
+  /** Upload handler for Pictures tab — receives a compressed File and returns the public URL */
+  onImageUpload?: (file: File) => Promise<string>;
+  /** Root folder ID for Drive browsing in Pictures tab */
+  driveFolderId?: string;
 }
 
 const PAGE_SIZE = 60;
@@ -48,6 +53,8 @@ export function IconSelector({
   onClose,
   onSelect,
   title = 'Selector de medios',
+  onImageUpload,
+  driveFolderId,
 }: IconSelectorProps) {
   const [activeTab, setActiveTab] = React.useState('icon');
   const [search, setSearch] = React.useState('');
@@ -119,14 +126,7 @@ export function IconSelector({
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="icon">Iconos</TabsTrigger>
             <TabsTrigger value="emoji">Emojis</TabsTrigger>
-            <Tooltip>
-               <TooltipTrigger asChild>
-                 <span tabIndex={0} className="w-full">
-                    <TabsTrigger value="picture" disabled className="w-full pointer-events-none opacity-50">Imágenes</TabsTrigger>
-                 </span>
-               </TooltipTrigger>
-               <TooltipContent>Coming Soon</TooltipContent>
-            </Tooltip>
+            <TabsTrigger value="picture">Imágenes</TabsTrigger>
           </TabsList>
         </div>
 
@@ -300,9 +300,16 @@ export function IconSelector({
         </TabsContent>
 
         <TabsContent value="picture" className="flex-1 px-6 pb-6 pt-4">
-             <div className="flex items-center justify-center h-full text-muted-foreground border rounded-md bg-muted/10">
-                <p>Selector de Imágenes (Próximamente)</p>
-             </div>
+          <ImagePickerContent
+            onImageSelected={(url) => {
+              onSelect(url);
+              onClose();
+            }}
+            onDismiss={onClose}
+            onImageUpload={onImageUpload}
+            driveFolderId={driveFolderId}
+            isVisible={activeTab === 'picture'}
+          />
         </TabsContent>
       </Tabs>
     </ResponsiveModal>

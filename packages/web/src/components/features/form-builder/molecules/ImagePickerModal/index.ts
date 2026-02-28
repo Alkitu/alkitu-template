@@ -1,2 +1,3 @@
 export { ImagePickerModal } from './ImagePickerModal';
-export type { ImagePickerModalProps } from './ImagePickerModal.types';
+export { ImagePickerContent } from './ImagePickerContent';
+export type { ImagePickerModalProps, ImagePickerContentProps } from './ImagePickerModal.types';

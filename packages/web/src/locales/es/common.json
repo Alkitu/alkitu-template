@@ -579,7 +579,8 @@
           "location": "Ubicación",
           "service": "Servicio",
           "details": "Detalles",
-          "dateTime": "Fecha/Hora"
+          "dateTime": "Fecha/Hora",
+          "summary": "Resumen"
         },
         "step1": {
           "title": "Seleccionar Ubicación",
@@ -619,8 +620,37 @@
           "timeLabel": "Hora de Ejecución *",
           "dateTimeRequired": "Por favor seleccione fecha y hora de ejecución",
           "futureRequired": "La fecha de ejecución debe ser futura",
-          "creating": "Creando...",
-          "submit": "Crear Solicitud"
+          "next": "Siguiente: Resumen"
+        },
+        "step5": {
+          "title": "Resumen de la Solicitud",
+          "description": "Revisa todos los datos antes de confirmar",
+          "confirm": "Confirmar y Enviar",
+          "locationSection": "Ubicación",
+          "serviceSection": "Servicio",
+          "formResponsesSection": "Respuestas del Formulario",
+          "attachments": "Archivos Adjuntos",
+          "attachmentsCount": "archivos",
+          "dateTimeSection": "Fecha y Hora",
+          "at": "a las",
+          "noFormResponses": "Sin campos personalizados",
+          "noAttachments": "Sin archivos adjuntos",
+          "compressingImages": "Comprimiendo imágenes...",
+          "uploadingFiles": "Subiendo archivos...",
+          "phaseCreating": "Creando solicitud...",
+          "phaseCreatingDesc": "Estamos registrando tu solicitud de servicio",
+          "phaseUploading": "Subiendo archivos...",
+          "phaseUploadingDesc": "Estamos subiendo los archivos adjuntos",
+          "successTitle": "¡Solicitud Creada Exitosamente!",
+          "successDescription": "Tu solicitud ha sido registrada correctamente.",
+          "requestId": "Número de Solicitud",
+          "whatsNext": "¿Qué sigue?",
+          "nextStep1": "Recibirás una notificación cuando tu solicitud sea asignada a un técnico",
+          "nextStep2": "Puedes hacer seguimiento del estado de tu solicitud en cualquier momento",
+          "nextStep3": "El equipo te contactará si necesita información adicional",
+          "viewRequest": "Ver Solicitud",
+          "backToRequests": "Volver a Solicitudes",
+          "uploadError": "Algunos archivos no se pudieron subir"
         },
         "success": "Solicitud creada exitosamente",
         "labels": {

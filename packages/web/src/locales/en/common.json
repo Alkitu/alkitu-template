@@ -662,7 +662,8 @@
           "location": "Location",
           "service": "Service",
           "details": "Details",
-          "dateTime": "Date/Time"
+          "dateTime": "Date/Time",
+          "summary": "Summary"
         },
         "step1": {
           "title": "Select Location",
@@ -702,8 +703,37 @@
           "timeLabel": "Execution Time *",
           "dateTimeRequired": "Please select execution date and time",
           "futureRequired": "Execution date must be in the future",
-          "creating": "Creating...",
-          "submit": "Create Request"
+          "next": "Next: Summary"
+        },
+        "step5": {
+          "title": "Request Summary",
+          "description": "Review all data before confirming",
+          "confirm": "Confirm and Submit",
+          "locationSection": "Location",
+          "serviceSection": "Service",
+          "formResponsesSection": "Form Responses",
+          "attachments": "Attached Files",
+          "attachmentsCount": "files",
+          "dateTimeSection": "Date and Time",
+          "at": "at",
+          "noFormResponses": "No custom fields",
+          "noAttachments": "No attached files",
+          "compressingImages": "Compressing images...",
+          "uploadingFiles": "Uploading files...",
+          "phaseCreating": "Creating request...",
+          "phaseCreatingDesc": "We are registering your service request",
+          "phaseUploading": "Uploading files...",
+          "phaseUploadingDesc": "We are uploading the attached files",
+          "successTitle": "Request Created Successfully!",
+          "successDescription": "Your request has been registered correctly.",
+          "requestId": "Request Number",
+          "whatsNext": "What's next?",
+          "nextStep1": "You will receive a notification when your request is assigned to a technician",
+          "nextStep2": "You can track the status of your request at any time",
+          "nextStep3": "The team will contact you if additional information is needed",
+          "viewRequest": "View Request",
+          "backToRequests": "Back to Requests",
+          "uploadError": "Some files could not be uploaded"
         },
         "success": "Request created successfully",
         "labels": {

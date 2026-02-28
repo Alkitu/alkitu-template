@@ -55,7 +55,10 @@ export class EmailTemplates {
   /**
    * Genera el email de bienvenida
    */
-  static getWelcomeEmail(data: WelcomeEmailData): {
+  static getWelcomeEmail(
+    data: WelcomeEmailData,
+    companyName: string = process.env.APP_NAME || 'Alkitu',
+  ): {
     html: string;
     subject: string;
   } {
@@ -72,7 +75,7 @@ export class EmailTemplates {
       <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Bienvenido a Alianza Consulting Corp</title>
+          <title>Bienvenido a ${companyName}</title>
       </head>
       <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f6f9fc;">
           <!-- Preheader text (shown in inbox preview) -->
@@ -83,7 +86,7 @@ export class EmailTemplates {
                   <div style="background-color: #ffffff; width: 60px; height: 60px; border-radius: 30px; margin: 0 auto 20px; text-align: center; line-height: 60px;">
                       <span style="color: #667eea; font-size: 24px; font-weight: bold; vertical-align: middle;">A</span>
                   </div>
-                  <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 600;">¡Bienvenido a Alianza Consulting Corp!</h1>
+                  <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 600;">¡Bienvenido a ${companyName}!</h1>
                   <p style="color: #e2e8f0; margin: 10px 0 0 0; font-size: 16px;">Tu cuenta ha sido creada exitosamente</p>
               </div>
 
@@ -94,7 +97,7 @@ export class EmailTemplates {
                   </p>
 
                   <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">
-                      ¡Gracias por unirte a Alianza Consulting Corp! Tu cuenta ha sido configurada y ya puedes comenzar a disfrutar de todas nuestras funcionalidades.
+                      ¡Gracias por unirte a ${companyName}! Tu cuenta ha sido configurada y ya puedes comenzar a disfrutar de todas nuestras funcionalidades.
                   </p>
 
                   <div style="background-color: #f7fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin: 30px 0;">
@@ -124,7 +127,7 @@ export class EmailTemplates {
 
                   <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 0;">
                       ¡Te damos la bienvenida al futuro!<br>
-                      <strong>El equipo de Alianza Consulting Corp</strong>
+                      <strong>El equipo de ${companyName}</strong>
                   </p>
               </div>
 
@@ -135,7 +138,7 @@ export class EmailTemplates {
                       <a href="${safeSupportUrl}" style="color: #667eea; text-decoration: none;">Soporte</a>
                   </p>
                   <p style="color: #a0aec0; margin: 0; font-size: 12px;">
-                      © ${new Date().getFullYear()} Alianza Consulting Corp. Todos los derechos reservados.
+                      © ${new Date().getFullYear()} ${companyName}. Todos los derechos reservados.
                   </p>
               </div>
           </div>
@@ -145,14 +148,17 @@ export class EmailTemplates {
 
     return {
       html,
-      subject: `¡Bienvenido a Alianza Consulting Corp, ${safeUserName}!`,
+      subject: `¡Bienvenido a ${companyName}, ${safeUserName}!`,
     };
   }
 
   /**
    * Genera el email de restablecimiento de contraseña (inline template)
    */
-  static getPasswordResetEmail(data: PasswordResetEmailData): {
+  static getPasswordResetEmail(
+    data: PasswordResetEmailData,
+    companyName: string = process.env.APP_NAME || 'Alkitu',
+  ): {
     html: string;
     subject: string;
   } {
@@ -167,7 +173,7 @@ export class EmailTemplates {
       <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Restablecer Contraseña - Alianza Consulting Corp</title>
+          <title>Restablecer Contraseña - ${companyName}</title>
       </head>
       <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f6f9fc;">
           <!-- Preheader text (shown in inbox preview) -->
@@ -218,7 +224,7 @@ export class EmailTemplates {
               <!-- Footer -->
               <div style="background-color: #f7fafc; padding: 20px; text-align: center; border-top: 1px solid #e2e8f0;">
                   <p style="color: #718096; font-size: 12px; margin: 0;">
-                      © ${new Date().getFullYear()} Alianza Consulting Corp | <a href="${safeSupportUrl}" style="color: #e53e3e;">Soporte</a>
+                      © ${new Date().getFullYear()} ${companyName} | <a href="${safeSupportUrl}" style="color: #e53e3e;">Soporte</a>
                   </p>
               </div>
           </div>
@@ -228,14 +234,17 @@ export class EmailTemplates {
 
     return {
       html,
-      subject: 'Restablecer tu contraseña - Alianza Consulting Corp',
+      subject: `Restablecer tu contraseña - ${companyName}`,
     };
   }
 
   /**
    * Template simple en línea para verificación de email
    */
-  static getEmailVerificationTemplate(data: EmailVerificationData): {
+  static getEmailVerificationTemplate(
+    data: EmailVerificationData,
+    companyName: string = process.env.APP_NAME || 'Alkitu',
+  ): {
     html: string;
     subject: string;
   } {
@@ -249,11 +258,11 @@ export class EmailTemplates {
       <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Verificar Email - Alianza Consulting Corp</title>
+          <title>Verificar Email - ${companyName}</title>
       </head>
       <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f6f9fc;">
           <!-- Preheader text (shown in inbox preview) -->
-          <div style="display: none; max-height: 0; overflow: hidden; mso-hide: all;">Verifica tu direcci&oacute;n de email para completar tu registro en Alianza Consulting Corp.</div>
+          <div style="display: none; max-height: 0; overflow: hidden; mso-hide: all;">Verifica tu direcci&oacute;n de email para completar tu registro en ${companyName}.</div>
           <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e2e8f0;">
               <!-- Header -->
               <div style="background-color: #48bb78; background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); padding: 40px 20px; text-align: center;">
@@ -290,7 +299,7 @@ export class EmailTemplates {
               <!-- Footer -->
               <div style="background-color: #f7fafc; padding: 20px; text-align: center;">
                   <p style="color: #718096; font-size: 12px; margin: 0;">
-                      © ${new Date().getFullYear()} Alianza Consulting Corp | <a href="${safeSupportUrl}" style="color: #48bb78;">Soporte</a>
+                      © ${new Date().getFullYear()} ${companyName} | <a href="${safeSupportUrl}" style="color: #48bb78;">Soporte</a>
                   </p>
               </div>
           </div>
@@ -300,7 +309,7 @@ export class EmailTemplates {
 
     return {
       html,
-      subject: 'Verifica tu email - Alianza Consulting Corp',
+      subject: `Verifica tu email - ${companyName}`,
     };
   }
 
@@ -313,6 +322,7 @@ export class EmailTemplates {
     userName: string,
     buttonText?: string,
     buttonUrl?: string,
+    companyName: string = process.env.APP_NAME || 'Alkitu',
   ): { html: string; subject: string } {
     const safeTitle = escapeHtml(title);
     const safeMessage = escapeHtml(message);
@@ -365,13 +375,13 @@ export class EmailTemplates {
 
                   <p style="color: #4a5568; font-size: 16px; margin-top: 30px;">
                       Saludos,<br>
-                      <strong>El equipo de Alianza Consulting Corp</strong>
+                      <strong>El equipo de ${companyName}</strong>
                   </p>
               </div>
 
               <div style="background-color: #f7fafc; padding: 20px; text-align: center;">
                   <p style="color: #718096; font-size: 12px; margin: 0;">
-                      © ${new Date().getFullYear()} Alianza Consulting Corp
+                      © ${new Date().getFullYear()} ${companyName}
                   </p>
               </div>
           </div>

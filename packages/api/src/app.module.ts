@@ -24,6 +24,7 @@ import { FeatureFlagsModule } from './feature-flags/feature-flags.module';
 import { AuditModule } from './audit/audit.module';
 import { AccessControlModule } from './access-control/access-control.module';
 import { DriveModule } from './drive/drive.module';
+import { BrandConfigModule } from './brand/brand-config.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { DriveModule } from './drive/drive.module';
       },
     ]),
     PrismaModule,
+    BrandConfigModule,
     AuditModule,
     AccessControlModule,
     UsersModule,

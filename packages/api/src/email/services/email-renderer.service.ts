@@ -1,11 +1,16 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Optional, Inject } from '@nestjs/common';
 import * as React from 'react';
 import { render } from '@react-email/render';
 import { BaseEmailLayout } from '../templates/BaseEmailLayout';
+import { BrandConfigService } from '../../brand/brand-config.service';
 
 @Injectable()
 export class EmailRendererService {
   private readonly logger = new Logger(EmailRendererService.name);
+
+  constructor(
+    @Optional() @Inject(BrandConfigService) private readonly brandConfigService?: BrandConfigService,
+  ) {}
 
   /**
    * Detects if body starts with <!DOCTYPE or <html> (case-insensitive, trimmed).
@@ -96,11 +101,15 @@ export class EmailRendererService {
         );
       }
 
+      // Resolve company name from DB/env
+      const companyName = await this.brandConfigService?.getCompanyName()
+        ?? process.env.APP_NAME ?? 'Alkitu';
+
       // Use a plain 'div' instead of Section to avoid the React conflict
       // where Section's internal <table> children clash with dangerouslySetInnerHTML
       const emailElement = React.createElement(
         BaseEmailLayout,
-        { locale, previewText },
+        { locale, previewText, companyName },
         React.createElement('div', {
           dangerouslySetInnerHTML: { __html: innerContent },
         }),

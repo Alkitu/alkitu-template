@@ -48,7 +48,7 @@ export function BrandProvider({ children }: { children: React.ReactNode }) {
   };
   
   const [config, setConfig] = React.useState<BrandConfig>({
-    primaryText: 'Alkitu',
+    primaryText: process.env.NEXT_PUBLIC_APP_NAME || 'Alkitu',
     secondaryText: 'Design System',
     primaryTextColor: '', // Will use system foreground
     secondaryTextColor: '', // Will use system muted-foreground  

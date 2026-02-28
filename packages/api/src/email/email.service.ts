@@ -8,6 +8,7 @@ import {
 } from './email-templates';
 import { PrismaService } from '../prisma.service';
 import { EmailRendererService } from './services/email-renderer.service';
+import { BrandConfigService } from '../brand/brand-config.service';
 import type { LocalizedEmailContent } from '@alkitu/shared';
 
 /**
@@ -39,6 +40,7 @@ export class EmailService {
   constructor(
     @Optional() @Inject(PrismaService) private readonly prisma?: PrismaService,
     @Optional() private readonly emailRendererService?: EmailRendererService,
+    @Optional() @Inject(BrandConfigService) private readonly brandConfigService?: BrandConfigService,
   ) {
     const apiKey = process.env.RESEND_API_KEY;
 
@@ -179,6 +181,11 @@ export class EmailService {
     return { success: false, error: 'Max retries exceeded' };
   }
 
+  private async resolveCompanyName(): Promise<string> {
+    return await this.brandConfigService?.getCompanyName()
+      ?? process.env.APP_NAME ?? 'Alkitu';
+  }
+
   /**
    * Envía email de bienvenida a nuevos usuarios
    * DB-first: tries to load template from DB, falls back to hard-coded HTML
@@ -211,7 +218,8 @@ export class EmailService {
       }
 
       // Fallback to hard-coded template
-      const { html, subject } = EmailTemplates.getWelcomeEmail(userData);
+      const companyName = await this.resolveCompanyName();
+      const { html, subject } = EmailTemplates.getWelcomeEmail(userData, companyName);
       return await this.sendEmail({
         to: userData.userEmail,
         subject,
@@ -257,7 +265,8 @@ export class EmailService {
       }
 
       // Fallback to hard-coded template
-      const { html, subject } = EmailTemplates.getPasswordResetEmail(userData);
+      const companyName = await this.resolveCompanyName();
+      const { html, subject } = EmailTemplates.getPasswordResetEmail(userData, companyName);
       return await this.sendEmail({
         to: userData.userEmail,
         subject,
@@ -303,8 +312,9 @@ export class EmailService {
       }
 
       // Fallback to hard-coded template
+      const companyName = await this.resolveCompanyName();
       const { html, subject } =
-        EmailTemplates.getEmailVerificationTemplate(userData);
+        EmailTemplates.getEmailVerificationTemplate(userData, companyName);
       return await this.sendEmail({
         to: userData.userEmail,
         subject,
@@ -358,12 +368,14 @@ export class EmailService {
       }
 
       // Fallback to hard-coded template
+      const companyName = await this.resolveCompanyName();
       const { html, subject } = EmailTemplates.getNotificationEmail(
         title,
         message,
         userName,
         buttonText,
         buttonUrl,
+        companyName,
       );
 
       return await this.sendEmail({
@@ -440,10 +452,11 @@ export class EmailService {
    */
   async testConfiguration(): Promise<{ success: boolean; error?: string }> {
     try {
+      const companyName = await this.resolveCompanyName();
       // Intenta enviar un email de prueba a una dirección válida
       const testResult = await this.sendEmail({
         to: 'test@resend.dev', // Email de prueba de Resend
-        subject: 'Test de configuración - Alianza Consulting Corp',
+        subject: `Test de configuración - ${companyName}`,
         html: '<h1>Test exitoso</h1><p>La configuración de Resend está funcionando correctamente.</p>',
       });
 

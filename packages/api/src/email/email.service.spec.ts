@@ -79,12 +79,15 @@ describe('EmailService', () => {
 
       const result = await service.sendEmail(options);
 
-      expect(mockResend.emails.send).toHaveBeenCalledWith({
-        from: 'test@example.com',
-        to: 'test@example.com',
-        subject: 'Test Subject',
-        html: '<h1>Test Email</h1>',
-      });
+      expect(mockResend.emails.send).toHaveBeenCalledWith(
+        {
+          from: 'test@example.com',
+          to: 'test@example.com',
+          subject: 'Test Subject',
+          html: '<h1>Test Email</h1>',
+        },
+        undefined,
+      );
 
       expect(result).toEqual({
         success: true,
@@ -145,12 +148,15 @@ describe('EmailService', () => {
 
       const result = await service.sendEmail(options);
 
-      expect(mockResend.emails.send).toHaveBeenCalledWith({
-        from: 'test@example.com',
-        to: ['test1@example.com', 'test2@example.com'],
-        subject: 'Test Subject',
-        html: '<h1>Test Email</h1>',
-      });
+      expect(mockResend.emails.send).toHaveBeenCalledWith(
+        {
+          from: 'test@example.com',
+          to: ['test1@example.com', 'test2@example.com'],
+          subject: 'Test Subject',
+          html: '<h1>Test Email</h1>',
+        },
+        undefined,
+      );
 
       expect(result.success).toBe(true);
     });
@@ -186,12 +192,15 @@ describe('EmailService', () => {
 
       const result = await service.sendWelcomeEmail(userData);
 
-      expect(mockResend.emails.send).toHaveBeenCalledWith({
-        from: 'test@example.com',
-        to: 'juan@example.com',
-        subject: '¡Bienvenido a Alianza Consulting Corp, Juan Pérez!',
-        html: expect.stringContaining('Juan Pérez'),
-      });
+      expect(mockResend.emails.send).toHaveBeenCalledWith(
+        {
+          from: 'test@example.com',
+          to: 'juan@example.com',
+          subject: '¡Bienvenido a Alkitu, Juan Pérez!',
+          html: expect.stringContaining('Juan Pérez'),
+        },
+        { idempotencyKey: 'welcome-juan@example.com' },
+      );
 
       expect(result).toEqual({
         success: true,
@@ -245,12 +254,15 @@ describe('EmailService', () => {
 
       const result = await service.sendPasswordResetEmail(userData);
 
-      expect(mockResend.emails.send).toHaveBeenCalledWith({
-        from: 'test@example.com',
-        to: 'juan@example.com',
-        subject: 'Restablecer tu contraseña - Alianza Consulting Corp',
-        html: expect.stringContaining('Juan Pérez'),
-      });
+      expect(mockResend.emails.send).toHaveBeenCalledWith(
+        {
+          from: 'test@example.com',
+          to: 'juan@example.com',
+          subject: 'Restablecer tu contraseña - Alkitu',
+          html: expect.stringContaining('Juan Pérez'),
+        },
+        expect.objectContaining({ idempotencyKey: expect.stringContaining('password-reset-juan@example.com') }),
+      );
 
       expect(result.success).toBe(true);
     });
@@ -273,12 +285,15 @@ describe('EmailService', () => {
 
       const result = await service.sendEmailVerification(userData);
 
-      expect(mockResend.emails.send).toHaveBeenCalledWith({
-        from: 'test@example.com',
-        to: 'juan@example.com',
-        subject: 'Verifica tu email - Alianza Consulting Corp',
-        html: expect.stringContaining('Juan Pérez'),
-      });
+      expect(mockResend.emails.send).toHaveBeenCalledWith(
+        {
+          from: 'test@example.com',
+          to: 'juan@example.com',
+          subject: 'Verifica tu email - Alkitu',
+          html: expect.stringContaining('Juan Pérez'),
+        },
+        { idempotencyKey: 'email-verification-juan@example.com' },
+      );
 
       expect(result.success).toBe(true);
     });
@@ -301,12 +316,15 @@ describe('EmailService', () => {
         'http://localhost:3000/action',
       );
 
-      expect(mockResend.emails.send).toHaveBeenCalledWith({
-        from: 'test@example.com',
-        to: 'juan@example.com',
-        subject: 'Test Notification',
-        html: expect.stringContaining('Juan Pérez'),
-      });
+      expect(mockResend.emails.send).toHaveBeenCalledWith(
+        {
+          from: 'test@example.com',
+          to: 'juan@example.com',
+          subject: 'Test Notification',
+          html: expect.stringContaining('Juan Pérez'),
+        },
+        expect.objectContaining({ idempotencyKey: expect.stringContaining('notification-juan@example.com') }),
+      );
 
       expect(result.success).toBe(true);
     });
@@ -343,12 +361,15 @@ describe('EmailService', () => {
 
       const result = await service.sendBulkEmails(recipients, subject, html);
 
-      expect(mockResend.emails.send).toHaveBeenCalledWith({
-        from: 'test@example.com',
-        to: recipients,
-        subject,
-        html,
-      });
+      expect(mockResend.emails.send).toHaveBeenCalledWith(
+        {
+          from: 'test@example.com',
+          to: recipients,
+          subject,
+          html,
+        },
+        undefined,
+      );
 
       expect(result.success).toBe(true);
       expect(result.results).toHaveLength(2);
@@ -404,12 +425,15 @@ describe('EmailService', () => {
 
       const result = await service.testConfiguration();
 
-      expect(mockResend.emails.send).toHaveBeenCalledWith({
-        from: 'test@example.com',
-        to: 'test@resend.dev',
-        subject: 'Test de configuración - Alianza Consulting Corp',
-        html: expect.stringContaining('Test exitoso'),
-      });
+      expect(mockResend.emails.send).toHaveBeenCalledWith(
+        {
+          from: 'test@example.com',
+          to: 'test@resend.dev',
+          subject: 'Test de configuración - Alkitu',
+          html: expect.stringContaining('Test exitoso'),
+        },
+        undefined,
+      );
 
       expect(result.success).toBe(true);
     });

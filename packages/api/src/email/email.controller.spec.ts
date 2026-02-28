@@ -143,7 +143,7 @@ describe('EmailController', () => {
           userName: 'Test User',
           subject: 'Notificación de Prueba',
           message:
-            'Esta es una notificación de prueba del sistema de emails de Alianza Consulting Corp. Todo está funcionando correctamente.',
+            'Esta es una notificación de prueba del sistema de emails. Todo está funcionando correctamente.',
           actionText: 'Ir al Dashboard',
           actionUrl: 'http://localhost:3000/dashboard',
           supportUrl: 'http://localhost:3000/support',

@@ -18,6 +18,7 @@ interface EmailPreviewShellProps {
   children: React.ReactNode;
   previewText?: string;
   locale?: string;
+  companyName?: string;
 }
 
 export function EmailPreviewShell({
@@ -25,6 +26,7 @@ export function EmailPreviewShell({
   children,
   previewText,
   locale = 'es',
+  companyName = process.env.NEXT_PUBLIC_APP_NAME || 'Alkitu',
 }: EmailPreviewShellProps) {
   return (
     <Html lang={locale}>
@@ -47,7 +49,7 @@ export function EmailPreviewShell({
               <div style={{ textAlign: 'center', marginBottom: '32px' }}>
                 <Img
                   src="/logo-light.png"
-                  alt="Alianza Consulting Corp"
+                  alt={companyName}
                   width={200}
                   height="auto"
                   style={{ margin: '0 auto' }}
@@ -61,7 +63,7 @@ export function EmailPreviewShell({
 
             <Section>
               <Text className="text-[#666666] text-[12px] leading-[24px] text-center">
-                © {new Date().getFullYear()} Alianza Consulting Corp. All rights
+                © {new Date().getFullYear()} {companyName}. All rights
                 reserved.
               </Text>
               <Text className="text-[#666666] text-[12px] leading-[24px] text-center">

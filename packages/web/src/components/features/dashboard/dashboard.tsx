@@ -434,8 +434,10 @@ function Dashboard({ children, showWelcome = false, userRole = 'admin' }: Dashbo
   const user = currentUser ? {
     id: currentUser.id || 'user',
     name: (currentUser as any).name || `${(currentUser as any).firstname || ''} ${(currentUser as any).lastname || ''}`.trim() || (currentUser as any).role || 'User',
+    firstname: (currentUser as any).firstname || '',
+    lastname: (currentUser as any).lastname || '',
     email: currentUser.email || '',
-    avatar: (currentUser as any).avatar || '/avatars/default.jpg',
+    avatar: (currentUser as any).image || '',
     role: userRole,
   } : { ...transformedData.user, role: userRole };
 

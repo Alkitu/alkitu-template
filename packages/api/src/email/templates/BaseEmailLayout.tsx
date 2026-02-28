@@ -17,12 +17,14 @@ export interface BaseEmailLayoutProps {
   children?: React.ReactNode;
   locale?: string;
   previewText?: string;
+  companyName?: string;
 }
 
 export function BaseEmailLayout({
   children,
   locale = 'es',
   previewText,
+  companyName = process.env.APP_NAME || 'Alkitu',
 }: BaseEmailLayoutProps) {
   return (
     <Html lang={locale}>
@@ -36,8 +38,8 @@ export function BaseEmailLayout({
             <Section className="mt-[32px]">
               <div style={{ textAlign: 'center', marginBottom: '32px' }}>
                 <Img
-                  src={`${process.env.NEXT_PUBLIC_APP_URL || 'https://app.alianzaconsultingcorp.com'}/logo-light.png`}
-                  alt="Alianza Consulting Corp"
+                  src={`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/logo-light.png`}
+                  alt={companyName}
                   width={200}
                   height="auto"
                   style={{ margin: '0 auto' }}
@@ -48,7 +50,7 @@ export function BaseEmailLayout({
             <Hr className="border-[#eaeaea] my-[26px] mx-0 w-full" />
             <Section>
               <Text className="text-[#666666] text-[12px] leading-[24px] text-center">
-                &copy; {new Date().getFullYear()} Alianza Consulting Corp. All
+                &copy; {new Date().getFullYear()} {companyName}. All
                 rights reserved.
               </Text>
               <Text className="text-[#666666] text-[12px] leading-[24px] text-center">

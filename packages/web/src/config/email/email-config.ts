@@ -6,7 +6,7 @@ export const emailDefaults = {
   from: process.env.EMAIL_FROM as string,
   baseUrl: process.env.NEXT_PUBLIC_APP_URL as string,
   brand: {
-    name: "INSIDE HAIR",
+    name: process.env.NEXT_PUBLIC_APP_NAME || "Alkitu",
     color: "#000000",
     textColor: "#FFFFFF"
   }

@@ -24,6 +24,8 @@ export interface Project {
 export interface User {
   id: string;
   name: string;
+  firstname?: string;
+  lastname?: string;
   email: string;
   avatar: string;
   role?: 'admin' | 'client' | 'employee' | 'user';

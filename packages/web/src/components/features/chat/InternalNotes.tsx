@@ -7,7 +7,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from '@/components/primitives/Card';
+} from '@/components/primitives/ui/card';
 import { Save, Eye } from 'lucide-react';
 
 interface InternalNotesProps {

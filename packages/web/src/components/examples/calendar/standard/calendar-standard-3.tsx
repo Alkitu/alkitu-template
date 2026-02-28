@@ -1,9 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { Button } from "~/components/ui/button"
-import { Calendar } from "~/components/ui/calendar"
-import { ScrollArea } from "~/components/ui/scroll-area"
+import { Button } from "@/components/primitives/ui/button"
+import { Calendar } from "@/components/primitives/ui/calendar"
+import { ScrollArea } from "@/components/primitives/ui/scroll-area"
 
 const Example = () => {
   const [date, setDate] = useState<Date | undefined>(new Date())

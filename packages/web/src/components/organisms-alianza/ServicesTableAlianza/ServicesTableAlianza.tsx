@@ -17,7 +17,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/primitives/DropdownMenu';
+} from '@/components/primitives/ui/dropdown-menu';
 import { Button } from '@/components/primitives/ui/button';
 import { Heading } from '@/components/atoms-alianza/Typography';
 import { ServiceRequestLink } from '@/components/molecules-alianza/ServiceRequestLink';

@@ -22,7 +22,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
-} from '@/components/primitives/DropdownMenu';
+} from '@/components/primitives/ui/dropdown-menu';
 import { Badge } from '@/components/atoms-alianza/Badge';
 import { useGlobalTheme } from '@/hooks/useGlobalTheme';
 import type { ThemeSwitcherProps } from './ThemeSwitcher.types';

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { trpc } from '@/lib/trpc';
-import { Card } from '@/components/primitives/Card';
+import { Card } from '@/components/primitives/ui/card';
 import { Button } from '@/components/primitives/ui/button';
 import { MessageSquare, Send, Loader2 } from 'lucide-react';
 import { Textarea } from '@/components/primitives/ui/textarea';

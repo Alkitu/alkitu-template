@@ -4,11 +4,4 @@ export {
   AccordionItem,
   AccordionTrigger,
   AccordionContent,
-} from '@/components/primitives/Accordion';
-
-export type {
-  AccordionProps,
-  AccordionItemProps,
-  AccordionTriggerProps,
-  AccordionContentProps,
-} from '@/components/primitives/Accordion';
+} from '@/components/primitives/ui/accordion';

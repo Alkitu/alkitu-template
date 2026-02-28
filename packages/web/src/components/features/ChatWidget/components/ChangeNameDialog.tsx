@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/primitives/ui/button';
-import { Input } from '@/components/primitives/Input';
+import { Input } from '@/components/primitives/ui/input';
 import { Label } from '@/components/primitives/ui/label';
 import { X } from 'lucide-react';
 

@@ -30,7 +30,7 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-} from '@/components/primitives/Card';
+} from '@/components/primitives/ui/card';
 import { Badge } from '@/components/primitives/ui/badge';
 import { Button } from '@/components/molecules-alianza/Button';
 import dynamic from 'next/dynamic';

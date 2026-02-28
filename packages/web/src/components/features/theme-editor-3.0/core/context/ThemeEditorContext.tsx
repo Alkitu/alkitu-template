@@ -605,10 +605,10 @@ export function ThemeEditorProvider({
         name: themeToLoad.name + ' Brand',
         logos: { icon: null, horizontal: null, vertical: null },
       },
-      spacing: dbThemeData.spacing || {},
-      borders: dbThemeData.borders || {},
-      shadows: dbThemeData.shadows || {},
-      scroll: dbThemeData.scroll || {},
+      spacing: dbThemeData.spacing || DEFAULT_THEME.spacing,
+      borders: dbThemeData.borders || DEFAULT_THEME.borders,
+      shadows: dbThemeData.shadows || DEFAULT_THEME.shadows,
+      scroll: dbThemeData.scroll || DEFAULT_THEME.scroll,
       isDefault: themeToLoad.isDefault,
       isFavorite: themeToLoad.isFavorite,
     };
@@ -638,9 +638,7 @@ export function ThemeEditorProvider({
     };
     applyTypographyElements(typography);
     if (loadedTheme.spacing && Object.keys(loadedTheme.spacing).length > 0) {
-      applySpacingElements(
-        loadedTheme.spacing as unknown as Record<string, string>,
-      );
+      applySpacingElements(loadedTheme.spacing);
     }
     if (loadedTheme.shadows && Object.keys(loadedTheme.shadows).length > 0) {
       applyShadowElements(
@@ -692,6 +690,33 @@ export function ThemeEditorProvider({
       });
     }
   }, [state.baseTheme.scroll, state.themeMode]);
+
+  // Apply typography when it changes
+  useEffect(() => {
+    if (state.baseTheme.typography) {
+      const typography = {
+        ...DEFAULT_TYPOGRAPHY,
+        ...(state.baseTheme.typography as any),
+      };
+      applyTypographyElements(typography);
+    }
+  }, [state.baseTheme.typography]);
+
+  // Apply spacing when it changes
+  useEffect(() => {
+    if (state.baseTheme.spacing && Object.keys(state.baseTheme.spacing).length > 0) {
+      applySpacingElements(state.baseTheme.spacing);
+    }
+  }, [state.baseTheme.spacing]);
+
+  // Apply shadows when they change
+  useEffect(() => {
+    if (state.baseTheme.shadows && Object.keys(state.baseTheme.shadows).length > 0) {
+      applyShadowElements(
+        state.baseTheme.shadows as unknown as Record<string, string>,
+      );
+    }
+  }, [state.baseTheme.shadows]);
 
   // Apply CSS changes when undo/redo affects the base theme (for immediate visual feedback)
   useEffect(() => {

@@ -21,13 +21,13 @@ import {
 } from "@/components/primitives/ui/field"
 import {
   Button
-} from "@/components/primitives/Button"
+} from "@/components/primitives/ui/button"
 import {
   Checkbox
 } from "@/components/primitives/ui/checkbox"
 import {
   Input
-} from "@/components/primitives/Input"
+} from "@/components/primitives/ui/input"
 import {
   Slider
 } from "@/components/primitives/ui/slider"
@@ -43,7 +43,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue
-} from "@/components/primitives/Select"
+} from "@/components/primitives/ui/select"
 
 const formSchema = z.object({
   name_0479271598: z.unknown(),

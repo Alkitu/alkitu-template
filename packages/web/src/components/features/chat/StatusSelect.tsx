@@ -4,7 +4,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/primitives/Select';
+} from '@/components/primitives/ui/select';
 import { Label } from '@/components/primitives/ui/label';
 import { Badge } from '@/components/atoms-alianza/Badge';
 

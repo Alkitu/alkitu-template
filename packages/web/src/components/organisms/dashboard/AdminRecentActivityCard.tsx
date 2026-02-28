@@ -13,7 +13,7 @@
  * />
  */
 
-import { Card } from '@/components/primitives/Card';
+import { Card } from '@/components/primitives/ui/card';
 import { TrendingUp } from 'lucide-react';
 import { AdminRecentActivityCardProps } from './AdminRecentActivityCard.types';
 

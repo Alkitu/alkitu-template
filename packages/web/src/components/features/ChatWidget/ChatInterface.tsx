@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/primitives/ui/button';
-import { Input } from '@/components/primitives/Input';
+import { Input } from '@/components/primitives/ui/input';
 import { Send } from 'lucide-react';
 import { MessageBubble } from '../chat/MessageBubble';
 import { playNotificationSound } from './utils/notificationSounds';

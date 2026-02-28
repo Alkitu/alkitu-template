@@ -8,7 +8,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/primitives/Card';
+} from '@/components/primitives/ui/card';
 import { Button } from '@/components/molecules-alianza/Button';
 import { FormInput } from '@/components/molecules-alianza/FormInput';
 import { FormSelect } from '@/components/molecules-alianza/FormSelect';
@@ -36,7 +36,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/primitives/Dialog';
+} from '@/components/primitives/ui/dialog';
 import { useParams, useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { handleApiError } from '@/lib/trpc-error-handler';

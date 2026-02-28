@@ -6,7 +6,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/primitives/ui/button';
-import { Input } from '@/components/primitives/Input';
+import { Input } from '@/components/primitives/ui/input';
 import { Label } from '@/components/primitives/ui/label';
 import { Checkbox } from '@/components/primitives/ui/checkbox';
 import { useTranslations } from '@/context/TranslationsContext';

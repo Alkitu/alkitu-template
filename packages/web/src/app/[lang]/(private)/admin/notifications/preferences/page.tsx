@@ -13,7 +13,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/primitives/Card';
+} from '@/components/primitives/ui/card';
 import { Button } from '@/components/primitives/ui/button';
 import { Typography } from '@/components/atoms-alianza/Typography';
 import {
@@ -32,8 +32,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/primitives/Select';
-import { Input } from '@/components/primitives/Input';
+} from '@/components/primitives/ui/select';
+import { Input } from '@/components/primitives/ui/input';
 import { Separator } from '@/components/atoms-alianza/Separator';
 import { Badge } from '@/components/atoms-alianza/Badge';
 import { Checkbox } from '@/components/primitives/ui/checkbox';

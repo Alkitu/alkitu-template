@@ -20,7 +20,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/primitives/Card';
+} from '@/components/primitives/ui/card';
 import { User, Shield, Settings, MapPin } from 'lucide-react';
 import { useGlobalTheme } from '@/hooks/useGlobalTheme';
 import { applyThemePreference } from '@/hooks/use-sync-user-preferences';

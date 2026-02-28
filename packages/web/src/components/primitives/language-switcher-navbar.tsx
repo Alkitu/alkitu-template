@@ -7,7 +7,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/primitives/DropdownMenu';
+} from '@/components/primitives/ui/dropdown-menu';
 import { Globe } from 'lucide-react';
 
 export function LanguageSwitcherNavbar() {

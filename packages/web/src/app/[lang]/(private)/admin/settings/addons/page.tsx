@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { trpc } from '@/lib/trpc';
 import { AdminPageHeader } from '@/components/molecules-alianza/AdminPageHeader';
-import { Card } from '@/components/primitives/Card';
+import { Card } from '@/components/primitives/ui/card';
 import { Switch } from '@/components/primitives/ui/switch';
 import { Badge } from '@/components/atoms-alianza/Badge';
 import { Icon } from '@/components/atoms-alianza/Icon';

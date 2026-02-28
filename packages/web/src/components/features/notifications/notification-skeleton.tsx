@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, CardContent, CardHeader } from '@/components/primitives/Card';
+import { Card, CardContent, CardHeader } from '@/components/primitives/ui/card';
 import { Skeleton } from '@/components/primitives/ui/skeleton';
 
 interface NotificationSkeletonProps {

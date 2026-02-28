@@ -3,14 +3,17 @@ import type { ThemeColors } from '@/components/features/theme-editor-3.0/core/ty
 
 /**
  * Database Theme structure from Prisma
+ *
+ * JSON fields use `unknown` because Prisma's JsonValue type includes `null`.
+ * Callers cast these to ThemeColors etc. after null-checking.
  */
 interface DbTheme {
   id: string;
   name: string;
-  lightModeConfig: any; // ThemeColors
-  darkModeConfig: any; // ThemeColors
-  typography?: any;
-  themeData?: any; // Contains borders, spacing, shadows, etc.
+  lightModeConfig: unknown; // ThemeColors — Prisma JSON field
+  darkModeConfig: unknown; // ThemeColors — Prisma JSON field
+  typography?: unknown; // TypographyElements — Prisma JSON field
+  themeData?: unknown; // { borders, spacing, shadows, brand, scroll } — Prisma JSON field
   isDefault: boolean;
   isFavorite: boolean;
 }
@@ -159,15 +162,23 @@ function generateShadowCSS(themeData: any): string {
 
 /**
  * Generate inline CSS from spacing settings stored in themeData.spacing
+ * Handles ThemeSpacing structure: { spacing: string, scale?: Record<string, string> }
  */
 function generateSpacingCSS(themeData: any): string {
   const spacing = themeData?.spacing;
-  if (!spacing) return '';
+  if (!spacing?.spacing) return '';
 
-  return Object.entries(spacing)
-    .map(([key, value]) => `    --spacing-${key}: ${value};`)
-    .filter(Boolean)
-    .join('\n');
+  const properties: string[] = [`    --spacing: ${spacing.spacing};`];
+
+  if (spacing.scale && typeof spacing.scale === 'object') {
+    Object.entries(spacing.scale).forEach(([key, value]) => {
+      if (typeof value === 'string') {
+        properties.push(`    --spacing-${key}: ${value};`);
+      }
+    });
+  }
+
+  return properties.join('\n');
 }
 
 export function generateInlineThemeCSS(theme: DbTheme | null): string {
@@ -175,8 +186,8 @@ export function generateInlineThemeCSS(theme: DbTheme | null): string {
     return '';
   }
 
-  const lightColors = theme.lightModeConfig as ThemeColors;
-  const darkColors = theme.darkModeConfig as ThemeColors;
+  const lightColors = theme.lightModeConfig as unknown as ThemeColors;
+  const darkColors = theme.darkModeConfig as unknown as ThemeColors;
   // Use merged typography logic handled in generateTypographyCSS
   const typography = theme.typography;
 
@@ -224,8 +235,8 @@ export function generateCriticalThemeCSS(theme: DbTheme | null): string {
     return '';
   }
 
-  const lightColors = theme.lightModeConfig as ThemeColors;
-  const darkColors = theme.darkModeConfig as ThemeColors;
+  const lightColors = theme.lightModeConfig as unknown as ThemeColors;
+  const darkColors = theme.darkModeConfig as unknown as ThemeColors;
 
   if (!lightColors || !darkColors) {
     return '';

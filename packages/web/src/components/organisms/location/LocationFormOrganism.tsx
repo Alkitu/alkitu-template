@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/primitives/ui/button';
 import { LocationColorPicker } from '@/components/molecules/location';
-import { Input } from '@/components/primitives/Input';
+import { Input } from '@/components/primitives/ui/input';
 import { Label } from '@/components/primitives/ui/label';
 import { FormError } from '@/components/primitives/ui/form-error';
 import { FormSuccess } from '@/components/primitives/ui/form-success';

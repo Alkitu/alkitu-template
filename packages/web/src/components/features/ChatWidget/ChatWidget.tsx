@@ -12,7 +12,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from '@/components/primitives/Card';
+} from '@/components/primitives/ui/card';
 import { saveConversation } from './utils/conversationStorage';
 import { ConversationList } from './components/ConversationList';
 import { ChevronLeft, MessageCircle, X } from 'lucide-react';

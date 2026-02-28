@@ -4,7 +4,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/primitives/DropdownMenu';
+} from '@/components/primitives/ui/dropdown-menu';
 import { UserRole, UserStatus } from '@alkitu/shared';
 
 interface BulkActionsProps {

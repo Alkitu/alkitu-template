@@ -10,7 +10,7 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-} from '@/components/primitives/Card';
+} from '@/components/primitives/ui/card';
 import type { FeatureGridProps } from './FeatureGrid.types';
 
 export const FeatureGrid = React.forwardRef<HTMLElement, FeatureGridProps>(

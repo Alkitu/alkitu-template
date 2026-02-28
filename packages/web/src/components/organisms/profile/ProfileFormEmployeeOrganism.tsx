@@ -6,7 +6,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/primitives/ui/button';
-import { Input } from '@/components/primitives/Input';
+import { Input } from '@/components/primitives/ui/input';
 import { Label } from '@/components/primitives/ui/label';
 import { useTranslations } from '@/context/TranslationsContext';
 import { FormError } from '@/components/primitives/ui/form-error';

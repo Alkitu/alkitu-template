@@ -1,5 +1,5 @@
 // Theme Editor 3.0 - CSS Variables Management
-import { ThemeData, ThemeColors, ThemeBorders, OklchColor } from '../../../core/types/theme.types';
+import { ThemeData, ThemeColors, ThemeBorders, ThemeSpacing, OklchColor } from '../../../core/types/theme.types';
 import { CSS_VARIABLE_MAP } from '../../../core/types/color-sections.types';
 import { oklchToHex } from '../color/color-conversions';
 import { TypographyElements } from '../../../theme-editor/editor/typography/types';
@@ -192,14 +192,31 @@ export function applyBorderElements(borders: ThemeBorders): void {
 }
 
 /**
- * Applies spacing values to CSS root variables
+ * Applies spacing values to CSS root variables.
+ * Accepts either a ThemeSpacing object { spacing, scale } or a flat Record<string, string>.
  */
-export function applySpacingElements(spacing: Record<string, string>): void {
+export function applySpacingElements(spacing: ThemeSpacing | Record<string, string>): void {
   const root = document.documentElement;
 
-  // Apply each spacing value as CSS variables
+  // Handle ThemeSpacing structure: { spacing: string, scale?: Record<string, string> }
+  if ('spacing' in spacing && typeof (spacing as ThemeSpacing).spacing === 'string') {
+    const themeSpacing = spacing as ThemeSpacing;
+    root.style.setProperty('--spacing', themeSpacing.spacing);
+    if (themeSpacing.scale && typeof themeSpacing.scale === 'object') {
+      Object.entries(themeSpacing.scale).forEach(([key, value]) => {
+        if (typeof value === 'string') {
+          root.style.setProperty(`--spacing-${key}`, value);
+        }
+      });
+    }
+    return;
+  }
+
+  // Handle flat Record<string, string> (e.g., from SpacingEditor's currentScale)
   Object.entries(spacing).forEach(([spacingKey, value]) => {
-    root.style.setProperty(`--spacing-${spacingKey}`, value);
+    if (typeof value === 'string') {
+      root.style.setProperty(`--spacing-${spacingKey}`, value);
+    }
   });
 }
 

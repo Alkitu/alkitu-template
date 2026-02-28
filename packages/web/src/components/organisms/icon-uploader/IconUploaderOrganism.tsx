@@ -10,7 +10,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/components/primitives/Dialog';
+} from '@/components/primitives/ui/dialog';
 import type { IconUploaderOrganismProps } from './IconUploaderOrganism.types';
 
 /**

@@ -26,7 +26,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/primitives/Card';
+} from '@/components/primitives/ui/card';
 import { AlertCircle, Eye, Loader2 } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/primitives/ui/alert';
 import { PlaceholderPaletteMolecule } from '@/components/molecules/placeholder-palette';

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Input } from '@/components/primitives/Input';
+import { Input } from '@/components/primitives/ui/input';
 import { Button } from '@/components/primitives/ui/button';
 import {
   Select,
@@ -7,7 +7,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/primitives/Select';
+} from '@/components/primitives/ui/select';
 import {
   ConversationStatus,
   ConversationFilters as ChatFilters,

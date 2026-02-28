@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useTranslations } from '@/context/TranslationsContext';
 import { Typography } from '@/components/atoms-alianza/Typography';
-import { Card } from '@/components/primitives/Card';
+import { Card } from '@/components/primitives/ui/card';
 import { Badge } from '@/components/atoms-alianza/Badge';
 import { Icon } from '@/components/atoms-alianza/Icon';
 import { cn } from '@/lib/utils';

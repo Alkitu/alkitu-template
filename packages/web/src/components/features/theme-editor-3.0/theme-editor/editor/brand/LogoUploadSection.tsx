@@ -102,7 +102,8 @@ export function LogoUploadSection({
         updateCurrentModeConfig(primaryColor, false);
       }
     }
-  }, [state.currentTheme.colors?.primary?.hex, isDarkMode]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.currentTheme.colors?.primary?.hex, isDarkMode, logo, currentIsLinked]);
   const [colorPicker, setColorPicker] = useState<{
     isOpen: boolean;
     colorIndex: number;

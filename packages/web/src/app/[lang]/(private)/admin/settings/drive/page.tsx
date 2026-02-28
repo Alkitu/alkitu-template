@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { AdminPageHeader } from '@/components/molecules-alianza/AdminPageHeader';
-import { Card } from '@/components/primitives/Card';
+import { Card } from '@/components/primitives/ui/card';
 import { Button } from '@/components/primitives/ui/button';
 import { Input } from '@/components/primitives/ui/input';
 import { Label } from '@/components/primitives/ui/label';

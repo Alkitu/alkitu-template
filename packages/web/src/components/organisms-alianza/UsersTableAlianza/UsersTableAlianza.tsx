@@ -18,7 +18,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/primitives/DropdownMenu';
+} from '@/components/primitives/ui/dropdown-menu';
 import { Button } from '@/components/primitives/ui/button';
 import type { UserTableItem, UsersTableAlianzaProps } from './UsersTableAlianza.types';
 

@@ -10,17 +10,4 @@ export {
   SelectSeparator,
   SelectScrollUpButton,
   SelectScrollDownButton,
-} from '@/components/primitives/Select';
-
-export type {
-  SelectProps,
-  SelectGroupProps,
-  SelectValueProps,
-  SelectTriggerProps,
-  SelectContentProps,
-  SelectLabelProps,
-  SelectItemProps,
-  SelectSeparatorProps,
-  SelectScrollUpButtonProps,
-  SelectScrollDownButtonProps,
-} from '@/components/primitives/Select';
+} from '@/components/primitives/ui/select';

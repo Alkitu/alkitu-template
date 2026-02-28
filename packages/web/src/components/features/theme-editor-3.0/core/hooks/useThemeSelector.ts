@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { useThemeEditor } from '../context/ThemeEditorContext';
-import { DEFAULT_THEMES } from '../constants/default-themes';
+import { DEFAULT_THEME, DEFAULT_THEMES } from '../constants/default-themes';
 import { ThemeData } from '../types/theme.types';
 import { generateColorVariants } from '../../theme-editor/editor/brand/utils';
 import { trpc } from '@/lib/trpc';
@@ -52,21 +52,24 @@ export function useThemeSelector() {
     if (!dbThemes) return [];
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return (dbThemes as any[]).map((theme: any) => ({
-      id: theme.id,
-      name: theme.name,
-      description: theme.description || '',
-      lightColors: theme.lightModeConfig as any,
-      darkColors: theme.darkModeConfig as any,
-      typography: theme.typography as any,
-      brand: {},
-      spacing: {},
-      borders: {},
-      shadows: {},
-      scroll: {},
-      isDefault: theme.isDefault,
-      isFavorite: theme.isFavorite,
-    })) as ThemeData[];
+    return (dbThemes as any[]).map((theme: any) => {
+      const td = (theme.themeData as any) || {};
+      return {
+        id: theme.id,
+        name: theme.name,
+        description: theme.description || '',
+        lightColors: theme.lightModeConfig as any,
+        darkColors: theme.darkModeConfig as any,
+        typography: theme.typography as any,
+        brand: td.brand ?? DEFAULT_THEME.brand,
+        spacing: td.spacing ?? DEFAULT_THEME.spacing,
+        borders: td.borders ?? DEFAULT_THEME.borders,
+        shadows: td.shadows ?? DEFAULT_THEME.shadows,
+        scroll: td.scroll ?? DEFAULT_THEME.scroll,
+        isDefault: theme.isDefault,
+        isFavorite: theme.isFavorite,
+      };
+    }) as ThemeData[];
   }, [dbThemes]);
 
   // Combine saved themes with built-in themes (saved themes first)

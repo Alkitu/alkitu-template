@@ -37,7 +37,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/primitives/Select/Select";
+} from "@/components/primitives/ui/select";
 import { cn } from "@/lib/utils";
 import type { UserPaginationProps } from './UserPagination.types';
 

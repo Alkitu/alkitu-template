@@ -10,6 +10,8 @@ import { TypographyElement, TypographyElements } from './types';
 
 interface TypographySectionProps {
   className?: string;
+  initialTypography?: TypographyElements;
+  onTypographyChange?: (typography: TypographyElements) => void;
 }
 
 // Re-export for backward compatibility
@@ -61,10 +63,12 @@ const TYPOGRAPHY_CONFIG = [
 ];
 
 export function TypographySection({
-  className = ""
+  className = "",
+  initialTypography,
+  onTypographyChange
 }: TypographySectionProps) {
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['h1']));
-  const { typography, updateElement } = useTypographyState();
+  const { typography, updateElement } = useTypographyState({ initialTypography, onTypographyChange });
 
   const toggleSection = (sectionKey: string) => {
     const newExpanded = new Set(expandedSections);

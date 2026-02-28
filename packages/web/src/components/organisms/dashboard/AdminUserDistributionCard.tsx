@@ -16,7 +16,7 @@
  * />
  */
 
-import { Card } from '@/components/primitives/Card';
+import { Card } from '@/components/primitives/ui/card';
 import { Users } from 'lucide-react';
 import { AdminUserDistributionCardProps } from './AdminUserDistributionCard.types';
 

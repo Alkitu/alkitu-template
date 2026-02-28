@@ -8,7 +8,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/primitives/Card';
+} from '@/components/primitives/ui/card';
 import { Badge } from '@/components/atoms-alianza/Badge';
 import { Separator } from '@/components/atoms-alianza/Separator';
 import {

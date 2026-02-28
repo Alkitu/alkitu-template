@@ -15,7 +15,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/primitives/Card';
+} from '@/components/primitives/ui/card';
 import { Badge } from '@/components/atoms-alianza/Badge';
 import { Button } from '@/components/primitives/ui/button';
 import { Checkbox } from '@/components/primitives/ui/checkbox';
@@ -27,8 +27,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/primitives/Select';
-import { Input } from '@/components/primitives/Input';
+} from '@/components/primitives/ui/select';
+import { Input } from '@/components/primitives/ui/input';
 import {
   Popover,
   PopoverContent,

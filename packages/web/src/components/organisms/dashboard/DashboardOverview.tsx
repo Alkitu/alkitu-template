@@ -44,7 +44,7 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { Card } from '@/components/primitives/Card';
+import { Card } from '@/components/primitives/ui/card';
 import { StatCard } from '@/components/molecules-alianza/StatCard';
 import { QuickActionCard } from '@/components/molecules-alianza/QuickActionCard';
 import { Construction, Settings, Wrench } from 'lucide-react';

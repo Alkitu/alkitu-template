@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-} from '@/components/primitives/Card';
+} from '@/components/primitives/ui/card';
 import { Button } from '@/components/molecules-alianza/Button';
 import { FormInput } from '@/components/molecules-alianza/FormInput';
 import { FormSelect } from '@/components/molecules-alianza/FormSelect';

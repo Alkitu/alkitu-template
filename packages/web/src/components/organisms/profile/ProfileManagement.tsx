@@ -9,7 +9,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/primitives/ui/tabs';
 import { Button } from '@/components/primitives/ui/button';
-import { Input } from '@/components/primitives/Input';
+import { Input } from '@/components/primitives/ui/input';
 import { Label } from '@/components/primitives/ui/label';
 import { Switch } from '@/components/primitives/ui/switch';
 import { useTranslations } from '@/context/TranslationsContext';

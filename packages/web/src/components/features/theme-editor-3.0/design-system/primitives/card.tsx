@@ -6,13 +6,4 @@ export {
   CardTitle,
   CardDescription,
   CardContent,
-} from '@/components/primitives/Card';
-
-export type {
-  CardProps,
-  CardHeaderProps,
-  CardFooterProps,
-  CardTitleProps,
-  CardDescriptionProps,
-  CardContentProps,
-} from '@/components/primitives/Card';
+} from '@/components/primitives/ui/card';

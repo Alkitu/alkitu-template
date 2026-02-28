@@ -12,7 +12,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/primitives/Card';
+} from '@/components/primitives/ui/card';
 import type { UnauthorizedOrganismProps } from './UnauthorizedOrganism.types';
 
 /**

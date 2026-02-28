@@ -116,6 +116,11 @@ export function injectColorTokens(
 
 /**
  * Inject typography settings into CSS variables
+ *
+ * NOTE: This function is currently NOT called at runtime. The theme editor
+ * uses `applyTypographyElements()` from `theme-editor-3.0/lib/utils/css/css-variables.ts`
+ * for element-level typography (h1, h2, paragraph, etc.). This function generates
+ * component-specific variables (button, input, label) which are planned but not yet wired.
  */
 export function injectTypographyTokens(typography: ThemeTypography): void {
   const root = document.documentElement;
@@ -213,8 +218,11 @@ export function getAvailableVariables(category?: CSSVarCategory): string[] {
       'secondary', 'secondary-foreground', 'muted', 'muted-foreground',
       'accent', 'accent-foreground', 'destructive', 'destructive-foreground',
       'border', 'input', 'ring', 'success', 'success-foreground',
-      'warning', 'warning-foreground', 'info', 'info-foreground',
+      'warning', 'warning-foreground',
       'chart-1', 'chart-2', 'chart-3', 'chart-4', 'chart-5',
+      'sidebar', 'sidebar-foreground', 'sidebar-primary', 'sidebar-primary-foreground',
+      'sidebar-accent', 'sidebar-accent-foreground', 'sidebar-border', 'sidebar-ring',
+      'scrollbar-track', 'scrollbar-thumb',
     ],
     [CSS_VAR_CATEGORIES.RADIUS]: [
       'radius', 'radius-button', 'radius-input', 'radius-card',

@@ -7,7 +7,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/primitives/Card';
+} from '@/components/primitives/ui/card';
 import { Button } from '@/components/primitives/ui/button';
 import { Badge } from '@/components/atoms-alianza/Badge';
 import { Alert, AlertDescription } from '@/components/atoms-alianza/Alert';

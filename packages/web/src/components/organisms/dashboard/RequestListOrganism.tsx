@@ -16,8 +16,8 @@
  */
 
 import Link from 'next/link';
-import { Card } from '@/components/primitives/Card';
-import { Button } from '@/components/primitives/Button';
+import { Card } from '@/components/primitives/ui/card';
+import { Button } from '@/components/primitives/ui/button';
 import { RequestStatusBadgeMolecule } from '@/components/molecules/request';
 import { PriorityIcon } from '@/components/atoms-alianza/PriorityIcon';
 import { formatDate } from '@/lib/utils/date';

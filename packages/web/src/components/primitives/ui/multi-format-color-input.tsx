@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Input } from '@/components/primitives/Input';
+import { Input } from '@/components/primitives/ui/input';
 import { Button } from '@/components/primitives/ui/button';
 import { Label } from '@/components/primitives/ui/label';
 import {

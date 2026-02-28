@@ -5,7 +5,7 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
-} from '@/components/primitives/Tabs';
+} from '@/components/primitives/ui/tabs';
 import { Badge } from '@/components/atoms-alianza/Badge';
 import type { TabsAlianzaProps } from './TabsAlianza.types';
 

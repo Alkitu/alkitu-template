@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { CompactErrorBoundary } from './CompactErrorBoundary';
 import { useState } from 'react';
 import { Button } from '@/components/molecules-alianza/Button';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/primitives/Card';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/primitives/ui/card';
 
 /**
  * CompactErrorBoundary - Molecule Component

@@ -13,7 +13,7 @@ import {
   CardTitle,
   CardDescription,
   CardContent,
-} from '@/components/primitives/Card';
+} from '@/components/primitives/ui/card';
 import type { PricingCardProps } from './PricingCard.types';
 
 export const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(

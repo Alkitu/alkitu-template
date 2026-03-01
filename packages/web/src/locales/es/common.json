@@ -332,6 +332,28 @@
         "description": "Ver analíticas e informes de la aplicación"
       }
     },
+    "calendar": {
+      "title": "Calendario",
+      "description": "Gestiona eventos y citas del equipo",
+      "toolbar": {
+        "today": "Hoy",
+        "previous": "Anterior",
+        "next": "Siguiente",
+        "month": "Mes",
+        "week": "Semana",
+        "day": "Día",
+        "agenda": "Agenda"
+      },
+      "noEvents": "No hay eventos en este rango.",
+      "showMore": "+{count} más",
+      "filters": {
+        "all": "Todos",
+        "pending": "Pendientes",
+        "ongoing": "En Progreso",
+        "completed": "Completadas",
+        "cancelled": "Canceladas"
+      }
+    },
     "users": {
       "title": "Usuarios",
       "description": "Gestión de usuarios del sistema",
@@ -719,7 +741,8 @@
       "employeeDashboard": "Panel de Empleado",
       "analyticsOverview": "Resumen",
       "analyticsReports": "Reportes",
-      "media": "Gestor de Medios"
+      "media": "Gestor de Medios",
+      "calendar": "Calendario"
     },
     "projects": {
       "alkitu": "Plataforma Alkitu"

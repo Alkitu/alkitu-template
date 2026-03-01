@@ -236,6 +236,14 @@ const getTransformedData = (
           items: [],
         }] : []),
 
+        {
+          title: t?.('nav.calendar') || 'Calendario',
+          url: '/admin/calendar',
+          icon: Calendar,
+          section: 'management',
+          items: [],
+        },
+
         // COMUNICACIÓN SECTION
         // Support Chat - conditionally rendered based on feature flag
         ...(featureFlags?.supportChatEnabled !== false ? [{

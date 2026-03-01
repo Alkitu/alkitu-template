@@ -357,7 +357,8 @@
       "employeeDashboard": "Employee Dashboard",
       "analyticsOverview": "Overview",
       "analyticsReports": "Reports",
-      "media": "Media Manager"
+      "media": "Media Manager",
+      "calendar": "Calendar"
     },
     "projects": {
       "alkitu": "Alkitu Platform"
@@ -413,6 +414,28 @@
       "analytics": {
         "title": "Analytics",
         "description": "View application analytics and reports"
+      }
+    },
+    "calendar": {
+      "title": "Calendar",
+      "description": "Manage team events and appointments",
+      "toolbar": {
+        "today": "Today",
+        "previous": "Back",
+        "next": "Next",
+        "month": "Month",
+        "week": "Week",
+        "day": "Day",
+        "agenda": "Agenda"
+      },
+      "noEvents": "No events in this range.",
+      "showMore": "+{count} more",
+      "filters": {
+        "all": "All",
+        "pending": "Pending",
+        "ongoing": "In Progress",
+        "completed": "Completed",
+        "cancelled": "Cancelled"
       }
     },
     "users": {

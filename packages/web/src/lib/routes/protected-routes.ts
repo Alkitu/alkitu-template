@@ -131,6 +131,10 @@ export const PROTECTED_ROUTES: ProtectedRoute[] = [
     roles: [UserRole.ADMIN],
   },
   {
+    path: '/admin/calendar',
+    roles: [UserRole.ADMIN],
+  },
+  {
     path: '/admin',
     roles: [UserRole.ADMIN],
   },

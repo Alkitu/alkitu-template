@@ -253,7 +253,9 @@
       "subtitle": "Ayúdanos a conocerte mejor para personalizar tu experiencia",
       "phone": "Teléfono (opcional)",
       "company": "Empresa (opcional)",
-      "address": "Dirección (opcional)",
+      "locationSection": "Ubicación de trabajo",
+      "locationError": "Error al crear la ubicación",
+      "phoneRequired": "El número de teléfono es obligatorio para cuentas de redes sociales",
       "addContactPerson": "Agregar persona de contacto",
       "contactPersonInfo": "Información de contacto",
       "contactName": "Nombre",
@@ -1513,6 +1515,7 @@
       "info": "Información del Perfil",
       "security": "Seguridad",
       "preferences": "Preferencias",
+      "accounts": "Cuentas Conectadas",
       "locations": "Ubicaciones",
       "files": "Archivos"
     },
@@ -1520,6 +1523,7 @@
       "profileDescription": "Actualiza tu información personal y de contacto.",
       "securityDescription": "Cambia tu contraseña para mantener tu cuenta segura.",
       "preferencesDescription": "Personaliza el tema y el idioma de la interfaz.",
+      "accountsDescription": "Administra las cuentas de terceros vinculadas a tu perfil.",
       "locationsDescription": "Administra tus ubicaciones de trabajo para solicitudes de servicio.",
       "filesDescription": "Tus archivos almacenados en Google Drive."
     },
@@ -1595,6 +1599,20 @@
     },
     "avatar": {
       "selectorTitle": "Elegir avatar"
+    },
+    "accounts": {
+      "google": "Google",
+      "connected": "Conectada",
+      "notConnected": "No conectada",
+      "connect": "Conectar",
+      "disconnect": "Desconectar",
+      "disconnectConfirmTitle": "¿Desconectar cuenta?",
+      "disconnectConfirmDescription": "Ya no podrás iniciar sesión con este proveedor. Puedes reconectarlo después.",
+      "disconnectSuccess": "Cuenta desconectada exitosamente",
+      "connectSuccess": "Cuenta conectada exitosamente",
+      "cannotDisconnect": "No puedes desconectar tu único método de acceso. Establece una contraseña primero.",
+      "error": "Error al actualizar las cuentas conectadas",
+      "cancel": "Cancelar"
     }
   },
   "locations": {

@@ -15,7 +15,6 @@ export interface ContactPersonData {
 export interface OnboardingFormData {
   phone?: string;
   company?: string;
-  address?: string;
   contactPerson?: ContactPersonData;
 }
 
@@ -26,5 +25,7 @@ export interface OnboardingFormOrganismProps {
   onComplete?: () => void;
   /** Callback when user skips onboarding */
   onSkip?: () => void;
+  /** Whether the user logged in via OAuth (Google, etc.) - makes phone required */
+  isOAuthUser?: boolean;
 }
 

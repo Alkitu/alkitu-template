@@ -5,6 +5,7 @@ import {
   WelcomeEmailData,
   PasswordResetEmailData,
   EmailVerificationData,
+  LoginCodeEmailData,
 } from './email-templates';
 import { PrismaService } from '../prisma.service';
 import { EmailRendererService } from './services/email-renderer.service';
@@ -325,6 +326,53 @@ export class EmailService {
         error instanceof Error ? error.message : 'Unknown error';
       this.logger.error(
         `Error al generar email de verificación: ${errorMessage}`,
+      );
+      return { success: false, error: errorMessage };
+    }
+  }
+
+  /**
+   * Envía email con código de acceso (login code)
+   * DB-first: tries to load template from DB, falls back to hard-coded HTML
+   */
+  async sendLoginCodeEmail(
+    userData: LoginCodeEmailData,
+    locale?: string,
+  ): Promise<{ success: boolean; messageId?: string; error?: string }> {
+    try {
+      // Try DB template first
+      const dbResult = await this.renderTemplateFromDB(
+        'login_code',
+        {
+          'user.firstname': userData.userName,
+          'loginCode': userData.code,
+        },
+        locale,
+      );
+
+      const idempotencyKey = `login-code-${userData.userEmail}-${Date.now()}`;
+
+      if (dbResult) {
+        return await this.sendEmail({
+          to: userData.userEmail,
+          subject: dbResult.subject,
+          html: dbResult.html,
+        }, idempotencyKey);
+      }
+
+      // Fallback to hard-coded template
+      const companyName = await this.resolveCompanyName();
+      const { html, subject } = EmailTemplates.getLoginCodeEmail(userData, companyName);
+      return await this.sendEmail({
+        to: userData.userEmail,
+        subject,
+        html,
+      }, idempotencyKey);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error(
+        `Error al generar email de código de acceso: ${errorMessage}`,
       );
       return { success: false, error: errorMessage };
     }

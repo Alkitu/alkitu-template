@@ -3,6 +3,7 @@ import { escapeHtml } from './email.service';
 /**
  * Tipos para los datos de los templates de email
  */
+
 export interface WelcomeEmailData {
   userName: string;
   userEmail: string;
@@ -23,6 +24,12 @@ export interface EmailVerificationData {
   userName: string;
   verificationUrl: string;
   supportUrl: string;
+}
+
+export interface LoginCodeEmailData {
+  userName: string;
+  userEmail: string;
+  code: string;
 }
 
 /**
@@ -392,6 +399,68 @@ export class EmailTemplates {
     return {
       html,
       subject: title,
+    };
+  }
+
+  /**
+   * Genera el email con código de acceso (login code)
+   */
+  static getLoginCodeEmail(
+    data: LoginCodeEmailData,
+    companyName: string = process.env.APP_NAME || 'Alkitu',
+  ): {
+    html: string;
+    subject: string;
+  } {
+    const safeUserName = escapeHtml(data.userName);
+    const safeCode = escapeHtml(data.code);
+
+    const html = `
+      <!DOCTYPE html>
+      <html lang="es">
+      <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Código de acceso - ${companyName}</title>
+      </head>
+      <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f6f9fc;">
+          <div style="display: none; max-height: 0; overflow: hidden; mso-hide: all;">Tu código de acceso a ${companyName}. Expira en 10 minutos.</div>
+          <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e2e8f0;">
+              <div style="background-color: #667eea; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 20px; text-align: center;">
+                  <h1 style="color: #ffffff; margin: 0; font-size: 24px;">Código de Acceso</h1>
+              </div>
+              <div style="padding: 40px 30px; text-align: center;">
+                  <p style="color: #4a5568; font-size: 16px; margin-bottom: 20px;">
+                      Hola <strong>${safeUserName}</strong>,
+                  </p>
+                  <p style="color: #4a5568; font-size: 16px; margin-bottom: 30px;">
+                      Tu código de acceso es:
+                  </p>
+                  <div style="background-color: #f7fafc; border: 2px solid #e2e8f0; border-radius: 8px; padding: 20px; margin: 0 auto 30px; max-width: 250px;">
+                      <span style="font-family: 'Courier New', monospace; font-size: 36px; font-weight: bold; letter-spacing: 8px; color: #2d3748;">${safeCode}</span>
+                  </div>
+                  <div style="background-color: #fffbeb; border: 1px solid #fcd34d; border-radius: 8px; padding: 16px; margin: 0 0 25px 0;">
+                      <p style="color: #92400e; font-size: 14px; margin: 0;">
+                          Este código expira en 10 minutos.
+                      </p>
+                  </div>
+                  <p style="color: #718096; font-size: 14px;">
+                      Si no solicitaste este código, puedes ignorar este email.
+                  </p>
+              </div>
+              <div style="background-color: #f7fafc; padding: 20px; text-align: center;">
+                  <p style="color: #718096; font-size: 12px; margin: 0;">
+                      &copy; ${new Date().getFullYear()} ${companyName}
+                  </p>
+              </div>
+          </div>
+      </body>
+      </html>
+    `;
+
+    return {
+      html,
+      subject: `Tu código de acceso a ${companyName}`,
     };
   }
 }

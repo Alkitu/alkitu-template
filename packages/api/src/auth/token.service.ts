@@ -129,9 +129,93 @@ export class TokenService {
     });
   }
 
+  // ── Login Code Methods ──────────────────────────────────────────
+
   /**
-   * Limpia tokens expirados (para ejecutar periódicamente)
+   * Crea un código de login de 6 dígitos
    */
+  async createLoginCode(email: string): Promise<string> {
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const expires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutos
+
+    // Eliminar códigos existentes para este email
+    await this.prisma.loginCode.deleteMany({
+      where: { email },
+    });
+
+    // Crear nuevo código
+    await this.prisma.loginCode.create({
+      data: {
+        email,
+        code,
+        expires,
+      },
+    });
+
+    return code;
+  }
+
+  /**
+   * Valida un código de login
+   */
+  async validateLoginCode(
+    email: string,
+    code: string,
+  ): Promise<{ valid: boolean }> {
+    const record = await this.prisma.loginCode.findFirst({
+      where: { email, code },
+    });
+
+    if (!record) {
+      return { valid: false };
+    }
+
+    if (record.expires < new Date()) {
+      // Código expirado, eliminar
+      await this.prisma.loginCode.delete({
+        where: { id: record.id },
+      });
+      return { valid: false };
+    }
+
+    if (record.attempts >= 5) {
+      // Demasiados intentos, eliminar
+      await this.prisma.loginCode.delete({
+        where: { id: record.id },
+      });
+      return { valid: false };
+    }
+
+    return { valid: true };
+  }
+
+  /**
+   * Incrementa el contador de intentos fallidos para un login code
+   */
+  async incrementLoginCodeAttempts(email: string): Promise<void> {
+    const record = await this.prisma.loginCode.findFirst({
+      where: { email },
+    });
+
+    if (record) {
+      await this.prisma.loginCode.update({
+        where: { id: record.id },
+        data: { attempts: { increment: 1 } },
+      });
+    }
+  }
+
+  /**
+   * Consume un código de login (elimina todos los códigos del email)
+   */
+  async consumeLoginCode(email: string): Promise<void> {
+    await this.prisma.loginCode.deleteMany({
+      where: { email },
+    });
+  }
+
+  // ── Refresh Token Methods ─────────────────────────────────────
+
   /**
    * Crea un token de refresco
    */
@@ -234,10 +318,11 @@ export class TokenService {
     passwordResetTokens: number;
     verificationTokens: number;
     refreshTokens: number;
+    loginCodes: number;
   }> {
     const now = new Date();
 
-    const [passwordResetCount, verificationCount, refreshCount] =
+    const [passwordResetCount, verificationCount, refreshCount, loginCodeCount] =
       await Promise.all([
         this.prisma.passwordResetToken.deleteMany({
           where: { expires: { lt: now } },
@@ -248,12 +333,16 @@ export class TokenService {
         this.prisma.refreshToken.deleteMany({
           where: { expires: { lt: now } },
         }),
+        this.prisma.loginCode.deleteMany({
+          where: { expires: { lt: now } },
+        }),
       ]);
 
     return {
       passwordResetTokens: passwordResetCount.count,
       verificationTokens: verificationCount.count,
       refreshTokens: refreshCount.count,
+      loginCodes: loginCodeCount.count,
     };
   }
 }

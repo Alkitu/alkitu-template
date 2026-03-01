@@ -1,7 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useRef } from 'react';
 import { Button } from '@/components/primitives/ui/button';
 import { Input } from '@/components/primitives/ui/input';
 import { Label } from '@/components/primitives/ui/label';
@@ -10,6 +9,8 @@ import { useTranslations } from '@/context/TranslationsContext';
 import { FormError } from '@/components/primitives/ui/form-error';
 import { FormSuccess } from '@/components/primitives/ui/form-success';
 import { useAuthRedirect } from '@/hooks/useAuthRedirect';
+import { LocationFormOrganism } from '@/components/organisms/location';
+import type { LocationFormImperativeHandle } from '@/components/organisms/location';
 import type {
   OnboardingFormOrganismProps,
   OnboardingFormData,
@@ -22,13 +23,12 @@ import type {
  * Follows Atomic Design principles as a self-contained feature component.
  *
  * Features:
- * - Optional fields for additional profile information
- * - Phone number input
+ * - Phone number input (required for OAuth users)
  * - Company name input
- * - Address textarea
+ * - Structured work location form (LocationFormOrganism in onboarding mode)
  * - Contact person details (optional, toggled)
  * - Skip option (user can complete later)
- * - API integration with /api/auth/complete-profile
+ * - API integration: creates WorkLocation + completes profile
  * - Loading states
  * - Error and success messages
  * - Automatic redirect to dashboard after completion
@@ -39,26 +39,18 @@ import type {
  * 3. User can either complete additional fields or skip
  * 4. On completion, profileComplete flag is set to true
  * 5. User is redirected to dashboard
- *
- * @example
- * ```tsx
- * <OnboardingFormOrganism
- *   onComplete={() => console.log('Profile completed')}
- *   onSkip={() => console.log('Skipped onboarding')}
- * />
- * ```
  */
 export const OnboardingFormOrganism = React.forwardRef<
   HTMLFormElement,
   OnboardingFormOrganismProps
->(({ className, onComplete, onSkip }, ref) => {
+>(({ className, onComplete, onSkip, isOAuthUser = false }, ref) => {
   const t = useTranslations();
-  const router = useRouter();
   const { redirectAfterLogin } = useAuthRedirect();
+  const locationFormRef = useRef<LocationFormImperativeHandle>(null);
+
   const [formData, setFormData] = useState<OnboardingFormData>({
     phone: '',
     company: '',
-    address: '',
   });
   const [includeContactPerson, setIncludeContactPerson] = useState(false);
   const [contactPersonData, setContactPersonData] = useState({
@@ -86,15 +78,29 @@ export const OnboardingFormOrganism = React.forwardRef<
     setSuccess('');
 
     try {
+      // Validate phone for OAuth users
+      if (isOAuthUser && !formData.phone?.trim()) {
+        setError(t('auth.onboarding.phoneRequired'));
+        setIsLoading(false);
+        return;
+      }
+
+      // Step 1: Create WorkLocation via LocationFormOrganism
+      const location = await locationFormRef.current?.submit();
+      if (!location) {
+        setError(t('auth.onboarding.locationError'));
+        setIsLoading(false);
+        return;
+      }
+
+      // Step 2: Complete profile with remaining data
       const submitData: OnboardingFormData = {
         phone: formData.phone || undefined,
         company: formData.company || undefined,
-        address: formData.address || undefined,
       };
 
       // Include contact person if toggled
       if (includeContactPerson) {
-        // Validate contact person fields if included
         if (
           !contactPersonData.name ||
           !contactPersonData.lastname ||
@@ -108,7 +114,6 @@ export const OnboardingFormOrganism = React.forwardRef<
         submitData.contactPerson = contactPersonData;
       }
 
-      // Call API to complete profile
       const response = await fetch('/api/auth/complete-profile', {
         method: 'POST',
         headers: {
@@ -126,7 +131,6 @@ export const OnboardingFormOrganism = React.forwardRef<
 
       setSuccess(t('auth.onboarding.success'));
 
-      // Call onComplete callback if provided
       if (onComplete) {
         onComplete();
       }
@@ -167,7 +171,6 @@ export const OnboardingFormOrganism = React.forwardRef<
         throw new Error(data.message || 'Failed to complete profile');
       }
 
-      // Call onSkip callback if provided
       if (onSkip) {
         onSkip();
       }
@@ -204,15 +207,25 @@ export const OnboardingFormOrganism = React.forwardRef<
       >
         {/* Phone */}
         <div className="space-y-2">
-          <Label htmlFor="phone">{t('auth.onboarding.phone')}</Label>
+          <Label htmlFor="phone">
+            {isOAuthUser
+              ? t('auth.onboarding.phone').replace(' (optional)', '').replace(' (opcional)', '')
+              : t('auth.onboarding.phone')}
+          </Label>
           <Input
             id="phone"
             type="tel"
             value={formData.phone}
             onChange={(e) => handleChange('phone', e.target.value)}
-            placeholder="+34 123 456 789"
+            placeholder="+1 123 456 7890"
             disabled={isLoading}
+            required={isOAuthUser}
           />
+          {isOAuthUser && (
+            <p className="text-xs text-muted-foreground">
+              {t('auth.onboarding.phoneRequired')}
+            </p>
+          )}
         </div>
 
         {/* Company */}
@@ -228,17 +241,16 @@ export const OnboardingFormOrganism = React.forwardRef<
           />
         </div>
 
-        {/* Address */}
+        {/* Work Location Section */}
         <div className="space-y-2">
-          <Label htmlFor="address">{t('auth.onboarding.address')}</Label>
-          <textarea
-            id="address"
-            value={formData.address}
-            onChange={(e) => handleChange('address', e.target.value)}
-            rows={3}
-            className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground disabled:opacity-50"
-            placeholder="Calle Principal 123, Ciudad"
+          <div className="text-sm font-medium">
+            {t('auth.onboarding.locationSection')}
+          </div>
+          <LocationFormOrganism
+            ref={locationFormRef}
+            mode="onboarding"
             disabled={isLoading}
+            showCancel={false}
           />
         </div>
 
@@ -312,7 +324,7 @@ export const OnboardingFormOrganism = React.forwardRef<
                   onChange={(e) =>
                     handleContactPersonChange('phone', e.target.value)
                   }
-                  placeholder="+34 987 654 321"
+                  placeholder="+1 987 654 321"
                   disabled={isLoading}
                   required={includeContactPerson}
                 />
@@ -366,4 +378,3 @@ export const OnboardingFormOrganism = React.forwardRef<
 OnboardingFormOrganism.displayName = 'OnboardingFormOrganism';
 
 export default OnboardingFormOrganism;
-

@@ -13,7 +13,10 @@ import { Button } from '@/components/molecules-alianza/Button';
 import { FormInput } from '@/components/molecules-alianza/FormInput';
 import { FormSelect } from '@/components/molecules-alianza/FormSelect';
 import { FormTextarea } from '@/components/molecules-alianza/FormTextarea';
-import { TabsAlianza, TabItem } from '@/components/molecules-alianza/TabsAlianza';
+import {
+  TabsAlianza,
+  TabItem,
+} from '@/components/molecules-alianza/TabsAlianza';
 import { Chip } from '@/components/atoms-alianza/Chip';
 import { Toggle } from '@/components/atoms-alianza/Toggle';
 import { Label } from '@/components/primitives/ui/label';
@@ -146,12 +149,15 @@ const UserDetailPage = ({
   const resetPasswordMutation = trpc.user.resetUserPassword.useMutation();
   const bulkUpdateStatusMutation = trpc.user.bulkUpdateStatus.useMutation();
   const bulkDeleteUsersMutation = trpc.user.bulkDeleteUsers.useMutation();
-  const adminChangePasswordMutation = trpc.user.adminChangePassword.useMutation();
+  const adminChangePasswordMutation =
+    trpc.user.adminChangePassword.useMutation();
   const sendMessageMutation = trpc.user.sendMessageToUser.useMutation();
   const anonymizeUserMutation = trpc.user.anonymizeUser.useMutation();
-  const createImpersonationTokenMutation = trpc.user.createImpersonationToken.useMutation();
+  const createImpersonationTokenMutation =
+    trpc.user.createImpersonationToken.useMutation();
   const ensureFoldersMutation = trpc.user.ensureUserDriveFolders.useMutation();
-  const updateDriveFolderMutation = trpc.user.updateUserDriveFolderId.useMutation();
+  const updateDriveFolderMutation =
+    trpc.user.updateUserDriveFolderId.useMutation();
 
   React.useEffect(() => {
     if (user) {
@@ -255,7 +261,11 @@ const UserDetailPage = ({
         userIds: [user.id],
         isActive: !isSuspending, // if we are suspending, isActive should be false. If activating, true.
       });
-      toast.success(isSuspending ? 'User suspended successfully' : 'User activated successfully');
+      toast.success(
+        isSuspending
+          ? 'User suspended successfully'
+          : 'User activated successfully',
+      );
       setShowSuspendDialog(false);
       refetch();
     } catch (error) {
@@ -307,7 +317,9 @@ const UserDetailPage = ({
   const initializeFilesTab = useCallback(async () => {
     if (!user || filesTabInitialized) return;
     try {
-      const folders = await ensureFoldersMutation.mutateAsync({ userId: user.id });
+      const folders = await ensureFoldersMutation.mutateAsync({
+        userId: user.id,
+      });
       setDriveFolderIdInput(folders.driveFolderId);
       setFilesTabInitialized(true);
       refetch();
@@ -346,9 +358,24 @@ const UserDetailPage = ({
     }
   };
 
-  if (isLoading) return <div className="flex items-center justify-center h-64"><div className="text-lg">Loading user details...</div></div>;
-  if (isError) return <div className="flex items-center justify-center h-64"><div className="text-lg text-red-500">Error loading user details.</div></div>;
-  if (!user) return <div className="flex items-center justify-center h-64"><div className="text-lg">User not found.</div></div>;
+  if (isLoading)
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-lg">Loading user details...</div>
+      </div>
+    );
+  if (isError)
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-lg text-red-500">Error loading user details.</div>
+      </div>
+    );
+  if (!user)
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-lg">User not found.</div>
+      </div>
+    );
 
   const passwordValidation = validatePassword(newPassword);
 
@@ -363,7 +390,7 @@ const UserDetailPage = ({
               <User className="h-5 w-5" />
               Profile Information
             </CardTitle>
-            <CardDescription className='mb-4'>
+            <CardDescription className="mb-4">
               Manage user&apos;s basic information and role assignment.
             </CardDescription>
           </CardHeader>
@@ -377,16 +404,17 @@ const UserDetailPage = ({
                   </span>
                 </div>
                 <p className="text-sm text-blue-600">
-                  Make your changes and click &quot;Save Changes&quot; to update the user&apos;s profile.
+                  Make your changes and click &quot;Save Changes&quot; to update
+                  the user&apos;s profile.
                 </p>
                 <div className="flex gap-2 mt-3">
-                  <Button onClick={handleSaveProfile} iconLeft={<Save className="h-4 w-4" />}>
+                  <Button
+                    onClick={handleSaveProfile}
+                    iconLeft={<Save className="h-4 w-4" />}
+                  >
                     Save Changes
                   </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => setEditMode(false)}
-                  >
+                  <Button variant="outline" onClick={() => setEditMode(false)}>
                     Cancel
                   </Button>
                 </div>
@@ -405,27 +433,38 @@ const UserDetailPage = ({
                 label="First Name"
                 id="name"
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
                 disabled={!editMode}
               />
               <FormInput
                 label="Last Name"
                 id="lastName"
                 value={formData.lastName}
-                onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, lastName: e.target.value })
+                }
                 disabled={!editMode}
               />
               <FormInput
                 label="Contact Number"
                 id="phone"
                 value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, phone: e.target.value })
+                }
                 disabled={!editMode}
               />
               <FormSelect
                 label="Role"
                 value={formData.role}
-                onValueChange={(value) => setFormData({ ...formData, role: value as keyof typeof UserRole })}
+                onValueChange={(value) =>
+                  setFormData({
+                    ...formData,
+                    role: value as keyof typeof UserRole,
+                  })
+                }
                 disabled={!editMode}
                 options={[
                   { value: 'ADMIN', label: 'Admin' },
@@ -435,7 +474,9 @@ const UserDetailPage = ({
                 ]}
               />
               <div className="flex flex-col gap-[3px] items-start w-full">
-                <label className="body-sm text-base-foreground-b w-full">Account Status</label>
+                <label className="body-sm text-base-foreground-b w-full">
+                  Account Status
+                </label>
                 <div className="flex items-center gap-2 h-[var(--input-height)]">
                   <Chip variant={user.terms ? 'solid' : 'destructive'}>
                     {user.terms ? 'Active' : 'Inactive'}
@@ -449,13 +490,22 @@ const UserDetailPage = ({
 
             {/* Tags Section */}
             <div className="space-y-2">
-              <label className="body-sm text-base-foreground-b w-full">Tags</label>
+              <label className="body-sm text-base-foreground-b w-full">
+                Tags
+              </label>
               <div className="flex flex-wrap gap-2 mb-2">
                 {tags.map((tag, index) => (
-                  <Chip key={index} variant="outline" className="flex items-center gap-1">
+                  <Chip
+                    key={index}
+                    variant="outline"
+                    className="flex items-center gap-1"
+                  >
                     {tag}
                     {editMode && (
-                      <button onClick={() => removeTag(tag)} className="ml-1 hover:bg-gray-200 rounded-full p-1">
+                      <button
+                        onClick={() => removeTag(tag)}
+                        className="ml-1 hover:bg-gray-200 rounded-full p-1"
+                      >
                         <Minus className="h-3 w-3" />
                       </button>
                     )}
@@ -471,13 +521,18 @@ const UserDetailPage = ({
                     onChange={(e) => setNewTag(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && addTag()}
                   />
-                  <Button onClick={addTag} iconOnly iconLeft={<Plus className="h-4 w-4" />} className="mt-6" />
+                  <Button
+                    onClick={addTag}
+                    iconOnly
+                    iconLeft={<Plus className="h-4 w-4" />}
+                    className="mt-6"
+                  />
                 </div>
               )}
             </div>
           </CardContent>
         </Card>
-      )
+      ),
     },
     {
       value: 'security',
@@ -489,7 +544,7 @@ const UserDetailPage = ({
               <Shield className="h-5 w-5" />
               Security & Authentication
             </CardTitle>
-            <CardDescription className='mb-4'>
+            <CardDescription className="mb-4">
               Manage user&apos;s password and authentication settings.
             </CardDescription>
           </CardHeader>
@@ -498,11 +553,19 @@ const UserDetailPage = ({
               <div className="flex items-center justify-between p-4 border rounded-lg">
                 <div>
                   <h4 className="font-medium">Change Password</h4>
-                  <p className="text-sm text-gray-600">Update user&apos;s password with validation</p>
+                  <p className="text-sm text-gray-600">
+                    Update user&apos;s password with validation
+                  </p>
                 </div>
-                <Dialog open={showPasswordDialog} onOpenChange={setShowPasswordDialog}>
+                <Dialog
+                  open={showPasswordDialog}
+                  onOpenChange={setShowPasswordDialog}
+                >
                   <DialogTrigger asChild>
-                    <Button variant="outline" iconLeft={<Key className="h-4 w-4" />}>
+                    <Button
+                      variant="outline"
+                      iconLeft={<Key className="h-4 w-4" />}
+                    >
                       Change Password
                     </Button>
                   </DialogTrigger>
@@ -510,7 +573,8 @@ const UserDetailPage = ({
                     <DialogHeader>
                       <DialogTitle>Change Password</DialogTitle>
                       <DialogDescription>
-                        Set a new password for {user.email}. Password must meet security requirements.
+                        Set a new password for {user.email}. Password must meet
+                        security requirements.
                       </DialogDescription>
                     </DialogHeader>
                     <div className="space-y-4">
@@ -528,7 +592,13 @@ const UserDetailPage = ({
                               variant="nude"
                               size="sm"
                               iconOnly
-                              iconLeft={showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                              iconLeft={
+                                showPassword ? (
+                                  <EyeOff className="h-4 w-4" />
+                                ) : (
+                                  <Eye className="h-4 w-4" />
+                                )
+                              }
                               onClick={() => setShowPassword(!showPassword)}
                             />
                           }
@@ -540,14 +610,35 @@ const UserDetailPage = ({
                         <Label>Password Requirements</Label>
                         <div className="space-y-1 text-sm">
                           {[
-                            { valid: passwordValidation.minLength, text: 'At least 8 characters' },
-                            { valid: passwordValidation.maxLength, text: 'Maximum 50 characters' },
-                            { valid: passwordValidation.hasUppercase, text: 'One uppercase letter' },
-                            { valid: passwordValidation.hasLowercase, text: 'One lowercase letter' },
-                            { valid: passwordValidation.hasNumber, text: 'One number' },
-                            { valid: passwordValidation.hasSpecialChar, text: 'One special character' },
+                            {
+                              valid: passwordValidation.minLength,
+                              text: 'At least 8 characters',
+                            },
+                            {
+                              valid: passwordValidation.maxLength,
+                              text: 'Maximum 50 characters',
+                            },
+                            {
+                              valid: passwordValidation.hasUppercase,
+                              text: 'One uppercase letter',
+                            },
+                            {
+                              valid: passwordValidation.hasLowercase,
+                              text: 'One lowercase letter',
+                            },
+                            {
+                              valid: passwordValidation.hasNumber,
+                              text: 'One number',
+                            },
+                            {
+                              valid: passwordValidation.hasSpecialChar,
+                              text: 'One special character',
+                            },
                           ].map((req, i) => (
-                            <div key={i} className={`flex items-center gap-2 ${req.valid ? 'text-green-600' : 'text-gray-500'}`}>
+                            <div
+                              key={i}
+                              className={`flex items-center gap-2 ${req.valid ? 'text-green-600' : 'text-gray-500'}`}
+                            >
                               {req.valid ? '✓' : '○'} {req.text}
                             </div>
                           ))}
@@ -555,17 +646,30 @@ const UserDetailPage = ({
                       </div>
 
                       <div className="flex items-center space-x-2">
-                        <Toggle checked={forceLogout} onCheckedChange={setForceLogout} />
+                        <Toggle
+                          checked={forceLogout}
+                          onCheckedChange={setForceLogout}
+                        />
                         <Label>Force logout from all devices</Label>
                       </div>
                     </div>
                     <DialogFooter>
-                      <Button variant="outline" onClick={() => setShowPasswordDialog(false)}>Cancel</Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => setShowPasswordDialog(false)}
+                      >
+                        Cancel
+                      </Button>
                       <Button
                         onClick={handleChangePassword}
-                        disabled={!isPasswordValid(passwordValidation) || adminChangePasswordMutation.isPending}
+                        disabled={
+                          !isPasswordValid(passwordValidation) ||
+                          adminChangePasswordMutation.isPending
+                        }
                       >
-                        {adminChangePasswordMutation.isPending ? 'Changing...' : 'Change Password'}
+                        {adminChangePasswordMutation.isPending
+                          ? 'Changing...'
+                          : 'Change Password'}
                       </Button>
                     </DialogFooter>
                   </DialogContent>
@@ -575,7 +679,9 @@ const UserDetailPage = ({
               <div className="flex items-center justify-between p-4 border rounded-lg">
                 <div>
                   <h4 className="font-medium">Reset Password</h4>
-                  <p className="text-sm text-gray-600">Send password reset email to user</p>
+                  <p className="text-sm text-gray-600">
+                    Send password reset email to user
+                  </p>
                 </div>
                 <Button
                   variant="outline"
@@ -583,14 +689,18 @@ const UserDetailPage = ({
                   disabled={resetPasswordMutation.isPending}
                   iconLeft={<Mail className="h-4 w-4" />}
                 >
-                  {resetPasswordMutation.isPending ? 'Sending...' : 'Send Reset Email'}
+                  {resetPasswordMutation.isPending
+                    ? 'Sending...'
+                    : 'Send Reset Email'}
                 </Button>
               </div>
 
               <div className="flex items-center justify-between p-4 border rounded-lg">
                 <div>
                   <h4 className="font-medium">Two-Factor Authentication</h4>
-                  <p className="text-sm text-gray-600">Status: {user.isTwoFactorEnabled ? 'Enabled' : 'Disabled'}</p>
+                  <p className="text-sm text-gray-600">
+                    Status: {user.isTwoFactorEnabled ? 'Enabled' : 'Disabled'}
+                  </p>
                 </div>
                 <Chip variant={user.isTwoFactorEnabled ? 'solid' : 'outline'}>
                   {user.isTwoFactorEnabled ? 'Enabled' : 'Disabled'}
@@ -599,7 +709,7 @@ const UserDetailPage = ({
             </div>
           </CardContent>
         </Card>
-      )
+      ),
     },
     {
       value: 'products',
@@ -611,7 +721,7 @@ const UserDetailPage = ({
               <Package className="h-5 w-5" />
               Product Enrollment
             </CardTitle>
-            <CardDescription className='mb-4'>
+            <CardDescription className="mb-4">
               Manage user&apos;s product subscriptions and progress.
             </CardDescription>
           </CardHeader>
@@ -619,13 +729,17 @@ const UserDetailPage = ({
             <div className="text-center py-8 text-gray-500">
               <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <p>Product management features coming soon</p>
-              <Button variant="outline" className="mt-4" iconLeft={<Plus className="h-4 w-4" />}>
+              <Button
+                variant="outline"
+                className="mt-4"
+                iconLeft={<Plus className="h-4 w-4" />}
+              >
                 Enroll in Product
               </Button>
             </div>
           </CardContent>
         </Card>
-      )
+      ),
     },
     {
       value: 'groups',
@@ -637,7 +751,7 @@ const UserDetailPage = ({
               <Users className="h-5 w-5" />
               Group Membership
             </CardTitle>
-            <CardDescription className='mb-4'>
+            <CardDescription className="mb-4">
               Manage user&apos;s group memberships and access levels.
             </CardDescription>
           </CardHeader>
@@ -645,34 +759,43 @@ const UserDetailPage = ({
             <div className="text-center py-8 text-gray-500">
               <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <p>Group management features coming soon</p>
-              <Button variant="outline" className="mt-4" iconLeft={<Plus className="h-4 w-4" />}>
+              <Button
+                variant="outline"
+                className="mt-4"
+                iconLeft={<Plus className="h-4 w-4" />}
+              >
                 Add to Group
               </Button>
             </div>
           </CardContent>
         </Card>
-      )
+      ),
     },
-    ...(user.role === 'CLIENT' ? [{
-      value: 'locations',
-      label: 'Locations',
-      content: (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <MapPin className="h-5 w-5" />
-              Work Locations
-            </CardTitle>
-            <CardDescription className='mb-4'>
-              Manage this client&apos;s work locations for service requests.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <LocationListOrganism userId={user.id} showAddButton />
-          </CardContent>
-        </Card>
-      )
-    }] : []),
+    ...(user.role === 'CLIENT'
+      ? [
+          {
+            value: 'locations',
+            label: 'Locations',
+            content: (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <MapPin className="h-5 w-5" />
+                    Work Locations
+                  </CardTitle>
+                  <CardDescription className="mb-4">
+                    Manage this client&apos;s work locations for service
+                    requests.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <LocationListOrganism userId={user.id} showAddButton />
+                </CardContent>
+              </Card>
+            ),
+          },
+        ]
+      : []),
     {
       value: 'files',
       label: 'Files',
@@ -683,7 +806,7 @@ const UserDetailPage = ({
               <FolderOpen className="h-5 w-5" />
               Google Drive Files
             </CardTitle>
-            <CardDescription className='mb-4'>
+            <CardDescription className="mb-4">
               Browse and manage this user&apos;s files in Google Drive.
             </CardDescription>
           </CardHeader>
@@ -704,11 +827,15 @@ const UserDetailPage = ({
                 onClick={handleUpdateDriveFolderId}
                 disabled={
                   updateDriveFolderMutation.isPending ||
-                  driveFolderIdInput.trim() === ((user as any).driveFolderId || '')
+                  driveFolderIdInput.trim() ===
+                    ((user as any).driveFolderId || '')
                 }
-                iconLeft={updateDriveFolderMutation.isPending
-                  ? <Loader2 className="h-4 w-4 animate-spin" />
-                  : <Check className="h-4 w-4" />
+                iconLeft={
+                  updateDriveFolderMutation.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Check className="h-4 w-4" />
+                  )
                 }
               >
                 Save
@@ -717,7 +844,10 @@ const UserDetailPage = ({
 
             {/* Media Browser */}
             {(user as any).driveFolderId ? (
-              <div className="border rounded-lg overflow-hidden p-4" style={{ minHeight: '500px' }}>
+              <div
+                className="border rounded-lg overflow-hidden p-4"
+                style={{ minHeight: '500px' }}
+              >
                 <MediaBrowser
                   rootFolderId={(user as any).driveFolderId}
                   rootFolderName={user.email}
@@ -726,22 +856,29 @@ const UserDetailPage = ({
             ) : (
               <div className="text-center py-12 text-muted-foreground">
                 <FolderOpen className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p className="mb-4">This user doesn&apos;t have Drive folders yet.</p>
+                <p className="mb-4">
+                  This user doesn&apos;t have Drive folders yet.
+                </p>
                 <Button
                   onClick={initializeFilesTab}
                   disabled={ensureFoldersMutation.isPending}
-                  iconLeft={ensureFoldersMutation.isPending
-                    ? <Loader2 className="h-4 w-4 animate-spin" />
-                    : <Plus className="h-4 w-4" />
+                  iconLeft={
+                    ensureFoldersMutation.isPending ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Plus className="h-4 w-4" />
+                    )
                   }
                 >
-                  {ensureFoldersMutation.isPending ? 'Creating folders...' : 'Initialize Drive Folders'}
+                  {ensureFoldersMutation.isPending
+                    ? 'Creating folders...'
+                    : 'Initialize Drive Folders'}
                 </Button>
               </div>
             )}
           </CardContent>
         </Card>
-      )
+      ),
     },
     {
       value: 'actions',
@@ -753,22 +890,32 @@ const UserDetailPage = ({
               <AlertTriangle className="h-5 w-5" />
               User Actions
             </CardTitle>
-            <CardDescription className='mb-4'>
+            <CardDescription className="mb-4">
               Perform administrative actions on this user account.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {/* Communication Actions */}
             <div className="space-y-4">
-              <h4 className="font-medium text-sm text-gray-700 uppercase tracking-wide">Communication</h4>
+              <h4 className="font-medium text-sm text-gray-700 uppercase tracking-wide">
+                Communication
+              </h4>
               <div className="flex items-center justify-between p-4 border rounded-lg">
                 <div>
                   <h5 className="font-medium">Send Message</h5>
-                  <p className="text-sm text-gray-600">Send a direct message to this user</p>
+                  <p className="text-sm text-gray-600">
+                    Send a direct message to this user
+                  </p>
                 </div>
-                <Dialog open={showMessageDialog} onOpenChange={setShowMessageDialog}>
+                <Dialog
+                  open={showMessageDialog}
+                  onOpenChange={setShowMessageDialog}
+                >
                   <DialogTrigger asChild>
-                    <Button variant="outline" iconLeft={<MessageSquare className="h-4 w-4" />}>
+                    <Button
+                      variant="outline"
+                      iconLeft={<MessageSquare className="h-4 w-4" />}
+                    >
                       Send Message
                     </Button>
                   </DialogTrigger>
@@ -789,9 +936,21 @@ const UserDetailPage = ({
                       />
                     </div>
                     <DialogFooter>
-                      <Button variant="outline" onClick={() => setShowMessageDialog(false)}>Cancel</Button>
-                      <Button onClick={handleSendMessage} disabled={!messageText.trim() || sendMessageMutation.isPending}>
-                        {sendMessageMutation.isPending ? 'Sending...' : 'Send Message'}
+                      <Button
+                        variant="outline"
+                        onClick={() => setShowMessageDialog(false)}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        onClick={handleSendMessage}
+                        disabled={
+                          !messageText.trim() || sendMessageMutation.isPending
+                        }
+                      >
+                        {sendMessageMutation.isPending
+                          ? 'Sending...'
+                          : 'Send Message'}
                       </Button>
                     </DialogFooter>
                   </DialogContent>
@@ -801,61 +960,109 @@ const UserDetailPage = ({
 
             {/* Administrative Actions */}
             <div className="space-y-4">
-              <h4 className="font-medium text-sm text-gray-700 uppercase tracking-wide">Administrative</h4>
-                              <div className="flex items-center justify-between p-4 border rounded-lg opacity-60">
-                                <div>
-                                  <h5 className="font-medium">Login as User (Coming Soon)</h5>
-                                  <p className="text-sm text-gray-600">Impersonate this user (requires confirmation)</p>
-                                </div>
-                                <Button variant="outline" iconLeft={<LogIn className="h-4 w-4" />} disabled>
-                                  Impersonate
-                                </Button>
-                              </div>            </div>
+              <h4 className="font-medium text-sm text-gray-700 uppercase tracking-wide">
+                Administrative
+              </h4>
+              <div className="flex items-center justify-between p-4 border rounded-lg opacity-60">
+                <div>
+                  <h5 className="font-medium">Login as User (Coming Soon)</h5>
+                  <p className="text-sm text-gray-600">
+                    Impersonate this user (requires confirmation)
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  iconLeft={<LogIn className="h-4 w-4" />}
+                  disabled
+                >
+                  Impersonate
+                </Button>
+              </div>{' '}
+            </div>
 
             {/* Dangerous Actions */}
             <div className="space-y-4">
-              <h4 className="font-medium text-sm text-red-700 uppercase tracking-wide">Dangerous Actions</h4>
-              <div className={cn(
-                "flex items-center justify-between p-4 border rounded-lg",
-                user.status === 'SUSPENDED' ? "border-green-200 bg-green-50" : "border-orange-200 bg-orange-50"
-              )}>
+              <h4 className="font-medium text-sm text-red-700 uppercase tracking-wide">
+                Dangerous Actions
+              </h4>
+              <div
+                className={cn(
+                  'flex items-center justify-between p-4 border rounded-lg',
+                  user.status === 'SUSPENDED'
+                    ? 'border-green-200 bg-green-50'
+                    : 'border-orange-200 bg-orange-50',
+                )}
+              >
                 <div>
-                  <h5 className={cn("font-medium", user.status === 'SUSPENDED' ? "text-green-800" : "text-orange-800")}>
-                    {user.status === 'SUSPENDED' ? "Activate User" : "Suspend User"}
+                  <h5
+                    className={cn(
+                      'font-medium',
+                      user.status === 'SUSPENDED'
+                        ? 'text-green-800'
+                        : 'text-orange-800',
+                    )}
+                  >
+                    {user.status === 'SUSPENDED'
+                      ? 'Activate User'
+                      : 'Suspend User'}
                   </h5>
-                  <p className={cn("text-sm", user.status === 'SUSPENDED' ? "text-green-600" : "text-orange-600")}>
-                    {user.status === 'SUSPENDED' ? "Restore user access to the platform" : "Temporarily disable user access"}
+                  <p
+                    className={cn(
+                      'text-sm',
+                      user.status === 'SUSPENDED'
+                        ? 'text-green-600'
+                        : 'text-orange-600',
+                    )}
+                  >
+                    {user.status === 'SUSPENDED'
+                      ? 'Restore user access to the platform'
+                      : 'Temporarily disable user access'}
                   </p>
                 </div>
-                <AlertDialog open={showSuspendDialog} onOpenChange={setShowSuspendDialog}>
+                <AlertDialog
+                  open={showSuspendDialog}
+                  onOpenChange={setShowSuspendDialog}
+                >
                   <AlertDialogTrigger asChild>
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       className={cn(
-                        "border-current",
-                        user.status === 'SUSPENDED' ? "text-green-700 hover:bg-green-100" : "text-orange-700 hover:bg-orange-100"
-                      )} 
-                      iconLeft={user.status === 'SUSPENDED' ? <LogIn className="h-4 w-4" /> : <UserX className="h-4 w-4" />}
+                        'border-current',
+                        user.status === 'SUSPENDED'
+                          ? 'text-green-700 hover:bg-green-100'
+                          : 'text-orange-700 hover:bg-orange-100',
+                      )}
+                      iconLeft={
+                        user.status === 'SUSPENDED' ? (
+                          <LogIn className="h-4 w-4" />
+                        ) : (
+                          <UserX className="h-4 w-4" />
+                        )
+                      }
                     >
-                      {user.status === 'SUSPENDED' ? "Activate" : "Suspend"}
+                      {user.status === 'SUSPENDED' ? 'Activate' : 'Suspend'}
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
                       <AlertDialogTitle>
-                        {user.status === 'SUSPENDED' ? "Activate User Account" : "Suspend User Account"}
+                        {user.status === 'SUSPENDED'
+                          ? 'Activate User Account'
+                          : 'Suspend User Account'}
                       </AlertDialogTitle>
                       <AlertDialogDescription>
-                        {user.status === 'SUSPENDED' 
+                        {user.status === 'SUSPENDED'
                           ? `This will restore ${user.email}'s account access. They will be able to log in again.`
-                          : `This will temporarily suspend ${user.email}'s account. They will not be able to log in until the suspension is lifted.`
-                        }
+                          : `This will temporarily suspend ${user.email}'s account. They will not be able to log in until the suspension is lifted.`}
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
                       <AlertDialogAction onClick={handleSuspendUser}>
-                        Confirm {user.status === 'SUSPENDED' ? "Activation" : "Suspension"}
+                        Confirm{' '}
+                        {user.status === 'SUSPENDED'
+                          ? 'Activation'
+                          : 'Suspension'}
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
@@ -865,11 +1072,19 @@ const UserDetailPage = ({
               <div className="flex items-center justify-between p-4 border border-red-200 rounded-lg bg-red-50">
                 <div>
                   <h5 className="font-medium text-red-800">Anonymize User</h5>
-                  <p className="text-sm text-red-600">Remove personal data (irreversible)</p>
+                  <p className="text-sm text-red-600">
+                    Remove personal data (irreversible)
+                  </p>
                 </div>
-                <AlertDialog open={showAnonymizeDialog} onOpenChange={setShowAnonymizeDialog}>
+                <AlertDialog
+                  open={showAnonymizeDialog}
+                  onOpenChange={setShowAnonymizeDialog}
+                >
                   <AlertDialogTrigger asChild>
-                    <Button variant="destructive" iconLeft={<AlertTriangle className="h-4 w-4" />}>
+                    <Button
+                      variant="destructive"
+                      iconLeft={<AlertTriangle className="h-4 w-4" />}
+                    >
                       Anonymize
                     </Button>
                   </AlertDialogTrigger>
@@ -877,12 +1092,15 @@ const UserDetailPage = ({
                     <AlertDialogHeader>
                       <AlertDialogTitle>Anonymize User Data</AlertDialogTitle>
                       <AlertDialogDescription>
-                        This will permanently remove all personal identifiable information for {user.email}.
+                        This will permanently remove all personal identifiable
+                        information for {user.email}.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={handleAnonymizeUser}>Confirm Anonymization</AlertDialogAction>
+                      <AlertDialogAction onClick={handleAnonymizeUser}>
+                        Confirm Anonymization
+                      </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
@@ -891,11 +1109,19 @@ const UserDetailPage = ({
               <div className="flex items-center justify-between p-4 border border-red-300 rounded-lg bg-red-100">
                 <div>
                   <h5 className="font-medium text-red-900">Delete User</h5>
-                  <p className="text-sm text-red-700">Permanently delete user account (irreversible)</p>
+                  <p className="text-sm text-red-700">
+                    Permanently delete user account (irreversible)
+                  </p>
                 </div>
-                <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+                <AlertDialog
+                  open={showDeleteDialog}
+                  onOpenChange={setShowDeleteDialog}
+                >
                   <AlertDialogTrigger asChild>
-                    <Button variant="destructive" iconLeft={<Trash2 className="h-4 w-4" />}>
+                    <Button
+                      variant="destructive"
+                      iconLeft={<Trash2 className="h-4 w-4" />}
+                    >
                       Delete
                     </Button>
                   </AlertDialogTrigger>
@@ -903,12 +1129,15 @@ const UserDetailPage = ({
                     <AlertDialogHeader>
                       <AlertDialogTitle>Delete User Account</AlertDialogTitle>
                       <AlertDialogDescription>
-                        This will permanently delete {user.email}&apos;s account.
+                        This will permanently delete {user.email}&apos;s
+                        account.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={handleDeleteUser}>Confirm Deletion</AlertDialogAction>
+                      <AlertDialogAction onClick={handleDeleteUser}>
+                        Confirm Deletion
+                      </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
@@ -916,8 +1145,8 @@ const UserDetailPage = ({
             </div>
           </CardContent>
         </Card>
-      )
-    }
+      ),
+    },
   ];
 
   return (
@@ -930,7 +1159,17 @@ const UserDetailPage = ({
         actions={
           <>
             <div className="flex gap-2">
-              <Chip variant={user.role === 'ADMIN' ? 'destructive' : user.role === 'EMPLOYEE' ? 'solid' : 'outline'}>{user.role}</Chip>
+              <Chip
+                variant={
+                  user.role === 'ADMIN'
+                    ? 'destructive'
+                    : user.role === 'EMPLOYEE'
+                      ? 'solid'
+                      : 'outline'
+                }
+              >
+                {user.role}
+              </Chip>
               {user.status === 'SUSPENDED' && (
                 <Chip variant="destructive">SUSPENDED</Chip>
               )}

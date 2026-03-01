@@ -43,6 +43,16 @@ model PasswordResetToken {
   expires DateTime
 }
 
+model LoginCode {
+  id       String   @id @default(auto()) @map("_id") @db.ObjectId
+  email    String
+  code     String
+  expires  DateTime
+  attempts Int      @default(0)
+
+  @@index([email])
+}
+
 enum ResourceType {
   USER
   ADMIN_PANEL

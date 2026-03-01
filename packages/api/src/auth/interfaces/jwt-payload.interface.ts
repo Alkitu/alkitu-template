@@ -33,4 +33,7 @@ export interface JwtPayload {
 
   /** Session active state - true if currently logged in */
   isActive: boolean;
+
+  /** Authentication provider ('local', 'google', etc.) */
+  provider: string;
 }

@@ -10,6 +10,7 @@ export interface VerifiedJWTPayload extends JoseJWTPayload {
   status?: string;
   profileComplete?: boolean;
   emailVerified?: boolean;
+  provider?: string;
 }
 
 /**

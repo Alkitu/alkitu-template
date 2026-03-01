@@ -32,6 +32,7 @@ const TEMPLATE_FILE_MAP: Record<string, string> = {
   welcome: 'welcome',
   email_verification: 'email-verification',
   password_reset: 'password-reset',
+  login_code: 'login-code',
   // Notification templates
   notification_general: 'notification-general',
   // Request lifecycle templates
@@ -111,6 +112,16 @@ export function getDefaultTemplateDefinitions(): TemplateDefinition[] {
       subjects: {
         es: 'Restablecer tu contraseña de Alkitu',
         en: 'Reset your Alkitu password',
+      },
+      trigger: 'ON_AUTH_EVENT' as TemplateTrigger,
+      status: null,
+      active: true,
+    },
+    {
+      name: 'login_code',
+      subjects: {
+        es: 'Tu código de acceso a Alkitu',
+        en: 'Your Alkitu login code',
       },
       trigger: 'ON_AUTH_EVENT' as TemplateTrigger,
       status: null,

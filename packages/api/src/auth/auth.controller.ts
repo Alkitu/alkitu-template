@@ -1,6 +1,7 @@
 import {
   Controller,
   Post,
+  Get,
   UseGuards,
   Request,
   Body,
@@ -8,6 +9,7 @@ import {
   HttpStatus,
   Delete,
   Param,
+  Res,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -16,9 +18,11 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { Throttle, SkipThrottle } from '@nestjs/throttler';
+import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { GoogleAuthGuard } from './guards/google-auth.guard';
 import { RolesGuard } from './guards/roles.guard';
 import { Roles } from './guards/roles.decorator';
 import { UserRole } from '@prisma/client';
@@ -29,6 +33,8 @@ import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { VerifyEmailDto } from './dto/verify-email.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { SendLoginCodeDto } from './dto/send-login-code.dto';
+import { VerifyLoginCodeDto } from './dto/verify-login-code.dto';
 import { TokenService } from './token.service';
 
 @ApiTags('auth')
@@ -203,6 +209,28 @@ export class AuthController {
     return this.authService.forgotPassword(forgotPasswordDto.email);
   }
 
+  @Post('send-login-code')
+  @Throttle({ short: { limit: 5, ttl: 60000 } })
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Send login code to email' })
+  @ApiResponse({ status: 200, description: 'Login code sent' })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  @ApiResponse({ status: 429, description: 'Too many requests' })
+  async sendLoginCode(@Body() dto: SendLoginCodeDto) {
+    return this.authService.sendLoginCode(dto.email);
+  }
+
+  @Post('verify-login-code')
+  @Throttle({ short: { limit: 5, ttl: 60000 } })
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Verify login code and return tokens' })
+  @ApiResponse({ status: 200, description: 'Login successful' })
+  @ApiResponse({ status: 400, description: 'Invalid or expired code' })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  async verifyLoginCode(@Body() dto: VerifyLoginCodeDto) {
+    return this.authService.verifyLoginCode(dto.email, dto.code);
+  }
+
   @Post('reset-password')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Reset password with token' })
@@ -302,6 +330,64 @@ export class AuthController {
     @Body() onboardingDto: OnboardingDto,
   ) {
     return this.authService.completeProfile(req.user.userId, onboardingDto);
+  }
+
+  /**
+   * Google OAuth - Initiate flow
+   * Redirects user to Google consent screen
+   */
+  @Get('google')
+  @UseGuards(GoogleAuthGuard)
+  @SkipThrottle()
+  @ApiOperation({ summary: 'Initiate Google OAuth flow' })
+  @ApiResponse({ status: 302, description: 'Redirects to Google consent screen' })
+  async googleAuth() {
+    // Guard redirects to Google automatically
+  }
+
+  /**
+   * Google OAuth - Callback
+   * Handles the callback from Google after user authorization.
+   * Creates/links account, sets tokens, and redirects to frontend.
+   *
+   * Link mode: If oauth-link-mode cookie is set, the user initiated this
+   * from their profile to connect their Google account. The flow uses
+   * handleOAuthLogin (which auto-links by email match) but redirects
+   * differently so the frontend doesn't overwrite the existing session.
+   */
+  @Get('google/callback')
+  @UseGuards(GoogleAuthGuard)
+  @SkipThrottle()
+  @ApiOperation({ summary: 'Google OAuth callback' })
+  @ApiResponse({ status: 302, description: 'Redirects to frontend with tokens' })
+  async googleAuthCallback(@Request() req, @Res() res: Response) {
+    const oauthProfile = req.user;
+
+    // Detect link mode from API-domain cookie (set by GoogleAuthGuard)
+    const cookieHeader = (req.headers?.cookie as string) || '';
+    const isLinkMode = cookieHeader.includes('oauth-link-mode=true');
+
+    // Clear the link mode cookie
+    if (isLinkMode) {
+      res.clearCookie('oauth-link-mode', { path: '/' });
+    }
+
+    // handleOAuthLogin handles both cases:
+    // - Existing account: logs in the linked user
+    // - Existing user by email: creates Account link, then logs in
+    // - New user: creates user + account
+    const result = await this.authService.handleOAuthLogin(oauthProfile, 'google');
+
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    const callbackUrl = new URL('/api/auth/oauth-callback', frontendUrl);
+    callbackUrl.searchParams.set('access_token', result.access_token);
+    callbackUrl.searchParams.set('refresh_token', result.refresh_token);
+
+    if (isLinkMode) {
+      callbackUrl.searchParams.set('mode', 'link');
+    }
+
+    return res.redirect(callbackUrl.toString());
   }
 
   // Endpoints administrativos para gestión de sesiones

@@ -24,6 +24,23 @@ export interface LocationFormOrganismProps {
 
   /** Optional userId to create location on behalf of another user (admin use) */
   userId?: string;
+
+  /** Display mode: 'full' shows all fields, 'onboarding' shows only address fields */
+  mode?: 'full' | 'onboarding';
+
+  /** Whether the form inputs are disabled (parent controls loading state) */
+  disabled?: boolean;
+}
+
+/**
+ * Imperative handle for LocationFormOrganism (used by parent components)
+ * Allows programmatic validation and submission from outside the form.
+ */
+export interface LocationFormImperativeHandle {
+  /** Validate the form and return parsed data or null if invalid */
+  validate: () => CreateLocationInput | null;
+  /** Validate and submit the form via API, return created WorkLocation or null */
+  submit: () => Promise<WorkLocation | null>;
 }
 
 /**

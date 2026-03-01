@@ -24,13 +24,14 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/primitives/ui/card';
-import { User, Shield, Settings, MapPin, Pencil, FolderOpen, Loader2, Plus } from 'lucide-react';
+import { User, Shield, Settings, MapPin, Pencil, FolderOpen, Loader2, Plus, Link2 } from 'lucide-react';
 import { useGlobalTheme } from '@/hooks/useGlobalTheme';
 import { applyThemePreference } from '@/hooks/use-sync-user-preferences';
 import { UserAvatar } from '@/components/molecules-alianza/UserAvatar';
 import { IconSelector } from '@/components/primitives/ui/icon-selector';
 import { MediaBrowser } from '@/components/features/media-manager';
 import { Button } from '@/components/molecules-alianza/Button';
+import { ConnectedAccountsCard } from '@/components/molecules-alianza/ConnectedAccountsCard';
 import type { ProfilePageOrganismProps } from './ProfilePageOrganism.types';
 import type { UserPreferencesFormValues } from '@/components/molecules-alianza/UserPreferencesForm/UserPreferencesForm.types';
 
@@ -238,6 +239,27 @@ export const ProfilePageOrganism: React.FC<ProfilePageOrganismProps> = ({
       ),
     },
     {
+      value: 'accounts',
+      label: t('tabs.accounts'),
+      icon: <Link2 className="h-4 w-4" />,
+      content: (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Link2 className="h-5 w-5" />
+              {t('tabs.accounts')}
+            </CardTitle>
+            <CardDescription>
+              {t('sections.accountsDescription')}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ConnectedAccountsCard t={t} />
+          </CardContent>
+        </Card>
+      ),
+    },
+    {
       value: 'preferences',
       label: t('tabs.preferences'),
       icon: <Settings className="h-4 w-4" />,
@@ -312,7 +334,7 @@ export const ProfilePageOrganism: React.FC<ProfilePageOrganismProps> = ({
                 </CardHeader>
                 <CardContent>
                   {(user as any).driveFolderId ? (
-                    <div className="border rounded-lg overflow-hidden" style={{ minHeight: '500px' }}>
+                    <div className="border rounded-lg overflow-hidden p-4" style={{ minHeight: '500px' }}>
                       <MediaBrowser
                         rootFolderId={(user as any).driveFolderId}
                         rootFolderName={user.email}

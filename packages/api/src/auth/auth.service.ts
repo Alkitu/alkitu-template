@@ -10,6 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { EmailService } from '../email/email.service';
 import { TokenService } from './token.service';
+import { PrismaService } from '../prisma.service';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { OnboardingDto } from '../users/dto/onboarding.dto';
@@ -23,6 +24,7 @@ export class AuthService {
     private jwtService: JwtService,
     private emailService: EmailService,
     private tokenService: TokenService,
+    private prisma: PrismaService,
   ) { }
 
   async validateUser(email: string, password: string): Promise<any> {
@@ -58,6 +60,7 @@ export class AuthService {
       emailVerified: !!user.emailVerified,
       status: user.status,
       isActive: true,
+      provider: user.provider || 'local',
     };
 
     const accessToken = this.jwtService.sign(payload);
@@ -98,6 +101,12 @@ export class AuthService {
       throw new NotFoundException('User not found');
     }
 
+    // Determine provider from linked accounts (default to 'local')
+    const accounts = await this.prisma.account.findFirst({
+      where: { userId: user.id },
+      select: { provider: true },
+    });
+
     const payload: JwtPayload = {
       email: user.email,
       sub: user.id,
@@ -108,6 +117,7 @@ export class AuthService {
       emailVerified: !!user.emailVerified,
       status: user.status,
       isActive: user.isActive || false,
+      provider: accounts?.provider || 'local',
     };
 
     const newAccessToken = this.jwtService.sign(payload);
@@ -234,6 +244,94 @@ export class AuthService {
     }
 
     return { message: 'Contraseña actualizada exitosamente' };
+  }
+
+  async sendLoginCode(email: string): Promise<{ message: string }> {
+    // Verificar que el usuario existe
+    const user = await this.usersService.findByEmail(email);
+    if (!user) {
+      throw new NotFoundException('No se encontró un usuario con ese email');
+    }
+
+    // Generar código de login
+    const code = await this.tokenService.createLoginCode(email);
+
+    // Enviar email con código
+    try {
+      await this.emailService.sendLoginCodeEmail({
+        userName: `${user.firstname} ${user.lastname}`.trim() || 'Usuario',
+        userEmail: user.email,
+        code,
+      });
+
+      return {
+        message: 'Se ha enviado un código de acceso a tu email',
+      };
+    } catch {
+      throw new BadRequestException(
+        'Error enviando el email con el código de acceso',
+      );
+    }
+  }
+
+  async verifyLoginCode(
+    email: string,
+    code: string,
+  ): Promise<{ access_token: string; refresh_token: string; user: any }> {
+    // Validar código
+    const codeValidation = await this.tokenService.validateLoginCode(
+      email,
+      code,
+    );
+
+    if (!codeValidation.valid) {
+      // Incrementar intentos fallidos
+      await this.tokenService.incrementLoginCodeAttempts(email);
+      throw new BadRequestException('Código inválido o expirado');
+    }
+
+    // Buscar usuario
+    const user = await this.usersService.findByEmail(email);
+    if (!user) {
+      throw new NotFoundException('Usuario no encontrado');
+    }
+
+    // Consumir código
+    await this.tokenService.consumeLoginCode(email);
+
+    // Marcar sesión como activa
+    await this.usersService.updateSessionStatus(user.id, true);
+
+    // Generar tokens (mismo patrón que login())
+    const payload: JwtPayload = {
+      email: user.email,
+      sub: user.id,
+      role: user.role,
+      firstname: user.firstname || '',
+      lastname: user.lastname || '',
+      profileComplete: user.profileComplete || false,
+      emailVerified: !!user.emailVerified,
+      status: user.status,
+      isActive: true,
+      provider: 'login-code',
+    };
+
+    const accessToken = this.jwtService.sign(payload);
+    const refreshToken = await this.tokenService.createRefreshToken(user.id);
+
+    return {
+      access_token: accessToken,
+      refresh_token: refreshToken,
+      user: {
+        id: user.id,
+        email: user.email,
+        firstname: user.firstname,
+        lastname: user.lastname,
+        role: user.role,
+        profileComplete: user.profileComplete,
+        emailVerified: !!user.emailVerified,
+      },
+    };
   }
 
   async sendEmailVerification(email: string): Promise<{ message: string }> {
@@ -369,5 +467,188 @@ export class AuthService {
    */
   async logout(userId: string): Promise<void> {
     await this.usersService.updateSessionStatus(userId, false);
+  }
+
+  /**
+   * Handle OAuth login/registration flow
+   *
+   * 1. Look up existing Account by provider + providerAccountId
+   * 2. If found -> login the linked User
+   * 3. If not found -> find User by email
+   *    a. If User exists -> create Account and link
+   *    b. If no User -> create User (no password, emailVerified) + Account
+   * 4. Return tokens with provider in JWT
+   */
+  async handleOAuthLogin(
+    oauthProfile: {
+      providerAccountId: string;
+      email: string;
+      firstname: string;
+      lastname: string;
+      image?: string | null;
+      accessToken?: string;
+      refreshToken?: string;
+    },
+    provider: string,
+  ) {
+    // Step 1: Check for existing Account
+    const existingAccount = await this.prisma.account.findUnique({
+      where: {
+        provider_providerAccountId: {
+          provider,
+          providerAccountId: oauthProfile.providerAccountId,
+        },
+      },
+      include: { user: true },
+    });
+
+    if (existingAccount) {
+      // Account exists -> login the linked user
+      const user = existingAccount.user;
+      return this.loginWithProvider(user, provider);
+    }
+
+    // Step 2: No Account found, check if User exists by email
+    const existingUser = await this.usersService.findByEmail(oauthProfile.email);
+
+    if (existingUser) {
+      // User exists -> create Account and link
+      await this.prisma.account.create({
+        data: {
+          userId: existingUser.id,
+          type: 'oauth',
+          provider,
+          providerAccountId: oauthProfile.providerAccountId,
+          access_token: oauthProfile.accessToken,
+          refresh_token: oauthProfile.refreshToken,
+        },
+      });
+
+      return this.loginWithProvider(existingUser, provider);
+    }
+
+    // Step 3: Neither Account nor User exists -> create both
+    const newUser = await this.prisma.user.create({
+      data: {
+        email: oauthProfile.email,
+        password: null,
+        firstname: oauthProfile.firstname,
+        lastname: oauthProfile.lastname,
+        image: oauthProfile.image,
+        emailVerified: new Date(),
+        profileComplete: false,
+        status: 'PENDING',
+        role: 'CLIENT',
+        terms: true,
+        accounts: {
+          create: {
+            type: 'oauth',
+            provider,
+            providerAccountId: oauthProfile.providerAccountId,
+            access_token: oauthProfile.accessToken,
+            refresh_token: oauthProfile.refreshToken,
+          },
+        },
+      },
+    });
+
+    return this.loginWithProvider(newUser, provider);
+  }
+
+  /**
+   * Link an OAuth account to an existing user (from profile page)
+   *
+   * 1. Check if the provider+providerAccountId is already linked to a different user
+   * 2. Check if the user already has this provider linked
+   * 3. Create the Account record
+   */
+  async linkOAuthAccount(
+    userId: string,
+    oauthProfile: {
+      providerAccountId: string;
+      email: string;
+      firstname: string;
+      lastname: string;
+      image?: string | null;
+      accessToken?: string;
+      refreshToken?: string;
+    },
+    provider: string,
+  ) {
+    // Check if this provider account is already linked to another user
+    const existingAccount = await this.prisma.account.findUnique({
+      where: {
+        provider_providerAccountId: {
+          provider,
+          providerAccountId: oauthProfile.providerAccountId,
+        },
+      },
+    });
+
+    if (existingAccount && existingAccount.userId !== userId) {
+      throw new BadRequestException(
+        'This Google account is already linked to another user',
+      );
+    }
+
+    // Check if user already has this provider linked
+    const userAccount = await this.prisma.account.findFirst({
+      where: { userId, provider },
+    });
+
+    if (userAccount) {
+      throw new BadRequestException('Google account already connected');
+    }
+
+    // Create the link
+    await this.prisma.account.create({
+      data: {
+        userId,
+        type: 'oauth',
+        provider,
+        providerAccountId: oauthProfile.providerAccountId,
+        access_token: oauthProfile.accessToken,
+        refresh_token: oauthProfile.refreshToken,
+      },
+    });
+
+    return { success: true };
+  }
+
+  /**
+   * Generate tokens with provider information for OAuth users
+   */
+  private async loginWithProvider(user: any, provider: string) {
+    await this.usersService.updateSessionStatus(user.id, true);
+
+    const payload: JwtPayload = {
+      email: user.email,
+      sub: user.id,
+      role: user.role,
+      firstname: user.firstname || '',
+      lastname: user.lastname || '',
+      profileComplete: user.profileComplete || false,
+      emailVerified: !!user.emailVerified,
+      status: user.status,
+      isActive: true,
+      provider,
+    };
+
+    const accessToken = this.jwtService.sign(payload);
+    const refreshToken = await this.tokenService.createRefreshToken(user.id);
+
+    return {
+      access_token: accessToken,
+      refresh_token: refreshToken,
+      user: {
+        id: user.id,
+        email: user.email,
+        firstname: user.firstname,
+        lastname: user.lastname,
+        role: user.role,
+        profileComplete: user.profileComplete,
+        emailVerified: !!user.emailVerified,
+      },
+    };
   }
 }

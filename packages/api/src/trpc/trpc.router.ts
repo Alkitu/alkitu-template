@@ -16,6 +16,7 @@ import { createRequestRouter } from './routers/request.router';
 import { createServiceRouter } from './routers/service.router';
 import { createCategoryRouter } from './routers/category.router';
 import { createLocationRouter } from './routers/location.router';
+import { createAccountRouter } from './routers/account.router';
 import { createFeatureFlagsRouter } from './routers/feature-flags.router';
 import { createFormTemplateRouter } from './routers/form-template.router';
 import { t } from './trpc';
@@ -64,6 +65,7 @@ export class TrpcRouter {
       service: createServiceRouter(this.prisma, this.driveFolderService), // Service catalog router
       category: createCategoryRouter(this.prisma), // Category catalog router with stats
       location: createLocationRouter(this.prisma), // Work location router
+      account: createAccountRouter(this.prisma), // Connected accounts router (link/unlink OAuth)
       featureFlags: createFeatureFlagsRouter(this.featureFlagsService), // Feature flags router
       formTemplate: createFormTemplateRouter(this.prisma), // Form template router (Advanced Form Builder)
     });

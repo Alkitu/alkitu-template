@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useImperativeHandle } from 'react';
 import { Button } from '@/components/primitives/ui/button';
 import { LocationColorPicker } from '@/components/molecules/location';
 import { Input } from '@/components/primitives/ui/input';
@@ -14,6 +14,7 @@ import { CreateLocationSchema, US_STATE_CODES } from '@alkitu/shared';
 import type {
   LocationFormOrganismProps,
   LocationFormData,
+  LocationFormImperativeHandle,
 } from './LocationFormOrganism.types';
 
 /**
@@ -48,7 +49,7 @@ import type {
  * ```
  */
 export const LocationFormOrganism = React.forwardRef<
-  HTMLFormElement,
+  LocationFormImperativeHandle,
   LocationFormOrganismProps
 >(
   (
@@ -60,10 +61,13 @@ export const LocationFormOrganism = React.forwardRef<
       onCancel,
       showCancel = true,
       userId,
+      mode = 'full',
+      disabled: externalDisabled = false,
     },
     ref,
   ) => {
     const isEditMode = !!initialData;
+    const isOnboarding = mode === 'onboarding';
 
     const [formData, setFormData] = useState<LocationFormData>({
       street: initialData?.street || '',
@@ -103,6 +107,60 @@ export const LocationFormOrganism = React.forwardRef<
         });
       }
     }, [initialData]);
+
+    // Expose imperative methods for parent components (onboarding mode)
+    useImperativeHandle(ref, () => ({
+      validate: () => {
+        try {
+          const dataToValidate = isOnboarding
+            ? { ...formData, icon: 'MapPin', iconColor: '#000000', isDefault: true }
+            : formData;
+          return CreateLocationSchema.parse(dataToValidate);
+        } catch {
+          return null;
+        }
+      },
+      submit: async () => {
+        setError('');
+        setFieldErrors({});
+
+        try {
+          const dataToValidate = isOnboarding
+            ? { ...formData, icon: 'MapPin', iconColor: '#000000', isDefault: true }
+            : formData;
+          const validatedData = CreateLocationSchema.parse(dataToValidate);
+
+          const payload = userId ? { ...validatedData, userId } : validatedData;
+          const response = await fetch('/api/locations', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(data.error || 'Failed to save location');
+          }
+
+          return data;
+        } catch (err) {
+          if (err instanceof Error && err.name === 'ZodError') {
+            const zodError = err as any;
+            const errors: Record<string, string> = {};
+            zodError.errors?.forEach((e: any) => {
+              const field = e.path[0];
+              errors[field] = e.message;
+            });
+            setFieldErrors(errors);
+            setError('Please fix the validation errors below');
+          } else if (err instanceof Error) {
+            setError(err.message);
+          }
+          return null;
+        }
+      },
+    }));
 
     const handleInputChange = (
       e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -211,65 +269,79 @@ export const LocationFormOrganism = React.forwardRef<
       }
     };
 
+    const inputDisabled = isLoading || externalDisabled;
+
+    const formRef = React.useRef<HTMLFormElement>(null);
+
+    const Wrapper = isOnboarding ? 'div' : 'form';
+    const wrapperProps = isOnboarding
+      ? {}
+      : { ref: formRef, onSubmit: handleSubmit };
+
     return (
-      <form
-        ref={ref}
-        onSubmit={handleSubmit}
+      <Wrapper
         className={`space-y-6 ${className}`}
         data-testid="location-form"
+        {...wrapperProps as any}
       >
-        {/* Title */}
-        <div>
-          <h3 className="text-lg font-semibold">
-            {isEditMode ? 'Edit Location' : 'Add New Location'}
-          </h3>
-          <p className="text-sm text-gray-600">
-            {isEditMode
-              ? 'Update the work location details'
-              : 'Enter the work location details'}
-          </p>
-        </div>
+        {/* Title - hidden in onboarding mode */}
+        {!isOnboarding && (
+          <div>
+            <h3 className="text-lg font-semibold">
+              {isEditMode ? 'Edit Location' : 'Add New Location'}
+            </h3>
+            <p className="text-sm text-gray-600">
+              {isEditMode
+                ? 'Update the work location details'
+                : 'Enter the work location details'}
+            </p>
+          </div>
+        )}
 
-        {/* Icon Selector */}
-        <div className="flex items-center gap-4">
-          <LocationIconMolecule
-            icon={formData.icon}
-            iconColor={formData.iconColor}
-            size="lg"
-          />
-          <div className="flex-1 space-y-4">
-            <div className="flex gap-4">
-              <div className="flex-1">
-                <Label>Icon</Label>
-                <div className="mt-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full justify-start text-left font-normal"
-                    onClick={() => setIsIconSelectorOpen(true)}
-                  >
-                    {formData.icon === 'MapPin' ? 'Select Icon' : 'Change Icon'}
-                  </Button>
+        {/* Icon Selector - hidden in onboarding mode */}
+        {!isOnboarding && (
+          <>
+            <div className="flex items-center gap-4">
+              <LocationIconMolecule
+                icon={formData.icon}
+                iconColor={formData.iconColor}
+                size="lg"
+              />
+              <div className="flex-1 space-y-4">
+                <div className="flex gap-4">
+                  <div className="flex-1">
+                    <Label>Icon</Label>
+                    <div className="mt-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full justify-start text-left font-normal"
+                        onClick={() => setIsIconSelectorOpen(true)}
+                      >
+                        {formData.icon === 'MapPin' ? 'Select Icon' : 'Change Icon'}
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="flex-1">
+                    <LocationColorPicker
+                      color={formData.iconColor || '#000000'}
+                      onChange={(color: string) =>
+                        setFormData((prev) => ({ ...prev, iconColor: color }))
+                      }
+                      label="Icon Color"
+                    />
+                  </div>
                 </div>
               </div>
-              <div className="flex-1">
-                <LocationColorPicker
-                  color={formData.iconColor || '#000000'}
-                  onChange={(color: string) =>
-                    setFormData((prev) => ({ ...prev, iconColor: color }))
-                  }
-                  label="Icon Color"
-                />
-              </div>
             </div>
-          </div>
-        </div>
 
-        <IconSelector
-          open={isIconSelectorOpen}
-          onClose={() => setIsIconSelectorOpen(false)}
-          onSelect={handleIconSelect}
-        />
+            <IconSelector
+              open={isIconSelectorOpen}
+              onClose={() => setIsIconSelectorOpen(false)}
+              onSelect={handleIconSelect}
+            />
+          </>
+        )}
 
         {/* Error and Success Messages */}
         {error && <FormError message={error} />}
@@ -277,9 +349,11 @@ export const LocationFormOrganism = React.forwardRef<
 
         {/* Address Section */}
         <div className="space-y-4">
-          <div className="text-sm font-medium text-gray-700">
-            Address Information
-          </div>
+          {!isOnboarding && (
+            <div className="text-sm font-medium text-gray-700">
+              Address Information
+            </div>
+          )}
 
           {/* Street (Required) */}
           <div className="space-y-2">
@@ -292,7 +366,7 @@ export const LocationFormOrganism = React.forwardRef<
               value={formData.street}
               onChange={handleInputChange}
               placeholder="123 Main Street"
-              disabled={isLoading}
+              disabled={inputDisabled}
               required
               maxLength={200}
               aria-invalid={!!fieldErrors.street}
@@ -314,7 +388,7 @@ export const LocationFormOrganism = React.forwardRef<
               value={formData.building}
               onChange={handleInputChange}
               placeholder="Empire State Building (optional)"
-              disabled={isLoading}
+              disabled={inputDisabled}
               maxLength={100}
             />
           </div>
@@ -329,7 +403,7 @@ export const LocationFormOrganism = React.forwardRef<
                 value={formData.tower}
                 onChange={handleInputChange}
                 placeholder="Tower A (optional)"
-                disabled={isLoading}
+                disabled={inputDisabled}
                 maxLength={100}
               />
             </div>
@@ -342,7 +416,7 @@ export const LocationFormOrganism = React.forwardRef<
                 value={formData.floor}
                 onChange={handleInputChange}
                 placeholder="5th Floor (optional)"
-                disabled={isLoading}
+                disabled={inputDisabled}
                 maxLength={50}
               />
             </div>
@@ -357,7 +431,7 @@ export const LocationFormOrganism = React.forwardRef<
               value={formData.unit}
               onChange={handleInputChange}
               placeholder="Suite 500 (optional)"
-              disabled={isLoading}
+              disabled={inputDisabled}
               maxLength={50}
             />
           </div>
@@ -373,7 +447,7 @@ export const LocationFormOrganism = React.forwardRef<
               value={formData.city}
               onChange={handleInputChange}
               placeholder="New York"
-              disabled={isLoading}
+              disabled={inputDisabled}
               required
               maxLength={100}
               aria-invalid={!!fieldErrors.city}
@@ -397,7 +471,7 @@ export const LocationFormOrganism = React.forwardRef<
                 name="state"
                 value={formData.state}
                 onChange={handleInputChange}
-                disabled={isLoading}
+                disabled={inputDisabled}
                 required
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 aria-invalid={!!fieldErrors.state}
@@ -427,7 +501,7 @@ export const LocationFormOrganism = React.forwardRef<
                 value={formData.zip}
                 onChange={handleInputChange}
                 placeholder="10001 or 10001-1234"
-                disabled={isLoading}
+                disabled={inputDisabled}
                 required
                 pattern="^\d{5}(-\d{4})?$"
                 title="ZIP code must be 5 digits or 5+4 format"
@@ -443,52 +517,54 @@ export const LocationFormOrganism = React.forwardRef<
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex items-center gap-3 pt-4">
-          {/* Default Location Checkbox */}
-          <div className="mr-auto flex items-center space-x-2">
-            <Checkbox
-              id="isDefault"
-              checked={formData.isDefault}
-              onCheckedChange={handleDefaultChange}
-              disabled={isLoading}
-            />
-            <Label
-              htmlFor="isDefault"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              Default Location
-            </Label>
-          </div>
+        {/* Action Buttons - hidden in onboarding mode (parent handles submission) */}
+        {!isOnboarding && (
+          <div className="flex items-center gap-3 pt-4">
+            {/* Default Location Checkbox */}
+            <div className="mr-auto flex items-center space-x-2">
+              <Checkbox
+                id="isDefault"
+                checked={formData.isDefault}
+                onCheckedChange={handleDefaultChange}
+                disabled={inputDisabled}
+              />
+              <Label
+                htmlFor="isDefault"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Default Location
+              </Label>
+            </div>
 
-          <Button type="submit" disabled={isLoading} className="min-w-[120px]">
-            {isLoading ? (
-              <>
-                <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-white" />
-                {isEditMode ? 'Updating...' : 'Creating...'}
-              </>
-            ) : (
-              <>{isEditMode ? 'Update Location' : 'Create Location'}</>
-            )}
-          </Button>
-
-          {showCancel && onCancel && (
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onCancel}
-              disabled={isLoading}
-            >
-              Cancel
+            <Button type="submit" disabled={inputDisabled} className="min-w-[120px]">
+              {isLoading ? (
+                <>
+                  <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-white" />
+                  {isEditMode ? 'Updating...' : 'Creating...'}
+                </>
+              ) : (
+                <>{isEditMode ? 'Update Location' : 'Create Location'}</>
+              )}
             </Button>
-          )}
-        </div>
+
+            {showCancel && onCancel && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onCancel}
+                disabled={inputDisabled}
+              >
+                Cancel
+              </Button>
+            )}
+          </div>
+        )}
 
         {/* Helper Text */}
         <p className="text-xs text-gray-500">
           <span className="text-red-600">*</span> Required fields
         </p>
-      </form>
+      </Wrapper>
     );
   },
 );

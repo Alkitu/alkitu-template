@@ -253,7 +253,9 @@
       "subtitle": "Help us get to know you better to personalize your experience",
       "phone": "Phone (optional)",
       "company": "Company (optional)",
-      "address": "Address (optional)",
+      "locationSection": "Work Location",
+      "locationError": "Failed to create location",
+      "phoneRequired": "Phone number is required for social login accounts",
       "addContactPerson": "Add contact person",
       "contactPersonInfo": "Contact information",
       "contactName": "Name",
@@ -1513,6 +1515,7 @@
       "info": "Profile Information",
       "security": "Security",
       "preferences": "Preferences",
+      "accounts": "Connected Accounts",
       "locations": "Locations",
       "files": "Files"
     },
@@ -1520,6 +1523,7 @@
       "profileDescription": "Update your personal and contact information.",
       "securityDescription": "Change your password to keep your account secure.",
       "preferencesDescription": "Customize the interface theme and language.",
+      "accountsDescription": "Manage third-party accounts linked to your profile.",
       "locationsDescription": "Manage your work locations for service requests.",
       "filesDescription": "Your files stored in Google Drive."
     },
@@ -1595,6 +1599,20 @@
     },
     "avatar": {
       "selectorTitle": "Choose avatar"
+    },
+    "accounts": {
+      "google": "Google",
+      "connected": "Connected",
+      "notConnected": "Not connected",
+      "connect": "Connect",
+      "disconnect": "Disconnect",
+      "disconnectConfirmTitle": "Disconnect account?",
+      "disconnectConfirmDescription": "You will no longer be able to sign in with this provider. You can reconnect it later.",
+      "disconnectSuccess": "Account disconnected successfully",
+      "connectSuccess": "Account connected successfully",
+      "cannotDisconnect": "You cannot disconnect your only sign-in method. Set a password first.",
+      "error": "Failed to update connected accounts",
+      "cancel": "Cancel"
     }
   },
   "locations": {

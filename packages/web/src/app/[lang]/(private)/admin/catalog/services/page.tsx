@@ -257,7 +257,7 @@ const ServicesPage = () => {
       </div>
 
       {/* Services Table */}
-      <div className="bg-background border border-border rounded-lg overflow-hidden min-h-[400px]">
+      <div className="bg-background border  border-border rounded-lg overflow-hidden min-h-[400px]">
         {isLoading ? (
           <div className="flex items-center justify-center h-[400px]">
             <p className="text-muted-foreground">

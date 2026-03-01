@@ -9,11 +9,22 @@ import { UsersModule } from '../users/users.module';
 import { EmailModule } from '../email/email.module';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
+import { GoogleStrategy } from './strategies/google.strategy';
 import { PrismaService } from '../prisma.service';
+
+/**
+ * Conditionally include GoogleStrategy only if GOOGLE_CLIENT_ID is configured.
+ * This prevents startup errors when Google OAuth credentials are not set.
+ */
+const optionalProviders = [];
+if (process.env.GOOGLE_CLIENT_ID) {
+  optionalProviders.push(GoogleStrategy);
+}
 
 /**
  * Authentication Module (ALI-115 updated)
  * Added ThrottlerModule for rate limiting protection
+ * Added Google OAuth strategy (conditional on GOOGLE_CLIENT_ID)
  */
 @Module({
   imports: [
@@ -45,6 +56,7 @@ import { PrismaService } from '../prisma.service';
     PrismaService,
     LocalStrategy,
     JwtStrategy,
+    ...optionalProviders,
     // RolesGuard should NOT be a global guard - it must execute AFTER JwtAuthGuard
     // Use @UseGuards(JwtAuthGuard, RolesGuard) at controller level instead
   ],

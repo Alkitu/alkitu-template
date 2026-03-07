@@ -32,10 +32,15 @@ async function migrateRequestTitles() {
       }
     }
 
-    // Fallback: Usar nombre del servicio + fecha
-    if (title === 'Nueva Solicitud' && request.service) {
-      const date = new Date(request.createdAt).toLocaleDateString('es-ES');
-      title = `${request.service.name} - ${date}`;
+    // Fallback: Usar customId si existe
+    if (title === 'Nueva Solicitud' && request.customId) {
+      title = `Solicitud ${request.customId}`;
+    }
+
+    // Skip if title didn't change
+    if (title === 'Nueva Solicitud') {
+      console.log(`⚠️ Solicitud ${request.id} sin customId, título no cambiado`);
+      continue;
     }
 
     await prisma.request.update({

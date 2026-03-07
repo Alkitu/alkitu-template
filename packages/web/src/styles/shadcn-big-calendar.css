@@ -72,10 +72,10 @@ button.rbc-input::-moz-focus-inner {
   direction: rtl;
 }
 .rbc-off-range {
-  color: hsl(var(--muted-foreground));
+  color: var(--muted-foreground);
 }
 .rbc-off-range-bg {
-  background: hsl(var(--muted));
+  background: var(--muted);
 }
 .rbc-header {
   overflow: hidden;
@@ -90,12 +90,12 @@ button.rbc-input::-moz-focus-inner {
   font-weight: bold;
   font-size: 90%;
   min-height: 0;
-  border-bottom: 1px solid hsl(var(--border));
-  border-right: 1px solid hsl(var(--border));
+  border-bottom: 1px solid var(--border);
+  border-right: 1px solid var(--border);
 }
 .rbc-rtl .rbc-header + .rbc-header {
   border-left-width: 0;
-  border-right: 1px solid hsl(var(--border));
+  border-right: 1px solid var(--border);
 }
 .rbc-header > a,
 .rbc-header > a:active,
@@ -111,7 +111,7 @@ button.rbc-input::-moz-focus-inner {
   z-index: 4;
 }
 .rbc-today {
-  background-color: hsl(var(--muted));
+  background-color: var(--muted);
 }
 .rbc-toolbar {
   display: -webkit-flex;
@@ -124,7 +124,7 @@ button.rbc-input::-moz-focus-inner {
   font-size: 16px;
   justify-content: space-between;
   padding: 0 0.25rem 0 0.25rem;
-  border-bottom: solid 1px hsl(var(--border));
+  border-bottom: solid 1px var(--border);
   margin-bottom: 0;
 }
 .rbc-toolbar .rbc-toolbar-label {
@@ -174,9 +174,9 @@ button.rbc-input::-moz-focus-inner {
 }
 .rbc-event,
 .rbc-slot-selection {
-  --event-bg: hsl(var(--primary));
-  --event-color: hsl(var(--primary-foreground));
-  --event-border: hsla(var(--primary), 0.9);
+  --event-bg: var(--primary);
+  --event-color: var(--primary-foreground);
+  --event-border: var(--primary);
   background-color: var(--event-bg);
   color: var(--event-color);
   padding: 3px;
@@ -194,14 +194,14 @@ button.rbc-input::-moz-focus-inner {
 .rbc-event:focus-visible {
   background-color: var(--event-bg);
   color: var(--event-color);
-  box-shadow: 0 0 0 2px hsl(var(--ring));
+  box-shadow: 0 0 0 2px var(--ring);
   outline: none;
 }
 .rbc-event-label {
   display: none;
 }
 .rbc-event-overlaps {
-  box-shadow: -1px 1px 5px 0px hsl(var(--primary-foreground));
+  box-shadow: -1px 1px 5px 0px var(--primary-foreground);
 }
 .rbc-event-continues-prior {
   border-top-left-radius: 0;
@@ -239,10 +239,10 @@ button.rbc-input::-moz-focus-inner {
   padding: 0 1px 1px 1px;
 }
 .rbc-selected-cell {
-  background-color: hsla(var(--primary), 0.1);
+  background-color: color-mix(in oklch, var(--primary) 10%, transparent);
 }
 .rbc-show-more {
-  background-color: hsl(var(--muted));
+  background-color: var(--muted);
   padding: 2px;
   border-radius: 4px;
   z-index: 4;
@@ -254,7 +254,7 @@ button.rbc-input::-moz-focus-inner {
 }
 .rbc-month-view {
   position: relative;
-  border: 0.1px solid hsl(var(--border));
+  border: 0.1px solid var(--border);
   display: -webkit-flex;
   display: -ms-flexbox;
   display: flex;
@@ -297,7 +297,7 @@ button.rbc-input::-moz-focus-inner {
   height: 100%;
 }
 .rbc-month-row + .rbc-month-row {
-  border-top: 1px solid hsl(var(--border));
+  border-top: 1px solid var(--border);
 }
 .rbc-date-cell {
   -webkit-flex: 1 1 0;
@@ -335,20 +335,20 @@ button.rbc-input::-moz-focus-inner {
 }
 .rbc-rtl .rbc-day-bg + .rbc-day-bg {
   border-left-width: 0;
-  border-right: 1px solid hsl(var(--border));
+  border-right: 1px solid var(--border);
 }
 .rbc-overlay {
   position: absolute;
   z-index: 5;
-  border: 1px solid hsl(var(--border));
-  background-color: hsl(var(--card));
+  border: 1px solid var(--border);
+  background-color: var(--card);
   padding: 10px;
 }
 .rbc-overlay > * + * {
   margin-top: 1px;
 }
 .rbc-overlay-header {
-  border-bottom: 1px solid hsl(var(--border));
+  border-bottom: 1px solid var(--border);
   margin: -10px -10px 5px -10px;
   padding: 2px 10px;
 }
@@ -365,7 +365,7 @@ button.rbc-input::-moz-focus-inner {
 }
 .rbc-agenda-view table.rbc-agenda-table {
   width: 100%;
-  border-bottom: 1px solid hsl(var(--border));
+  border-bottom: 1px solid var(--border);
   border-spacing: 0;
   border-collapse: collapse;
 }
@@ -383,19 +383,19 @@ button.rbc-input::-moz-focus-inner {
   text-transform: lowercase;
 }
 .rbc-agenda-view table.rbc-agenda-table tbody > tr > td + td {
-  border-left: 1px solid hsl(var(--border));
+  border-left: 1px solid var(--border);
 }
 .rbc-rtl .rbc-agenda-view table.rbc-agenda-table tbody > tr > td + td {
   border-left-width: 0;
-  border-right: 1px solid hsl(var(--border));
+  border-right: 1px solid var(--border);
 }
 .rbc-agenda-view table.rbc-agenda-table tbody > tr + tr {
-  border-top: 1px solid hsl(var(--border));
+  border-top: 1px solid var(--border);
 }
 .rbc-agenda-view table.rbc-agenda-table thead > tr > th {
   padding: 3px 5px;
   text-align: left;
-  border-bottom: 1px solid hsl(var(--border));
+  border-bottom: 1px solid var(--border);
 }
 .rbc-rtl .rbc-agenda-view table.rbc-agenda-table thead > tr > th {
   text-align: right;
@@ -431,7 +431,7 @@ button.rbc-input::-moz-focus-inner {
   flex: 1;
 }
 .rbc-timeslot-group {
-  border-bottom: 1px solid hsl(var(--border));
+  border-bottom: 1px solid var(--border);
   min-height: 40px;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -498,7 +498,7 @@ button.rbc-input::-moz-focus-inner {
   min-height: 1em;
 }
 .rbc-day-slot .rbc-time-slot {
-  border-top: 1px solid hsla(var(--border), 0.5);
+  border-top: 1px solid color-mix(in oklch, var(--border) 50%, transparent);
 }
 .rbc-time-slot {
   -webkit-flex: 1 0 0;
@@ -514,7 +514,7 @@ button.rbc-input::-moz-focus-inner {
 .rbc-slot-selection {
   z-index: 10;
   position: absolute;
-  background-color: hsl(var(--primary));
+  background-color: var(--primary);
 }
 .rbc-slot-selecting {
   cursor: move;
@@ -530,12 +530,12 @@ button.rbc-input::-moz-focus-inner {
   -ms-flex: 1;
   flex: 1;
   width: 100%;
-  border: 1px solid hsl(var(--border));
+  border: 1px solid var(--border);
   min-height: 0;
 }
 .rbc-time-view .rbc-time-gutter {
   white-space: nowrap;
-  color: hsl(var(--muted-foreground));
+  color: var(--muted-foreground);
 }
 .rbc-time-view .rbc-allday-cell {
   box-sizing: content-box;
@@ -563,13 +563,13 @@ button.rbc-input::-moz-focus-inner {
 }
 .rbc-rtl .rbc-time-header.rbc-overflowing {
   border-right-width: 0;
-  border-left: 1px solid hsl(var(--border));
+  border-left: 1px solid var(--border);
 }
 .rbc-time-header > .rbc-row:first-child {
-  border-bottom: 1px solid hsl(var(--border));
+  border-bottom: 1px solid var(--border);
 }
 .rbc-time-header > .rbc-row.rbc-row-resource {
-  border-bottom: 1px solid hsl(var(--border));
+  border-bottom: 1px solid var(--border);
 }
 .rbc-time-header-content {
   -webkit-flex: 1;
@@ -579,11 +579,11 @@ button.rbc-input::-moz-focus-inner {
   -webkit-flex-direction: column;
   -ms-flex-direction: column;
   flex-direction: column;
-  border-left: 1px solid hsl(var(--border));
+  border-left: 1px solid var(--border);
 }
 .rbc-rtl .rbc-time-header-content {
   border-left-width: 0;
-  border-right: 1px solid hsl(var(--border));
+  border-right: 1px solid var(--border);
 }
 .rbc-time-content {
   display: -webkit-flex;
@@ -596,7 +596,7 @@ button.rbc-input::-moz-focus-inner {
   -ms-flex-align: start;
   align-items: flex-start;
   width: 100%;
-  border-top: 2px solid hsl(var(--border));
+  border-top: 2px solid var(--border);
   overflow-y: auto;
   position: relative;
 }
@@ -606,11 +606,11 @@ button.rbc-input::-moz-focus-inner {
   flex: none;
 }
 .rbc-time-content > * + * > * {
-  border-left: 1px solid hsl(var(--border));
+  border-left: 1px solid var(--border);
 }
 .rbc-rtl .rbc-time-content > * + * > * {
   border-left-width: 0;
-  border-right: 1px solid hsl(var(--border));
+  border-right: 1px solid var(--border);
 }
 .rbc-time-content > .rbc-day-slot {
   width: 100%;
@@ -620,7 +620,7 @@ button.rbc-input::-moz-focus-inner {
   -webkit-user-select: none;
 }
 .rbc-current-time-indicator {
-  border-top: 2px solid hsl(var(--destructive)) !important;
+  border-top: 2px solid var(--destructive) !important;
   width: 100%;
   z-index: 10;
   position: absolute;
@@ -629,8 +629,8 @@ button.rbc-input::-moz-focus-inner {
 
 /* shadcn overrides */
 .rbc-calendar {
-  background-color: hsl(var(--background));
-  color: hsl(var(--foreground));
+  background-color: var(--background);
+  color: var(--foreground);
   overflow: hidden;
 }
 .rbc-toolbar button {
@@ -644,86 +644,86 @@ button.rbc-input::-moz-focus-inner {
   margin-top: 0.25rem;
   margin-bottom: 0.25rem;
   box-shadow: none !important;
-  color: hsl(var(--foreground)) !important;
+  color: var(--foreground) !important;
 }
 .rbc-toolbar button.rbc-active {
-  color: hsl(var(--accent-foreground)) !important;
-  background-color: hsl(var(--accent)) !important;
+  color: var(--accent-foreground) !important;
+  background-color: var(--accent) !important;
 }
 .rbc-toolbar button:hover {
-  background-color: hsl(var(--accent)) !important;
-  color: hsl(var(--accent-foreground));
+  background-color: var(--accent) !important;
+  color: var(--accent-foreground);
 }
 .rbc-time-view {
   margin-top: 0;
   border: none;
 }
 .rbc-time-header {
-  background-color: hsl(var(--card));
-  border-bottom: 1px solid hsl(var(--border));
+  background-color: var(--card);
+  border-bottom: 1px solid var(--border);
 }
 .rbc-time-gutter {
-  background-color: hsl(var(--card));
+  background-color: var(--card);
 }
 .rbc-day-bg {
-  background-color: hsl(var(--background));
-  border-right: 1px solid hsl(var(--border));
+  background-color: var(--background);
+  border-right: 1px solid var(--border);
 }
 .rbc-month-view {
   border: none;
 }
 .rbc-event:hover {
   background-color: var(--event-bg);
-  box-shadow: 0 0 0 1px hsl(var(--ring));
+  box-shadow: 0 0 0 1px var(--ring);
 }
 
 /* Event variant classes */
 .rbc-event.event-variant-primary {
-  --event-bg: hsl(var(--primary));
-  --event-color: hsl(var(--primary-foreground));
-  --event-border: hsla(var(--primary), 0.9);
+  --event-bg: var(--primary);
+  --event-color: var(--primary-foreground);
+  --event-border: var(--primary);
 }
 .rbc-event.event-variant-secondary {
-  --event-bg: hsl(var(--secondary));
-  --event-color: hsl(var(--secondary-foreground));
-  --event-border: hsl(var(--secondary));
+  --event-bg: var(--secondary);
+  --event-color: var(--secondary-foreground);
+  --event-border: var(--secondary);
 }
 .rbc-event.event-variant-outline {
-  --event-bg: hsl(var(--background));
-  --event-color: hsl(var(--foreground));
-  --event-border: hsl(var(--input));
+  --event-bg: var(--background);
+  --event-color: var(--foreground);
+  --event-border: var(--input);
 }
 .rbc-event.event-variant-outline:hover {
-  --event-bg: hsl(var(--accent));
-  --event-color: hsl(var(--accent-foreground));
-  --event-border: hsl(var(--accent));
+  --event-bg: var(--accent);
+  --event-color: var(--accent-foreground);
+  --event-border: var(--accent);
 }
 
-/* Request status event variants */
+/* Request status event variants — semaphore colors matching RequestStatusBadge */
 .rbc-event.event-variant-pending {
-  --event-bg: hsl(var(--warning));
-  --event-color: hsl(var(--warning-foreground));
-  --event-border: hsl(var(--warning));
+  --event-bg: #dc2626;
+  --event-color: #fff;
+  --event-border: #dc2626;
 }
 .rbc-event.event-variant-ongoing {
-  --event-bg: hsl(var(--primary));
-  --event-color: hsl(var(--primary-foreground));
-  --event-border: hsl(var(--primary));
+  --event-bg: #2563eb;
+  --event-color: #fff;
+  --event-border: #2563eb;
 }
 .rbc-event.event-variant-completed {
-  --event-bg: hsl(var(--success));
-  --event-color: hsl(var(--success-foreground));
-  --event-border: hsl(var(--success));
+  --event-bg: #16a34a;
+  --event-color: #fff;
+  --event-border: #16a34a;
 }
 .rbc-event.event-variant-cancelled {
-  --event-bg: hsl(var(--destructive));
-  --event-color: hsl(var(--destructive-foreground));
-  --event-border: hsl(var(--destructive));
+  --event-bg: #6b7280;
+  --event-color: #fff;
+  --event-border: #6b7280;
 }
 
 .event-component {
-  background-color: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
+  background-color: var(--primary);
+  color: var(--primary-foreground);
   padding: 5px;
   border-radius: var(--radius);
   font-size: 14px;
@@ -733,7 +733,7 @@ button.rbc-input::-moz-focus-inner {
 }
 
 .rbc-current-time-indicator {
-  background-color: 2px solid hsl(var(--destructive)) !important;
+  background-color: 2px solid var(--destructive) !important;
   z-index: 3;
   position: absolute;
   pointer-events: none;
@@ -741,7 +741,7 @@ button.rbc-input::-moz-focus-inner {
 }
 
 .rbc-agenda-empty {
-  color: hsl(var(--muted-foreground));
+  color: var(--muted-foreground);
   display: flex;
   height: 100%;
   align-items: center;

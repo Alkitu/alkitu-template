@@ -1,5 +1,6 @@
 'use client';
 
+import { usePathname } from 'next/navigation';
 import { ChevronRight, type LucideIcon } from 'lucide-react';
 
 import {
@@ -29,6 +30,10 @@ export function NavMain({ items }: { items: NavItem[] }) {
 
   // Acceso al estado del sidebar (expanded/collapsed)
   const { state, setOpen } = useSidebar();
+
+  // Detect active item based on current pathname
+  const pathname = usePathname();
+  const pathWithoutLocale = pathname.replace(/^\/(es|en)/, '');
 
   // Callback para manejar el clic en un elemento desplegable
   const handleCollapsibleClick = useCallback(
@@ -86,10 +91,12 @@ export function NavMain({ items }: { items: NavItem[] }) {
               const hasSubItems = item.items && item.items.length > 0;
 
               // If it has no subitems, render a direct link
+              const isItemActive = pathWithoutLocale === item.url || pathWithoutLocale.startsWith(item.url + '/');
+
               if (!hasSubItems) {
                 return (
                   <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild tooltip={item.title}>
+                    <SidebarMenuButton asChild tooltip={item.title} isActive={isItemActive}>
                       <a href={item.url}>
                         {item.icon && <item.icon />}
                         <span>{item.title}</span>
@@ -120,6 +127,7 @@ export function NavMain({ items }: { items: NavItem[] }) {
                     <CollapsibleTrigger asChild>
                       <SidebarMenuButton
                         tooltip={item.title}
+                        isActive={isItemActive}
                         data-collapsible-trigger="true"
                         className="android-click-fix touch-target"
                         onClick={(e) => {

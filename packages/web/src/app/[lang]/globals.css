@@ -4,6 +4,7 @@
 @import 'tailwindcss';
 @custom-variant dark (&:is(.dark *));
 @import '../../styles/scrollbar-utilities.css';
+@import '../../styles/tiptap-editor.css';
 
 @layer base {
   :root {

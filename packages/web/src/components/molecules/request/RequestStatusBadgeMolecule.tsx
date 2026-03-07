@@ -27,35 +27,35 @@ import type { RequestStatusBadgeMoleculeProps } from './RequestStatusBadgeMolecu
 export const RequestStatusBadgeMolecule: React.FC<
   RequestStatusBadgeMoleculeProps
 > = ({ status, className = '', size = 'md' }) => {
-  // Status configurations
+  // Status configurations — semaphore-style colors
   const statusConfig = {
     [RequestStatus.PENDING]: {
       label: 'Pendiente',
       icon: Clock,
-      bgColor: 'bg-warning/10',
-      textColor: 'text-warning',
-      borderColor: 'border-warning/20',
+      bgColor: 'bg-red-50',
+      textColor: 'text-red-600',
+      borderColor: 'border-red-200',
     },
     [RequestStatus.ONGOING]: {
       label: 'En Proceso',
       icon: Play,
-      bgColor: 'bg-primary/10',
-      textColor: 'text-primary',
-      borderColor: 'border-primary/20',
+      bgColor: 'bg-blue-50',
+      textColor: 'text-blue-600',
+      borderColor: 'border-blue-200',
     },
     [RequestStatus.COMPLETED]: {
       label: 'Completada',
       icon: CheckCircle,
-      bgColor: 'bg-success/10',
-      textColor: 'text-success',
-      borderColor: 'border-success/20',
+      bgColor: 'bg-green-50',
+      textColor: 'text-green-600',
+      borderColor: 'border-green-200',
     },
     [RequestStatus.CANCELLED]: {
       label: 'Cancelada',
       icon: XCircle,
-      bgColor: 'bg-destructive/10',
-      textColor: 'text-destructive',
-      borderColor: 'border-destructive/20',
+      bgColor: 'bg-gray-50',
+      textColor: 'text-gray-500',
+      borderColor: 'border-gray-200',
     },
   };
 

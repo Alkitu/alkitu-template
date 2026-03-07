@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { RequestStatusChangedHook } from './request-status-changed.hook';
 import { NotificationService } from '../../notification/notification.service';
+import { EmailTemplateService } from '../../email-templates/email-template.service';
 import { RequestStatus, NotificationType } from '@prisma/client';
 
 describe('RequestStatusChangedHook', () => {
@@ -40,12 +41,20 @@ describe('RequestStatusChangedHook', () => {
       sendMultiChannelNotification: jest.fn().mockResolvedValue(undefined),
     };
 
+    const mockEmailTemplateService = {
+      sendStatusChangedEmails: jest.fn().mockResolvedValue(undefined),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         RequestStatusChangedHook,
         {
           provide: NotificationService,
           useValue: mockNotificationService,
+        },
+        {
+          provide: EmailTemplateService,
+          useValue: mockEmailTemplateService,
         },
       ],
     }).compile();
@@ -81,7 +90,7 @@ describe('RequestStatusChangedHook', () => {
         expect.objectContaining({
           type: NotificationType.REQUEST_STATUS_CHANGED,
           message: expect.stringContaining('en progreso'),
-          link: '/client/requests/request-123',
+          link: '/requests/request-123',
         }),
       );
     });
@@ -102,7 +111,7 @@ describe('RequestStatusChangedHook', () => {
         expect.objectContaining({
           type: NotificationType.REQUEST_STATUS_CHANGED,
           message: expect.stringContaining('en progreso'),
-          link: '/employee/requests/request-123',
+          link: '/requests/request-123',
         }),
       );
     });
@@ -140,7 +149,7 @@ describe('RequestStatusChangedHook', () => {
         expect.objectContaining({
           type: NotificationType.REQUEST_STATUS_CHANGED,
           message: expect.stringContaining('completada exitosamente'),
-          link: '/client/requests/request-123',
+          link: '/requests/request-123',
         }),
       );
     });
@@ -157,7 +166,7 @@ describe('RequestStatusChangedHook', () => {
         expect.objectContaining({
           type: NotificationType.REQUEST_STATUS_CHANGED,
           message: expect.stringContaining('cancelada'),
-          link: '/client/requests/request-123',
+          link: '/requests/request-123',
         }),
       );
     });

@@ -1,9 +1,9 @@
 'use client';
 
 import * as React from 'react';
-import { Calendar as CalendarIcon, Clock } from 'lucide-react';
-import { format } from 'date-fns';
+import { format, addMonths, addYears } from 'date-fns';
 import { es, enUS } from 'date-fns/locale';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/primitives/ui/button';
@@ -52,92 +52,200 @@ export function CalendarAppointment({
 }: CalendarAppointmentProps) {
   const locale = lang === 'en' ? enUS : es;
 
+  // Controlled month state for custom navigation header
+  const [month, setMonth] = React.useState<Date>(date || new Date());
+
+  // ── ResizeObserver: Calendar pane dictates height/width ──
+  const [calendarHeight, setCalendarHeight] = React.useState<number | undefined>(undefined);
+  const [calendarWidth, setCalendarWidth] = React.useState<number | undefined>(undefined);
+  const calendarRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    const el = calendarRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setCalendarHeight(entry.borderBoxSize[0].blockSize);
+        setCalendarWidth(entry.borderBoxSize[0].inlineSize);
+      }
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  // Sync month view when date prop changes externally
+  React.useEffect(() => {
+    if (date) setMonth(date);
+  }, [date]);
+
+  const dateLabel = lang === 'en' ? 'Select date' : 'Selecciona fecha';
+  const timeLabel = lang === 'en' ? 'Select time' : 'Selecciona hora';
+
+  const isDateDisabled = (d: Date) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return d < today;
+  };
+
+  const handleDateSelect = (d: Date | undefined) => {
+    setDate(d);
+    if (!d) setTime(null);
+  };
+
+  // Check if a time slot is in the past (for today only)
+  const isTimePast = (t: string): boolean => {
+    if (!date) return false;
+    const today = new Date();
+    if (date.toDateString() !== today.toDateString()) return false;
+    const [hour, minute] = t.split(':').map(Number);
+    const timeDate = new Date();
+    timeDate.setHours(hour, minute, 0, 0);
+    return timeDate < new Date();
+  };
+
   return (
-    <div
-      className={cn(
-        'w-full max-w-[850px] mx-auto bg-card rounded-3xl border border-border shadow-sm flex flex-col overflow-hidden',
-        className,
-      )}
-    >
-      {/* ── TOP HEADER (Full Width) ── */}
-      <div className="w-full flex flex-col items-center md:items-start p-6 sm:p-8 border-b border-border/50 bg-muted/10">
-        <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-2 text-foreground">
-          <CalendarIcon className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
-          {lang === 'en' ? 'Select Date and Time' : 'Seleccionar Fecha y Hora'}
-        </h2>
-        <p className="mt-2 text-sm text-muted-foreground text-center md:text-left">
-          {lang === 'en'
-            ? 'Choose an available slot for your request execution.'
-            : 'Elige un horario disponible para la ejecución de la solicitud.'}
-        </p>
+    <div className={cn('w-full max-w-5xl mx-auto', className)}>
+      {/* ── Section Labels Row ── */}
+      <div className="flex flex-col md:flex-row gap-4 md:gap-6 lg:gap-10 mb-4">
+        <div className="flex-1">
+          <h3 className="text-base font-semibold text-foreground text-center md:text-left">
+            {dateLabel}
+          </h3>
+        </div>
+        <div className="flex-1 hidden md:block">
+          <h3 className="text-base font-semibold text-foreground text-center md:text-left">
+            {timeLabel}
+          </h3>
+        </div>
       </div>
 
-      {/* ── BOTTOM CONTENT (Split Columns) ── */}
-      <div className="flex flex-col md:flex-row w-full flex-1">
-        {/* LEFT PANE: CALENDAR */}
-        <div className="flex-1 p-6 sm:p-8 flex justify-center border-b md:border-b-0 md:border-r border-border/50 min-h-[400px]">
+      {/* ── Main Content: Calendar + Time Slots ── */}
+      <div className="flex flex-col md:flex-row gap-4 md:gap-6 lg:gap-10 md:items-start md:justify-center">
+
+        {/* ─── Left Pane: Calendar (height/width authority) ─── */}
+        <div
+          ref={calendarRef}
+          className="w-full md:w-auto rounded-2xl border border-border/60 bg-card p-5 md:p-6"
+        >
+          {/* Custom Header: Month name LEFT, navigation arrows RIGHT */}
+          <div className="flex items-center justify-between w-full mb-4">
+            <h4 className="text-base md:text-lg font-semibold capitalize text-foreground whitespace-nowrap">
+              {format(month, 'MMMM yyyy', { locale })}
+            </h4>
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                aria-label={lang === 'es' ? 'Mes anterior' : 'Previous month'}
+                className="h-8 w-8 rounded-full inline-flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                onClick={() => setMonth(addMonths(month, -1))}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+              <button
+                type="button"
+                aria-label={lang === 'es' ? 'Mes siguiente' : 'Next month'}
+                className="h-8 w-8 rounded-full inline-flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                onClick={() => setMonth(addMonths(month, 1))}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+
           <Calendar
             mode="single"
             selected={date}
-            onSelect={(d) => {
-              setDate(d);
-              if (!d) setTime(null);
-            }}
-            defaultMonth={date || new Date()}
+            onSelect={handleDateSelect}
+            month={month}
+            onMonthChange={setMonth}
+            disabled={isDateDisabled}
             locale={locale}
-            disabled={(date) => {
-              const today = new Date();
-              today.setHours(0, 0, 0, 0);
-              return date < today;
+            startMonth={new Date()}
+            endMonth={addYears(new Date(), 2)}
+            showOutsideDays={false}
+            className="p-0 w-full bg-transparent"
+            classNames={{
+              months: 'w-full flex-col',
+              month: 'w-full',
+              month_caption: 'hidden',
+              nav: 'hidden',
+              month_grid: 'w-full border-collapse',
+              weekdays: 'flex w-full justify-between mb-2',
+              weekday:
+                'text-muted-foreground font-semibold text-xs w-full uppercase tracking-wider text-center',
+              week: 'flex w-full mt-1 justify-between',
+              day: cn(
+                'text-center text-sm p-0.5 w-full relative',
+                'focus-within:relative focus-within:z-20',
+              ),
+              day_button: cn(
+                'relative h-10 w-10 md:h-11 md:w-11 mx-auto p-0 font-normal rounded-full',
+                'inline-flex items-center justify-center cursor-pointer',
+                'text-sm md:text-base transition-colors',
+                'hover:bg-muted',
+              ),
+              selected:
+                '[&>button]:bg-primary [&>button]:text-primary-foreground [&>button]:font-bold [&>button]:hover:bg-primary [&>button]:hover:text-primary-foreground',
+              today: '[&>button]:font-semibold [&>button]:text-primary',
+              outside: 'day-outside text-muted-foreground opacity-70',
+              disabled:
+                'text-muted-foreground opacity-70 [&>button]:cursor-not-allowed [&>button]:hover:bg-transparent',
+              hidden: 'invisible',
             }}
-            className="p-0 bg-transparent flex justify-center [--cell-size:2.8rem] sm:[--cell-size:3rem] md:[--cell-size:3.5rem]"
           />
         </div>
 
-        {/* RIGHT PANE: TIMEPICKER */}
-        <div className="relative h-[350px] w-full shrink-0 overflow-hidden md:h-auto md:min-h-[500px] md:w-[320px] bg-muted/5">
-          <div className="absolute inset-0 flex flex-col pt-6 md:pt-8">
-            <div className="flex items-center justify-center gap-2 px-6 pb-4">
-              <Clock className="h-4 w-4 text-muted-foreground" />
-              <p className="text-center text-sm font-semibold text-foreground">
-                {lang === 'en' ? 'Available Times' : 'Horarios'}
-              </p>
-            </div>
-            <ScrollArea className="flex-1 px-6 pb-6 overflow-y-auto">
-              <div className="flex flex-col gap-3 pb-8">
-                {availableTimes.map((t) => {
-                  const isSelected = time === t;
-                  const isPast = (() => {
-                    if (!date) return false;
-                    const today = new Date();
-                    if (date.toDateString() !== today.toDateString())
-                      return false;
-                    const [hour, minute] = t.split(':').map(Number);
-                    const timeDate = new Date();
-                    timeDate.setHours(hour, minute, 0, 0);
-                    return timeDate < new Date();
-                  })();
+        {/* ─── Right Pane: Time Slots (dimensions synced to calendar) ─── */}
+        <div className="w-full md:w-auto flex flex-col">
+          {/* Mobile-only label */}
+          <h3 className="text-base font-semibold text-foreground text-center mb-4 md:hidden">
+            {timeLabel}
+          </h3>
 
-                  return (
-                    <Button
-                      key={t}
-                      type="button"
-                      variant={isSelected ? 'default' : 'outline'}
-                      className={cn(
-                        'w-full h-11 sm:h-12 rounded-xl transition-all duration-200 text-sm sm:text-base cursor-pointer shadow-none',
-                        isSelected
-                          ? 'border-primary bg-primary text-primary-foreground shadow-sm shadow-primary/20'
-                          : 'border-border/60 bg-background text-foreground hover:border-primary hover:text-primary hover:bg-primary/5',
-                        isPast &&
-                          'pointer-events-none cursor-not-allowed opacity-40 text-muted-foreground bg-muted/20',
-                      )}
-                      disabled={!date || isPast}
-                      onClick={() => setTime(t)}
-                    >
-                      {t}
-                    </Button>
-                  );
-                })}
+          <div
+            className="rounded-2xl border border-border/60 bg-card overflow-hidden"
+            style={{
+              height: calendarHeight || undefined,
+              width: calendarWidth || undefined,
+            }}
+          >
+            <ScrollArea className="h-full">
+              <div className="p-4 md:p-5">
+                {!date ? (
+                  /* Empty state: no date selected */
+                  <div className="flex min-h-[200px] items-center justify-center text-center text-sm text-muted-foreground px-4">
+                    {lang === 'en'
+                      ? 'Select a day on the calendar to see available times.'
+                      : 'Selecciona un día en el calendario para ver los horarios disponibles.'}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 gap-3">
+                    {availableTimes.map((t) => {
+                      const isSelected = time === t;
+                      const isPast = isTimePast(t);
+
+                      // Hide past time slots
+                      if (isPast) return null;
+
+                      return (
+                        <Button
+                          key={`${date.toISOString()}-${t}`}
+                          type="button"
+                          variant="outline"
+                          className={cn(
+                            'w-full justify-center transition-all duration-200 h-12 text-sm font-medium rounded-lg',
+                            isSelected
+                              ? 'bg-primary text-primary-foreground shadow-md border-primary hover:bg-primary hover:text-primary-foreground'
+                              : 'bg-card text-foreground hover:bg-muted hover:border-border border-border/80',
+                          )}
+                          onClick={() => setTime(t)}
+                        >
+                          <span className="tabular-nums">{t}</span>
+                        </Button>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </ScrollArea>
           </div>
@@ -146,3 +254,5 @@ export function CalendarAppointment({
     </div>
   );
 }
+
+export default CalendarAppointment;

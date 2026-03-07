@@ -25,6 +25,7 @@ import {
   requireResourceAccess,
 } from '../middlewares/roles.middleware';
 import { RequestStatusChangedHook } from '../../requests/hooks/request-status-changed.hook';
+import { RequestNotificationBuilder } from '../../requests/builders/request-notification.builder';
 import { NotificationService } from '../../notification/notification.service';
 import { EmailTemplateService } from '../../email-templates/email-template.service';
 import { CounterService } from '../../counter/counter.service';
@@ -131,6 +132,7 @@ export function createRequestRouter(
               select: {
                 id: true,
                 name: true,
+                code: true,
                 thumbnail: true,
                 category: {
                   select: {
@@ -298,7 +300,7 @@ export function createRequestRouter(
           | Record<string, unknown>
           | null
           | undefined;
-        const title = (responses?.title as string) || 'Nueva Solicitud';
+        const title = (responses?.title as string) || (customId ? `Solicitud ${customId}` : 'Nueva Solicitud');
 
         const createdRequest = await prisma.request.create({
           data: {
@@ -322,7 +324,7 @@ export function createRequestRouter(
           .ensureRequestFolder(createdRequest.id)
           .catch(() => {});
 
-        // Send request creation emails (non-blocking)
+        // Send request creation emails + in-app notifications (non-blocking)
         prisma.request
           .findUnique({
             where: { id: createdRequest.id },
@@ -333,11 +335,54 @@ export function createRequestRouter(
               assignedTo: true,
             },
           })
-          .then((fullRequest) => {
-            if (fullRequest) {
-              emailTemplateService
-                .sendRequestCreatedEmails(fullRequest as any)
-                .catch(() => {});
+          .then(async (fullRequest) => {
+            if (!fullRequest) return;
+
+            // Send emails
+            emailTemplateService
+              .sendRequestCreatedEmails(fullRequest as any)
+              .catch(() => {});
+
+            // Send in-app notifications (mirrors requests.service.ts)
+            try {
+              // Notify client (confirmation)
+              const clientNotif =
+                RequestNotificationBuilder.buildCreatedNotification(
+                  fullRequest as any,
+                  'client',
+                );
+              await notificationService.sendMultiChannelNotification(
+                fullRequest.userId,
+                {
+                  type: clientNotif.type,
+                  message: clientNotif.message,
+                  data: clientNotif.data,
+                  link: clientNotif.link,
+                },
+              );
+
+              // Notify all admins (new request alert)
+              const admins = await prisma.user.findMany({
+                where: { role: UserRole.ADMIN },
+                select: { id: true },
+              });
+              const adminNotif =
+                RequestNotificationBuilder.buildCreatedNotification(
+                  fullRequest as any,
+                  'admin',
+                );
+              await Promise.all(
+                admins.map((admin) =>
+                  notificationService.sendMultiChannelNotification(admin.id, {
+                    type: adminNotif.type,
+                    message: adminNotif.message,
+                    data: adminNotif.data,
+                    link: adminNotif.link,
+                  }),
+                ),
+              );
+            } catch {
+              // Non-blocking: notification failures shouldn't affect request creation
             }
           })
           .catch(() => {});

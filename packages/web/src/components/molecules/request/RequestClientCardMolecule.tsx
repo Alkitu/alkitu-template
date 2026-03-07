@@ -1,5 +1,6 @@
 import React from 'react';
-import { User, Phone } from 'lucide-react';
+import { Phone } from 'lucide-react';
+import { UserAvatar } from '@/components/molecules-alianza/UserAvatar';
 import { RequestClientCardMoleculeProps } from './RequestClientCardMolecule.types';
 
 export const RequestClientCardMolecule: React.FC<
@@ -12,9 +13,13 @@ export const RequestClientCardMolecule: React.FC<
       <div className="absolute top-0 left-0 w-1 h-full bg-linear-to-b from-primary to-primary/40" />
       <div className="flex items-center gap-4 pl-2">
         {/* Avatar Circle */}
-        <div className="w-12 h-12 rounded-full bg-primary/5 border border-primary/10 shadow-inner flex items-center justify-center ring-2 ring-background">
-          <User className="h-5 w-5 text-primary/80" />
-        </div>
+        <UserAvatar
+          name={client.firstname}
+          lastName={client.lastname}
+          image={client.image || undefined}
+          size="lg"
+          className="ring-2 ring-background"
+        />
         <div>
           <h3 className="text-base font-bold text-foreground tracking-tight leading-tight">
             {client.firstname} {client.lastname}
@@ -28,13 +33,18 @@ export const RequestClientCardMolecule: React.FC<
       </div>
 
       {client.phone && (
-        <a
-          href={`tel:${client.phone}`}
-          className="p-3 rounded-full bg-background border shadow-sm hover:shadow hover:bg-muted transition-all active:scale-95 group"
-          title={client.phone}
-        >
-          <Phone className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
-        </a>
+        <div className="flex items-center gap-3">
+          <span className="text-base font-bold text-foreground tracking-tight">
+            {client.phone}
+          </span>
+          <a
+            href={`tel:${client.phone}`}
+            className="p-3 rounded-full bg-green-50 border border-green-200 hover:bg-green-100 shadow-sm hover:shadow transition-all active:scale-95 group"
+            title={client.phone}
+          >
+            <Phone className="h-5 w-5 text-green-600 group-hover:text-green-700 transition-colors" />
+          </a>
+        </div>
       )}
     </div>
   );

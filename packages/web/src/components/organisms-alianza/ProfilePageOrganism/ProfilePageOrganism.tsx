@@ -113,7 +113,7 @@ export const ProfilePageOrganism: React.FC<ProfilePageOrganismProps> = ({
       // Apply language if changed: update cookie + context + navigate
       const currentLang = pathname.split('/').filter(Boolean)[0];
       if (values.language !== currentLang) {
-        setLocale(values.language);
+        await setLocale(values.language);
         const newPath = pathname.replace(
           `/${currentLang}`,
           `/${values.language}`,

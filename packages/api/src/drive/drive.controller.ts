@@ -493,9 +493,11 @@ export class DriveController {
   @ApiResponse({ status: 404, description: 'No thumbnail available' })
   async getFileThumbnail(
     @Param('fileId') fileId: string,
+    @Query('size') size: string | undefined,
     @Res() res: Response,
   ) {
-    const result = await this.driveService.getThumbnail(fileId);
+    const parsedSize = size ? Math.min(parseInt(size, 10) || 0, 1600) : undefined;
+    const result = await this.driveService.getThumbnail(fileId, parsedSize || undefined);
 
     if (!result) {
       throw new NotFoundException('No thumbnail available for this file');

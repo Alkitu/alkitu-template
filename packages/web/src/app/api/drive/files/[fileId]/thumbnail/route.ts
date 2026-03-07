@@ -22,8 +22,11 @@ export async function GET(
 
     const { fileId } = await props.params;
 
+    const size = _request.nextUrl.searchParams.get('size');
+    const sizeParam = size ? `?size=${size}` : '';
+
     const response = await fetch(
-      `${BACKEND_URL}/drive/files/${fileId}/thumbnail`,
+      `${BACKEND_URL}/drive/files/${fileId}/thumbnail${sizeParam}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,

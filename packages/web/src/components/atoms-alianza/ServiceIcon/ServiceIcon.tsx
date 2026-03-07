@@ -30,7 +30,12 @@ export const ServiceIcon: React.FC<ServiceIconProps> = ({
   const style = color ? { color } : undefined;
 
   if (thumbnail) {
-    // Priority 1: Emoji character
+    // Priority 1: URL or relative path (e.g. /api/drive/...)
+    if (thumbnail.startsWith('http') || thumbnail.startsWith('/')) {
+      return <img src={thumbnail} alt="service icon" className="w-full h-full object-cover rounded-full" />;
+    }
+
+    // Priority 2: Emoji character
     if (isEmoji(thumbnail)) {
       return (
         <span className={className} role="img" aria-label="service icon" style={{ lineHeight: 1, ...style }}>
@@ -39,7 +44,7 @@ export const ServiceIcon: React.FC<ServiceIconProps> = ({
       );
     }
 
-    // Priority 2: Lucide icon name from the Icons registry
+    // Priority 3: Lucide icon name from the Icons registry
     const ThumbnailIcon = Icons[thumbnail as keyof typeof Icons];
     if (ThumbnailIcon) {
       return <ThumbnailIcon className={className} style={style} />;

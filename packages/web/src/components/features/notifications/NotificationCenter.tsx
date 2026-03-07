@@ -22,6 +22,11 @@ import { Button } from '@/components/molecules-alianza/Button';
 import { Chip } from '@/components/atoms-alianza/Chip';
 import { cn } from '@/lib/utils';
 
+/** Strip accidental role prefixes from notification links stored in the DB */
+function sanitizeNotificationLink(link: string): string {
+  return link.replace(/^\/(client|employee|admin)/, '');
+}
+
 interface NotificationCenterProps {
   userId?: string;
 }
@@ -74,6 +79,25 @@ export function NotificationCenter({ userId }: NotificationCenterProps) {
     if (userId) markAllReadMutation.mutate({ userId });
   };
 
+  const handleNotificationClick = (notification: any) => {
+    if (!notification.read) {
+      markAsReadMutation.mutate({ notificationId: notification.id });
+    }
+    // TODO: Remove debug logging after confirming fix
+    console.log('[NotificationCenter] click:', {
+      id: notification.id,
+      link: notification.link,
+      requestId: notification.data?.requestId,
+      type: notification.type,
+    });
+    if (notification.link) {
+      router.push(`${roleBase}${sanitizeNotificationLink(notification.link)}`);
+    } else if (notification.data?.requestId) {
+      router.push(`${roleBase}/requests/${notification.data.requestId}`);
+    }
+    setOpen(false);
+  };
+
   // Helper to get icon (Consistent with page.tsx)
   const getIcon = (n: any) => {
     if (n.title?.toLowerCase().includes('servicio')) return <Check className="w-4 h-4 text-primary" />;
@@ -98,8 +122,9 @@ export function NotificationCenter({ userId }: NotificationCenterProps) {
           return (
             <div
               key={notification.id}
+              onClick={() => handleNotificationClick(notification)}
               className={cn(
-                "group relative flex items-start gap-3 p-3 rounded-2xl transition-colors",
+                "group relative flex items-start gap-3 p-3 rounded-2xl transition-colors cursor-pointer",
                 isUnread
                   ? "bg-primary/5 border border-primary/10"
                   : "bg-background shadow-sm border border-border/40"

@@ -414,6 +414,7 @@ export class DriveService implements OnModuleInit {
    */
   async getThumbnail(
     fileId: string,
+    size?: number,
   ): Promise<{ buffer: Buffer; contentType: string } | null> {
     try {
       // First, get the thumbnailLink from file metadata
@@ -423,8 +424,13 @@ export class DriveService implements OnModuleInit {
         supportsAllDrives: true,
       });
 
-      const thumbnailLink = meta.data.thumbnailLink;
+      let thumbnailLink = meta.data.thumbnailLink;
       if (!thumbnailLink) return null;
+
+      // Replace default thumbnail size (=s220) with requested size
+      if (size) {
+        thumbnailLink = thumbnailLink.replace(/=s\d+$/, `=s${size}`);
+      }
 
       // Fetch the thumbnail using the service account's auth
       const authClient = await this.auth.getClient();

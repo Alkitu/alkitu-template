@@ -80,6 +80,14 @@ const getTransformedData = (
         section: 'management',
         items: [],
       },
+      // Support Chat - conditionally rendered based on feature flag
+      ...(featureFlags?.supportChatEnabled !== false ? [{
+        title: t?.('nav.chat') || 'Chat',
+        url: '/client/chat',
+        icon: MessageCircle,
+        section: 'communication' as const,
+        items: [],
+      }] : []),
       {
         title: t?.('nav.notifications') || 'Notificaciones',
         url: '/client/notifications',
@@ -410,10 +418,6 @@ function Dashboard({ children, showWelcome = false, userRole = 'admin' }: Dashbo
   const t = useTranslations('dashboard');
   const pathname = usePathname();
   const { data: sessionUser } = trpc.user.me.useQuery();
-  const { data: fullUser } = trpc.user.getUserByEmail.useQuery(
-    { email: sessionUser?.email || '' },
-    { enabled: !!sessionUser?.email }
-  );
 
   // Sync DB preferences (theme, language) to local UI systems on first load
   useSyncUserPreferences(sessionUser);
@@ -437,7 +441,7 @@ function Dashboard({ children, showWelcome = false, userRole = 'admin' }: Dashbo
     fileUploadEnabled,
   });
 
-  const currentUser = fullUser || sessionUser;
+  const currentUser = sessionUser;
 
   const user = currentUser ? {
     id: currentUser.id || 'user',

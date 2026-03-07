@@ -75,10 +75,24 @@ export default function CreateServicePage() {
   const createServiceMutation = trpc.service.createService.useMutation();
   const ensureFolderMutation = trpc.service.ensureServiceDriveFolder.useMutation();
 
+  const [codeError, setCodeError] = useState('');
+
+  const validateCode = (code: string): string => {
+    if (!code) return t('admin.catalog.services.create.validation.codeRequired') || 'Service code is required';
+    if (code.length < 3) return t('admin.catalog.services.create.validation.codeMinLength') || 'Code must be at least 3 characters';
+    if (code.length > 4) return t('admin.catalog.services.create.validation.codeMaxLength') || 'Code must be at most 4 characters';
+    if (!/^[A-Z0-9]+$/.test(code)) return t('admin.catalog.services.create.validation.codeFormat') || 'Code must be uppercase alphanumeric characters only';
+    return '';
+  };
+
   const handleBasicNext = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!basicData.name || !basicData.categoryId) {
-      toast.error(t('admin.catalog.services.create.validation.requiredFields'));
+    const codeValidation = validateCode(basicData.code);
+    setCodeError(codeValidation);
+    if (!basicData.name || !basicData.categoryId || codeValidation) {
+      if (!basicData.name || !basicData.categoryId) {
+        toast.error(t('admin.catalog.services.create.validation.requiredFields'));
+      }
       return;
     }
     // Set form title from service name if not set
@@ -114,7 +128,7 @@ export default function CreateServicePage() {
         isActive: basicData.isActive,
         thumbnail: basicData.thumbnail || undefined,
         iconColor: basicData.iconColor || '#000000',
-        code: basicData.code || undefined,
+        code: basicData.code,
       });
 
       // 3. Fire-and-forget: create Drive folder for new service
@@ -182,9 +196,9 @@ export default function CreateServicePage() {
                       
                       if (!iconValue) return <MapPin className="h-6 w-6" style={iconStyle} />;
 
-                      // Check if it's a URL (basic check)
-                      if (iconValue.startsWith('http')) {
-                          return <img src={iconValue} alt="Icon" className="h-6 w-6 object-contain" />;
+                      // Check if it's a URL or relative path (e.g. /api/drive/...)
+                      if (iconValue.startsWith('http') || iconValue.startsWith('/')) {
+                          return <img src={iconValue} alt="Icon" className="w-full h-full object-cover rounded-full" />;
                       }
 
                       // Check for Emoji
@@ -267,15 +281,23 @@ export default function CreateServicePage() {
 
               <div>
                 <FormInput
-                  label={t('admin.catalog.services.create.form.serviceCode') || 'Service Code'}
+                  label={(t('admin.catalog.services.create.form.serviceCode') || 'Service Code') + ' *'}
                   id="code"
                   value={basicData.code}
-                  onChange={(e) => setBasicData({ ...basicData, code: e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6) })}
+                  onChange={(e) => {
+                    const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4);
+                    setBasicData({ ...basicData, code: value });
+                    if (codeError) setCodeError(validateCode(value));
+                  }}
                   placeholder="LIMP"
                 />
-                <p className="mt-1 text-xs text-muted-foreground">
-                  {t('admin.catalog.services.create.form.serviceCodeDescription') || '3-6 uppercase alphanumeric characters. Used for request IDs (e.g., REQ-LIMP-202602-0001)'}
-                </p>
+                {codeError ? (
+                  <p className="mt-1 text-xs text-destructive">{codeError}</p>
+                ) : (
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {t('admin.catalog.services.create.form.serviceCodeDescription') || '3-4 uppercase alphanumeric characters. Used for request IDs (e.g., REQ-LIMP-202602-0001)'}
+                  </p>
+                )}
               </div>
 
               {/* Active/Inactive Toggle */}

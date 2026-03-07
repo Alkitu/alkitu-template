@@ -237,26 +237,12 @@ function persistActiveSection(section: EditorSection) {
 }
 
 /**
- * Get initial theme mode from localStorage (client-side only)
- * This prevents FOUC by ensuring React hydrates with the same mode as the blocking script
+ * Get initial theme mode - always returns 'light' for deterministic SSR/hydration.
+ * The actual theme mode is synced from localStorage after hydration via useEffect
+ * in ThemeEditorProvider. No FOUC occurs because layout.tsx has a blocking script
+ * that applies the correct CSS class before React hydrates.
  */
 function getInitialThemeMode(): ThemeMode {
-  // Only read from localStorage on the client
-  if (typeof window !== 'undefined') {
-    try {
-      const savedMode = localStorage.getItem('theme-mode');
-      if (savedMode === 'dark' || savedMode === 'light') {
-        return savedMode;
-      }
-      // 'system' mode is not supported by ThemeMode type; default to 'light'
-      if (savedMode === 'system') {
-        return 'light';
-      }
-    } catch (error) {
-      console.warn('Failed to read theme-mode from localStorage:', error);
-    }
-  }
-  // Default to 'light' for SSR or if localStorage is not available
   return 'light';
 }
 
@@ -528,8 +514,27 @@ export function ThemeEditorProvider({
   // Debug log to verify we are using the correct ID
   // console.log('🔍 [ThemeEditorProvider] Loading themes for companyId:', companyId);
 
-  // FIX: Only execute query on client side to prevent React 19 hydration errors
-  const isClient = typeof window !== 'undefined';
+  // FIX: Use useEffect-based mounted state to prevent React 19 hydration errors.
+  // typeof window !== 'undefined' causes server/client branch mismatch; useState+useEffect
+  // ensures isClient is false on both SSR and initial client render, then true after hydration.
+  const [isClient, setIsClient] = React.useState(false);
+  React.useEffect(() => { setIsClient(true); }, []);
+
+  // Sync theme mode from localStorage after hydration (replaces the removed
+  // window check in getInitialThemeMode to avoid server/client state mismatch)
+  React.useEffect(() => {
+    try {
+      const savedMode = localStorage.getItem('theme-mode');
+      if (savedMode === 'dark' || savedMode === 'light') {
+        dispatch({ type: 'SET_THEME_MODE', payload: savedMode });
+      } else if (savedMode === 'system') {
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        dispatch({ type: 'SET_THEME_MODE', payload: prefersDark ? 'dark' : 'light' });
+      }
+    } catch (error) {
+      console.warn('Failed to read theme-mode from localStorage:', error);
+    }
+  }, []);
 
   // Always fetch from database to detect theme updates (favorite/default changes)
   const { data: dbThemes, refetch: refetchThemes } =

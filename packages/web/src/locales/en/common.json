@@ -655,7 +655,7 @@
             "activeDescription": "Service will be visible in the catalog",
             "inactiveDescription": "Service will be hidden from the catalog",
             "serviceCode": "Service Code",
-            "serviceCodeDescription": "3-6 uppercase alphanumeric characters. Used for request IDs (e.g., REQ-LIMP-202602-0001)"
+            "serviceCodeDescription": "3-4 uppercase alphanumeric characters. Used for request IDs (e.g., REQ-LIMP-202602-0001)"
           },
           "buttons": {
             "next": "Next: Design Form",
@@ -670,6 +670,10 @@
           },
           "fieldsConfigured": "field(s) configured",
           "validation": {
+            "codeRequired": "Enter a service code to continue",
+            "codeMinLength": "The code needs at least 3 characters",
+            "codeMaxLength": "The code can have a maximum of 4 characters",
+            "codeFormat": "Only uppercase letters and numbers (e.g., LIMP, AC01)",
             "requiredFields": "Please fill in all required fields",
             "atLeastOneField": "Please add at least one field to the form"
           },

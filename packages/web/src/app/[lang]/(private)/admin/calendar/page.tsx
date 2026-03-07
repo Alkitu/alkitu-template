@@ -32,26 +32,25 @@ const STATUS_CONFIG: Record<
     icon: Clock,
     filterKey: 'pending',
     variant: 'pending',
-    activeClass: 'bg-warning text-warning-foreground hover:bg-warning/90',
+    activeClass: 'bg-red-600 text-white hover:bg-red-700',
   },
   [RequestStatus.ONGOING]: {
     icon: Play,
     filterKey: 'ongoing',
     variant: 'ongoing',
-    activeClass: 'bg-primary text-primary-foreground hover:bg-primary/90',
+    activeClass: 'bg-blue-600 text-white hover:bg-blue-700',
   },
   [RequestStatus.COMPLETED]: {
     icon: CheckCircle,
     filterKey: 'completed',
     variant: 'completed',
-    activeClass: 'bg-success text-success-foreground hover:bg-success/90',
+    activeClass: 'bg-green-600 text-white hover:bg-green-700',
   },
   [RequestStatus.CANCELLED]: {
     icon: XCircle,
     filterKey: 'cancelled',
     variant: 'cancelled',
-    activeClass:
-      'bg-destructive text-destructive-foreground hover:bg-destructive/90',
+    activeClass: 'bg-gray-500 text-white hover:bg-gray-600',
   },
 };
 
@@ -100,7 +99,8 @@ export default function AdminCalendarPage() {
       id: string;
       status: string;
       executionDateTime: string;
-      service?: { name: string } | null;
+      service?: { name: string; code?: string | null } | null;
+      user?: { firstname?: string | null; lastname?: string | null } | null;
     }>;
     return requests
       .filter((req) => activeStatuses.has(req.status))
@@ -108,9 +108,17 @@ export default function AdminCalendarPage() {
         const start = new Date(req.executionDateTime);
         const end = new Date(start.getTime() + 60 * 60 * 1000); // 1h duration
         const config = STATUS_CONFIG[req.status as RequestStatus];
+        const code = req.service?.code;
+        const serviceName = req.service?.name ?? 'Request';
+        const userName = [req.user?.firstname, req.user?.lastname]
+          .filter(Boolean)
+          .join(' ');
+        const title = [code, userName || serviceName]
+          .filter(Boolean)
+          .join(' – ');
         return {
           id: req.id,
-          title: req.service?.name ?? 'Request',
+          title,
           start,
           end,
           variant: config.variant,

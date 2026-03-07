@@ -23,10 +23,9 @@ export const getServicesByCategorySchema = z.object({
 
 export const serviceCodeSchema = z
   .string()
-  .min(3)
-  .max(6)
-  .regex(/^[A-Z0-9]+$/, 'Code must be 3-6 uppercase alphanumeric characters')
-  .optional();
+  .min(3, 'Code must be at least 3 characters')
+  .max(4, 'Code must be at most 4 characters')
+  .regex(/^[A-Z0-9]+$/, 'Code must be 3-4 uppercase alphanumeric characters');
 
 export const createServiceSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -46,7 +45,7 @@ export const updateServiceSchema = z.object({
   thumbnail: z.string().nullish(),
   iconColor: z.string().nullish(),
   isActive: z.boolean().optional(),
-  code: serviceCodeSchema.or(z.null()),
+  code: serviceCodeSchema.optional().or(z.null()),
 });
 
 export const deleteServiceSchema = z.object({ id: z.string() });

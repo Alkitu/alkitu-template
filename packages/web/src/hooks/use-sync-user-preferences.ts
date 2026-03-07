@@ -60,15 +60,17 @@ export function useSyncUserPreferences(
 
     // Sync language: DB → cookie + context + URL
     if (user.language && user.language !== locale) {
-      setLocale(user.language as 'es' | 'en');
-      const currentLang = pathname.split('/').filter(Boolean)[0];
-      if (currentLang !== user.language) {
-        const newPath = pathname.replace(
-          `/${currentLang}`,
-          `/${user.language}`,
-        );
-        router.push(newPath);
-      }
+      const targetLang = user.language as 'es' | 'en';
+      setLocale(targetLang).then(() => {
+        const currentLang = pathname.split('/').filter(Boolean)[0];
+        if (currentLang !== targetLang) {
+          const newPath = pathname.replace(
+            `/${currentLang}`,
+            `/${targetLang}`,
+          );
+          router.push(newPath);
+        }
+      });
     }
   }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
 }

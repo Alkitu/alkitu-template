@@ -29,6 +29,11 @@ import type {
   NotificationsPageOrganismProps,
 } from './NotificationsPageOrganism.types';
 
+/** Strip accidental role prefixes from notification links stored in the DB */
+function sanitizeNotificationLink(link: string): string {
+  return link.replace(/^\/(client|employee|admin)/, '');
+}
+
 export function NotificationsPageOrganism({
   requestsBasePath,
 }: NotificationsPageOrganismProps) {
@@ -101,15 +106,28 @@ export function NotificationsPageOrganism({
     deleteNotificationMutation.mutate({ notificationId: id });
   };
 
+  const getNotificationHref = (notification: Notification): string | null => {
+    // TODO: Remove debug logging after confirming fix
+    console.log('[NotificationsPage] getHref:', {
+      id: notification.id,
+      link: notification.link,
+      requestId: notification.data?.requestId,
+      type: notification.type,
+    });
+    if (notification.link) {
+      const roleBase = requestsBasePath.replace('/requests', '');
+      return `/${lang}${roleBase}${sanitizeNotificationLink(notification.link)}`;
+    }
+    if (notification.data?.requestId) {
+      return `/${lang}${requestsBasePath}/${notification.data.requestId}`;
+    }
+    return null;
+  };
+
   const handleNotificationClick = (notification: Notification) => {
     if (!notification.read) handleMarkAsRead(notification.id);
-    if (notification.data?.requestId) {
-      router.push(
-        `/${lang}${requestsBasePath}/${notification.data.requestId}`,
-      );
-    } else if (notification.link) {
-      router.push(notification.link);
-    }
+    const href = getNotificationHref(notification);
+    if (href) router.push(href);
   };
 
   // Icon helper
@@ -213,10 +231,10 @@ export function NotificationsPageOrganism({
           </div>
 
           {/* "Ver Solicitud" Button */}
-          {notification.data?.requestId && (
+          {getNotificationHref(notification) && (
             <div className="mt-3" onClick={(e) => e.stopPropagation()}>
               <Link
-                href={`/${lang}${requestsBasePath}/${notification.data.requestId}`}
+                href={getNotificationHref(notification)!}
               >
                 <Button variant="outline" size="sm" className="gap-2">
                   <ExternalLink className="h-3.5 w-3.5" />

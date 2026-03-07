@@ -26,6 +26,7 @@ import type { NextRequest } from 'next/server';
 const FEATURE_GATED_ROUTES: Record<string, string> = {
   '/admin/chat/analytics': 'support-chat',
   '/admin/chat': 'support-chat',
+  '/client/chat': 'support-chat',
   '/admin/channels': 'team-channels',
   '/admin/analytics': 'analytics',
   '/admin/notifications': 'notifications',

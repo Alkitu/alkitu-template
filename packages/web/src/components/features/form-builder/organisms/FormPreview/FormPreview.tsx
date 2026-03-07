@@ -17,6 +17,7 @@ import { Checkbox } from '@/components/primitives/ui/checkbox';
 import { Switch } from '@/components/primitives/ui/switch';
 import { RadioGroup, RadioGroupItem } from '@/components/primitives/ui/radio-group';
 import { cn } from '@/lib/utils';
+import { DateTimePicker } from '../../molecules/DateTimePicker';
 
 /**
  * FormPreview Organism Component
@@ -320,11 +321,20 @@ export function FormPreview({
       case 'time':
       case 'datetime':
         return (
-          <Input
-            id={field.id}
-            type={field.type === 'date' ? 'date' : field.type === 'time' ? 'time' : 'datetime-local'}
-            placeholder={placeholder}
-            {...register(field.id)}
+          <Controller
+            name={field.id}
+            control={control}
+            render={({ field: controllerField }) => (
+              <DateTimePicker
+                mode={field.dateOptions?.mode || field.type}
+                value={controllerField.value}
+                onChange={controllerField.onChange}
+                dateOptions={field.dateOptions}
+                locale={field.dateOptions?.locale || previewLocale}
+                placeholder={placeholder}
+                disabled={!isInteractive}
+              />
+            )}
           />
         );
 

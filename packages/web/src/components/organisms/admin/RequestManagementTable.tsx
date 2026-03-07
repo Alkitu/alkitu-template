@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { Plus, Search } from 'lucide-react';
 import { toast } from 'sonner';
 import { handleApiError } from '@/lib/trpc-error-handler';
@@ -53,6 +54,7 @@ export const RequestManagementTable: React.FC<RequestManagementTableProps> = ({
   const isClient = mode === 'client';
   const router = useRouter();
   const searchParams = useSearchParams();
+  const queryClient = useQueryClient();
 
   // State management
   const [activeFilter, setActiveFilter] = useState<RequestFilterType>('pending');
@@ -150,7 +152,6 @@ export const RequestManagementTable: React.FC<RequestManagementTableProps> = ({
     data: requestsData,
     isLoading,
     isError,
-    refetch,
   } = trpc.request.getFilteredRequests.useQuery(queryParams);
 
   // Fetch request stats using tRPC
@@ -207,7 +208,7 @@ export const RequestManagementTable: React.FC<RequestManagementTableProps> = ({
     try {
       await assignMutation.mutateAsync({ id: requestId, assignedToId: employeeId });
       toast.success('Empleado asignado correctamente');
-      await refetch();
+      await queryClient.invalidateQueries({ queryKey: [['request']] });
       setIsAssignModalOpen(false);
       onRequestUpdated?.();
     } catch (error) {
@@ -274,26 +275,40 @@ export const RequestManagementTable: React.FC<RequestManagementTableProps> = ({
           label="Total de Solicitudes"
           value={stats.total}
           variant="default"
+          onClick={() => handleFilterChange('all')}
+          isActive={activeFilter === 'all'}
         />
         <UserStatsCard
           label="Pendientes"
           value={stats.pending}
-          variant="accent"
+          valueClassName="text-red-600"
+          onClick={() => handleFilterChange('pending')}
+          isActive={activeFilter === 'pending'}
+          activeClassName="border-red-500 bg-red-50 dark:bg-red-950/30"
         />
         <UserStatsCard
           label="En Progreso"
           value={stats.ongoing}
-          variant="accent"
+          valueClassName="text-blue-600"
+          onClick={() => handleFilterChange('ongoing')}
+          isActive={activeFilter === 'ongoing'}
+          activeClassName="border-blue-500 bg-blue-50 dark:bg-blue-950/30"
         />
         <UserStatsCard
           label="Completadas"
           value={stats.completed}
-          variant="accent"
+          valueClassName="text-green-600"
+          onClick={() => handleFilterChange('completed')}
+          isActive={activeFilter === 'completed'}
+          activeClassName="border-green-500 bg-green-50 dark:bg-green-950/30"
         />
         <UserStatsCard
           label="Canceladas"
           value={stats.cancelled}
-          variant="accent"
+          valueClassName="text-gray-500"
+          onClick={() => handleFilterChange('cancelled')}
+          isActive={activeFilter === 'cancelled'}
+          activeClassName="border-gray-400 bg-gray-100 dark:bg-gray-800/30"
         />
       </div>
 

@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useParams } from 'next/navigation';
 import { ClipboardList, MapPin, Plus, FileText, Clock, CheckCircle2 } from 'lucide-react';
+import { trpc } from '@/lib/trpc';
 import { QuickActionCard } from '@/components/molecules-alianza/QuickActionCard';
 import { StatsCardGrid } from '@/components/organisms/dashboard';
 import { RequestListOrganism } from '@/components/organisms/dashboard';
@@ -13,109 +14,75 @@ import type { RequestItem } from '@/components/organisms/dashboard';
  *
  * Main dashboard for CLIENT role users.
  * Displays active requests, quick actions, and key metrics.
+ *
+ * Migration Note: Converted from fetch() to tRPC for type safety and better error handling
  */
-
-interface Stats {
-  active: number;
-  completed: number;
-  locations: number;
-}
-
 export default function ClientDashboardPage() {
-  const [stats, setStats] = useState<Stats>({ active: 0, completed: 0, locations: 0 });
-  const [recentRequests, setRecentRequests] = useState<RequestItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { lang } = useParams();
 
-  useEffect(() => {
-    const fetchDashboardData = async () => {
-      setIsLoading(true);
+  // Fetch recent requests with tRPC (backend automatically filters by role)
+  const { data: requestsData, isLoading: requestsLoading } = trpc.request.getFilteredRequests.useQuery({
+    page: 1,
+    limit: 5,
+    sortBy: 'createdAt',
+    sortOrder: 'desc',
+  });
 
-      // Helper function to fetch with timeout
-      const fetchWithTimeout = async (url: string, timeout = 5000) => {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), timeout);
+  // Fetch request stats with tRPC (backend automatically filters by role)
+  const { data: statsData, isLoading: statsLoading } = trpc.request.getRequestStats.useQuery({});
 
-        try {
-          const response = await fetch(url, { signal: controller.signal });
-          clearTimeout(timeoutId);
-          return response;
-        } catch (error) {
-          clearTimeout(timeoutId);
-          throw error;
-        }
-      };
+  // Fetch current user to get locations
+  const { data: user } = trpc.user.me.useQuery();
 
-      try {
-        // Fetch data with timeout protection
-        const [statsResponse, locationsResponse, requestsResponse] = await Promise.allSettled([
-          fetchWithTimeout('/api/requests/stats/count').catch(() => null),
-          fetchWithTimeout('/api/locations').catch(() => null),
-          fetchWithTimeout('/api/requests?limit=5&sort=createdAt:desc').catch(() => null),
-        ]);
+  // Fetch user locations
+  const { data: locationsData } = trpc.location.getUserLocations.useQuery(
+    { userId: user?.id! },
+    { enabled: !!user?.id },
+  );
 
-        // Parse stats (fallback to 0 if API doesn't exist)
-        if (statsResponse.status === 'fulfilled' && statsResponse.value?.ok) {
-          const statsData = await statsResponse.value.json();
-          const active = (statsData.PENDING || 0) + (statsData.ONGOING || 0);
-          const completed = statsData.COMPLETED || 0;
+  // Extract data
+  const recentRequests = requestsData?.requests || [];
+  const isLoading = requestsLoading || statsLoading;
 
-          // Parse locations
-          let locationsCount = 0;
-          if (locationsResponse.status === 'fulfilled' && locationsResponse.value?.ok) {
-            const locationsData = await locationsResponse.value.json();
-            locationsCount = Array.isArray(locationsData) ? locationsData.length : 0;
-          }
-
-          setStats({ active, completed, locations: locationsCount });
-        }
-
-        // Parse recent requests
-        if (requestsResponse.status === 'fulfilled' && requestsResponse.value?.ok) {
-          const requestsData = await requestsResponse.value.json();
-          setRecentRequests(Array.isArray(requestsData) ? requestsData.slice(0, 5) : []);
-        }
-      } catch (error) {
-        console.error('Error fetching dashboard data:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchDashboardData();
-  }, []);
+  // Calculate stats from API response
+  const stats = {
+    active: (statsData?.byStatus?.PENDING || 0) + (statsData?.byStatus?.ONGOING || 0),
+    completed: statsData?.byStatus?.COMPLETED || 0,
+    locations: locationsData?.length ?? 0,
+  };
 
   const quickActions = [
     {
       icon: Plus,
       label: 'Solicitud',
       subtitle: 'Nueva',
-      href: '/client/requests/new',
+      href: `/${lang}/client/requests/new`,
       variant: 'primary' as const,
     },
     {
       icon: ClipboardList,
       label: 'Solicitudes',
       subtitle: 'Mis',
-      href: '/client/requests',
+      href: `/${lang}/client/requests`,
       customIconColor: 'text-blue-600 dark:text-blue-400',
     },
     {
       icon: MapPin,
       label: 'de Trabajo',
       subtitle: 'Ubicaciones',
-      href: '/client/locations',
+      href: `/${lang}/client/locations`,
       customIconColor: 'text-green-600 dark:text-green-400',
     },
     {
       icon: FileText,
       label: 'Notificaciones',
       subtitle: 'Ver',
-      href: '/client/notifications',
+      href: `/${lang}/client/notifications`,
       customIconColor: 'text-purple-600 dark:text-purple-400',
     },
   ];
 
-  const statsData: StatCardData[] = [
+  const statsCardsData: StatCardData[] = [
     {
       label: 'Solicitudes Activas',
       value: stats.active,
@@ -155,16 +122,16 @@ export default function ClientDashboardPage() {
       </div>
 
       {/* Statistics Cards */}
-      <StatsCardGrid stats={statsData} isLoading={isLoading} columns={3} />
+      <StatsCardGrid stats={statsCardsData} isLoading={isLoading} columns={3} />
 
       {/* Recent Activity */}
       <RequestListOrganism
-        requests={recentRequests}
+        requests={recentRequests as unknown as RequestItem[]}
         isLoading={isLoading}
-        baseHref="/client/requests"
+        baseHref={`/${lang}/client/requests`}
         emptyMessage="No hay actividad reciente"
         emptyActionLabel="Nueva Solicitud"
-        emptyActionHref="/client/requests/new"
+        emptyActionHref={`/${lang}/client/requests/new`}
         title="Actividad Reciente"
         showClientName={false}
       />

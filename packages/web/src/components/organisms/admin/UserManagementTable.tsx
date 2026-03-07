@@ -211,21 +211,35 @@ export const UserManagementTable = React.forwardRef<
           label={labels.stats.total}
           value={stats.total}
           variant="default"
+          onClick={() => handleFilterChange('all')}
+          isActive={activeFilter === 'all'}
         />
         <UserStatsCard
           label={labels.stats.admins}
           value={stats.admins}
           variant="accent"
+          valueClassName="text-violet-600"
+          onClick={() => handleFilterChange('admin')}
+          isActive={activeFilter === 'admin'}
+          activeClassName="border-violet-500 bg-violet-50 dark:bg-violet-950/30"
         />
         <UserStatsCard
           label={labels.stats.employees}
           value={stats.employees}
           variant="accent"
+          valueClassName="text-blue-600"
+          onClick={() => handleFilterChange('employee')}
+          isActive={activeFilter === 'employee'}
+          activeClassName="border-blue-500 bg-blue-50 dark:bg-blue-950/30"
         />
         <UserStatsCard
           label={labels.stats.clients}
           value={stats.clients}
           variant="accent"
+          valueClassName="text-emerald-600"
+          onClick={() => handleFilterChange('client')}
+          isActive={activeFilter === 'client'}
+          activeClassName="border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30"
         />
       </div>
 

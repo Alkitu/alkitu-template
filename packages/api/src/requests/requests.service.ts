@@ -119,6 +119,15 @@ export class RequestsService {
         );
       }
 
+      // Extract title from templateResponses or generate from customId
+      const responses = createRequestDto.templateResponses as
+        | Record<string, unknown>
+        | null
+        | undefined;
+      const title =
+        (responses?.title as string) ||
+        (customId ? `Solicitud ${customId}` : 'Nueva Solicitud');
+
       // Create the request with audit logging
       const createdRequest = await this.prisma.request.create({
         data: {
@@ -128,6 +137,7 @@ export class RequestsService {
           executionDateTime: executionDate,
           templateResponses: createRequestDto.templateResponses as any,
           note: createRequestDto.note as any,
+          title,
           customId,
           status: RequestStatus.PENDING,
           deletedAt: null, // Explicitly set to null for soft delete queries

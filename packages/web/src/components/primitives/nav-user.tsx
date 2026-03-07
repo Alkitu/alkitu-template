@@ -39,6 +39,7 @@ import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { useCallback } from 'react';
 import { trpc } from '@/lib/trpc';
+import { useFeatureFlag } from '@/hooks/useFeatureFlag';
 import { useTranslationContext } from '@/context/TranslationsContext';
 
 // import { LanguageSwitcher } from './language-switcher';
@@ -59,6 +60,7 @@ export function NavUser({ user }: { user: User }) {
     userId: user.id,
     enabled: !!user.id,
   });
+  const { isEnabled: chatEnabled } = useFeatureFlag('support-chat');
 
   const handleLanguageChange = (lang: string) => {
     // Persist to DB
@@ -183,12 +185,14 @@ export function NavUser({ user }: { user: User }) {
                   {t('billing')}
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/admin/chat" className="relative">
-                  <MessageSquare className="h-4 w-4" />
-                  Chat
-                </Link>
-              </DropdownMenuItem>
+              {chatEnabled && (
+                <DropdownMenuItem asChild>
+                  <Link href={`/${user.role || 'admin'}/chat`} className="relative">
+                    <MessageSquare className="h-4 w-4" />
+                    Chat
+                  </Link>
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem asChild>
                 <Link href="/dashboard/notifications" className="relative">
                   <div className="relative">

@@ -144,7 +144,7 @@ export class RequestStatusChangedHook {
       {
         type: NotificationType.REQUEST_STATUS_CHANGED,
         message,
-        link: `/client/requests/${request.id}`,
+        link: `/requests/${request.id}`,
         data: {
           requestId: request.id,
           serviceId: request.serviceId,
@@ -184,7 +184,7 @@ export class RequestStatusChangedHook {
       {
         type: NotificationType.REQUEST_STATUS_CHANGED,
         message: `La solicitud para "${serviceName}" de ${clientName} está ahora en progreso`,
-        link: `/employee/requests/${request.id}`,
+        link: `/requests/${request.id}`,
         data: {
           requestId: request.id,
           serviceId: request.serviceId,

@@ -105,7 +105,7 @@ export function QuickActionCard({
   const cardClass = cn(
     'relative p-6 transition-all cursor-pointer',
     'hover:shadow-lg hover:scale-[1.02]',
-    isPrimary && 'border-primary/20 hover:border-primary/40',
+    isPrimary && 'bg-primary/10 border-primary/20 hover:bg-primary/15 hover:border-primary/40',
     disabled && 'opacity-50 cursor-not-allowed pointer-events-none',
     className
   );

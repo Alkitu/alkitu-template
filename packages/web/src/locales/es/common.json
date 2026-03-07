@@ -571,7 +571,7 @@
             "activeDescription": "El servicio será visible en el catálogo",
             "inactiveDescription": "El servicio estará oculto en el catálogo",
             "serviceCode": "Código del Servicio",
-            "serviceCodeDescription": "3-6 caracteres alfanuméricos en mayúsculas. Se usa para generar IDs de solicitudes (ej: REQ-LIMP-202602-0001)"
+            "serviceCodeDescription": "3-4 caracteres alfanuméricos en mayúsculas. Se usa para generar IDs de solicitudes (ej: REQ-LIMP-202602-0001)"
           },
           "buttons": {
             "next": "Siguiente: Diseñar Formulario",
@@ -586,6 +586,10 @@
           },
           "fieldsConfigured": "campo(s) configurado(s)",
           "validation": {
+            "codeRequired": "Ingresa un código de servicio para continuar",
+            "codeMinLength": "El código necesita al menos 3 caracteres",
+            "codeMaxLength": "El código puede tener máximo 4 caracteres",
+            "codeFormat": "Solo letras mayúsculas y números (ej: LIMP, AC01)",
             "requiredFields": "Por favor completa todos los campos requeridos",
             "atLeastOneField": "Por favor agrega al menos un campo al formulario"
           },

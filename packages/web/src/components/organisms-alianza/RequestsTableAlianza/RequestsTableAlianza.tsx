@@ -1,6 +1,6 @@
 import React from 'react';
 import { RequestsTableAlianzaProps } from './RequestsTableAlianza.types';
-import { Eye, UserPlus, Clock, MapPin, UserCog } from 'lucide-react';
+import { Eye, UserPlus, MapPin, UserCog } from 'lucide-react';
 import { ServiceIcon } from '@/components/atoms-alianza/ServiceIcon';
 
 /**
@@ -23,19 +23,19 @@ export const RequestsTableAlianza: React.FC<RequestsTableAlianzaProps> = ({
     const statusConfig: Record<string, { label: string; className: string }> = {
       PENDING: {
         label: 'Pendiente',
-        className: 'bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-400 dark:border-yellow-800/30',
+        className: 'bg-red-50 text-red-600 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800/30',
       },
       ONGOING: {
         label: 'En Progreso',
-        className: 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800/30',
+        className: 'bg-blue-50 text-blue-600 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800/30',
       },
       COMPLETED: {
         label: 'Completada',
-        className: 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800/30',
+        className: 'bg-green-50 text-green-600 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800/30',
       },
       CANCELLED: {
         label: 'Cancelada',
-        className: 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800/30',
+        className: 'bg-gray-50 text-gray-500 border-gray-200 dark:bg-gray-900/20 dark:text-gray-400 dark:border-gray-800/30',
       },
     };
 
@@ -56,6 +56,9 @@ export const RequestsTableAlianza: React.FC<RequestsTableAlianzaProps> = ({
       year: 'numeric',
       month: 'short',
       day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
     }).format(date);
   };
 
@@ -78,6 +81,11 @@ export const RequestsTableAlianza: React.FC<RequestsTableAlianzaProps> = ({
             <th className="text-left py-3 px-4 text-sm font-semibold text-foreground">
               Fecha Ejecución
             </th>
+            {!hideColumns.includes('location') && (
+              <th className="text-left py-3 px-4 text-sm font-semibold text-foreground">
+                Ubicación
+              </th>
+            )}
             {!hideColumns.includes('assignedTo') && (
               <th className="text-left py-3 px-4 text-sm font-semibold text-foreground">
                 Asignado a
@@ -111,28 +119,9 @@ export const RequestsTableAlianza: React.FC<RequestsTableAlianzaProps> = ({
                     >
                       {request.serviceName}
                     </span>
-                    <span className="text-xs text-muted-foreground">
+                    <span className="inline-flex w-fit items-center px-2 py-0.5 rounded-full text-xs font-medium bg-muted text-muted-foreground border border-border/50">
                       {request.categoryName}
                     </span>
-                    {(request.executionTime || request.locationCity) && (
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        {request.executionTime && (
-                          <span className="flex items-center gap-1">
-                            <Clock className="h-3 w-3" />
-                            {request.executionTime}
-                          </span>
-                        )}
-                        {request.executionTime && request.locationCity && (
-                          <span>•</span>
-                        )}
-                        {request.locationCity && (
-                          <span className="flex items-center gap-1">
-                            <MapPin className="h-3 w-3" />
-                            {request.locationCity}, {request.locationState}
-                          </span>
-                        )}
-                      </div>
-                    )}
                   </div>
                 </div>
               </td>
@@ -157,9 +146,23 @@ export const RequestsTableAlianza: React.FC<RequestsTableAlianzaProps> = ({
               <td className="py-3 px-4">{getStatusBadge(request.status)}</td>
 
               {/* Execution Date */}
-              <td className="py-3 px-4 text-sm text-foreground">
+              <td className="py-3 px-4 text-sm text-foreground whitespace-nowrap">
                 {formatDate(request.executionDateTime)}
               </td>
+
+              {/* Location */}
+              {!hideColumns.includes('location') && (
+                <td className="py-3 px-4 text-sm text-foreground">
+                  {request.locationCity ? (
+                    <span className="flex items-center gap-1">
+                      <MapPin className="h-3 w-3 text-muted-foreground shrink-0" />
+                      {request.locationCity}{request.locationState ? `, ${request.locationState}` : ''}
+                    </span>
+                  ) : (
+                    <span className="text-muted-foreground">—</span>
+                  )}
+                </td>
+              )}
 
               {/* Assigned To */}
               {!hideColumns.includes('assignedTo') && (

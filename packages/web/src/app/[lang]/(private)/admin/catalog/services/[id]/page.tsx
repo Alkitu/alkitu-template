@@ -85,6 +85,15 @@ export default function EditServicePage() {
   const [initialFormSettingsJson, setInitialFormSettingsJson] = useState<string>('');
   const [isIconSelectorOpen, setIsIconSelectorOpen] = useState(false);
   const [serviceDriveFolderId, setServiceDriveFolderId] = useState<string | null>(null);
+  const [codeError, setCodeError] = useState('');
+
+  const validateCode = (code: string): string => {
+    if (!code) return 'El código del servicio es obligatorio';
+    if (code.length < 3) return 'El código debe tener al menos 3 caracteres';
+    if (code.length > 4) return 'El código debe tener máximo 4 caracteres';
+    if (!/^[A-Z0-9]+$/.test(code)) return 'El código debe ser alfanumérico en mayúsculas';
+    return '';
+  };
 
   // tRPC queries
   const { data: service, isLoading: loadingService } = trpc.service.getServiceById.useQuery(
@@ -176,7 +185,9 @@ export default function EditServicePage() {
   const totalFieldCount = useMemo(() => countFields(formSettings.fields), [formSettings.fields]);
 
   const handleSaveAll = async () => {
-    if (!basicData.name || !basicData.categoryId) {
+    const codeValidation = validateCode(basicData.code);
+    setCodeError(codeValidation);
+    if (!basicData.name || !basicData.categoryId || codeValidation) {
       toast.error('Por favor, completa todos los campos requeridos');
       return;
     }
@@ -232,7 +243,9 @@ export default function EditServicePage() {
 
   const handleBasicNext = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!basicData.name || !basicData.categoryId) {
+    const codeValidation = validateCode(basicData.code);
+    setCodeError(codeValidation);
+    if (!basicData.name || !basicData.categoryId || codeValidation) {
       toast.error('Por favor, completa todos los campos requeridos');
       return;
     }
@@ -362,9 +375,9 @@ export default function EditServicePage() {
                       
                       if (!iconValue) return <MapPin className="h-6 w-6" style={iconStyle} />;
 
-                      // Check if it's a URL (basic check)
-                      if (iconValue.startsWith('http')) {
-                          return <img src={iconValue} alt="Icon" className="h-6 w-6 object-contain" />;
+                      // Check if it's a URL or relative path (e.g. /api/drive/...)
+                      if (iconValue.startsWith('http') || iconValue.startsWith('/')) {
+                          return <img src={iconValue} alt="Icon" className="w-full h-full object-cover rounded-full" />;
                       }
 
                       // Check for Emoji
@@ -447,15 +460,23 @@ export default function EditServicePage() {
 
               <div>
                 <FormInput
-                  label="Código del Servicio"
+                  label="Código del Servicio *"
                   id="code"
                   value={basicData.code}
-                  onChange={(e) => setBasicData({ ...basicData, code: e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6) })}
+                  onChange={(e) => {
+                    const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4);
+                    setBasicData({ ...basicData, code: value });
+                    if (codeError) setCodeError(validateCode(value));
+                  }}
                   placeholder="LIMP"
                 />
-                <p className="mt-1 text-xs text-muted-foreground">
-                  3-6 caracteres alfanuméricos en mayúsculas. Se usa para generar IDs de solicitudes (ej: REQ-LIMP-202602-0001)
-                </p>
+                {codeError ? (
+                  <p className="mt-1 text-xs text-destructive">{codeError}</p>
+                ) : (
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    3-4 caracteres alfanuméricos en mayúsculas. Se usa para generar IDs de solicitudes (ej: REQ-LIMP-202602-0001)
+                  </p>
+                )}
               </div>
 
               {/* Active/Inactive Toggle */}

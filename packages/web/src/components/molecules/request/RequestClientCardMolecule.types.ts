@@ -5,6 +5,7 @@ export interface RequestClientCardMoleculeProps {
     email: string;
     phone?: string | null;
     company?: string | null;
+    image?: string | null;
   };
   clientType?: string; // e.g., "Cliente Premium"
   className?: string;

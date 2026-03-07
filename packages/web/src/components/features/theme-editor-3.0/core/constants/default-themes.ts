@@ -39,8 +39,8 @@ const DEFAULT_LIGHT_COLORS: import('../types/theme.types').ThemeColors = {
   
   // Muted colors
   muted: createColorToken('muted', 'oklch(0.9700 0 0)', 0.9700, 0, 0),
-  mutedForeground: createColorToken('muted-foreground', 'oklch(0.5560 0 0)', 0.5560, 0, 0),
-  
+  mutedForeground: createColorToken('muted-foreground', 'oklch(0.3900 0 0)', 0.3900, 0, 0),
+
   // Alert colors (destructive, warning, success)
   destructive: createColorToken('destructive', 'oklch(0.5770 0.2450 27.3250)', 0.5770, 0.2450, 27.3250),
   destructiveForeground: createColorToken('destructive-foreground', 'oklch(1 0 0)', 1, 0, 0),

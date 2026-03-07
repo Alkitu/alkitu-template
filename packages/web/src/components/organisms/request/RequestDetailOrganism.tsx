@@ -34,6 +34,7 @@ import {
 import { FormResponsesPreview } from '@/components/features/form-builder/organisms/FormResponsesPreview';
 import type { DriveAttachment } from '@/components/features/form-builder/organisms/FormResponsesPreview/FormResponsesPreview.types';
 import type { RequestDetailOrganismProps } from './RequestDetailOrganism.types';
+import { useQueryClient } from '@tanstack/react-query';
 import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
 import { RequestChatPanel } from './RequestChatPanel';
@@ -62,6 +63,7 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
   className = '',
   onUpdate,
 }) => {
+  const queryClient = useQueryClient();
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
   const [isCancellationRequestModalOpen, setIsCancellationRequestModalOpen] =
@@ -116,6 +118,7 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
       await assignMutation.mutateAsync({ id: reqId, assignedToId: employeeId });
       toast.success('La solicitud ha sido asignada correctamente.');
       refetch();
+      queryClient.invalidateQueries({ queryKey: [['request']] });
       if (onUpdate) onUpdate();
     } catch {
       toast.error('No se pudo asignar el empleado.');
@@ -130,6 +133,7 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
       await updateStatusMutation.mutateAsync({ id: reqId, status });
       toast.success('El estado de la solicitud ha sido actualizado.');
       refetch();
+      queryClient.invalidateQueries({ queryKey: [['request']] });
       if (onUpdate) onUpdate();
     } catch {
       toast.error('No se pudo actualizar el estado.');
@@ -144,6 +148,7 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
       await requestCancellationMutation.mutateAsync({ id: reqId, reason });
       toast.success('Su solicitud de cancelación ha sido enviada.');
       refetch();
+      queryClient.invalidateQueries({ queryKey: [['request']] });
       if (onUpdate) onUpdate();
     } catch {
       toast.error('No se pudo enviar la solicitud de cancelación.');
@@ -162,6 +167,7 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
       });
       toast.success('La cancelación ha sido aprobada.');
       refetch();
+      queryClient.invalidateQueries({ queryKey: [['request']] });
       if (onUpdate) onUpdate();
     } catch {
       toast.error('No se pudo aprobar la cancelación.');
@@ -320,16 +326,6 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
                   Editar
                 </Button>
               )}
-              {canRequestCancellation && (
-                <Button
-                  variant="outline"
-                  onClick={() => setIsCancellationRequestModalOpen(true)}
-                  className="h-10 px-6! border-amber-300 text-amber-600 hover:bg-amber-50 font-bold uppercase tracking-wider text-xs"
-                >
-                  <AlertTriangle className="mr-2 h-4 w-4" />
-                  Solicitar Cancelación
-                </Button>
-              )}
             </>
           )}
         </div>
@@ -361,7 +357,7 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
             </h1>
           )}
           <div className="flex items-center gap-3 text-xs font-bold tracking-widest uppercase">
-            <span className="text-muted-foreground w-12">ID</span>
+            <span className="text-foreground/90 w-12">ID</span>
             <span className="text-primary bg-primary/10 px-2 py-1 rounded-md">
               #{(request as any).customId || requestId.slice(-8).toUpperCase()}
             </span>
@@ -375,9 +371,42 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
         </div>
       </div>
 
+      {/* ── Status Timeline Card ── */}
+      <div className="bg-card border border-border shadow-sm rounded-xl p-8">
+        <h2 className="flex items-center gap-3 text-sm font-black uppercase tracking-widest text-foreground mb-8">
+          <CheckCircle className="h-5 w-5 text-primary" />
+          Estado de la Solicitud
+        </h2>
+        <RequestTimelineMolecule events={timelineEvents} />
+
+        {request.assignedTo && (
+          <div className="mt-6 pt-6 border-t border-border">
+            <h3 className="text-[10px] uppercase font-black text-foreground/60 tracking-widest mb-3">
+              Empleado Asignado
+            </h3>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                <span className="font-bold text-green-700 text-xs">
+                  {request.assignedTo.firstname[0]}
+                  {request.assignedTo.lastname[0]}
+                </span>
+              </div>
+              <div>
+                <p className="text-sm font-bold text-foreground">
+                  {request.assignedTo.firstname} {request.assignedTo.lastname}
+                </p>
+                <p className="text-xs text-foreground/60">
+                  {request.assignedTo.email}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* ── Client Info ── */}
       <div className="pt-2">
-        <h2 className="flex items-center gap-3 text-[10px] uppercase tracking-[0.2em] font-black text-muted-foreground/60 mb-5">
+        <h2 className="flex items-center gap-3 text-[10px] uppercase tracking-[0.2em] font-black text-foreground/60 mb-5">
           <span className="w-6 h-0.5 bg-primary/20 rounded-full" />
           Información del Cliente
         </h2>
@@ -386,236 +415,224 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
         </div>
       </div>
 
-      {/* ── Service Details Card ── */}
-      <div className="bg-white border border-border shadow-sm rounded-xl p-8 space-y-8">
+      {/* ── Service Details ── */}
+      <div className="space-y-4">
         <h2 className="flex items-center gap-4 text-sm font-black uppercase tracking-widest text-foreground">
           <Briefcase className="h-5 w-5 text-primary" />
           Detalles del Servicio
           <span className="flex-1 h-px bg-border" />
         </h2>
 
-        <div className="grid gap-8 md:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-2">
           {/* Location */}
-          <div className="flex gap-4">
-            <div className="shrink-0 w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center">
-              <MapPin className="h-5 w-5 text-primary" />
-            </div>
-            <div className="flex-1">
-              <h4 className="text-[10px] uppercase font-black text-muted-foreground/60 tracking-widest mb-1">
+          <div className="bg-card border border-border rounded-xl p-5 shadow-sm">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="shrink-0 w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center">
+                <MapPin className="h-5 w-5 text-primary" />
+              </div>
+              <h4 className="text-xs uppercase font-black text-foreground/60 tracking-widest">
                 Ubicación
               </h4>
-              {editHook.isEditing ? (
-                <div className="space-y-3">
-                  <FormSelect
-                    label="Ubicación"
-                    value={
-                      editHook.formData.useNewLocation
-                        ? 'new'
-                        : editHook.formData.locationId
-                    }
-                    onValueChange={editHook.handleLocationChange}
-                    options={editHook.locationOptions}
-                  />
-                  {(editHook.formData.useNewLocation ||
-                    editHook.formData.locationId) && (
-                    <>
-                      <div className="grid grid-cols-2 gap-3">
-                        <FormInput
-                          label="Edificio"
-                          value={editHook.formData.locationBuilding}
-                          onChange={(e) =>
-                            editHook.updateField(
-                              'locationBuilding',
-                              e.target.value,
-                            )
-                          }
-                        />
-                        <FormInput
-                          label="Torre"
-                          value={editHook.formData.locationTower}
-                          onChange={(e) =>
-                            editHook.updateField(
-                              'locationTower',
-                              e.target.value,
-                            )
-                          }
-                        />
-                      </div>
-                      <div className="grid grid-cols-2 gap-3">
-                        <FormInput
-                          label="Piso"
-                          value={editHook.formData.locationFloor}
-                          onChange={(e) =>
-                            editHook.updateField(
-                              'locationFloor',
-                              e.target.value,
-                            )
-                          }
-                        />
-                        <FormInput
-                          label="Unidad"
-                          value={editHook.formData.locationUnit}
-                          onChange={(e) =>
-                            editHook.updateField('locationUnit', e.target.value)
-                          }
-                        />
-                      </div>
+            </div>
+            {editHook.isEditing ? (
+              <div className="space-y-3">
+                <FormSelect
+                  label="Ubicación"
+                  value={
+                    editHook.formData.useNewLocation
+                      ? 'new'
+                      : editHook.formData.locationId
+                  }
+                  onValueChange={editHook.handleLocationChange}
+                  options={editHook.locationOptions}
+                />
+                {(editHook.formData.useNewLocation ||
+                  editHook.formData.locationId) && (
+                  <>
+                    <div className="grid grid-cols-2 gap-3">
                       <FormInput
-                        label="Calle"
-                        value={editHook.formData.locationStreet}
+                        label="Edificio"
+                        value={editHook.formData.locationBuilding}
                         onChange={(e) =>
-                          editHook.updateField('locationStreet', e.target.value)
+                          editHook.updateField('locationBuilding', e.target.value)
+                        }
+                      />
+                      <FormInput
+                        label="Torre"
+                        value={editHook.formData.locationTower}
+                        onChange={(e) =>
+                          editHook.updateField('locationTower', e.target.value)
+                        }
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <FormInput
+                        label="Piso"
+                        value={editHook.formData.locationFloor}
+                        onChange={(e) =>
+                          editHook.updateField('locationFloor', e.target.value)
+                        }
+                      />
+                      <FormInput
+                        label="Unidad"
+                        value={editHook.formData.locationUnit}
+                        onChange={(e) =>
+                          editHook.updateField('locationUnit', e.target.value)
+                        }
+                      />
+                    </div>
+                    <FormInput
+                      label="Calle"
+                      value={editHook.formData.locationStreet}
+                      onChange={(e) =>
+                        editHook.updateField('locationStreet', e.target.value)
+                      }
+                      required
+                    />
+                    <div className="grid grid-cols-3 gap-3">
+                      <FormInput
+                        label="Ciudad"
+                        value={editHook.formData.locationCity}
+                        onChange={(e) =>
+                          editHook.updateField('locationCity', e.target.value)
                         }
                         required
                       />
-                      <div className="grid grid-cols-3 gap-3">
-                        <FormInput
-                          label="Ciudad"
-                          value={editHook.formData.locationCity}
-                          onChange={(e) =>
-                            editHook.updateField('locationCity', e.target.value)
-                          }
-                          required
-                        />
-                        <FormInput
-                          label="Estado"
-                          value={editHook.formData.locationState}
-                          onChange={(e) =>
-                            editHook.updateField(
-                              'locationState',
-                              e.target.value,
-                            )
-                          }
-                          required
-                        />
-                        <FormInput
-                          label="C.P."
-                          value={editHook.formData.locationZip}
-                          onChange={(e) =>
-                            editHook.updateField('locationZip', e.target.value)
-                          }
-                          required
-                        />
-                      </div>
-                    </>
-                  )}
-                </div>
-              ) : (
-                <>
-                  <p className="font-bold text-sm text-foreground">
-                    {request.location?.building ||
-                      request.location?.city ||
-                      'Ubicación'}
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {request.location?.street}
-                  </p>
-                </>
-              )}
-            </div>
+                      <FormInput
+                        label="Estado"
+                        value={editHook.formData.locationState}
+                        onChange={(e) =>
+                          editHook.updateField('locationState', e.target.value)
+                        }
+                        required
+                      />
+                      <FormInput
+                        label="C.P."
+                        value={editHook.formData.locationZip}
+                        onChange={(e) =>
+                          editHook.updateField('locationZip', e.target.value)
+                        }
+                        required
+                      />
+                    </div>
+                  </>
+                )}
+              </div>
+            ) : (
+              <>
+                <p className="font-bold text-base text-foreground">
+                  {request.location?.building ||
+                    request.location?.city ||
+                    'Ubicación'}
+                </p>
+                <p className="font-bold text-sm text-foreground/90 mt-1">
+                  {request.location?.street}
+                </p>
+              </>
+            )}
           </div>
 
           {/* Service Type */}
-          <div className="flex gap-4">
-            <div className="shrink-0 w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center">
-              <Wrench className="h-5 w-5 text-primary" />
-            </div>
-            <div>
-              <h4 className="text-[10px] uppercase font-black text-muted-foreground/60 tracking-widest mb-1">
+          <div className="bg-card border border-border rounded-xl p-5 shadow-sm">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="shrink-0 w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center">
+                <Wrench className="h-5 w-5 text-primary" />
+              </div>
+              <h4 className="text-xs uppercase font-black text-foreground/60 tracking-widest">
                 Tipo de Servicio
               </h4>
-              <p className="font-bold text-sm text-foreground">
-                {editHook.isEditing
-                  ? editHook.selectedServiceName || 'Seleccione un servicio'
-                  : request.service?.name || 'Servicio'}
-              </p>
             </div>
+            <p className="font-bold text-base text-foreground">
+              {editHook.isEditing
+                ? editHook.selectedServiceName || 'Seleccione un servicio'
+                : request.service?.name || 'Servicio'}
+            </p>
           </div>
 
           {/* Date/Time */}
-          <div className="flex gap-4">
-            <div className="shrink-0 w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center">
-              <Calendar className="h-5 w-5 text-primary" />
-            </div>
-            <div className="flex-1">
-              <h4 className="text-[10px] uppercase font-black text-muted-foreground/60 tracking-widest mb-1">
+          <div className="bg-card border border-border rounded-xl p-5 shadow-sm">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="shrink-0 w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center">
+                <Calendar className="h-5 w-5 text-primary" />
+              </div>
+              <h4 className="text-xs uppercase font-black text-foreground/60 tracking-widest">
                 Fecha y Hora
               </h4>
-              {editHook.isEditing ? (
-                <FormInput
-                  label=""
-                  type="datetime-local"
-                  value={editHook.formData.executionDateTime}
-                  onChange={(e) =>
-                    editHook.updateField('executionDateTime', e.target.value)
-                  }
-                  required
-                />
-              ) : (
-                <>
-                  <p className="font-bold text-sm text-foreground">
-                    {executionDate.toLocaleDateString('es-ES', {
-                      day: 'numeric',
-                      month: 'long',
-                      year: 'numeric',
-                    })}
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {executionDate.toLocaleTimeString('es-ES', {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}
-                  </p>
-                </>
-              )}
             </div>
+            {editHook.isEditing ? (
+              <FormInput
+                label=""
+                type="datetime-local"
+                value={editHook.formData.executionDateTime}
+                onChange={(e) =>
+                  editHook.updateField('executionDateTime', e.target.value)
+                }
+                required
+              />
+            ) : (
+              <>
+                <p className="font-bold text-base text-foreground">
+                  {executionDate.toLocaleDateString('es-ES', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                  })}
+                </p>
+                <p className="font-bold text-sm text-foreground/90 mt-1">
+                  {executionDate.toLocaleTimeString('es-ES', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+                </p>
+              </>
+            )}
           </div>
 
           {/* Created Date */}
-          <div className="flex gap-4">
-            <div className="shrink-0 w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center">
-              <FileText className="h-5 w-5 text-primary" />
-            </div>
-            <div>
-              <h4 className="text-[10px] uppercase font-black text-muted-foreground/60 tracking-widest mb-1">
+          <div className="bg-card border border-border rounded-xl p-5 shadow-sm">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="shrink-0 w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center">
+                <FileText className="h-5 w-5 text-primary" />
+              </div>
+              <h4 className="text-xs uppercase font-black text-foreground/60 tracking-widest">
                 Solicitado el
               </h4>
-              <p className="font-bold text-sm text-foreground">
-                {new Date(request.createdAt).toLocaleDateString('es-ES', {
-                  day: 'numeric',
-                  month: 'long',
-                  year: 'numeric',
-                })}
-              </p>
             </div>
+            <p className="font-bold text-base text-foreground">
+              {new Date(request.createdAt).toLocaleDateString('es-ES', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+              })}
+            </p>
           </div>
 
           {/* Notes */}
           {(editHook.isEditing || requestNote) && (
-            <div className="flex gap-4 col-span-2">
-              <div className="shrink-0 w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center">
-                <FileText className="h-5 w-5 text-primary" />
-              </div>
-              <div className="flex-1">
-                <h4 className="text-[10px] uppercase font-black text-muted-foreground/60 tracking-widest mb-1">
+            <div className="bg-card border border-border rounded-xl p-5 shadow-sm md:col-span-2">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="shrink-0 w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center">
+                  <FileText className="h-5 w-5 text-primary" />
+                </div>
+                <h4 className="text-xs uppercase font-black text-foreground/60 tracking-widest">
                   Notas
                 </h4>
-                {editHook.isEditing ? (
-                  <FormTextarea
-                    label=""
-                    value={editHook.formData.note}
-                    onChange={(e) =>
-                      editHook.updateField('note', e.target.value)
-                    }
-                    rows={3}
-                    placeholder="Agregar notas..."
-                  />
-                ) : (
-                  <p className="text-xs text-foreground/80 leading-relaxed">
-                    {requestNote || 'Sin notas adicionales.'}
-                  </p>
-                )}
               </div>
+              {editHook.isEditing ? (
+                <FormTextarea
+                  label=""
+                  value={editHook.formData.note}
+                  onChange={(e) =>
+                    editHook.updateField('note', e.target.value)
+                  }
+                  rows={3}
+                  placeholder="Agregar notas..."
+                />
+              ) : (
+                <p className="text-sm text-foreground leading-relaxed">
+                  {requestNote || 'Sin notas adicionales.'}
+                </p>
+              )}
             </div>
           )}
         </div>
@@ -623,7 +640,7 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
 
       {/* ── Form Responses Card (with Drive attachments) ── */}
       {formSettings && Object.keys(templateResponses).length > 0 && (
-        <div className="bg-white border border-border shadow-sm rounded-xl p-8 space-y-6">
+        <div className="bg-card border border-border shadow-sm rounded-xl p-8 space-y-6">
           <h2 className="flex items-center gap-4 text-sm font-black uppercase tracking-widest text-foreground">
             <ClipboardList className="h-5 w-5 text-primary" />
             Respuestas del Formulario
@@ -638,39 +655,6 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
           />
         </div>
       )}
-
-      {/* ── Status Timeline Card ── */}
-      <div className="bg-white border border-border shadow-sm rounded-xl p-8">
-        <h2 className="flex items-center gap-3 text-sm font-black uppercase tracking-widest text-foreground mb-8">
-          <CheckCircle className="h-5 w-5 text-primary" />
-          Estado de la Solicitud
-        </h2>
-        <RequestTimelineMolecule events={timelineEvents} />
-
-        {request.assignedTo && (
-          <div className="mt-6 pt-6 border-t border-border">
-            <h3 className="text-[10px] uppercase font-black text-muted-foreground/60 tracking-widest mb-3">
-              Empleado Asignado
-            </h3>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-                <span className="font-bold text-green-700 text-xs">
-                  {request.assignedTo.firstname[0]}
-                  {request.assignedTo.lastname[0]}
-                </span>
-              </div>
-              <div>
-                <p className="text-sm font-bold text-foreground">
-                  {request.assignedTo.firstname} {request.assignedTo.lastname}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {request.assignedTo.email}
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
 
       {/* ── Cancellation Requested Banner ── */}
       {(request as any).cancellationRequested &&
@@ -720,6 +704,20 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
 
       {/* ── Chat Panel (feature-flagged) ── */}
       {chatEnabled && <RequestChatPanel requestId={requestId} />}
+
+      {/* ── Request Cancellation (client only) ── */}
+      {canRequestCancellation && (
+        <div className="flex justify-end">
+          <Button
+            variant="outline"
+            onClick={() => setIsCancellationRequestModalOpen(true)}
+            className="h-10 px-6! border-amber-300 text-amber-600 hover:bg-amber-50 font-bold uppercase tracking-wider text-xs"
+          >
+            <AlertTriangle className="mr-2 h-4 w-4" />
+            Solicitar Cancelación
+          </Button>
+        </div>
+      )}
 
       {/* ── Modals ── */}
       <QuickAssignModal

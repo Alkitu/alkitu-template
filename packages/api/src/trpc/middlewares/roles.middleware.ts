@@ -1,4 +1,5 @@
 import { TRPCError } from '@trpc/server';
+import { NotFoundException } from '@nestjs/common';
 import { UserRole as PrismaUserRole, AccessLevel } from '@prisma/client';
 import { UserRole } from '@alkitu/shared/enums/user-role.enum';
 import { hasRole } from '@alkitu/shared/rbac/role-hierarchy';
@@ -293,6 +294,14 @@ export const requireResourceAccess = (options: RequireResourceAccessOptions) => 
       // If error is already TRPCError, rethrow it
       if (error instanceof TRPCError) {
         throw error;
+      }
+
+      // NotFoundException → TRPCError NOT_FOUND (e.g. deleted request)
+      if (error instanceof NotFoundException) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: error.message,
+        });
       }
 
       // AccessControlService throws ForbiddenException with metadata

@@ -1,14 +1,16 @@
 'use client';
 
-import { useRef, useCallback } from 'react';
+import { useRef, useCallback, useState } from 'react';
 import { Button } from '@/components/primitives/ui/button';
 import { Input } from '@/components/primitives/ui/input';
 import { Switch } from '@/components/primitives/ui/switch';
 import { VariableChip } from '@/components/atoms-alianza/VariableChip';
 import { EmailTemplate } from '@alkitu/shared';
-import { RotateCcw, Save } from 'lucide-react';
+import { RotateCcw, Save, Code, Eye } from 'lucide-react';
 import { Label } from '@/components/primitives/ui/label';
 import { Textarea } from '@/components/primitives/ui/textarea';
+import { EmailVisualEditor } from '@/components/molecules-alianza/EmailVisualEditor';
+import type { EmailVisualEditorRef } from '@/components/molecules-alianza/EmailVisualEditor';
 
 interface TemplateEditorFormProps {
   template: EmailTemplate;
@@ -40,9 +42,16 @@ export function TemplateEditorForm({
   variables,
 }: TemplateEditorFormProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const editorRef = useRef<EmailVisualEditorRef>(null);
+  const [editorMode, setEditorMode] = useState<'html' | 'visual'>('html');
 
   const insertVariable = useCallback(
     (variable: string) => {
+      if (editorMode === 'visual') {
+        editorRef.current?.insertContent(variable);
+        return;
+      }
+
       const textarea = textareaRef.current;
       if (!textarea) return;
 
@@ -57,7 +66,7 @@ export function TemplateEditorForm({
         textarea.focus();
       });
     },
-    [body, onBodyChange],
+    [body, onBodyChange, editorMode],
   );
 
   return (
@@ -131,20 +140,50 @@ export function TemplateEditorForm({
 
         <div className="space-y-2 flex-1 flex flex-col">
           <div className="flex justify-between items-center">
-             <Label htmlFor="body">Email Body (HTML)</Label>
-             <span className="text-xs text-muted-foreground">Supports HTML & Variables</span>
+             <Label htmlFor="body">Email Body</Label>
+             <div className="flex items-center space-x-1 bg-muted p-1 rounded-md">
+               {([
+                 { key: 'html' as const, label: 'HTML', icon: Code },
+                 { key: 'visual' as const, label: 'Visual', icon: Eye },
+               ]).map(({ key, label, icon: Icon }) => (
+                 <button
+                   key={key}
+                   type="button"
+                   onClick={() => setEditorMode(key)}
+                   className={`flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-sm transition-all ${
+                     editorMode === key
+                       ? 'bg-background text-foreground shadow-sm'
+                       : 'text-muted-foreground hover:text-foreground'
+                   }`}
+                 >
+                   <Icon className="h-3.5 w-3.5" />
+                   {label}
+                 </button>
+               ))}
+             </div>
           </div>
           <p className="text-xs text-muted-foreground">
             Your content will be automatically wrapped in the standard email layout with header and footer.
           </p>
-          <Textarea
-            ref={textareaRef}
-            id="body"
-            value={body}
-            onChange={(e) => onBodyChange(e.target.value)}
-            placeholder="Write your email content HTML here..."
-            className="font-mono text-sm min-h-[300px] flex-1 resize-y"
-          />
+          {editorMode === 'html' ? (
+            <Textarea
+              ref={textareaRef}
+              id="body"
+              value={body}
+              onChange={(e) => onBodyChange(e.target.value)}
+              placeholder="Write your email content HTML here..."
+              className="font-mono text-sm min-h-[300px] flex-1 resize-y"
+            />
+          ) : (
+            <EmailVisualEditor
+              ref={editorRef}
+              content={body}
+              onContentChange={onBodyChange}
+              placeholder="Start writing your email content..."
+              className="flex-1"
+              minHeight="300px"
+            />
+          )}
         </div>
 
         {variables.length > 0 && (

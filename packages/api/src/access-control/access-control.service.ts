@@ -1,4 +1,4 @@
-import { Injectable, ForbiddenException } from '@nestjs/common';
+import { Injectable, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { AccessLevel } from '@prisma/client';
 import { UserRole } from '@alkitu/shared/enums/user-role.enum';
@@ -197,7 +197,12 @@ export class AccessControlService {
     });
 
     if (!request) {
-      return false;
+      throw new NotFoundException({
+        message: 'Request not found',
+        resourceType: 'REQUEST',
+        resourceId: requestId,
+        code: 'RESOURCE_NOT_FOUND',
+      });
     }
 
     // User is the creator

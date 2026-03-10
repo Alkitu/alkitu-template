@@ -47,8 +47,8 @@ export async function POST(request: NextRequest) {
     const notificationPayload = {
       title: 'Test Notification',
       body: 'This is a test push notification from Alkitu!',
-      icon: '/favicon.ico',
-      badge: '/favicon.ico',
+      icon: '/api/favicon',
+      badge: '/api/favicon',
       tag: 'test-notification',
       data: {
         id: `test-${Date.now()}`,
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
         {
           action: 'view',
           title: 'View Dashboard',
-          icon: '/favicon.ico',
+          icon: '/api/favicon',
         },
         {
           action: 'dismiss',

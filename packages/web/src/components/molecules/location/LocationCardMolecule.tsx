@@ -5,7 +5,6 @@ import { Button } from '@/components/primitives/ui/button';
 import { Building2, Edit, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { LocationCardMoleculeProps } from './LocationCardMolecule.types';
-import { LocationIconMolecule } from './LocationIconMolecule';
 
 /**
  * LocationCardMolecule - Molecule Component (ALI-117)
@@ -52,8 +51,6 @@ export const LocationCardMolecule: React.FC<LocationCardMoleculeProps> = ({
   ].filter(Boolean);
   const hasAddressLine1 = addressLine1Parts.length > 0;
 
-  const iconColor = location.iconColor || '#2563eb';
-
   return (
     <div
       className={cn(
@@ -64,14 +61,6 @@ export const LocationCardMolecule: React.FC<LocationCardMoleculeProps> = ({
       data-testid="location-card"
     >
       <div className="flex items-center gap-4">
-        {/* Location Icon */}
-        <LocationIconMolecule
-          icon={location.icon}
-          iconColor={iconColor}
-          size="md"
-          isDefault={location.isDefault}
-        />
-
         {/* Location Info */}
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">

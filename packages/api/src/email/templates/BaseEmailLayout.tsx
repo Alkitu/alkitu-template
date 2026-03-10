@@ -18,6 +18,7 @@ export interface BaseEmailLayoutProps {
   locale?: string;
   previewText?: string;
   companyName?: string;
+  logoUrl?: string;
 }
 
 export function BaseEmailLayout({
@@ -25,6 +26,7 @@ export function BaseEmailLayout({
   locale = 'es',
   previewText,
   companyName = process.env.APP_NAME || 'Alkitu',
+  logoUrl,
 }: BaseEmailLayoutProps) {
   return (
     <Html lang={locale}>
@@ -38,7 +40,7 @@ export function BaseEmailLayout({
             <Section className="mt-[32px]">
               <div style={{ textAlign: 'center', marginBottom: '32px' }}>
                 <Img
-                  src={`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/logo-light.png`}
+                  src={logoUrl || `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/logo`}
                   alt={companyName}
                   width={200}
                   height="auto"

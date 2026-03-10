@@ -10,7 +10,7 @@ export class BrandConfigService {
 
   constructor(
     @Optional() @Inject(PrismaService) private readonly prisma?: PrismaService,
-  ) {}
+  ) { }
 
   async getCompanyName(): Promise<string> {
     const now = Date.now();
@@ -52,7 +52,7 @@ export class BrandConfigService {
 
   getLogoUrl(): string {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-    return `${baseUrl}/logo-light.png`;
+    return `${baseUrl}/api/logo`;
   }
 
   invalidateCache(): void {

@@ -2,14 +2,11 @@
 
 import React, { useState, useEffect, useImperativeHandle } from 'react';
 import { Button } from '@/components/primitives/ui/button';
-import { LocationColorPicker } from '@/components/molecules/location';
 import { Input } from '@/components/primitives/ui/input';
 import { Label } from '@/components/primitives/ui/label';
 import { FormError } from '@/components/primitives/ui/form-error';
 import { FormSuccess } from '@/components/primitives/ui/form-success';
-import { Checkbox } from '@/components/primitives/ui/checkbox';
-import { IconSelector } from '@/components/primitives/ui/icon-selector';
-import { LocationIconMolecule } from '@/components/molecules/location';
+import { Switch } from '@/components/primitives/ui/switch';
 import { CreateLocationSchema, US_STATE_CODES } from '@alkitu/shared';
 import type {
   LocationFormOrganismProps,
@@ -78,7 +75,7 @@ export const LocationFormOrganism = React.forwardRef<
       city: initialData?.city || '',
       zip: initialData?.zip || '',
       state: initialData?.state || '',
-      icon: initialData?.icon || 'MapPin',
+      icon: initialData?.icon || 'Home',
       iconColor: initialData?.iconColor || '#000000',
       isDefault: initialData?.isDefault || false,
     });
@@ -101,7 +98,7 @@ export const LocationFormOrganism = React.forwardRef<
           city: initialData.city || '',
           zip: initialData.zip || '',
           state: initialData.state || '',
-          icon: initialData.icon || 'MapPin',
+          icon: initialData.icon || 'Home',
           iconColor: initialData.iconColor || '#000000',
           isDefault: initialData.isDefault || false,
         });
@@ -113,7 +110,7 @@ export const LocationFormOrganism = React.forwardRef<
       validate: () => {
         try {
           const dataToValidate = isOnboarding
-            ? { ...formData, icon: 'MapPin', iconColor: '#000000', isDefault: true }
+            ? { ...formData, icon: 'Home', iconColor: '#000000', isDefault: true }
             : formData;
           return CreateLocationSchema.parse(dataToValidate);
         } catch {
@@ -126,7 +123,7 @@ export const LocationFormOrganism = React.forwardRef<
 
         try {
           const dataToValidate = isOnboarding
-            ? { ...formData, icon: 'MapPin', iconColor: '#000000', isDefault: true }
+            ? { ...formData, icon: 'Home', iconColor: '#000000', isDefault: true }
             : formData;
           const validatedData = CreateLocationSchema.parse(dataToValidate);
 
@@ -238,7 +235,7 @@ export const LocationFormOrganism = React.forwardRef<
             city: '',
             zip: '',
             state: '',
-            icon: 'MapPin',
+            icon: 'Home',
             iconColor: '#000000',
             isDefault: false,
           });
@@ -298,50 +295,7 @@ export const LocationFormOrganism = React.forwardRef<
           </div>
         )}
 
-        {/* Icon Selector - hidden in onboarding mode */}
-        {!isOnboarding && (
-          <>
-            <div className="flex items-center gap-4">
-              <LocationIconMolecule
-                icon={formData.icon}
-                iconColor={formData.iconColor}
-                size="lg"
-              />
-              <div className="flex-1 space-y-4">
-                <div className="flex gap-4">
-                  <div className="flex-1">
-                    <Label>Icon</Label>
-                    <div className="mt-2">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="w-full justify-start text-left font-normal"
-                        onClick={() => setIsIconSelectorOpen(true)}
-                      >
-                        {formData.icon === 'MapPin' ? 'Select Icon' : 'Change Icon'}
-                      </Button>
-                    </div>
-                  </div>
-                  <div className="flex-1">
-                    <LocationColorPicker
-                      color={formData.iconColor || '#000000'}
-                      onChange={(color: string) =>
-                        setFormData((prev) => ({ ...prev, iconColor: color }))
-                      }
-                      label="Icon Color"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <IconSelector
-              open={isIconSelectorOpen}
-              onClose={() => setIsIconSelectorOpen(false)}
-              onSelect={handleIconSelect}
-            />
-          </>
-        )}
+        {/* Icon Selector - completely removed per user requirements */}
 
         {/* Error and Success Messages */}
         {error && <FormError message={error} />}
@@ -519,44 +473,47 @@ export const LocationFormOrganism = React.forwardRef<
 
         {/* Action Buttons - hidden in onboarding mode (parent handles submission) */}
         {!isOnboarding && (
-          <div className="flex items-center gap-3 pt-4">
-            {/* Default Location Checkbox */}
-            <div className="mr-auto flex items-center space-x-2">
-              <Checkbox
-                id="isDefault"
-                checked={formData.isDefault}
-                onCheckedChange={handleDefaultChange}
-                disabled={inputDisabled}
-              />
+          <div className="flex flex-col md:flex-row md:items-center gap-4 pt-4">
+            {/* Default Location Toggle */}
+            <div className="flex items-center justify-between md:justify-start md:mr-auto w-full md:w-auto p-4 md:p-0 bg-muted/50 rounded-lg md:bg-transparent">
               <Label
                 htmlFor="isDefault"
                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
-                Default Location
+                Set as Default Location
               </Label>
+              <Switch
+                id="isDefault"
+                checked={formData.isDefault}
+                onCheckedChange={handleDefaultChange}
+                disabled={inputDisabled}
+                className="ml-4"
+              />
             </div>
 
-            <Button type="submit" disabled={inputDisabled} className="min-w-[120px]">
-              {isLoading ? (
-                <>
-                  <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-white" />
-                  {isEditMode ? 'Updating...' : 'Creating...'}
-                </>
-              ) : (
-                <>{isEditMode ? 'Update Location' : 'Create Location'}</>
+            <div className="flex flex-col-reverse md:flex-row gap-3 w-full md:w-auto">
+              {showCancel && onCancel && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={onCancel}
+                  disabled={inputDisabled}
+                  className="w-full md:w-auto"
+                >
+                  Cancel
+                </Button>
               )}
-            </Button>
-
-            {showCancel && onCancel && (
-              <Button
-                type="button"
-                variant="outline"
-                onClick={onCancel}
-                disabled={inputDisabled}
-              >
-                Cancel
+              <Button type="submit" disabled={inputDisabled} className="w-full md:w-auto min-w-[120px]">
+                {isLoading ? (
+                  <>
+                    <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-white" />
+                    {isEditMode ? 'Updating...' : 'Creating...'}
+                  </>
+                ) : (
+                  <>{isEditMode ? 'Update Location' : 'Create Location'}</>
+                )}
               </Button>
-            )}
+            </div>
           </div>
         )}
 

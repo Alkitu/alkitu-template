@@ -472,7 +472,7 @@ export default function NewRequestWizardPage() {
   return (
     <div className="flex flex-col gap-6 p-6">
       {/* Header */}
-      <div className="flex items-center gap-4">
+      <div className="flex flex-col items-start gap-4 md:flex-row md:items-center">
         <Button
           variant="outline"
           size="sm"
@@ -549,11 +549,10 @@ export default function NewRequestWizardPage() {
                     <div
                       key={location.id}
                       onClick={() => handleLocationCardSelect(location)}
-                      className={`cursor-pointer rounded-lg transition-all ${
-                        selectedLocation?.id === location.id
+                      className={`cursor-pointer rounded-lg transition-all ${selectedLocation?.id === location.id
                           ? 'ring-2 ring-primary ring-offset-2'
                           : 'hover:ring-1 hover:ring-primary/30'
-                      }`}
+                        }`}
                     >
                       <LocationCardMolecule
                         location={location}
@@ -795,7 +794,7 @@ export default function NewRequestWizardPage() {
                 {t('step5.formResponsesSection')}
               </div>
               {selectedService?.formSettings &&
-              Object.keys(templateResponses).length > 0 ? (
+                Object.keys(templateResponses).length > 0 ? (
                 <div className="p-3 rounded-lg bg-muted/50">
                   <FormResponsesPreview
                     formSettings={selectedService.formSettings}

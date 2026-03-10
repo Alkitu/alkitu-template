@@ -48,7 +48,7 @@ export function EmailPreviewShell({
             <Section className="mt-[32px]">
               <div style={{ textAlign: 'center', marginBottom: '32px' }}>
                 <Img
-                  src="/logo-light.png"
+                  src="/api/logo"
                   alt={companyName}
                   width={200}
                   height="auto"

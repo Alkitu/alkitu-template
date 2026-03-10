@@ -220,7 +220,7 @@ export function SeoProgress({
             <h4 className="text-sm font-medium mb-2">Vista previa en Google</h4>
             <div className="flex items-center gap-2">
               <Image
-                src="/favicon.ico"
+                src="/api/favicon"
                 alt="Favicon"
                 width={16}
                 height={16}

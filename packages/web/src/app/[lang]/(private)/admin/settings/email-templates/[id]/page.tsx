@@ -11,10 +11,12 @@ import type { EmailTemplate } from '@alkitu/shared';
 import { TemplateEditorForm } from '../components/TemplateEditorForm';
 import { TemplatePreview } from '../components/TemplatePreview';
 import { Split } from 'lucide-react';
+import { useTranslations } from '@/context/TranslationsContext';
 
 export default function EditEmailTemplatePage() {
   const { lang, id } = useParams();
   const templateId = id as string;
+  const t = useTranslations('emailManagement');
 
   const [locale, setLocale] = useState('es');
   const [editSubject, setEditSubject] = useState('');
@@ -84,7 +86,7 @@ export default function EditEmailTemplatePage() {
         });
       }
 
-      toast.success('Template saved successfully');
+      toast.success(t('page.savedSuccess'));
       await refetch();
     } catch (error) {
       handleApiError(error);
@@ -94,13 +96,13 @@ export default function EditEmailTemplatePage() {
   const handleReset = useCallback(async () => {
     if (!templateData) return;
 
-    if (!window.confirm('Are you sure you want to reset this template to its default content? This cannot be undone.')) {
+    if (!window.confirm(t('page.resetConfirm'))) {
       return;
     }
 
     try {
       await resetMutation.mutateAsync({ id: templateData.id });
-      toast.success('Template reset to default');
+      toast.success(t('page.resetSuccess'));
       const result = await refetch();
 
       if (result.data) {
@@ -120,7 +122,7 @@ export default function EditEmailTemplatePage() {
         id: templateData.id,
         data: { active: !templateData.active },
       });
-      toast.success(`Template ${!templateData.active ? 'activated' : 'deactivated'}`);
+      toast.success(t(!templateData.active ? 'page.activated' : 'page.deactivated'));
       await refetch();
     } catch (error) {
       handleApiError(error);
@@ -133,10 +135,10 @@ export default function EditEmailTemplatePage() {
     return (
       <div className="p-6 space-y-6 container mx-auto max-w-7xl">
         <AdminPageHeader
-          title="Edit Email Template"
-          description="Loading template..."
+          title={t('page.editTitle')}
+          description={t('page.loading')}
           backHref={`/${lang}/admin/settings/email-templates`}
-          backLabel="Back to Email Templates"
+          backLabel={t('page.backLabel')}
         />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Skeleton className="h-[500px] rounded-xl" />
@@ -150,10 +152,10 @@ export default function EditEmailTemplatePage() {
     return (
       <div className="p-6 space-y-4 container mx-auto max-w-7xl">
         <AdminPageHeader
-          title="Template Not Found"
-          description="The email template could not be found."
+          title={t('page.notFoundTitle')}
+          description={t('page.notFoundDescription')}
           backHref={`/${lang}/admin/settings/email-templates`}
-          backLabel="Back to Email Templates"
+          backLabel={t('page.backLabel')}
         />
       </div>
     );
@@ -163,14 +165,14 @@ export default function EditEmailTemplatePage() {
     <div className="p-6 space-y-6 container mx-auto max-w-7xl pb-20">
       <AdminPageHeader
         title={templateData.name}
-        description={templateData.description || 'Edit this email template'}
+        description={templateData.description || t('page.editDescription')}
         backHref={`/${lang}/admin/settings/email-templates`}
-        backLabel="Back to Email Templates"
+        backLabel={t('page.backLabel')}
       />
 
       <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
         <Split className="h-4 w-4" />
-        <span>Editor & Preview</span>
+        <span>{t('page.editorAndPreview')}</span>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -189,6 +191,7 @@ export default function EditEmailTemplatePage() {
             onToggleActive={handleToggleActive}
             isSaving={isSaving}
             variables={variables || templateData.variables || []}
+            t={t}
           />
         </div>
 

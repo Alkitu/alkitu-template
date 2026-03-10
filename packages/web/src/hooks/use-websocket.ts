@@ -71,7 +71,7 @@ export function useWebSocket({
 
     const socket = io(websocketUrl, {
       withCredentials: true,
-      transports: ['websocket', 'polling'],
+      transports: ['polling', 'websocket'],
       upgrade: true,
       autoConnect: true,
       reconnection: true,
@@ -104,7 +104,7 @@ export function useWebSocket({
     });
 
     socket.on('connect_error', (error) => {
-      logger.error('WebSocket connection error', { error: error.message });
+      logger.warn('WebSocket connection error', { error: error.message });
       setState((prev) => ({
         ...prev,
         connected: false,

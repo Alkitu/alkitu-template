@@ -134,6 +134,7 @@ export function createRequestRouter(
                 name: true,
                 code: true,
                 thumbnail: true,
+                deletedAt: true,
                 category: {
                   select: {
                     id: true,
@@ -322,7 +323,7 @@ export function createRequestRouter(
         // Non-blocking: create Drive folder for this request
         driveFolderService
           .ensureRequestFolder(createdRequest.id)
-          .catch(() => {});
+          .catch(() => { });
 
         // Send request creation emails + in-app notifications (non-blocking)
         prisma.request
@@ -341,7 +342,7 @@ export function createRequestRouter(
             // Send emails
             emailTemplateService
               .sendRequestCreatedEmails(fullRequest as any)
-              .catch(() => {});
+              .catch(() => { });
 
             // Send in-app notifications (mirrors requests.service.ts)
             try {
@@ -385,7 +386,7 @@ export function createRequestRouter(
               // Non-blocking: notification failures shouldn't affect request creation
             }
           })
-          .catch(() => {});
+          .catch(() => { });
 
         return createdRequest;
       }),
@@ -546,11 +547,22 @@ export function createRequestRouter(
         }),
       )
       .mutation(async ({ input }) => {
+        // Determine new status based on whether we're assigning or unassigning
+        const newStatus = input.assignedToId
+          ? RequestStatus.ONGOING
+          : RequestStatus.PENDING;
+
+        const currentRequest = await prisma.request.findUnique({
+          where: { id: input.id },
+          select: { status: true },
+        });
+        const previousStatus = currentRequest?.status ?? RequestStatus.PENDING;
+
         const updatedRequest = await prisma.request.update({
           where: { id: input.id },
           data: {
             assignedToId: input.assignedToId,
-            status: RequestStatus.ONGOING,
+            status: newStatus,
           },
           include: {
             service: { include: { category: true } },
@@ -560,12 +572,14 @@ export function createRequestRouter(
           },
         });
 
-        // Send notifications to employee and client
-        await requestStatusChangedHook.execute(
-          updatedRequest,
-          RequestStatus.PENDING,
-          RequestStatus.ONGOING,
-        );
+        // Send notifications only when assigning (not unassigning)
+        if (input.assignedToId) {
+          await requestStatusChangedHook.execute(
+            updatedRequest,
+            previousStatus as RequestStatus,
+            RequestStatus.ONGOING,
+          );
+        }
 
         return updatedRequest;
       }),

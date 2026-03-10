@@ -1402,6 +1402,37 @@
         "status": "Estado",
         "sentAt": "Enviado"
       }
+    },
+    "editor": {
+      "editing": "Editando versión en",
+      "spanish": "Español",
+      "english": "Inglés",
+      "subject": "Asunto",
+      "body": "Cuerpo del Email",
+      "bodyHint": "Tu contenido se ajustará automáticamente dentro del diseño estándar del email con encabezado y pie de página.",
+      "htmlPlaceholder": "Escribe el HTML de tu email aquí...",
+      "visualPlaceholder": "Comienza a escribir el contenido de tu email...",
+      "availableVariables": "Variables Disponibles",
+      "active": "Activo",
+      "inactive": "Inactivo",
+      "noDescription": "Sin descripción.",
+      "reset": "Restablecer",
+      "save": "Guardar",
+      "saving": "Guardando..."
+    },
+    "page": {
+      "editTitle": "Editar Plantilla de Email",
+      "loading": "Cargando plantilla...",
+      "notFoundTitle": "Plantilla No Encontrada",
+      "notFoundDescription": "No se pudo encontrar la plantilla de email.",
+      "backLabel": "Volver a Plantillas de Email",
+      "editDescription": "Editar esta plantilla de email",
+      "editorAndPreview": "Editor y Vista Previa",
+      "savedSuccess": "Plantilla guardada exitosamente",
+      "resetConfirm": "¿Estás seguro de que quieres restablecer esta plantilla a su contenido predeterminado? Esta acción no se puede deshacer.",
+      "resetSuccess": "Plantilla restablecida a valores predeterminados",
+      "activated": "Plantilla activada",
+      "deactivated": "Plantilla desactivada"
     }
   },
   "users": {

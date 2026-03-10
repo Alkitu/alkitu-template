@@ -77,7 +77,7 @@ export type UpdateRequestStatusInput = z.infer<
  */
 export const assignRequestSchema = z.object({
   id: z.string(),
-  assignedToId: z.string(),
+  assignedToId: z.string().nullable(),
 });
 
 export type AssignRequestInput = z.infer<typeof assignRequestSchema>;

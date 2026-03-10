@@ -16,47 +16,47 @@ export const ServiceSelectionItem: React.FC<ServiceSelectionItemProps> = ({
       onClick={() => onSelect(service.id)}
       disabled={disabled}
       className={`
-        flex w-full items-center gap-4 rounded-lg border p-4 text-left transition-all
+        relative flex w-full flex-col items-center justify-center gap-4 rounded-xl border p-6 text-center transition-all
         ${isSelected
-          ? 'border-primary/50 bg-primary/5'
+          ? 'border-primary/50 bg-primary/5 ring-1 ring-primary/20'
           : 'border-border hover:border-primary/30 hover:bg-accent/50'
         }
         ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
         ${className}
       `}
     >
-      {/* Icon */}
-      <div 
-        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-colors"
-        style={{ backgroundColor: getDynamicBackgroundColor(service.iconColor || '#000000') }}
-      >
-        <ServiceIcon
-          category={service.categoryName}
-          thumbnail={service.thumbnail}
-          className="h-5 w-5"
-          color={service.iconColor}
-        />
-      </div>
-
-      {/* Name + Description */}
-      <div className="min-w-0 flex-1">
-        <p className="font-semibold text-foreground">{service.name}</p>
-        {service.description && (
-          <p className="truncate text-sm text-muted-foreground">
-            {service.description}
-          </p>
-        )}
-      </div>
-
       {/* Radio indicator */}
       <div
         className={`
-          flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors
+          absolute right-4 top-4 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors
           ${isSelected ? 'border-primary' : 'border-muted-foreground/40'}
         `}
       >
         {isSelected && (
           <div className="h-2.5 w-2.5 rounded-full bg-primary" />
+        )}
+      </div>
+
+      {/* Icon */}
+      <div
+        className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full transition-colors overflow-hidden"
+        style={{ backgroundColor: getDynamicBackgroundColor(service.iconColor || '#000000') }}
+      >
+        <ServiceIcon
+          category={service.categoryName}
+          thumbnail={service.thumbnail}
+          className="h-10 w-10 text-primary-foreground"
+          color={service.iconColor}
+        />
+      </div>
+
+      {/* Name + Description */}
+      <div className="flex flex-col gap-1">
+        <p className="font-semibold text-foreground">{service.name}</p>
+        {service.description && (
+          <p className="text-sm text-muted-foreground line-clamp-2">
+            {service.description}
+          </p>
         )}
       </div>
     </button>

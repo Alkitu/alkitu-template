@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { UserCheck, AlertCircle } from 'lucide-react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { AlertCircle } from 'lucide-react';
 import { ResponsiveModal } from '@/components/primitives/ui/responsive-modal';
 import { Button } from '@/components/primitives/ui/button';
 import {
@@ -12,15 +12,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/primitives/ui/select';
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from '@/components/primitives/ui/tooltip';
 import { useTranslations } from '@/context/TranslationsContext';
 import { trpc } from '@/lib/trpc';
 import { UserRole } from '@alkitu/shared';
+
+const NONE_VALUE = '__none__';
+const LONG_PRESS_MS = 500;
 
 interface QuickAssignModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   requestId: string;
-  onConfirm: (requestId: string, employeeId: string) => Promise<void>;
+  onConfirm: (requestId: string, employeeId: string | null) => Promise<void>;
   isLoading?: boolean;
 }
 
@@ -58,23 +66,46 @@ export const QuickAssignModal: React.FC<QuickAssignModalProps> = ({
     return employeesData.users || [];
   }, [employeesData]);
 
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+  const longPressRef = useRef<ReturnType<typeof setTimeout>>();
+  const isLongPressRef = useRef(false);
+
+  const selectedEmployeeText = React.useMemo(() => {
+    if (!selectedEmployeeId || selectedEmployeeId === NONE_VALUE) return '';
+    const employee = employees.find((e: any) => e.id === selectedEmployeeId);
+    if (!employee) return '';
+    return `${employee.firstname} ${employee.lastname} (${employee.email})`;
+  }, [selectedEmployeeId, employees]);
+
+  const handleTouchStart = useCallback(() => {
+    if (!selectedEmployeeText) return;
+    isLongPressRef.current = false;
+    longPressRef.current = setTimeout(() => {
+      isLongPressRef.current = true;
+      setTooltipOpen(true);
+    }, LONG_PRESS_MS);
+  }, [selectedEmployeeText]);
+
+  const handleTouchEnd = useCallback(() => {
+    clearTimeout(longPressRef.current);
+    if (isLongPressRef.current) {
+      setTimeout(() => setTooltipOpen(false), 1500);
+    }
+    isLongPressRef.current = false;
+  }, []);
+
   useEffect(() => {
     if (!open) {
       setSelectedEmployeeId('');
+      setTooltipOpen(false);
     }
+    return () => clearTimeout(longPressRef.current);
   }, [open]);
-
-  // Debug: Log employee data
-  useEffect(() => {
-    if (employeesData) {
-      console.log('Employees data:', employeesData);
-      console.log('Employees array:', employees);
-    }
-  }, [employeesData, employees]);
 
   const handleConfirm = async () => {
     if (!selectedEmployeeId) return;
-    await onConfirm(requestId, selectedEmployeeId);
+    const employeeId = selectedEmployeeId === NONE_VALUE ? null : selectedEmployeeId;
+    await onConfirm(requestId, employeeId);
     onOpenChange(false);
   };
 
@@ -102,16 +133,32 @@ export const QuickAssignModal: React.FC<QuickAssignModalProps> = ({
               value={selectedEmployeeId}
               onValueChange={setSelectedEmployeeId}
               disabled={isFetchingEmployees || isLoading}
+              onOpenChange={(isOpen) => {
+                if (isOpen) setTooltipOpen(false);
+              }}
             >
-              <SelectTrigger>
-                <SelectValue
-                  placeholder={
-                    isFetchingEmployees
-                      ? (t('loadingEmployees') || 'Cargando empleados...')
-                      : (t('selectEmployeePlaceholder') || 'Seleccionar empleado')
-                  }
-                />
-              </SelectTrigger>
+              <Tooltip open={tooltipOpen} onOpenChange={setTooltipOpen}>
+                <TooltipTrigger asChild>
+                  <SelectTrigger
+                    onTouchStart={handleTouchStart}
+                    onTouchEnd={handleTouchEnd}
+                    onTouchCancel={handleTouchEnd}
+                  >
+                    <SelectValue
+                      placeholder={
+                        isFetchingEmployees
+                          ? (t('loadingEmployees') || 'Cargando empleados...')
+                          : (t('selectEmployeePlaceholder') || 'Seleccionar empleado')
+                      }
+                    />
+                  </SelectTrigger>
+                </TooltipTrigger>
+                {selectedEmployeeText && (
+                  <TooltipContent side="bottom" className="max-w-[300px] break-words">
+                    {selectedEmployeeText}
+                  </TooltipContent>
+                )}
+              </Tooltip>
               <SelectContent style={{ zIndex: 9999 }}>
                 <SelectGroup>
                   {isFetchingEmployees ? (
@@ -126,11 +173,19 @@ export const QuickAssignModal: React.FC<QuickAssignModalProps> = ({
                       </p>
                     </div>
                   ) : (
-                    employees.map((employee: any) => (
-                      <SelectItem key={employee.id} value={employee.id}>
-                        {employee.firstname} {employee.lastname} ({employee.email})
+                    <>
+                      <SelectItem value={NONE_VALUE} className="text-muted-foreground italic">
+                        Ninguno
                       </SelectItem>
-                    ))
+                      {employees.map((employee: any) => {
+                        const displayText = `${employee.firstname} ${employee.lastname} (${employee.email})`;
+                        return (
+                          <SelectItem key={employee.id} value={employee.id} title={displayText}>
+                            {displayText}
+                          </SelectItem>
+                        );
+                      })}
+                    </>
                   )}
                 </SelectGroup>
               </SelectContent>

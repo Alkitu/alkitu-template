@@ -25,10 +25,10 @@ export const CategorizedServiceSelector: React.FC<CategorizedServiceSelectorProp
 
     const filtered = query
       ? services.filter(
-          (s) =>
-            s.name.toLowerCase().includes(query) ||
-            s.categoryName.toLowerCase().includes(query)
-        )
+        (s) =>
+          s.name.toLowerCase().includes(query) ||
+          s.categoryName.toLowerCase().includes(query)
+      )
       : services;
 
     const groupMap = new Map<string, CategoryGroup>();
@@ -134,7 +134,7 @@ export const CategorizedServiceSelector: React.FC<CategorizedServiceSelectorProp
               </span>
             </div>
             {/* Services in this category */}
-            <div className="space-y-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {group.services.map(renderServiceItem)}
             </div>
           </div>

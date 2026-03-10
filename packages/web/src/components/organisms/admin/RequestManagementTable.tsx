@@ -203,11 +203,11 @@ export const RequestManagementTable: React.FC<RequestManagementTableProps> = ({
     setIsAssignModalOpen(true);
   };
 
-  const handleAssignConfirm = async (requestId: string, employeeId: string) => {
+  const handleAssignConfirm = async (requestId: string, employeeId: string | null) => {
     setActionLoading(true);
     try {
-      await assignMutation.mutateAsync({ id: requestId, assignedToId: employeeId });
-      toast.success('Empleado asignado correctamente');
+      await assignMutation.mutateAsync({ id: requestId, assignedToId: employeeId || '' });
+      toast.success(employeeId ? 'Empleado asignado correctamente' : 'Asignación removida correctamente');
       await queryClient.invalidateQueries({ queryKey: [['request']] });
       setIsAssignModalOpen(false);
       onRequestUpdated?.();
@@ -252,6 +252,7 @@ export const RequestManagementTable: React.FC<RequestManagementTableProps> = ({
         executionTime,
         locationCity: req.location?.city,
         locationState: req.location?.state,
+        isServiceActive: !req.service?.deletedAt,
       };
     });
   }, [requestsData]);

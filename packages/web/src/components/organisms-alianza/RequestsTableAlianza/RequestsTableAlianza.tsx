@@ -19,7 +19,7 @@ export const RequestsTableAlianza: React.FC<RequestsTableAlianzaProps> = ({
   hideColumns = [],
   className = '',
 }) => {
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status: string, isServiceActive?: boolean) => {
     const statusConfig: Record<string, { label: string; className: string }> = {
       PENDING: {
         label: 'Pendiente',
@@ -41,9 +41,15 @@ export const RequestsTableAlianza: React.FC<RequestsTableAlianzaProps> = ({
 
     const config = statusConfig[status] || statusConfig.PENDING;
 
+    // Override active badge styles if the parent service is inactive
+    const isInactiveService = isServiceActive === false;
+    const finalClassName = isInactiveService
+      ? 'bg-gray-100 text-gray-500 border-gray-300 dark:bg-gray-800/50 dark:text-gray-400 dark:border-gray-700'
+      : config.className;
+
     return (
       <span
-        className={`px-2 py-1 rounded text-xs font-medium border ${config.className}`}
+        className={`px-2 py-1 rounded text-xs font-medium border ${finalClassName}`}
       >
         {config.label}
       </span>
@@ -105,22 +111,29 @@ export const RequestsTableAlianza: React.FC<RequestsTableAlianzaProps> = ({
               {/* Service Name */}
               <td className="py-3 px-4">
                 <div className="flex items-start gap-3">
-                  <div className="shrink-0 mt-0.5">
+                  <div className={`shrink-0 mt-0.5 ${request.isServiceActive === false ? 'grayscale opacity-60' : ''}`}>
                     <ServiceIcon
                       category={request.categoryName}
                       thumbnail={request.serviceThumbnail}
-                      className="h-5 w-5 text-primary"
+                      className={`h-10 w-10 ${request.isServiceActive === false ? 'text-muted-foreground' : 'text-primary'}`}
                     />
                   </div>
                   <div className="flex flex-col gap-1">
                     <span
-                      className="text-sm font-medium text-foreground"
+                      className={`text-sm font-medium ${request.isServiceActive === false ? 'text-muted-foreground' : 'text-foreground'}`}
                       title={`Servicio: ${request.categoryName}`}
                     >
                       {request.serviceName}
                     </span>
-                    <span className="inline-flex w-fit items-center px-2 py-0.5 rounded-full text-xs font-medium bg-muted text-muted-foreground border border-border/50">
-                      {request.categoryName}
+                    <span className="inline-flex w-fit max-w-[200px] flex-wrap items-center gap-1">
+                      <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-muted text-muted-foreground border border-border/50">
+                        {request.categoryName}
+                      </span>
+                      {request.isServiceActive === false && (
+                        <span className="text-[10px] text-muted-foreground italic leading-tight">
+                          (este servicio esta inactivo)
+                        </span>
+                      )}
                     </span>
                   </div>
                 </div>
@@ -143,7 +156,7 @@ export const RequestsTableAlianza: React.FC<RequestsTableAlianzaProps> = ({
               )}
 
               {/* Status */}
-              <td className="py-3 px-4">{getStatusBadge(request.status)}</td>
+              <td className="py-3 px-4">{getStatusBadge(request.status, request.isServiceActive)}</td>
 
               {/* Execution Date */}
               <td className="py-3 px-4 text-sm text-foreground whitespace-nowrap">

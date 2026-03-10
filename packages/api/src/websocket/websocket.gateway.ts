@@ -27,7 +27,7 @@ interface JwtPayload {
   cors: {
     origin:
       process.env.NODE_ENV === 'production'
-        ? false
+        ? (process.env.FRONTEND_URL ? [process.env.FRONTEND_URL] : false)
         : ['http://localhost:3000', 'http://localhost:3010'],
     credentials: true,
   },

@@ -475,137 +475,137 @@ export function FormBuilder({
               <TabsTrigger value="settings">Settings</TabsTrigger>
             </TabsList>
 
-        {/* BUILDER TAB */}
-        <TabsContent value="builder" className="space-y-6 mt-6">
-          {/* Global Configuration Section */}
-          <GlobalConfigEditor
-            value={formSettings}
-            onChange={handleChange}
-            editingLocale={editingLocale}
-            onLocaleChange={setEditingLocale}
-            supportedLocales={formSettings.supportedLocales || ['en']}
-            defaultLocale={formSettings.defaultLocale as SupportedLocale}
-          />
+            {/* BUILDER TAB */}
+            <TabsContent value="builder" className="space-y-6 mt-6">
+              {/* Global Configuration Section */}
+              <GlobalConfigEditor
+                value={formSettings}
+                onChange={handleChange}
+                editingLocale={editingLocale}
+                onLocaleChange={setEditingLocale}
+                supportedLocales={formSettings.supportedLocales || ['en']}
+                defaultLocale={formSettings.defaultLocale as SupportedLocale}
+              />
 
-          {/* Fields Section */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-                <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
-                  {hasGroups
-                    ? 'Form Structure (Groups)'
-                    : 'Form Fields'}
-                </h3>
-              </div>
-              {hasGroups && (
-                <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
-                  STEP MODE ACTIVE
-                </span>
-              )}
-            </div>
-
-            {/* Empty State */}
-            {formSettings.fields.length === 0 && (
-              <div className="border-2 border-dashed rounded-lg p-12 text-center">
-                <div className="flex flex-col items-center gap-4">
-                  <div className="rounded-full bg-muted p-4">
-                    <Plus className="h-8 w-8 text-muted-foreground" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold mb-2">
-                      No fields yet
+              {/* Fields Section */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+                    <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
+                      {hasGroups
+                        ? 'Form Structure (Groups)'
+                        : 'Form Fields'}
                     </h3>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Get started by adding your first field
-                    </p>
-                    <Button onClick={() => setShowFieldPicker(true)}>
+                  </div>
+                  {hasGroups && (
+                    <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
+                      STEP MODE ACTIVE
+                    </span>
+                  )}
+                </div>
+
+                {/* Empty State */}
+                {formSettings.fields.length === 0 && (
+                  <div className="border-2 border-dashed rounded-lg p-12 text-center">
+                    <div className="flex flex-col items-center gap-4">
+                      <div className="rounded-full bg-muted p-4">
+                        <Plus className="h-8 w-8 text-muted-foreground" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold mb-2">
+                          No fields yet
+                        </h3>
+                        <p className="text-sm text-muted-foreground mb-4">
+                          Get started by adding your first field
+                        </p>
+                        <Button onClick={() => setShowFieldPicker(true)}>
+                          <Plus className="h-4 w-4 mr-2" />
+                          Add Field
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Fields List with Drag & Drop */}
+                {formSettings.fields.length > 0 && (
+                  <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleDragEnd}
+                  >
+                    <SortableContext
+                      items={formSettings.fields.map((f) => f.id)}
+                      strategy={verticalListSortingStrategy}
+                    >
+                      <div className="space-y-4">
+                        {formSettings.fields.map((field, index) => (
+                          <SortableFieldItem
+                            key={field.id}
+                            field={field}
+                            index={index}
+                            isCollapsed={collapsedFields.has(field.id)}
+                            onToggleCollapse={toggleFieldCollapse}
+                            onFieldChange={handleFieldChange}
+                            onDuplicateField={handleDuplicateField}
+                            onRemoveField={handleRemoveField}
+                            supportedLocales={
+                              formSettings.supportedLocales || ['en']
+                            }
+                            defaultLocale={
+                              formSettings.defaultLocale as SupportedLocale
+                            }
+                            editingLocale={editingLocale}
+                            onLocaleChange={setEditingLocale}
+                            driveFolderId={driveFolderId}
+                          />
+                        ))}
+                      </div>
+                    </SortableContext>
+                  </DndContext>
+                )}
+
+                {/* Add Field Button */}
+                <Button
+                  onClick={() => setShowFieldPicker(true)}
+                  className={cn(
+                    'w-full py-6 border-dashed border-2 hover:border-primary hover:bg-primary/5 transition-all',
+                    hasGroups
+                      ? 'bg-primary text-primary-foreground hover:bg-primary/90 border-transparent shadow-md'
+                      : ''
+                  )}
+                  variant={hasGroups ? 'default' : 'outline'}
+                >
+                  {hasGroups ? (
+                    <>
+                      <Plus className="h-5 w-5 mr-2" />
+                      Add New Group (Step)
+                    </>
+                  ) : (
+                    <>
                       <Plus className="h-4 w-4 mr-2" />
                       Add Field
-                    </Button>
-                  </div>
-                </div>
+                    </>
+                  )}
+                </Button>
               </div>
-            )}
 
-            {/* Fields List with Drag & Drop */}
-            {formSettings.fields.length > 0 && (
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={handleDragEnd}
-              >
-                <SortableContext
-                  items={formSettings.fields.map((f) => f.id)}
-                  strategy={verticalListSortingStrategy}
-                >
-                  <div className="space-y-4">
-                    {formSettings.fields.map((field, index) => (
-                      <SortableFieldItem
-                        key={field.id}
-                        field={field}
-                        index={index}
-                        isCollapsed={collapsedFields.has(field.id)}
-                        onToggleCollapse={toggleFieldCollapse}
-                        onFieldChange={handleFieldChange}
-                        onDuplicateField={handleDuplicateField}
-                        onRemoveField={handleRemoveField}
-                        supportedLocales={
-                          formSettings.supportedLocales || ['en']
-                        }
-                        defaultLocale={
-                          formSettings.defaultLocale as SupportedLocale
-                        }
-                        editingLocale={editingLocale}
-                        onLocaleChange={setEditingLocale}
-                        driveFolderId={driveFolderId}
-                      />
-                    ))}
-                  </div>
-                </SortableContext>
-              </DndContext>
-            )}
+              {/* Final Actions Section */}
+              <FinalActionsEditor
+                value={formSettings}
+                onChange={handleChange}
+                editingLocale={editingLocale}
+                onLocaleChange={setEditingLocale}
+                supportedLocales={formSettings.supportedLocales || ['en']}
+                defaultLocale={formSettings.defaultLocale as SupportedLocale}
+              />
+            </TabsContent>
 
-            {/* Add Field Button */}
-            <Button
-              onClick={() => setShowFieldPicker(true)}
-              className={cn(
-                'w-full py-6 border-dashed border-2 hover:border-primary hover:bg-primary/5 transition-all',
-                hasGroups
-                  ? 'bg-primary text-primary-foreground hover:bg-primary/90 border-transparent shadow-md'
-                  : ''
-              )}
-              variant={hasGroups ? 'default' : 'outline'}
-            >
-              {hasGroups ? (
-                <>
-                  <Plus className="h-5 w-5 mr-2" />
-                  Add New Group (Step)
-                </>
-              ) : (
-                <>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Field
-                </>
-              )}
-            </Button>
-          </div>
-
-          {/* Final Actions Section */}
-          <FinalActionsEditor
-            value={formSettings}
-            onChange={handleChange}
-            editingLocale={editingLocale}
-            onLocaleChange={setEditingLocale}
-            supportedLocales={formSettings.supportedLocales || ['en']}
-            defaultLocale={formSettings.defaultLocale as SupportedLocale}
-          />
-        </TabsContent>
-
-        {/* SETTINGS TAB */}
-        <TabsContent value="settings" className="space-y-6 mt-6">
-          <LocaleSettings value={formSettings} onChange={handleChange} />
-        </TabsContent>
+            {/* SETTINGS TAB */}
+            <TabsContent value="settings" className="space-y-6 mt-6">
+              <LocaleSettings value={formSettings} onChange={handleChange} />
+            </TabsContent>
           </Tabs>
 
           {/* Field Type Picker Dialog */}
@@ -711,7 +711,7 @@ function SortableFieldItem({
         <div className="flex items-center gap-1">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
+              <Button variant="ghost" className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground">
                 <MoreVertical className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -732,8 +732,7 @@ function SortableFieldItem({
 
           <Button
             variant="ghost"
-            size="icon"
-            className="h-8 w-8"
+            className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
             onClick={() => onToggleCollapse(field.id)}
           >
             <ChevronUp

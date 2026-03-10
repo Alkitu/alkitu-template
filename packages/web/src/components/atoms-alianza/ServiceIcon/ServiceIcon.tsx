@@ -32,7 +32,7 @@ export const ServiceIcon: React.FC<ServiceIconProps> = ({
   if (thumbnail) {
     // Priority 1: URL or relative path (e.g. /api/drive/...)
     if (thumbnail.startsWith('http') || thumbnail.startsWith('/')) {
-      return <img src={thumbnail} alt="service icon" className="w-full h-full object-cover rounded-full" />;
+      return <img src={thumbnail} alt="service icon" className={`object-cover rounded-full ${className || 'w-full h-full'}`} style={style} />;
     }
 
     // Priority 2: Emoji character

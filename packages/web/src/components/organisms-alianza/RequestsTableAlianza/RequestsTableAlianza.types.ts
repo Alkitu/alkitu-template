@@ -13,6 +13,7 @@ export interface RequestTableItem {
   executionTime?: string;      // "10:00 AM"
   locationCity?: string;        // "Escazú"
   locationState?: string;       // "San José"
+  isServiceActive?: boolean;
 }
 
 export interface RequestsTableAlianzaProps {

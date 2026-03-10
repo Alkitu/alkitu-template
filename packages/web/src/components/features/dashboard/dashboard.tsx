@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { trpc } from '@/lib/trpc';
 import {
@@ -422,6 +422,14 @@ function Dashboard({ children, showWelcome = false, userRole = 'admin' }: Dashbo
   // Sync DB preferences (theme, language) to local UI systems on first load
   useSyncUserPreferences(sessionUser);
 
+  // Prevent hydration mismatch: feature flags may resolve from tRPC cache on
+  // the client but are always `false` during SSR. If we use the cached values
+  // during the hydration render the Radix component tree changes, shifting all
+  // auto-generated IDs. By deferring flag application until after mount, the
+  // server and client first-render always produce the same tree.
+  const [hasMounted, setHasMounted] = useState(false);
+  useEffect(() => setHasMounted(true), []);
+
   // Feature flags for conditional navigation
   const { isEnabled: supportChatEnabled } = useFeatureFlag('support-chat');
   const { isEnabled: teamChannelsEnabled } = useFeatureFlag('team-channels');
@@ -431,15 +439,29 @@ function Dashboard({ children, showWelcome = false, userRole = 'admin' }: Dashbo
   const { isEnabled: mediaManagerEnabled } = useFeatureFlag('media-manager');
   const { isEnabled: fileUploadEnabled } = useFeatureFlag('file-upload');
 
-  const transformedData = getTransformedData(t, pathname, userRole, {
-    supportChatEnabled,
-    teamChannelsEnabled,
-    analyticsEnabled,
-    notificationsEnabled,
-    emailTemplatesEnabled,
-    mediaManagerEnabled,
-    fileUploadEnabled,
-  });
+  // During SSR and hydration all flags are false (matches server output).
+  // After mount, use the real values so the UI updates without a mismatch.
+  const effectiveFlags = hasMounted
+    ? {
+        supportChatEnabled,
+        teamChannelsEnabled,
+        analyticsEnabled,
+        notificationsEnabled,
+        emailTemplatesEnabled,
+        mediaManagerEnabled,
+        fileUploadEnabled,
+      }
+    : {
+        supportChatEnabled: false,
+        teamChannelsEnabled: false,
+        analyticsEnabled: false,
+        notificationsEnabled: false,
+        emailTemplatesEnabled: false,
+        mediaManagerEnabled: false,
+        fileUploadEnabled: false,
+      };
+
+  const transformedData = getTransformedData(t, pathname, userRole, effectiveFlags);
 
   const currentUser = sessionUser;
 

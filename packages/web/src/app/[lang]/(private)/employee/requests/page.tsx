@@ -79,6 +79,7 @@ export default function EmployeeRequestsPage() {
       executionTime,
       locationCity: req.location?.city,
       locationState: req.location?.state,
+      isServiceActive: !req.service?.deletedAt,
     };
   });
 
@@ -86,11 +87,11 @@ export default function EmployeeRequestsPage() {
   const filteredRequests =
     searchValue && tableRequests
       ? tableRequests.filter(
-          (request) =>
-            request.serviceName.toLowerCase().includes(searchValue.toLowerCase()) ||
-            request.clientName.toLowerCase().includes(searchValue.toLowerCase()) ||
-            request.clientEmail?.toLowerCase().includes(searchValue.toLowerCase()),
-        )
+        (request) =>
+          request.serviceName.toLowerCase().includes(searchValue.toLowerCase()) ||
+          request.clientName.toLowerCase().includes(searchValue.toLowerCase()) ||
+          request.clientEmail?.toLowerCase().includes(searchValue.toLowerCase()),
+      )
       : tableRequests;
 
   // Handlers
@@ -140,51 +141,46 @@ export default function EmployeeRequestsPage() {
         <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={() => handleFilterChange('all')}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              activeFilter === 'all'
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeFilter === 'all'
                 ? 'bg-primary text-primary-foreground'
                 : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
-            }`}
+              }`}
           >
             Todas
           </button>
           <button
             onClick={() => handleFilterChange(RequestStatus.PENDING)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              activeFilter === RequestStatus.PENDING
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeFilter === RequestStatus.PENDING
                 ? 'bg-amber-500 text-white'
                 : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
-            }`}
+              }`}
           >
             Pendientes
           </button>
           <button
             onClick={() => handleFilterChange(RequestStatus.ONGOING)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              activeFilter === RequestStatus.ONGOING
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeFilter === RequestStatus.ONGOING
                 ? 'bg-blue-500 text-white'
                 : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
-            }`}
+              }`}
           >
             En Proceso
           </button>
           <button
             onClick={() => handleFilterChange(RequestStatus.COMPLETED)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              activeFilter === RequestStatus.COMPLETED
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeFilter === RequestStatus.COMPLETED
                 ? 'bg-green-500 text-white'
                 : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
-            }`}
+              }`}
           >
             Completadas
           </button>
           <button
             onClick={() => handleFilterChange(RequestStatus.CANCELLED)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              activeFilter === RequestStatus.CANCELLED
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeFilter === RequestStatus.CANCELLED
                 ? 'bg-red-500 text-white'
                 : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
-            }`}
+              }`}
           >
             Canceladas
           </button>

@@ -6,7 +6,7 @@ import { Input } from '@/components/primitives/ui/input';
 import { Switch } from '@/components/primitives/ui/switch';
 import { VariableChip } from '@/components/atoms-alianza/VariableChip';
 import { EmailTemplate } from '@alkitu/shared';
-import { RotateCcw, Save, Code, Eye } from 'lucide-react';
+import { RotateCcw, Save, Code, Eye, Globe, Info } from 'lucide-react';
 import { Label } from '@/components/primitives/ui/label';
 import { Textarea } from '@/components/primitives/ui/textarea';
 import { EmailVisualEditor } from '@/components/molecules-alianza/EmailVisualEditor';
@@ -25,6 +25,7 @@ interface TemplateEditorFormProps {
   onToggleActive: () => void;
   isSaving: boolean;
   variables: string[];
+  t: (key: string) => string;
 }
 
 export function TemplateEditorForm({
@@ -40,6 +41,7 @@ export function TemplateEditorForm({
   onToggleActive,
   isSaving,
   variables,
+  t,
 }: TemplateEditorFormProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const editorRef = useRef<EmailVisualEditorRef>(null);
@@ -84,11 +86,11 @@ export function TemplateEditorForm({
                    className="h-4 w-7"
                   />
                   <Label htmlFor="active-mode" className="text-xs text-muted-foreground font-medium cursor-pointer">
-                     {template.active ? 'Active' : 'Inactive'}
+                     {template.active ? t('editor.active') : t('editor.inactive')}
                   </Label>
               </div>
            </div>
-           <p className="text-sm text-muted-foreground">{template.description || 'No description provided.'}</p>
+           <p className="text-sm text-muted-foreground">{template.description || t('editor.noDescription')}</p>
         </div>
         
         <div className="flex items-center gap-2">
@@ -100,36 +102,52 @@ export function TemplateEditorForm({
                disabled={isSaving}
              >
                <RotateCcw className="h-4 w-4 mr-2" />
-               Reset
+               {t('editor.reset')}
              </Button>
            )}
            <Button size="sm" onClick={onSave} disabled={isSaving}>
              <Save className="h-4 w-4 mr-2" />
-             {isSaving ? 'Saving...' : 'Save'}
+             {isSaving ? t('editor.saving') : t('editor.save')}
            </Button>
         </div>
       </div>
 
-       <div className="flex items-center space-x-1 bg-muted p-1 rounded-md w-fit">
-        {['es', 'en'].map((loc) => (
-          <button
-            key={loc}
-            type="button"
-            onClick={() => onLocaleChange(loc)}
-            className={`px-4 py-1.5 text-sm font-medium rounded-sm transition-all ${
-              locale === loc
-                ? 'bg-background text-foreground shadow-sm'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            {loc.toUpperCase()}
-          </button>
-        ))}
+       <div className="space-y-2">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center space-x-1 bg-muted p-1 rounded-md w-fit">
+            {(['es', 'en'] as const).map((loc) => (
+              <button
+                key={loc}
+                type="button"
+                onClick={() => onLocaleChange(loc)}
+                className={`flex items-center gap-1.5 px-4 py-1.5 text-sm font-medium rounded-sm transition-all ${
+                  locale === loc
+                    ? 'bg-background text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                <Globe className="h-3.5 w-3.5" />
+                {loc === 'es' ? 'Español' : 'English'}
+              </button>
+            ))}
+          </div>
+          <span className="text-xs text-muted-foreground">
+            {t('editor.editing')}: <strong>{locale === 'es' ? t('editor.spanish') : t('editor.english')}</strong>
+          </span>
+        </div>
+        <div className="flex items-start gap-2 px-3 py-2 rounded-md bg-amber-50 border border-amber-200 dark:bg-amber-950/30 dark:border-amber-800">
+          <Info className="h-4 w-4 text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
+          <p className="text-xs text-amber-800 dark:text-amber-300">
+            Las traducciones no son automáticas. Recuerda editar y guardar las versiones en español e inglés por separado.
+            <span className="mx-1.5 text-amber-400 dark:text-amber-600">|</span>
+            Translations are not automatic. Remember to edit and save both the Spanish and English versions separately.
+          </p>
+        </div>
       </div>
 
       <div className="space-y-4 flex-1 overflow-y-auto pr-1">
         <div className="space-y-2">
-          <Label htmlFor="subject">Subject</Label>
+          <Label htmlFor="subject">{t('editor.subject')}</Label>
           <Input
             id="subject"
             value={subject}
@@ -140,7 +158,7 @@ export function TemplateEditorForm({
 
         <div className="space-y-2 flex-1 flex flex-col">
           <div className="flex justify-between items-center">
-             <Label htmlFor="body">Email Body</Label>
+             <Label htmlFor="body">{t('editor.body')}</Label>
              <div className="flex items-center space-x-1 bg-muted p-1 rounded-md">
                {([
                  { key: 'html' as const, label: 'HTML', icon: Code },
@@ -163,7 +181,7 @@ export function TemplateEditorForm({
              </div>
           </div>
           <p className="text-xs text-muted-foreground">
-            Your content will be automatically wrapped in the standard email layout with header and footer.
+            {t('editor.bodyHint')}
           </p>
           {editorMode === 'html' ? (
             <Textarea
@@ -171,7 +189,7 @@ export function TemplateEditorForm({
               id="body"
               value={body}
               onChange={(e) => onBodyChange(e.target.value)}
-              placeholder="Write your email content HTML here..."
+              placeholder={t('editor.htmlPlaceholder')}
               className="font-mono text-sm min-h-[300px] flex-1 resize-y"
             />
           ) : (
@@ -179,7 +197,7 @@ export function TemplateEditorForm({
               ref={editorRef}
               content={body}
               onContentChange={onBodyChange}
-              placeholder="Start writing your email content..."
+              placeholder={t('editor.visualPlaceholder')}
               className="flex-1"
               minHeight="300px"
             />
@@ -188,7 +206,7 @@ export function TemplateEditorForm({
 
         {variables.length > 0 && (
           <div className="pt-2 border-t">
-            <Label className="mb-3 block text-xs uppercase tracking-wider text-muted-foreground">Available Variables</Label>
+            <Label className="mb-3 block text-xs uppercase tracking-wider text-muted-foreground">{t('editor.availableVariables')}</Label>
             <div className="flex flex-wrap gap-2">
               {variables.map((variable) => (
                 <VariableChip

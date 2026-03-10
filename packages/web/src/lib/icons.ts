@@ -1,5 +1,17 @@
 import * as LucideIcons from 'lucide-react';
 import {
+  ServiceBathVanity,
+  ServiceCabinets,
+  ServiceCarpetCleaning,
+  ServiceCeilingPaint,
+  ServiceColorChange,
+  ServiceDeepCleaning,
+  ServiceDrywall,
+  ServiceFloorPlan,
+  ServiceFullCleaning,
+  ServiceFullPaint,
+} from '@/components/primitives/ui/service-icons';
+import {
   FaGoogle,
   FaFacebookF,
   FaLinkedinIn,
@@ -34,6 +46,17 @@ export const Icons = {
   Twitter: FaXTwitter,
   Instagram: FaInstagram,
   WhatsApp: FaWhatsapp,
+  // Custom Service Icons
+  ServiceBathVanity,
+  ServiceCabinets,
+  ServiceCarpetCleaning,
+  ServiceCeilingPaint,
+  ServiceColorChange,
+  ServiceDeepCleaning,
+  ServiceDrywall,
+  ServiceFloorPlan,
+  ServiceFullCleaning,
+  ServiceFullPaint,
 } as const;
 
 export type Icon = keyof typeof Icons;
@@ -53,32 +76,49 @@ const socialIconsList = [
   'WhatsApp',
 ];
 
-export const iconLibraries = {
-  Lucide: Object.keys(RestLucide)
-    .filter((key) => {
-      // Basic filtering
-      if (
-        key === 'lucide-react' ||
-        key === 'default' ||
-        !/^[A-Z]/.test(key) ||
-        socialIconsList.includes(key)
-      ) {
-        return false;
-      }
+// Service Specific Icons
+const serviceIconsList = [
+  { name: 'Bathroom Vanity', icon: 'ServiceBathVanity' },
+  { name: 'Cabinets', icon: 'ServiceCabinets' },
+  { name: 'Carpet Cleaning', icon: 'ServiceCarpetCleaning' },
+  { name: 'Ceiling Paint', icon: 'ServiceCeilingPaint' },
+  { name: 'Color Change', icon: 'ServiceColorChange' },
+  { name: 'Deep Cleaning', icon: 'ServiceDeepCleaning' },
+  { name: 'Drywall Service', icon: 'ServiceDrywall' },
+  { name: 'Floor Plan Service', icon: 'ServiceFloorPlan' },
+  { name: 'Full Cleaning', icon: 'ServiceFullCleaning' },
+  { name: 'Full Paint', icon: 'ServiceFullPaint' },
+];
 
-      // Filter out "Icon" suffix duplicates
-      // If "ActivityIcon" exists, check if "Activity" also exists.
-      // If both exist, we keep "Activity" and skip "ActivityIcon".
-      if (key.endsWith('Icon')) {
-        const baseName = key.slice(0, -4);
-        if (Object.prototype.hasOwnProperty.call(RestLucide, baseName)) {
+export const iconLibraries = {
+  Lucide: [
+    ...serviceIconsList,
+    ...Object.keys(RestLucide)
+      .filter((key) => {
+        // Basic filtering
+        if (
+          key === 'lucide-react' ||
+          key === 'default' ||
+          !/^[A-Z]/.test(key) ||
+          socialIconsList.includes(key)
+        ) {
           return false;
         }
-      }
 
-      return true;
-    })
-    .map((key) => ({ name: key, icon: key })),
+        // Filter out "Icon" suffix duplicates
+        // If "ActivityIcon" exists, check if "Activity" also exists.
+        // If both exist, we keep "Activity" and skip "ActivityIcon".
+        if (key.endsWith('Icon')) {
+          const baseName = key.slice(0, -4);
+          if (Object.prototype.hasOwnProperty.call(RestLucide, baseName)) {
+            return false;
+          }
+        }
+
+        return true;
+      })
+      .map((key) => ({ name: key, icon: key })),
+  ],
   Social: socialIconsList.map((key) => ({ name: key, icon: key })),
 };
 

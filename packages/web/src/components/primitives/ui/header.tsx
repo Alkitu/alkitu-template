@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import TailwindGrid from './TailwindGrid';
 import BreadcrumbNavigation from './breadcrumb-navigation';
 import { Separator } from './separator';
@@ -14,8 +14,14 @@ interface HeaderProps {
 }
 
 function Header({ type, homeLabel, dropdownSliceEnd, separator, userId }: HeaderProps) {
+  const [hasMounted, setHasMounted] = useState(false);
+  useEffect(() => setHasMounted(true), []);
+
   // Check if notifications feature is enabled
   const { isEnabled: notificationsEnabled } = useFeatureFlag('notifications');
+
+  // Hydration mismatch fix: force feature flags to false during SSR/hydration
+  const effectiveNotificationsEnabled = hasMounted ? notificationsEnabled : false;
 
   return (
     <header className="flex w-full items-center justify-between gap-4">
@@ -30,7 +36,7 @@ function Header({ type, homeLabel, dropdownSliceEnd, separator, userId }: Header
         />
       </div>
       <div className="flex items-center gap-2">
-        {notificationsEnabled !== false && <NotificationCenter userId={userId} />}
+        {effectiveNotificationsEnabled !== false && <NotificationCenter userId={userId} />}
       </div>
     </header>
   );

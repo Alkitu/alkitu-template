@@ -37,13 +37,16 @@ import type { RequestDetailOrganismProps } from './RequestDetailOrganism.types';
 import { useQueryClient } from '@tanstack/react-query';
 import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
-import { RequestChatPanel } from './RequestChatPanel';
+// Removed RequestChatPanel import
 import { useFeatureFlag } from '@/hooks/useFeatureFlag';
 import { useRequestInlineEdit } from '@/hooks/useRequestInlineEdit';
 import { FormInput } from '@/components/molecules-alianza/FormInput';
 import { FormTextarea } from '@/components/molecules-alianza/FormTextarea';
 import { Combobox } from '@/components/molecules-alianza/Combobox';
 import { FormSelect } from '@/components/molecules-alianza/FormSelect';
+import { UserAvatar } from '@/components/molecules-alianza/UserAvatar';
+import { ServiceIcon } from '@/components/atoms-alianza/ServiceIcon';
+import { getDynamicBackgroundColor } from '@/lib/utils/color';
 
 /**
  * RequestDetailOrganism - Unified Single-Column Layout
@@ -85,8 +88,7 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
   const requestCancellationMutation =
     trpc.request.requestCancellation.useMutation();
 
-  // Feature flags
-  const { isEnabled: chatEnabled } = useFeatureFlag('request-collaboration');
+  // null
 
   // Inline editing (ADMIN only)
   const editHook = useRequestInlineEdit({
@@ -112,11 +114,15 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
   const canRequestCancellation = isClient && isActive;
 
   // --- Handlers ---
-  const handleAssign = async (reqId: string, employeeId: string) => {
+  const handleAssign = async (reqId: string, employeeId: string | null) => {
     setActionLoading('assign');
     try {
       await assignMutation.mutateAsync({ id: reqId, assignedToId: employeeId });
-      toast.success('La solicitud ha sido asignada correctamente.');
+      toast.success(
+        employeeId
+          ? 'La solicitud ha sido asignada correctamente.'
+          : 'El empleado ha sido desasignado.'
+      );
       refetch();
       queryClient.invalidateQueries({ queryKey: [['request']] });
       if (onUpdate) onUpdate();
@@ -336,31 +342,44 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
         {/* Subtle decorative background blur */}
         <div className="absolute top-0 right-0 -mt-16 -mr-16 w-64 h-64 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="relative space-y-3 flex-1">
-          {editHook.isEditing ? (
-            <div className="max-w-md">
-              <Combobox
-                options={editHook.serviceOptions}
-                value={editHook.formData.serviceId}
-                onChange={(value) =>
-                  editHook.updateField('serviceId', value as string)
-                }
-                placeholder="Seleccionar servicio..."
-                searchPlaceholder="Buscar servicio..."
-                emptyMessage="No se encontraron servicios."
-                className="w-full"
-              />
+        <div className="relative flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 flex-1">
+          <div
+            className="flex shrink-0 h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-2xl shadow-sm transition-colors overflow-hidden"
+            style={{ backgroundColor: getDynamicBackgroundColor((request.service as any)?.iconColor || '#000000') }}
+          >
+            <ServiceIcon
+              category={(request.service as any)?.categoryName || 'default'}
+              thumbnail={(request.service as any)?.thumbnail}
+              className="h-8 w-8 sm:h-10 sm:w-10 text-primary-foreground"
+              color={(request.service as any)?.iconColor}
+            />
+          </div>
+          <div className="relative space-y-3 flex-1">
+            {editHook.isEditing ? (
+              <div className="max-w-md">
+                <Combobox
+                  options={editHook.serviceOptions}
+                  value={editHook.formData.serviceId}
+                  onChange={(value) =>
+                    editHook.updateField('serviceId', value as string)
+                  }
+                  placeholder="Seleccionar servicio..."
+                  searchPlaceholder="Buscar servicio..."
+                  emptyMessage="No se encontraron servicios."
+                  className="w-full"
+                />
+              </div>
+            ) : (
+              <h1 className="text-3xl md:text-4xl font-black text-foreground tracking-tight leading-none">
+                {request.service?.name?.toUpperCase() || 'SERVICIO'}
+              </h1>
+            )}
+            <div className="flex items-center gap-3 text-xs font-bold tracking-widest uppercase">
+              <span className="text-foreground/90 w-12">ID</span>
+              <span className="text-primary bg-primary/10 px-2 py-1 rounded-md">
+                #{(request as any).customId || requestId.slice(-8).toUpperCase()}
+              </span>
             </div>
-          ) : (
-            <h1 className="text-3xl md:text-4xl font-black text-foreground tracking-tight leading-none">
-              {request.service?.name?.toUpperCase() || 'SERVICIO'}
-            </h1>
-          )}
-          <div className="flex items-center gap-3 text-xs font-bold tracking-widest uppercase">
-            <span className="text-foreground/90 w-12">ID</span>
-            <span className="text-primary bg-primary/10 px-2 py-1 rounded-md">
-              #{(request as any).customId || requestId.slice(-8).toUpperCase()}
-            </span>
           </div>
         </div>
         <div className="relative shrink-0">
@@ -448,75 +467,75 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
                 />
                 {(editHook.formData.useNewLocation ||
                   editHook.formData.locationId) && (
-                  <>
-                    <div className="grid grid-cols-2 gap-3">
+                    <>
+                      <div className="grid grid-cols-2 gap-3">
+                        <FormInput
+                          label="Edificio"
+                          value={editHook.formData.locationBuilding}
+                          onChange={(e) =>
+                            editHook.updateField('locationBuilding', e.target.value)
+                          }
+                        />
+                        <FormInput
+                          label="Torre"
+                          value={editHook.formData.locationTower}
+                          onChange={(e) =>
+                            editHook.updateField('locationTower', e.target.value)
+                          }
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <FormInput
+                          label="Piso"
+                          value={editHook.formData.locationFloor}
+                          onChange={(e) =>
+                            editHook.updateField('locationFloor', e.target.value)
+                          }
+                        />
+                        <FormInput
+                          label="Unidad"
+                          value={editHook.formData.locationUnit}
+                          onChange={(e) =>
+                            editHook.updateField('locationUnit', e.target.value)
+                          }
+                        />
+                      </div>
                       <FormInput
-                        label="Edificio"
-                        value={editHook.formData.locationBuilding}
+                        label="Calle"
+                        value={editHook.formData.locationStreet}
                         onChange={(e) =>
-                          editHook.updateField('locationBuilding', e.target.value)
-                        }
-                      />
-                      <FormInput
-                        label="Torre"
-                        value={editHook.formData.locationTower}
-                        onChange={(e) =>
-                          editHook.updateField('locationTower', e.target.value)
-                        }
-                      />
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
-                      <FormInput
-                        label="Piso"
-                        value={editHook.formData.locationFloor}
-                        onChange={(e) =>
-                          editHook.updateField('locationFloor', e.target.value)
-                        }
-                      />
-                      <FormInput
-                        label="Unidad"
-                        value={editHook.formData.locationUnit}
-                        onChange={(e) =>
-                          editHook.updateField('locationUnit', e.target.value)
-                        }
-                      />
-                    </div>
-                    <FormInput
-                      label="Calle"
-                      value={editHook.formData.locationStreet}
-                      onChange={(e) =>
-                        editHook.updateField('locationStreet', e.target.value)
-                      }
-                      required
-                    />
-                    <div className="grid grid-cols-3 gap-3">
-                      <FormInput
-                        label="Ciudad"
-                        value={editHook.formData.locationCity}
-                        onChange={(e) =>
-                          editHook.updateField('locationCity', e.target.value)
+                          editHook.updateField('locationStreet', e.target.value)
                         }
                         required
                       />
-                      <FormInput
-                        label="Estado"
-                        value={editHook.formData.locationState}
-                        onChange={(e) =>
-                          editHook.updateField('locationState', e.target.value)
-                        }
-                        required
-                      />
-                      <FormInput
-                        label="C.P."
-                        value={editHook.formData.locationZip}
-                        onChange={(e) =>
-                          editHook.updateField('locationZip', e.target.value)
-                        }
-                        required
-                      />
-                    </div>
-                  </>
-                )}
+                      <div className="grid grid-cols-3 gap-3">
+                        <FormInput
+                          label="Ciudad"
+                          value={editHook.formData.locationCity}
+                          onChange={(e) =>
+                            editHook.updateField('locationCity', e.target.value)
+                          }
+                          required
+                        />
+                        <FormInput
+                          label="Estado"
+                          value={editHook.formData.locationState}
+                          onChange={(e) =>
+                            editHook.updateField('locationState', e.target.value)
+                          }
+                          required
+                        />
+                        <FormInput
+                          label="C.P."
+                          value={editHook.formData.locationZip}
+                          onChange={(e) =>
+                            editHook.updateField('locationZip', e.target.value)
+                          }
+                          required
+                        />
+                      </div>
+                    </>
+                  )}
               </div>
             ) : (
               <>
@@ -703,7 +722,6 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
         )}
 
       {/* ── Chat Panel (feature-flagged) ── */}
-      {chatEnabled && <RequestChatPanel requestId={requestId} />}
 
       {/* ── Request Cancellation (client only) ── */}
       {canRequestCancellation && (

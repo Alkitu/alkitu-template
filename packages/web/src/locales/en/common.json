@@ -1402,6 +1402,37 @@
         "status": "Status",
         "sentAt": "Sent"
       }
+    },
+    "editor": {
+      "editing": "Editing",
+      "spanish": "Spanish",
+      "english": "English",
+      "subject": "Subject",
+      "body": "Email Body",
+      "bodyHint": "Your content will be automatically wrapped in the standard email layout with header and footer.",
+      "htmlPlaceholder": "Write your email content HTML here...",
+      "visualPlaceholder": "Start writing your email content...",
+      "availableVariables": "Available Variables",
+      "active": "Active",
+      "inactive": "Inactive",
+      "noDescription": "No description provided.",
+      "reset": "Reset",
+      "save": "Save",
+      "saving": "Saving..."
+    },
+    "page": {
+      "editTitle": "Edit Email Template",
+      "loading": "Loading template...",
+      "notFoundTitle": "Template Not Found",
+      "notFoundDescription": "The email template could not be found.",
+      "backLabel": "Back to Email Templates",
+      "editDescription": "Edit this email template",
+      "editorAndPreview": "Editor & Preview",
+      "savedSuccess": "Template saved successfully",
+      "resetConfirm": "Are you sure you want to reset this template to its default content? This cannot be undone.",
+      "resetSuccess": "Template reset to default",
+      "activated": "Template activated",
+      "deactivated": "Template deactivated"
     }
   },
   "users": {

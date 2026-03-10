@@ -796,11 +796,72 @@ export class RequestsService {
         throw new NotFoundException(`Request with ID "${id}" not found`);
       }
 
-      // Can only assign PENDING requests
-      if (request.status !== RequestStatus.PENDING) {
+      // Can only assign/reassign PENDING or ONGOING requests
+      if (
+        request.status !== RequestStatus.PENDING &&
+        request.status !== RequestStatus.ONGOING
+      ) {
         throw new BadRequestException(
-          'Can only assign requests in PENDING status',
+          'Can only assign requests in PENDING or ONGOING status',
         );
+      }
+
+      // Handle unassignment (assignedToId = null)
+      if (!assignRequestDto.assignedToId) {
+        const updatedRequest = await this.prisma.request.update({
+          where: { id },
+          data: {
+            assignedToId: null,
+            status: RequestStatus.PENDING,
+            updatedBy: userId,
+          },
+          include: {
+            user: {
+              select: {
+                id: true,
+                firstname: true,
+                lastname: true,
+                email: true,
+                company: true,
+              },
+            },
+            service: {
+              select: {
+                id: true,
+                name: true,
+                categoryId: true,
+                category: { select: { id: true, name: true } },
+              },
+            },
+            location: {
+              select: {
+                id: true,
+                street: true,
+                city: true,
+                state: true,
+                zip: true,
+                building: true,
+                tower: true,
+                floor: true,
+                unit: true,
+              },
+            },
+            assignedTo: {
+              select: {
+                id: true,
+                firstname: true,
+                lastname: true,
+                email: true,
+              },
+            },
+          },
+        });
+
+        this.logger.log(
+          `Request ${id} unassigned by user ${userId}`,
+        );
+
+        return updatedRequest;
       }
 
       // Validate assignee exists and has EMPLOYEE or ADMIN role

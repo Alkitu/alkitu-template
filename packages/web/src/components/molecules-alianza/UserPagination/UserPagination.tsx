@@ -104,7 +104,7 @@ export function UserPagination({
           <Button
             variant="outline"
             size="icon"
-            className="h-8 w-8"
+            className="h-8 w-8 text-foreground hover:text-foreground"
             disabled={currentPage <= 1}
             onClick={() => onPageChange(currentPage - 1)}
           >
@@ -114,7 +114,7 @@ export function UserPagination({
           <Button
             variant="outline"
             size="icon"
-            className="h-8 w-8"
+            className="h-8 w-8 text-foreground hover:text-foreground"
             disabled={currentPage >= totalPages}
             onClick={() => onPageChange(currentPage + 1)}
           >

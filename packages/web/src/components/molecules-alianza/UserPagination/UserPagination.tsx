@@ -104,21 +104,21 @@ export function UserPagination({
           <Button
             variant="outline"
             size="icon"
-            className="h-8 w-8 text-foreground hover:text-foreground"
+            className="h-8 w-8 !border-input !text-foreground hover:!bg-accent"
             disabled={currentPage <= 1}
             onClick={() => onPageChange(currentPage - 1)}
           >
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronLeft className="h-4 w-4" strokeWidth={2.5} />
             <span className="sr-only">{l.previous}</span>
           </Button>
           <Button
             variant="outline"
             size="icon"
-            className="h-8 w-8 text-foreground hover:text-foreground"
+            className="h-8 w-8 !border-input !text-foreground hover:!bg-accent"
             disabled={currentPage >= totalPages}
             onClick={() => onPageChange(currentPage + 1)}
           >
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="h-4 w-4" strokeWidth={2.5} />
             <span className="sr-only">{l.next}</span>
           </Button>
         </div>

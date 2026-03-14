@@ -146,7 +146,7 @@ export class RequestNotificationBuilder {
     if (recipient === 'admin') {
       return {
         userId: '', // Will be set for each admin
-        message: `Cancellation requested for service request #${request.id.slice(-6)} - ${reason}`,
+        message: `${data.clientName || 'Un cliente'} ha solicitado la cancelación del servicio "${request.service?.name || 'servicio'}" - ${reason}`,
         type: NotificationType.REQUEST_CANCELLATION_REQUESTED,
         link: `/requests/${request.id}`,
         data,

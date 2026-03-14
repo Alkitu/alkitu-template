@@ -344,13 +344,13 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
 
         <div className="relative flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 flex-1">
           <div
-            className="flex shrink-0 h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-2xl shadow-sm transition-colors overflow-hidden"
+            className="flex shrink-0 h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-2xl shadow-sm transition-colors overflow-hidden [&_img]:rounded-none"
             style={{ backgroundColor: getDynamicBackgroundColor((request.service as any)?.iconColor || '#000000') }}
           >
             <ServiceIcon
               category={(request.service as any)?.categoryName || 'default'}
               thumbnail={(request.service as any)?.thumbnail}
-              className="h-8 w-8 sm:h-10 sm:w-10 text-primary-foreground"
+              className="h-full w-full text-primary-foreground"
               color={(request.service as any)?.iconColor}
             />
           </div>
@@ -383,12 +383,74 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
           </div>
         </div>
         <div className="relative shrink-0">
-          <RequestStatusBadgeMolecule
-            status={request.status as RequestStatus}
-            size="lg"
-          />
+          {canChangeStatus ? (
+            <button
+              type="button"
+              onClick={() => setIsStatusModalOpen(true)}
+              className="cursor-pointer transition-transform hover:scale-105 active:scale-95"
+              title="Cambiar estado"
+            >
+              <RequestStatusBadgeMolecule
+                status={request.status as RequestStatus}
+                size="lg"
+              />
+            </button>
+          ) : (
+            <RequestStatusBadgeMolecule
+              status={request.status as RequestStatus}
+              size="lg"
+            />
+          )}
         </div>
       </div>
+
+      {/* ── Cancellation Requested Banner ── */}
+      {(request as any).cancellationRequested &&
+        request.status !== RequestStatus.CANCELLED && (
+          <div className="rounded-xl border border-amber-200 bg-amber-50 p-6">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
+              <div className="flex-1">
+                <h3 className="font-bold text-amber-800">
+                  Cancelación Solicitada
+                </h3>
+                <p className="mt-1 text-sm text-amber-700">
+                  El cliente ha solicitado la cancelación de esta solicitud.
+                  {(request as any).cancellationRequestedAt && (
+                    <span className="ml-1 text-amber-600">
+                      (
+                      {new Date(
+                        (request as any).cancellationRequestedAt,
+                      ).toLocaleString('es-ES', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                      )
+                    </span>
+                  )}
+                </p>
+                {(isAdmin || isEmployee) && (
+                  <Button
+                    onClick={handleApproveCancellation}
+                    disabled={actionLoading === 'approveCancellation'}
+                    className="mt-3 bg-amber-600 hover:bg-amber-700 text-white font-bold uppercase tracking-wider text-xs"
+                    size="sm"
+                  >
+                    {actionLoading === 'approveCancellation' ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <CheckCircle className="mr-2 h-4 w-4" />
+                    )}
+                    Aprobar Cancelación
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
       {/* ── Status Timeline Card ── */}
       <div className="bg-card border border-border shadow-sm rounded-xl p-8">
@@ -674,52 +736,6 @@ export const RequestDetailOrganism: React.FC<RequestDetailOrganismProps> = ({
           />
         </div>
       )}
-
-      {/* ── Cancellation Requested Banner ── */}
-      {(request as any).cancellationRequested &&
-        request.status !== RequestStatus.CANCELLED && (
-          <div className="rounded-xl border border-amber-200 bg-amber-50 p-6">
-            <div className="flex items-start gap-3">
-              <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
-              <div className="flex-1">
-                <h3 className="font-bold text-amber-800">
-                  Cancelación Solicitada
-                </h3>
-                <p className="mt-1 text-sm text-amber-700">
-                  El cliente ha solicitado la cancelación de esta solicitud.
-                  {(request as any).cancellationRequestedAt && (
-                    <span className="ml-1 text-amber-600">
-                      (
-                      {new Date(
-                        (request as any).cancellationRequestedAt,
-                      ).toLocaleDateString('es-ES', {
-                        day: 'numeric',
-                        month: 'long',
-                        year: 'numeric',
-                      })}
-                      )
-                    </span>
-                  )}
-                </p>
-                {(isAdmin || isEmployee) && (
-                  <Button
-                    onClick={handleApproveCancellation}
-                    disabled={actionLoading === 'approveCancellation'}
-                    className="mt-3 bg-amber-600 hover:bg-amber-700 text-white font-bold uppercase tracking-wider text-xs"
-                    size="sm"
-                  >
-                    {actionLoading === 'approveCancellation' ? (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    ) : (
-                      <CheckCircle className="mr-2 h-4 w-4" />
-                    )}
-                    Aprobar Cancelación
-                  </Button>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
 
       {/* ── Chat Panel (feature-flagged) ── */}
 

@@ -1,3 +1,3 @@
 [submodule "packages/design-system"]
 	path = packages/design-system
-	url = git@github.com:Alkitu/design-system.git
+	url = https://github.com/Alkitu/design-system.git

@@ -3,7 +3,3 @@ packages:
   - 'packages/web'
   - 'packages/shared'
   - 'packages/mobile'
-  - 'packages/design-system/web'
-  - 'packages/design-system/mobile'
-  - 'packages/design-system/tokens'
-  - 'tools/*'

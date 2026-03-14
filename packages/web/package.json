@@ -29,7 +29,7 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
-    "@alkitu/shared": "file:../shared",
+    "@alkitu/shared": "workspace:*",
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
@@ -175,6 +175,6 @@
   },
   "engines": {
     "node": ">=18.0.0",
-    "npm": ">=8.0.0"
+    "pnpm": ">=9.0.0"
   }
 }

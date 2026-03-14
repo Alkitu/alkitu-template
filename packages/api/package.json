@@ -48,7 +48,7 @@
     "migrate:clean": "ts-node -r tsconfig-paths/register src/scripts/migrate-to-form-templates.ts"
   },
   "dependencies": {
-    "@alkitu/shared": "file:../shared",
+    "@alkitu/shared": "workspace:*",
     "@nestjs/cli": "^11.0.14",
     "@nestjs/common": "^11.0.1",
     "@nestjs/core": "^11.0.1",
@@ -64,12 +64,16 @@
     "@react-email/render": "^2.0.4",
     "@trpc/server": "^11.4.3",
     "@types/bcryptjs": "^2.4.6",
+    "@types/express": "^5.0.0",
+    "@types/multer": "^2.0.0",
     "@types/passport-jwt": "^4.0.1",
     "@types/passport-local": "^1.0.38",
+    "@types/react": "^19.2.14",
     "bcryptjs": "^3.0.2",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
     "dotenv": "^16.6.0",
+    "express": "^5.2.1",
     "googleapis": "^171.4.0",
     "nestjs-zod": "^4.3.1",
     "passport": "^0.7.0",
@@ -77,6 +81,7 @@
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
     "prisma": "^6.10.1",
+    "react": "^19.2.4",
     "reflect-metadata": "^0.2.2",
     "resend": "^4.6.0",
     "rxjs": "^7.8.1",
@@ -84,9 +89,7 @@
     "socket.io": "^4.8.1",
     "swagger-ui-express": "^5.0.1",
     "web-push": "^3.6.7",
-    "zod": "^3.25.67",
-    "@types/express": "^5.0.0",
-    "@types/multer": "^2.0.0"
+    "zod": "^3.25.67"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",

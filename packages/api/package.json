@@ -48,7 +48,7 @@
     "migrate:clean": "ts-node -r tsconfig-paths/register src/scripts/migrate-to-form-templates.ts"
   },
   "dependencies": {
-    "@alkitu/shared": "file:../shared",
+    "@alkitu/shared": "workspace:*",
     "@nestjs/cli": "^11.0.14",
     "@nestjs/common": "^11.0.1",
     "@nestjs/core": "^11.0.1",

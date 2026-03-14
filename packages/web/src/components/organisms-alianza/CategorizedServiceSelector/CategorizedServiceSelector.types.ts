@@ -27,4 +27,5 @@ export interface CategorizedServiceSelectorProps {
   noResultsText?: string;
   emptyText?: string;
   className?: string;
+  favoritesCategoryText?: string;
 }

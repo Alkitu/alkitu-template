@@ -465,7 +465,8 @@
           "fieldsInForm": "campos en el formulario",
           "services": "servicios",
           "next": "Siguiente: Detalles del Servicio",
-          "required": "Por favor seleccione un servicio"
+          "required": "Por favor seleccione un servicio",
+          "favorites": "Favoritos"
         },
         "step4": {
           "title": "Detalles del Servicio",
@@ -636,7 +637,8 @@
           "selected": "Servicio seleccionado:",
           "fieldsInForm": "campos en el formulario",
           "next": "Siguiente: Detalles del Servicio",
-          "required": "Por favor seleccione un servicio"
+          "required": "Por favor seleccione un servicio",
+          "favorites": "Favoritos"
         },
         "step3": {
           "title": "Detalles del Servicio",

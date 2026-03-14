@@ -495,6 +495,7 @@ export default function AdminCreateRequestPage() {
               searchPlaceholder={t('step3.searchPlaceholder')}
               noResultsText={t('step3.noResults')}
               emptyText={t('step3.empty')}
+              favoritesCategoryText={t('step3.favorites')}
             />
 
             {selectedService && (

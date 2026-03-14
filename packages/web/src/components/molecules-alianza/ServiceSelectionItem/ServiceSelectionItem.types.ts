@@ -13,4 +13,6 @@ export interface ServiceSelectionItemProps {
   onSelect: (serviceId: string) => void;
   disabled?: boolean;
   className?: string;
+  isFavorite?: boolean;
+  onToggleFavorite?: (serviceId: string) => void;
 }

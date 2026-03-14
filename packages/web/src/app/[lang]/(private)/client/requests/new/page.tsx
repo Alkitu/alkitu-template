@@ -724,6 +724,7 @@ export default function NewRequestWizardPage() {
               searchPlaceholder={t('step2.searchPlaceholder')}
               noResultsText={t('step2.noResults')}
               emptyText={t('step2.empty')}
+              favoritesCategoryText={t('step2.favorites')}
             />
 
             {selectedService && (

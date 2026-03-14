@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { Search, Package, X } from 'lucide-react';
 import { Input } from '@/components/atoms-alianza/Input';
 import { ServiceSelectionItem } from '@/components/molecules-alianza/ServiceSelectionItem';
@@ -7,6 +7,8 @@ import type {
   CategoryGroup,
   SelectableService,
 } from './CategorizedServiceSelector.types';
+
+const FAVORITES_STORAGE_KEY = 'alkitu-favorite-services';
 
 export const CategorizedServiceSelector: React.FC<CategorizedServiceSelectorProps> = ({
   services,
@@ -17,8 +19,42 @@ export const CategorizedServiceSelector: React.FC<CategorizedServiceSelectorProp
   noResultsText = 'No services found',
   emptyText = 'No services available',
   className = '',
+  favoritesCategoryText,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [favorites, setFavorites] = useState<Set<string>>(new Set());
+
+  // Load favorites from localStorage on mount (SSR-safe)
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(FAVORITES_STORAGE_KEY);
+      if (stored) {
+        const ids: string[] = JSON.parse(stored);
+        if (Array.isArray(ids)) {
+          setFavorites(new Set(ids));
+        }
+      }
+    } catch {
+      // Ignore localStorage errors
+    }
+  }, []);
+
+  const toggleFavorite = useCallback((serviceId: string) => {
+    setFavorites((prev) => {
+      const next = new Set(prev);
+      if (next.has(serviceId)) {
+        next.delete(serviceId);
+      } else {
+        next.add(serviceId);
+      }
+      try {
+        localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify([...next]));
+      } catch {
+        // Ignore localStorage errors
+      }
+      return next;
+    });
+  }, []);
 
   const filteredGroups = useMemo(() => {
     const query = searchQuery.toLowerCase().trim();
@@ -45,14 +81,32 @@ export const CategorizedServiceSelector: React.FC<CategorizedServiceSelectorProp
       }
     }
 
-    return Array.from(groupMap.values()).sort((a, b) =>
+    // Build favorites group from filtered services
+    const favoriteServices = filtered.filter((s) => favorites.has(s.id));
+    const favoritesGroup: CategoryGroup | null =
+      favoriteServices.length > 0
+        ? {
+            categoryId: '__favorites__',
+            categoryName: favoritesCategoryText || 'Favorites',
+            services: favoriteServices,
+          }
+        : null;
+
+    const sortedGroups = Array.from(groupMap.values()).sort((a, b) =>
       a.categoryName.localeCompare(b.categoryName)
     );
-  }, [services, searchQuery]);
 
-  const renderServiceItem = (service: SelectableService) => (
+    // Favorites always first
+    if (favoritesGroup) {
+      return [favoritesGroup, ...sortedGroups];
+    }
+
+    return sortedGroups;
+  }, [services, searchQuery, favorites, favoritesCategoryText]);
+
+  const renderServiceItem = (service: SelectableService, groupId: string) => (
     <ServiceSelectionItem
-      key={service.id}
+      key={`${groupId}-${service.id}`}
       service={{
         id: service.id,
         name: service.name,
@@ -63,6 +117,8 @@ export const CategorizedServiceSelector: React.FC<CategorizedServiceSelectorProp
       }}
       isSelected={selectedServiceId === service.id}
       onSelect={() => onServiceSelect(service)}
+      isFavorite={favorites.has(service.id)}
+      onToggleFavorite={toggleFavorite}
     />
   );
 
@@ -135,7 +191,7 @@ export const CategorizedServiceSelector: React.FC<CategorizedServiceSelectorProp
             </div>
             {/* Services in this category */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {group.services.map(renderServiceItem)}
+              {group.services.map((s) => renderServiceItem(s, group.categoryId))}
             </div>
           </div>
         ))}

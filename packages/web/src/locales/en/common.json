@@ -549,7 +549,8 @@
           "fieldsInForm": "fields in form",
           "services": "services",
           "next": "Next: Service Details",
-          "required": "Please select a service"
+          "required": "Please select a service",
+          "favorites": "Favorites"
         },
         "step4": {
           "title": "Service Details",
@@ -720,7 +721,8 @@
           "selected": "Selected service:",
           "fieldsInForm": "fields in form",
           "next": "Next: Service Details",
-          "required": "Please select a service"
+          "required": "Please select a service",
+          "favorites": "Favorites"
         },
         "step3": {
           "title": "Service Details",

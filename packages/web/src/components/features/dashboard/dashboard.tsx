@@ -491,7 +491,7 @@ function Dashboard({ children, showWelcome = false, userRole = 'admin' }: Dashbo
       <AppSidebar {...transformedData} user={user} />
 
       <SidebarInset className="flex flex-col min-h-screen overflow-hidden">
-        <div className="flex sticky top-0 bg-background h-16 shrink-0 items-center gap-2 border-b px-4 w-full">
+        <div className="flex sticky top-0 bg-background h-16 shrink-0 items-center gap-2 border-b px-4 w-full relative">
           <SidebarTrigger className="-ml-1" />
           <div className="w-full col-start-1 col-end-full ">
             <Header

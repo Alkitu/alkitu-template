@@ -32,6 +32,16 @@ import {
   CardDescription,
 } from '@/components/primitives/ui/card';
 import { Badge } from '@/components/primitives/ui/badge';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/primitives/ui/alert-dialog';
 import { Button } from '@/components/molecules-alianza/Button';
 import dynamic from 'next/dynamic';
 import { Heading } from '@/components/atoms-alianza/Typography';
@@ -98,6 +108,9 @@ export default function NewRequestWizardPage() {
   );
   const [executionTime, setExecutionTime] = useState<string | null>(null);
   const [showCreateLocationForm, setShowCreateLocationForm] = useState(false);
+  const [editingLocation, setEditingLocation] = useState<WorkLocation | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [locationToDelete, setLocationToDelete] = useState<WorkLocation | null>(null);
   const [pendingFiles, setPendingFiles] = useState<Record<string, File[]>>({});
 
   // Submission state
@@ -216,6 +229,42 @@ export default function NewRequestWizardPage() {
     toast.success(t('step1.addLocationSuccess'));
     await refetchLocations();
     setSelectedLocation(location);
+  };
+
+  const handleEditLocation = (location: WorkLocation) => {
+    setEditingLocation(location);
+  };
+
+  const handleDeleteLocation = (location: WorkLocation) => {
+    setLocationToDelete(location);
+  };
+
+  const confirmDeleteLocation = async () => {
+    if (!locationToDelete) return;
+    const location = locationToDelete;
+    setLocationToDelete(null);
+    try {
+      setDeletingId(location.id);
+      const res = await fetch(`/api/locations/${location.id}`, { method: 'DELETE' });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Failed to delete');
+      }
+      toast.success(t('step1.deleteSuccess'));
+      if (selectedLocation?.id === location.id) setSelectedLocation(null);
+      await refetchLocations();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Error al eliminar');
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  const handleEditSuccess = async (updated: WorkLocation) => {
+    setEditingLocation(null);
+    toast.success(t('step1.editSuccess'));
+    await refetchLocations();
+    if (selectedLocation?.id === updated.id) setSelectedLocation(updated);
   };
 
   const handleStep1Next = () => {
@@ -545,20 +594,66 @@ export default function NewRequestWizardPage() {
               <div className="space-y-3">
                 {locationsData.items.map((loc) => {
                   const location = loc as unknown as WorkLocation;
+                  const requestCount = (loc as any)._count?.requests ?? 0;
+                  const canModify = requestCount === 0;
+
+                  if (editingLocation?.id === location.id) {
+                    return (
+                      <div key={location.id} className="rounded-lg border border-dashed border-primary/30 bg-muted/30 p-4">
+                        <LocationFormOrganism
+                          initialData={editingLocation}
+                          onSuccess={handleEditSuccess}
+                          onCancel={() => setEditingLocation(null)}
+                          showCancel
+                          userId={currentUser?.id}
+                        />
+                      </div>
+                    );
+                  }
+
                   return (
                     <div
                       key={location.id}
-                      onClick={() => handleLocationCardSelect(location)}
-                      className={`cursor-pointer rounded-lg transition-all ${selectedLocation?.id === location.id
+                      className={`rounded-lg transition-all ${selectedLocation?.id === location.id
                           ? 'ring-2 ring-primary ring-offset-2'
                           : 'hover:ring-1 hover:ring-primary/30'
                         }`}
                     >
-                      <LocationCardMolecule
-                        location={location}
-                        showEdit={false}
-                        showDelete={false}
-                      />
+                      <div
+                        className="cursor-pointer"
+                        onClick={() => handleLocationCardSelect(location)}
+                      >
+                        <LocationCardMolecule
+                          location={location}
+                          showEdit={false}
+                          showDelete={false}
+                          requestCount={requestCount}
+                        />
+                      </div>
+                      {canModify && (
+                        <div className="flex justify-end gap-2 px-4 pb-3 mt-1">
+                          <button
+                            type="button"
+                            className="text-xs text-muted-foreground hover:text-destructive transition-colors"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteLocation(location);
+                            }}
+                          >
+                            {t('step1.delete')}
+                          </button>
+                          <button
+                            type="button"
+                            className="text-xs text-primary hover:text-primary/80 font-medium transition-colors"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleEditLocation(location);
+                            }}
+                          >
+                            {t('step1.edit')}
+                          </button>
+                        </div>
+                      )}
                     </div>
                   );
                 })}
@@ -616,7 +711,7 @@ export default function NewRequestWizardPage() {
               <p className="text-sm">
                 <strong>{t('labels.location')}</strong>{' '}
                 {selectedLocation
-                  ? `${selectedLocation.street}, ${selectedLocation.city}`
+                  ? <span className="text-primary font-medium">{selectedLocation.street}, {selectedLocation.city}</span>
                   : ''}
               </p>
             </div>
@@ -673,7 +768,7 @@ export default function NewRequestWizardPage() {
               <p className="text-sm">
                 <strong>{t('labels.location')}</strong>{' '}
                 {selectedLocation
-                  ? `${selectedLocation.street}, ${selectedLocation.city}`
+                  ? <span className="text-primary font-medium">{selectedLocation.street}, {selectedLocation.city}</span>
                   : ''}{' '}
                 | <strong>{t('labels.service')}</strong> {selectedService.name}
               </p>
@@ -881,6 +976,30 @@ export default function NewRequestWizardPage() {
           </CardContent>
         </Card>
       )}
+
+      {/* Delete Location Confirmation Dialog */}
+      <AlertDialog open={!!locationToDelete} onOpenChange={(open) => !open && setLocationToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('step1.deleteConfirm')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('step1.deleteConfirmDescription').replace(
+                '{address}',
+                locationToDelete ? `${locationToDelete.street}, ${locationToDelete.city}, ${locationToDelete.state}` : ''
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('step1.cancel')}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDeleteLocation}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deletingId ? t('step1.deleting') : t('step1.delete')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

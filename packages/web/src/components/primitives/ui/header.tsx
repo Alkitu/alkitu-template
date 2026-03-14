@@ -25,7 +25,7 @@ function Header({ type, homeLabel, dropdownSliceEnd, separator, userId }: Header
   const effectiveNotificationsEnabled = hasMounted ? notificationsEnabled : false;
 
   return (
-    <header className="flex w-full items-center justify-between gap-4 relative">
+    <header className="flex w-full items-center justify-between gap-4">
       <div className="hidden md:flex items-center gap-2 z-10">
         {separator && (
           <div className="mr-2 h-4 w-[1px] bg-border" />
@@ -41,7 +41,7 @@ function Header({ type, homeLabel, dropdownSliceEnd, separator, userId }: Header
         <Logo className="scale-75 sm:scale-90 md:scale-100 origin-center" />
       </div>
 
-      <div className="flex items-center gap-2 z-10">
+      <div className="flex items-center gap-2 z-10 ml-auto">
         {effectiveNotificationsEnabled !== false && <NotificationCenter userId={userId} />}
       </div>
     </header>

@@ -617,7 +617,15 @@
           "required": "Por favor seleccione una ubicación",
           "noLocations": "No tienes ubicaciones registradas",
           "addLocation": "Agregar Nueva Ubicación",
-          "addLocationSuccess": "Ubicación creada exitosamente"
+          "addLocationSuccess": "Ubicación creada exitosamente",
+          "edit": "Editar",
+          "delete": "Eliminar",
+          "deleteConfirm": "¿Eliminar esta ubicación?",
+          "deleteConfirmDescription": "Esta acción no se puede deshacer. La ubicación \"{address}\" será eliminada permanentemente.",
+          "deleteSuccess": "Ubicación eliminada",
+          "deleting": "Eliminando...",
+          "editSuccess": "Ubicación actualizada",
+          "cancel": "Cancelar"
         },
         "step2": {
           "title": "Seleccionar Servicio",

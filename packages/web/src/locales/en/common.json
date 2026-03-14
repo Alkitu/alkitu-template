@@ -701,7 +701,15 @@
           "required": "Please select a location",
           "noLocations": "You have no registered locations",
           "addLocation": "Add New Location",
-          "addLocationSuccess": "Location created successfully"
+          "addLocationSuccess": "Location created successfully",
+          "edit": "Edit",
+          "delete": "Delete",
+          "deleteConfirm": "Delete this location?",
+          "deleteConfirmDescription": "This action cannot be undone. The location \"{address}\" will be permanently deleted.",
+          "deleteSuccess": "Location deleted",
+          "deleting": "Deleting...",
+          "editSuccess": "Location updated",
+          "cancel": "Cancel"
         },
         "step2": {
           "title": "Select Service",

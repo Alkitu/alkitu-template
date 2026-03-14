@@ -20,15 +20,22 @@ jobs:
     steps:
       - name: 🚀 Checkout code
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
+          cache: "pnpm"
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
 
       - name: 📦 Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: 🔧 Generate Prisma Client
         run: |
@@ -38,7 +45,7 @@ jobs:
       - name: 🟢 Run GREEN phase tests
         run: |
           echo "🟢 GREEN Phase - Running unit tests..."
-          npm run test:unit
+          pnpm run test:unit
         env:
           CI: true
 
@@ -63,15 +70,22 @@ jobs:
     steps:
       - name: 🚀 Checkout code
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
+          cache: "pnpm"
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
 
       - name: 📦 Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: 🔧 Generate Prisma Client
         run: |
@@ -81,9 +95,9 @@ jobs:
       - name: 🔄 Run REFACTOR phase
         run: |
           echo "🔄 REFACTOR Phase - Quality checks..."
-          npm run lint
-          npm run type-check
-          npm run test:all
+          pnpm run lint
+          pnpm run type-check
+          pnpm run test:all
         env:
           CI: true
 
@@ -108,15 +122,22 @@ jobs:
     steps:
       - name: 🚀 Checkout code
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
+          cache: "pnpm"
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
 
       - name: 📦 Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: 🔧 Generate Prisma Client
         run: |
@@ -126,7 +147,7 @@ jobs:
       - name: 🧪 Run VALIDATION phase
         run: |
           echo "🧪 VALIDATION Phase - Mutation testing..."
-          npm run test:mutation
+          pnpm run test:mutation
         env:
           CI: true
         continue-on-error: true
@@ -167,6 +188,8 @@ jobs:
     steps:
       - name: 🚀 Checkout code
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
       - name: 🐳 Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -219,15 +242,22 @@ jobs:
     steps:
       - name: 🚀 Checkout code
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
+          cache: "pnpm"
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
 
       - name: 📦 Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: 🔧 Generate Prisma Client
         run: |
@@ -242,7 +272,7 @@ jobs:
       - name: 🔍 Run quality gates
         run: |
           echo "🔍 Running quality gates..."
-          npm run quality:gates
+          pnpm run quality:gates
 
       - name: 📊 Generate quality report
         run: |
@@ -253,7 +283,7 @@ jobs:
           echo "- 🔄 REFACTOR Phase: ✅ Completed" >> quality-report.md
           echo "- 🧪 VALIDATION Phase: ✅ Completed" >> quality-report.md
           echo "## Quality Metrics" >> quality-report.md
-          echo "- Test Coverage: $(npm run test:coverage --silent | grep 'All files' | awk '{print $10}')" >> quality-report.md
+          echo "- Test Coverage: $(pnpm run test:coverage --silent | grep 'All files' | awk '{print $10}')" >> quality-report.md
           echo "- Mutation Score: $(cat reports/mutation/mutation.json | jq '.mutationScore')%" >> quality-report.md
           echo "- Lint Errors: 0" >> quality-report.md
           echo "- Type Errors: 0" >> quality-report.md
@@ -275,15 +305,22 @@ jobs:
     steps:
       - name: 🚀 Checkout code
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
+          cache: "pnpm"
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
 
       - name: 📦 Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: 🔧 Generate Prisma Client
         run: |
@@ -291,7 +328,7 @@ jobs:
           cd packages/api && npx prisma generate
 
       - name: 🏗️ Build production
-        run: npm run build:all
+        run: pnpm run build
 
       - name: 🚀 Deploy to Vercel
         uses: amondnet/vercel-action@v25

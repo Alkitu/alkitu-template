@@ -1,41 +1,63 @@
 #!/usr/bin/env tsx
 
-import { generateProtectedRoutes, validateRoutes, formatValidationResults } from '../src/lib/routes/generate-protected-routes';
-import { PROTECTED_ROUTES } from '../src/lib/routes/protected-routes';
+import { generateProtectedRoutes } from '../src/lib/routes/generate-protected-routes';
+import { isPublicRoute, getRequiredRoles } from '../src/lib/routes/route-access';
 
 /**
  * Route Validation Script
  *
- * Validates that all protected routes in the filesystem
- * are properly configured in protected-routes.ts
+ * With deny-by-default middleware, this script verifies that:
+ * 1. All filesystem routes are either public (whitelisted) or role-protected.
+ * 2. The prefix-based role rules match the folder structure.
  *
  * Usage:
- *   npm run validate:routes
+ *   pnpm run validate:routes
  *   tsx scripts/validate-routes.ts
  */
 
-console.log('🔍 Validating Protected Routes...\n');
+console.log('🔍 Validating Route Access (deny-by-default model)...\n');
 
-// Generate routes from filesystem
 const generated = generateProtectedRoutes();
-console.log(`📁 Found ${generated.length} routes in filesystem`);
-console.log(`📋 Found ${PROTECTED_ROUTES.length} routes in config\n`);
+console.log(`📁 Found ${generated.length} routes in filesystem\n`);
 
-// Validate against configured routes
-const validation = validateRoutes(generated, PROTECTED_ROUTES);
+let hasWarnings = false;
 
-// Display results
-console.log(formatValidationResults(validation));
+for (const route of generated) {
+  const cleanPath = route.path;
+  const isPublic = isPublicRoute(cleanPath);
+  const requiredRoles = getRequiredRoles(cleanPath);
 
-// Exit with appropriate code
-if (validation.isValid) {
-  console.log('✅ Route validation successful!');
-  process.exit(0);
-} else {
-  console.log('❌ Route validation failed. Please update protected-routes.ts');
-  console.log('\nTo fix:');
-  console.log('  1. Review the missing/extra routes above');
-  console.log('  2. Update packages/web/src/lib/routes/protected-routes.ts');
-  console.log('  3. Run: npm run validate:routes\n');
-  process.exit(1);
+  // Compare filesystem-derived roles vs prefix-derived roles
+  const fsRolesSet = new Set(route.roles.map((r) => r.toString()));
+  const prefixRolesSet = new Set(requiredRoles.map((r) => r.toString()));
+
+  const match =
+    fsRolesSet.size === prefixRolesSet.size &&
+    [...fsRolesSet].every((r) => prefixRolesSet.has(r));
+
+  if (isPublic) {
+    console.log(`  ✅ ${cleanPath} → public (whitelisted)`);
+  } else if (match) {
+    console.log(`  ✅ ${cleanPath} → [${requiredRoles.join(', ')}]`);
+  } else {
+    hasWarnings = true;
+    console.log(`  ⚠️  ${cleanPath}`);
+    console.log(`      Filesystem roles: [${route.roles.join(', ')}]`);
+    console.log(`      Prefix rules:     [${requiredRoles.join(', ')}]`);
+  }
 }
+
+console.log('');
+
+if (hasWarnings) {
+  console.log(
+    '⚠️  Some routes have role mismatches between folder structure and prefix rules.',
+  );
+  console.log(
+    '   This is informational — prefix rules are authoritative at runtime.\n',
+  );
+} else {
+  console.log('✅ All routes are consistent with prefix-based access rules.\n');
+}
+
+process.exit(0);

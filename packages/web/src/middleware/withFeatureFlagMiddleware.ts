@@ -1,5 +1,6 @@
 import { NextMiddleware, NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { getCleanPath, getLocaleFromPath } from '@/lib/routes/path-utils';
 
 /**
  * Feature Flag Middleware
@@ -138,21 +139,3 @@ export function withFeatureFlagMiddleware(next: NextMiddleware): NextMiddleware 
   };
 }
 
-/**
- * Remove language prefix from path
- */
-function getCleanPath(pathname: string): string {
-  const segments = pathname.split('/');
-  if (segments.length > 1 && ['es', 'en'].includes(segments[1])) {
-    return '/' + segments.slice(2).join('/');
-  }
-  return pathname;
-}
-
-/**
- * Extract locale from path
- */
-function getLocaleFromPath(pathname: string): string | null {
-  const firstSegment = pathname.split('/')[1];
-  return ['es', 'en'].includes(firstSegment) ? firstSegment : null;
-}

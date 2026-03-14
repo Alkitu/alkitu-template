@@ -1,5 +1,4 @@
 import { NextMiddleware, NextResponse, NextRequest } from 'next/server';
-import { PROTECTED_ROUTES } from '@/lib/routes/protected-routes';
 import { UserRole } from '@alkitu/shared/enums/user-role.enum';
 import { hasRole } from '@alkitu/shared/rbac/role-hierarchy';
 import { verifyJWT, type VerifiedJWTPayload } from '@/lib/auth/verify-jwt';
@@ -11,10 +10,15 @@ import {
   REFRESH_TOKEN_MAX_AGE,
   AUTH_COOKIE_OPTIONS,
 } from '@/lib/auth/constants';
+import {
+  isBypassRoute,
+  isPublicRoute,
+  isAuthPageRoute,
+  getRequiredRoles,
+} from '@/lib/routes/route-access';
+import { getCleanPath, resolveLocale } from '@/lib/routes/path-utils';
 
-const DEFAULT_LOCALE = 'es';
-const SUPPORTED_LOCALES = ['es', 'en'];
-const LOCALE_COOKIE_NAME = 'NEXT_LOCALE';
+// ─── Token helpers (internal) ──────────────────────────────────────
 
 /**
  * Attempt to refresh the access token using the refresh token cookie.
@@ -77,12 +81,32 @@ function setAuthCookies(
   });
 }
 
+/**
+ * Get the role-specific dashboard path for a given role.
+ */
+function getDashboardForRole(role: string): string {
+  switch (role.toUpperCase()) {
+    case 'CLIENT':
+    case 'LEAD':
+    case 'USER':
+      return 'client/dashboard';
+    case 'EMPLOYEE':
+      return 'employee/dashboard';
+    case 'ADMIN':
+    case 'MODERATOR':
+      return 'admin/dashboard';
+    default:
+      return 'client/dashboard';
+  }
+}
+
+// ─── Main middleware ───────────────────────────────────────────────
+
 export function withAuthMiddleware(next: NextMiddleware): NextMiddleware {
   return async function middleware(request, event) {
     const { pathname } = request.nextUrl;
 
-    // TEMPORAL: Bypass de autenticación para desarrollo
-    // CRITICAL SECURITY: This bypass is ONLY allowed in development
+    // ── 1. SKIP_AUTH dev bypass ──────────────────────────────────
     if (process.env.SKIP_AUTH === 'true') {
       if (process.env.NODE_ENV === 'production') {
         throw new Error(
@@ -95,48 +119,36 @@ export function withAuthMiddleware(next: NextMiddleware): NextMiddleware {
 
     logger.debug('[AUTH] Processing path', { pathname });
 
-    // Check if user is already authenticated and trying to access auth pages
-    if (isAuthRoute(pathname)) {
+    // ── 2. Bypass routes (API, _next, static files) ─────────────
+    if (isBypassRoute(pathname)) {
+      return next(request, event);
+    }
+
+    const cleanPath = getCleanPath(pathname);
+
+    // ── 3. Auth pages — redirect away if already logged in ──────
+    if (isAuthPageRoute(cleanPath)) {
       const authCookie = request.cookies.get(AUTH_TOKEN_COOKIE);
 
       if (authCookie) {
         try {
           const tokenPayload = await verifyJWT(authCookie.value);
-
           if (tokenPayload) {
-            const userRole = (
-              tokenPayload.role || (tokenPayload as any).user?.role
-            )?.toUpperCase();
-            const locale =
-              getLocaleFromPath(pathname) ||
-              getLocaleFromCookie(request) ||
-              DEFAULT_LOCALE;
+            const userRole =
+              tokenPayload.role || (tokenPayload as any).user?.role;
+            const locale = resolveLocale(pathname, request);
+            const dashboard = getDashboardForRole(userRole);
 
-            let dashboardUrl: string;
-            switch (userRole) {
-              case 'CLIENT':
-              case 'LEAD':
-              case 'USER':
-                dashboardUrl = `/${locale}/client/dashboard`;
-                break;
-              case 'EMPLOYEE':
-                dashboardUrl = `/${locale}/employee/dashboard`;
-                break;
-              case 'ADMIN':
-              case 'MODERATOR':
-                dashboardUrl = `/${locale}/admin/dashboard`;
-                break;
-              default:
-                dashboardUrl = `/${locale}/client/dashboard`;
-            }
-
-            logger.debug('[AUTH] Authenticated user on auth page, redirecting', {
-              destination: dashboardUrl,
-            });
-            return NextResponse.redirect(new URL(dashboardUrl, request.url));
+            logger.debug(
+              '[AUTH] Authenticated user on auth page, redirecting',
+              { destination: `/${locale}/${dashboard}` },
+            );
+            return NextResponse.redirect(
+              new URL(`/${locale}/${dashboard}`, request.url),
+            );
           }
         } catch {
-          // If token is invalid, continue to auth page normally
+          // Token invalid — let them through to auth page
         }
       }
 
@@ -144,58 +156,43 @@ export function withAuthMiddleware(next: NextMiddleware): NextMiddleware {
       return next(request, event);
     }
 
-    // Si es una ruta de API, archivos estáticos, continuar
-    if (
-      pathname.match(/^\/(?:api|_next|.*\..*)/) ||
-      pathname === '/not-found'
-    ) {
+    // ── 4. Public routes — no auth needed ────────────────────────
+    if (isPublicRoute(cleanPath)) {
+      logger.debug('[AUTH] Public route, passing through', { cleanPath });
       return next(request, event);
     }
 
-    // Verificar si la ruta requiere autenticación
-    const cleanPath = getCleanPath(pathname);
-    const requiredRoles = getRequiredRoles(cleanPath);
+    // ── 5. DENY BY DEFAULT — authenticate ────────────────────────
+    logger.debug('[AUTH] Protected route, authenticating', { cleanPath });
 
-    logger.debug('[AUTH] Route check', { cleanPath, requiredRoles });
+    const locale = resolveLocale(pathname, request);
 
-    if (!requiredRoles) {
-      return next(request, event);
-    }
-
-    // Verificar autenticación
-    const authCookie = request.cookies.get(AUTH_TOKEN_COOKIE);
-
-    const redirectToLogin = (req: NextRequest) => {
-      const locale =
-        getLocaleFromPath(req.nextUrl.pathname) ||
-        getLocaleFromCookie(req) ||
-        DEFAULT_LOCALE;
-
+    const redirectToLogin = () => {
       const redirectUrl = new URL(
-        `/${locale}/auth/login?redirect=${encodeURIComponent(req.nextUrl.pathname)}`,
-        req.url,
+        `/${locale}/auth/login?redirect=${encodeURIComponent(pathname)}`,
+        request.url,
       );
       logger.debug('[AUTH] Redirecting to login', { locale });
       return NextResponse.redirect(redirectUrl);
     };
 
+    // ── 5a. Get or refresh token ─────────────────────────────────
+    const authCookie = request.cookies.get(AUTH_TOKEN_COOKIE);
+
     if (!authCookie) {
       logger.debug('[AUTH] No auth cookie found, attempting refresh');
-
       const tokens = await refreshTokens(request);
       if (!tokens) {
-        return redirectToLogin(request);
+        return redirectToLogin();
       }
 
       const response = NextResponse.next();
       setAuthCookies(response, tokens.accessToken, tokens.refreshToken);
-
       logger.debug('[AUTH] Token refreshed successfully');
       request.headers.set('Authorization', `Bearer ${tokens.accessToken}`);
       return next(request, event);
     }
 
-    // Get user role from JWT token
     let userRole: string | undefined;
     let tokenPayload: VerifiedJWTPayload | null = null;
     let currentAccessToken = authCookie.value;
@@ -205,179 +202,82 @@ export function withAuthMiddleware(next: NextMiddleware): NextMiddleware {
     if (tokenPayload) {
       userRole = tokenPayload.role || (tokenPayload as any).user?.role;
 
-      // If token is expired (verifyJWT already checks, but role might be missing), try refresh
       if (!userRole) {
         logger.debug('[AUTH] Token missing role, attempting refresh');
         const tokens = await refreshTokens(request);
-
         if (tokens) {
           currentAccessToken = tokens.accessToken;
           tokenPayload = await verifyJWT(tokens.accessToken);
           userRole = tokenPayload?.role || (tokenPayload as any)?.user?.role;
-
-          // Update cookies on the request for subsequent middleware
           request.cookies.set(AUTH_TOKEN_COOKIE, tokens.accessToken);
           request.cookies.set(REFRESH_TOKEN_COOKIE, tokens.refreshToken);
         }
       }
     } else {
-      // Token verification failed — try refresh
       logger.debug('[AUTH] Token verification failed, attempting refresh');
       const tokens = await refreshTokens(request);
-
       if (tokens) {
         currentAccessToken = tokens.accessToken;
         tokenPayload = await verifyJWT(tokens.accessToken);
         userRole = tokenPayload?.role || (tokenPayload as any)?.user?.role;
-
         request.cookies.set(AUTH_TOKEN_COOKIE, tokens.accessToken);
         request.cookies.set(REFRESH_TOKEN_COOKIE, tokens.refreshToken);
       } else {
-        return redirectToLogin(request);
+        return redirectToLogin();
       }
     }
 
     if (!userRole) {
       logger.debug('[AUTH] No user role resolved, redirecting to login');
-      const locale =
-        getLocaleFromPath(pathname) ||
-        getLocaleFromCookie(request) ||
-        DEFAULT_LOCALE;
-      const redirectUrl = new URL(
-        `/${locale}/auth/login?redirect=${encodeURIComponent(pathname)}`,
-        request.url,
-      );
-      return NextResponse.redirect(redirectUrl);
+      return redirectToLogin();
     }
 
-    // Verificar autorización por rol (usando jerarquía de roles)
+    // ── 5b. Role-based authorization ─────────────────────────────
     const userRoleEnum = userRole.toUpperCase() as UserRole;
+    const requiredRoles = getRequiredRoles(cleanPath);
 
     if (!hasRole(userRoleEnum, requiredRoles)) {
       logger.debug('[AUTH] Insufficient role', {
         userRole: userRoleEnum,
         requiredRoles,
       });
-      const locale =
-        getLocaleFromPath(pathname) ||
-        getLocaleFromCookie(request) ||
-        DEFAULT_LOCALE;
-      const redirectUrl = new URL(`/${locale}/unauthorized`, request.url);
-      return NextResponse.redirect(redirectUrl);
+      return NextResponse.redirect(
+        new URL(`/${locale}/unauthorized`, request.url),
+      );
     }
 
-    // Check for PENDING status - redirect to complete verification/onboarding
+    // ── 5c. PENDING status redirects ─────────────────────────────
     if (tokenPayload && tokenPayload.status === 'PENDING') {
-      const emailVerified = tokenPayload.emailVerified;
-      const profileComplete = tokenPayload.profileComplete;
-      const locale =
-        getLocaleFromPath(pathname) ||
-        getLocaleFromCookie(request) ||
-        DEFAULT_LOCALE;
+      const { emailVerified, profileComplete } = tokenPayload;
 
       if (!emailVerified) {
-        const verifyUrl = new URL(
-          `/${locale}/auth/verify-email`,
-          request.url,
-        );
         logger.debug('[AUTH] PENDING user, redirecting to email verification');
-        return NextResponse.redirect(verifyUrl);
+        return NextResponse.redirect(
+          new URL(`/${locale}/auth/verify-email`, request.url),
+        );
       }
 
       if (!profileComplete) {
-        const onboardingUrl = new URL(`/${locale}/onboarding`, request.url);
         logger.debug('[AUTH] PENDING user, redirecting to onboarding');
-        return NextResponse.redirect(onboardingUrl);
+        return NextResponse.redirect(
+          new URL(`/${locale}/onboarding`, request.url),
+        );
       }
     }
 
-    // Role-based dashboard redirects
+    // ── 5d. Dashboard redirect by role ───────────────────────────
     if (cleanPath === '/dashboard' || cleanPath === '/dashboard/') {
-      const locale =
-        getLocaleFromPath(pathname) ||
-        getLocaleFromCookie(request) ||
-        DEFAULT_LOCALE;
-
-      let roleDashboard: string;
-      switch (userRoleEnum) {
-        case UserRole.CLIENT:
-          roleDashboard = 'client/dashboard';
-          break;
-        case UserRole.EMPLOYEE:
-          roleDashboard = 'employee/dashboard';
-          break;
-        case UserRole.ADMIN:
-          roleDashboard = 'admin/dashboard';
-          break;
-        default:
-          roleDashboard = 'dashboard';
-      }
-
-      if (roleDashboard !== 'dashboard') {
-        const redirectUrl = new URL(
-          `/${locale}/${roleDashboard}`,
-          request.url,
-        );
+      const dashboard = getDashboardForRole(userRoleEnum);
+      if (dashboard !== 'dashboard') {
         logger.debug('[AUTH] Redirecting to role-specific dashboard', {
-          destination: redirectUrl.pathname,
+          destination: `/${locale}/${dashboard}`,
         });
-        return NextResponse.redirect(redirectUrl);
+        return NextResponse.redirect(
+          new URL(`/${locale}/${dashboard}`, request.url),
+        );
       }
     }
 
     return next(request, event);
   };
-}
-
-function isAuthRoute(pathname: string): boolean {
-  const authRoutes = [
-    '/auth/login',
-    '/auth/register',
-    '/auth/forgot-password',
-    '/auth/reset-password',
-    '/unauthorized',
-  ];
-
-  const cleanPath = getCleanPath(pathname);
-  return (
-    authRoutes.some((route) => cleanPath.startsWith(route)) ||
-    authRoutes.some((route) => pathname.includes(route))
-  );
-}
-
-function getCleanPath(pathname: string): string {
-  const segments = pathname.split('/');
-  if (segments.length > 1 && ['es', 'en'].includes(segments[1])) {
-    return '/' + segments.slice(2).join('/');
-  }
-  return pathname;
-}
-
-function getRequiredRoles(path: string): UserRole[] | null {
-  const matchingRoutes = PROTECTED_ROUTES.filter((route) => {
-    if (route.path === path) {
-      return true;
-    }
-    return path.startsWith(route.path + '/');
-  });
-
-  if (matchingRoutes.length === 0) {
-    return null;
-  }
-
-  matchingRoutes.sort((a, b) => b.path.length - a.path.length);
-  return matchingRoutes[0].roles;
-}
-
-function getLocaleFromPath(pathname: string): string | null {
-  const firstSegment = pathname.split('/')[1];
-  return SUPPORTED_LOCALES.includes(firstSegment) ? firstSegment : null;
-}
-
-function getLocaleFromCookie(request: NextRequest): string | null {
-  const cookieLocale = request.cookies.get(LOCALE_COOKIE_NAME)?.value;
-  if (cookieLocale && SUPPORTED_LOCALES.includes(cookieLocale)) {
-    return cookieLocale;
-  }
-  return null;
 }

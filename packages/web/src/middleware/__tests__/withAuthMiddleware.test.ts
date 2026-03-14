@@ -137,9 +137,9 @@ describe('Auth Middleware Integration Tests', () => {
   });
 
   // =====================================================
-  // Public routes
+  // Bypass routes (API, static, _next)
   // =====================================================
-  describe('Public routes', () => {
+  describe('Bypass routes', () => {
     it('should allow /api paths without auth', async () => {
       const request = createRequest('http://localhost:3000/api/auth/login');
       const middleware = withAuthMiddleware(mockNext);
@@ -241,6 +241,126 @@ describe('Auth Middleware Integration Tests', () => {
       const request = createRequest(
         'http://localhost:3000/es/auth/login',
         { 'auth-token': 'invalid-jwt-token' },
+      );
+      const middleware = withAuthMiddleware(mockNext);
+      await middleware(request, createEvent());
+
+      expect(mockNext).toHaveBeenCalled();
+    });
+  });
+
+  // =====================================================
+  // Public routes (explicitly whitelisted)
+  // =====================================================
+  describe('Public routes', () => {
+    it('should allow /es/design-system without auth', async () => {
+      const request = createRequest(
+        'http://localhost:3000/es/design-system',
+      );
+      const middleware = withAuthMiddleware(mockNext);
+      await middleware(request, createEvent());
+
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should allow /es/contrast-checker without auth', async () => {
+      const request = createRequest(
+        'http://localhost:3000/es/contrast-checker',
+      );
+      const middleware = withAuthMiddleware(mockNext);
+      await middleware(request, createEvent());
+
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should allow /es/unauthorized without auth', async () => {
+      const request = createRequest(
+        'http://localhost:3000/es/unauthorized',
+      );
+      const middleware = withAuthMiddleware(mockNext);
+      await middleware(request, createEvent());
+
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should allow landing page / without auth', async () => {
+      const request = createRequest('http://localhost:3000/');
+      const middleware = withAuthMiddleware(mockNext);
+      await middleware(request, createEvent());
+
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should allow /es/feature-disabled without auth', async () => {
+      const request = createRequest(
+        'http://localhost:3000/es/feature-disabled',
+      );
+      const middleware = withAuthMiddleware(mockNext);
+      await middleware(request, createEvent());
+
+      expect(mockNext).toHaveBeenCalled();
+    });
+  });
+
+  // =====================================================
+  // DENY BY DEFAULT — unknown routes require auth
+  // =====================================================
+  describe('Deny by default', () => {
+    it('should require auth for unknown routes (no token → login)', async () => {
+      const request = createRequest(
+        'http://localhost:3000/es/ruta-random',
+      );
+      const middleware = withAuthMiddleware(mockNext);
+      const response = await middleware(request, createEvent());
+
+      expect(response?.status).toBe(307);
+      expect(response?.headers.get('Location')).toContain('/es/auth/login');
+    });
+
+    it('should require auth for new deeply nested route without token', async () => {
+      const request = createRequest(
+        'http://localhost:3000/es/some/deeply/nested/page',
+      );
+      const middleware = withAuthMiddleware(mockNext);
+      const response = await middleware(request, createEvent());
+
+      expect(response?.status).toBe(307);
+      expect(response?.headers.get('Location')).toContain('/es/auth/login');
+    });
+
+    it('should auto-protect new admin route — CLIENT gets unauthorized', async () => {
+      mockVerifyJWT.mockResolvedValue(validClientPayload);
+
+      const request = createRequest(
+        'http://localhost:3000/es/admin/nueva-pagina',
+        { 'auth-token': 'valid-jwt' },
+      );
+      const middleware = withAuthMiddleware(mockNext);
+      const response = await middleware(request, createEvent());
+
+      expect(response?.status).toBe(307);
+      expect(response?.headers.get('Location')).toContain('/es/unauthorized');
+    });
+
+    it('should auto-protect new admin route — ADMIN gets access', async () => {
+      mockVerifyJWT.mockResolvedValue(validAdminPayload);
+
+      const request = createRequest(
+        'http://localhost:3000/es/admin/nueva-pagina',
+        { 'auth-token': 'valid-jwt' },
+      );
+      const middleware = withAuthMiddleware(mockNext);
+      await middleware(request, createEvent());
+
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should allow authenticated user with any role to access generic protected route', async () => {
+      mockVerifyJWT.mockResolvedValue(validClientPayload);
+
+      const request = createRequest(
+        'http://localhost:3000/es/some-new-feature',
+        { 'auth-token': 'valid-jwt' },
       );
       const middleware = withAuthMiddleware(mockNext);
       await middleware(request, createEvent());
@@ -376,7 +496,7 @@ describe('Auth Middleware Integration Tests', () => {
       expect(mockNext).toHaveBeenCalled();
     });
 
-    it('should allow all authenticated users to access shared routes', async () => {
+    it('should allow all authenticated users to access shared routes like /profile', async () => {
       mockVerifyJWT.mockResolvedValue(validClientPayload);
 
       const request = createRequest(
@@ -403,8 +523,6 @@ describe('Auth Middleware Integration Tests', () => {
         }),
       }) as any;
 
-      // verifyJWT not called for the inline refresh path (no auth cookie)
-      // but we still need to mock it for potential calls
       mockVerifyJWT.mockResolvedValue(validAdminPayload);
 
       const request = createRequest(
@@ -412,7 +530,7 @@ describe('Auth Middleware Integration Tests', () => {
         { 'refresh-token': 'valid-refresh-token' },
       );
       const middleware = withAuthMiddleware(mockNext);
-      const response = await middleware(request, createEvent());
+      await middleware(request, createEvent());
 
       expect(global.fetch).toHaveBeenCalledWith(
         expect.stringContaining('/api/auth/refresh'),
@@ -637,21 +755,6 @@ describe('Auth Middleware Integration Tests', () => {
       const location = response?.headers.get('Location') || '';
       expect(location).toContain('redirect=');
       expect(location).toContain('%2Fes%2Fadmin%2Fusers');
-    });
-  });
-
-  // =====================================================
-  // Routes without required roles
-  // =====================================================
-  describe('Routes without required roles', () => {
-    it('should allow access to unprotected routes without auth', async () => {
-      const request = createRequest(
-        'http://localhost:3000/es/some-public-page',
-      );
-      const middleware = withAuthMiddleware(mockNext);
-      await middleware(request, createEvent());
-
-      expect(mockNext).toHaveBeenCalled();
     });
   });
 });

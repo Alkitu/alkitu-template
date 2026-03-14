@@ -57,7 +57,7 @@ services:
     plan: free
     branch: main
     buildCommand: git submodule update --init --recursive && npm install -g pnpm@9 && pnpm install --frozen-lockfile && npx prisma generate --schema=packages/api/prisma/schema.prisma && pnpm run build:shared && pnpm run build:web
-    startCommand: cd packages/web && npm start
+    startCommand: cd packages/web && pnpm start
     healthCheckPath: /
     autoDeploy: true
     envVars:

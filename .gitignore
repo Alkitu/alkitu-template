@@ -129,3 +129,5 @@ storybook-static
 
 # Secrets folder
 secrets/
+.vercel
+.env*.local

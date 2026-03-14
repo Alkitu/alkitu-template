@@ -15,7 +15,7 @@
   "author": "Alkitu Team",
   "license": "MIT",
   "scripts": {
-    "prepare": "git submodule update --init --recursive",
+    "prepare": "git submodule update --init --recursive || true",
     "dev": "npm-run-all --parallel dev:web dev:api",
     "dev:web": "pnpm --filter @alkitu/web run dev",
     "dev:api": "pnpm --filter @alkitu/api run dev",

@@ -30,29 +30,38 @@ export class TrpcService {
           let user = undefined;
 
           try {
-            // Parse auth-token from cookies
-            const cookieHeader = req.headers.cookie;
-            if (cookieHeader) {
-              const cookies = cookieHeader.split(';').reduce(
-                (acc, cookie) => {
-                  const [key, value] = cookie.trim().split('=');
-                  acc[key] = value;
-                  return acc;
-                },
-                {} as Record<string, string>,
-              );
+            let token: string | undefined;
 
-              const token = cookies['auth-token'];
+            // Try Authorization header first (cross-domain support)
+            const authHeader = req.headers.authorization;
+            if (authHeader?.startsWith('Bearer ')) {
+              token = authHeader.slice(7);
+            }
 
-              if (token) {
-                const decoded = this.jwtService.verify(token);
-                if (decoded) {
-                  user = {
-                    id: decoded.sub || decoded.id,
-                    email: decoded.email,
-                    role: decoded.role,
-                  };
-                }
+            // Fallback to cookie (same-domain)
+            if (!token) {
+              const cookieHeader = req.headers.cookie;
+              if (cookieHeader) {
+                const cookies = cookieHeader.split(';').reduce(
+                  (acc, cookie) => {
+                    const [key, value] = cookie.trim().split('=');
+                    acc[key] = value;
+                    return acc;
+                  },
+                  {} as Record<string, string>,
+                );
+                token = cookies['auth-token'];
+              }
+            }
+
+            if (token) {
+              const decoded = this.jwtService.verify(token);
+              if (decoded) {
+                user = {
+                  id: decoded.sub || decoded.id,
+                  email: decoded.email,
+                  role: decoded.role,
+                };
               }
             }
           } catch (error) {

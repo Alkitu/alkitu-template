@@ -4,14 +4,14 @@ import { ReactNode, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { httpBatchLink } from '@trpc/client';
 import { trpc } from '@/lib/trpc';
+import { AUTH_TOKEN_COOKIE } from '@/lib/auth/constants';
 
-/**
- * Wrapper Client Component para el provider de tRPC con React Query.
- * Usa el QueryClient existente en lugar de crear uno nuevo.
- *
- * @param children - Componentes hijos que tendrán acceso a tRPC
- * @returns JSX.Element - Provider de tRPC envolviendo a los hijos
- */
+function getAuthToken(): string | undefined {
+  if (typeof document === 'undefined') return undefined;
+  const match = document.cookie.match(new RegExp(`(?:^|; )${AUTH_TOKEN_COOKIE}=([^;]*)`));
+  return match?.[1];
+}
+
 export function TrpcProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
 
@@ -20,6 +20,10 @@ export function TrpcProvider({ children }: { children: ReactNode }) {
       links: [
         httpBatchLink({
           url: `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/trpc`,
+          headers() {
+            const token = getAuthToken();
+            return token ? { Authorization: `Bearer ${token}` } : {};
+          },
           fetch(url, options) {
             return fetch(url, {
               ...options,

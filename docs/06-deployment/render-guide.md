@@ -1,472 +1,199 @@
-# 🎨 Deploy Completo en Render - Guía Paso a Paso
+# Deploy en Render - Guía Paso a Paso
 
-Esta guía te llevará desde cero hasta tener tu aplicación funcionando en Render (Free Tier).
+Esta guía cubre el deploy de alkitu-template en Render (Free Tier) usando **pnpm** como package manager.
 
-## 📋 Pre-requisitos
+## Pre-requisitos
 
-- [x] Cuenta en Render.com (gratis para empezar)
-- [x] MongoDB Atlas configurado (free tier)
-- [x] Repositorio en GitHub
-- [x] Render CLI instalado ✅
+- Cuenta en [Render.com](https://render.com)
+- MongoDB Atlas configurado (free tier)
+- Repositorio en GitHub
+- Render CLI instalado (`brew install render`)
 
-## ⚠️ Importante: Free Tier Limitaciones
+## Arquitectura de Deploy
 
-**Recuerda:**
-- ✅ Free tier **PERMANENTE** (no expira)
-- ✅ 2 servicios gratis (API + Web)
-- ⚠️ Servicios se "duermen" después de **15 minutos** de inactividad
-- ⚠️ Primera carga tarda **30-60 segundos** al despertar
-- ✅ Cargas siguientes son instantáneas (mientras esté activo)
-
-**Ideal para:**
-- 🎓 Proyectos de aprendizaje
-- 📱 Portfolios personales
-- 🧪 Demos y prototipos
-- 🏃 Testing antes de producción
-
----
-
-## 🚀 Paso 1: Autenticación
-
-```bash
-# Login en Render (abrirá navegador)
-render login
-
-# Verificar autenticación
-render whoami
+```
+render.yaml (Infrastructure as Code)
+├── alkitu-api  (NestJS backend)  → https://alkitu-api.onrender.com
+└── alkitu-web  (Next.js frontend) → https://alkitu-web.onrender.com
 ```
 
 ---
 
-## 🔑 Paso 2: Generar Secrets
+## Build Commands
 
-Necesitas generar varios secrets antes de deployar:
+Los build commands deben configurarse tanto en `render.yaml` como en el **dashboard de Render** (Settings > Build Command). El dashboard tiene prioridad sobre el yaml.
 
-### 2.1 JWT Secret
-
-```bash
-# Generar JWT secret
-openssl rand -base64 32
-
-# Copiar y guardar (lo necesitarás en Paso 4)
-```
-
-### 2.2 VAPID Keys (Push Notifications)
+### alkitu-api
 
 ```bash
-# Generar VAPID keys
-cd packages/web
-npx web-push generate-vapid-keys
-
-# Copiar ambas keys:
-# - Public Key: para NEXT_PUBLIC_VAPID_PUBLIC_KEY
-# - Private Key: para VAPID_PRIVATE_KEY
+npm install -g pnpm@9 && NODE_ENV=development pnpm install --no-frozen-lockfile && pnpm exec prisma generate --schema=packages/api/prisma/schema.prisma && pnpm run build:shared && pnpm run build:api
 ```
 
-### 2.3 MongoDB Atlas Setup
+### alkitu-web
 
-Si aún no tienes MongoDB Atlas configurado:
+```bash
+npm install -g pnpm@9 && NODE_ENV=development pnpm install --no-frozen-lockfile && pnpm exec prisma generate --schema=packages/api/prisma/schema.prisma && pnpm run build:shared && pnpm run build:web
+```
 
-1. Ir a https://cloud.mongodb.com
-2. Crear cluster M0 (Free):
-   ```
-   Provider: AWS
-   Region: us-east-1 (cerca de Render Oregon)
-   Cluster Tier: M0 Sandbox (FREE)
-   ```
-3. **Database Access** → Crear usuario:
-   ```
-   Username: alkitu_user
-   Password: <genera-password-seguro>
-   Database User Privileges: Read and write to any database
-   ```
-4. **Network Access** → Add IP Address:
-   ```
-   IP Address: 0.0.0.0/0
-   Comment: Allow from anywhere (Render)
-   ```
-5. **Connect** → Copiar connection string:
-   ```
-   mongodb+srv://alkitu_user:<password>@cluster.mongodb.net/alkitu?retryWrites=true&w=majority
-   ```
+### Start Commands
 
-### 2.4 Resend API Key
-
-Si aún no tienes Resend configurado:
-
-1. Ir a https://resend.com
-2. Sign up (free tier: 100 emails/día)
-3. **API Keys** → Create API Key
-4. Copiar y guardar el key: `re_xxxxxxxxxxxx`
+- **API:** `bash scripts/start-api-production.sh`
+- **Web:** `cd packages/web && pnpm start`
 
 ---
 
-## 📦 Paso 3: Deploy con Blueprint
+## Gotchas Importantes (pnpm + Render)
 
-Render detectará automáticamente el archivo `render.yaml` que ya creamos.
+### 1. NODE_ENV=production omite devDependencies
 
-### Opción A: Deploy desde Dashboard (Recomendado)
+Render configura `NODE_ENV=production` como env var. Esto hace que **pnpm skip devDependencies** (prisma, typescript, @types/*) que son necesarias para compilar.
 
-1. Ve a https://dashboard.render.com
-2. Click **"New +"** → **"Blueprint"**
-3. Conecta tu repositorio: `alkitu-template`
-4. Render detectará `render.yaml` automáticamente
-5. Click **"Apply"**
+**Fix:** Usar `NODE_ENV=development pnpm install` en el buildCommand. Solo afecta el install, el runtime sigue en production.
 
-### Opción B: Deploy desde CLI
+### 2. El script `prepare` puede abortar la instalación
 
-```bash
-# Desde la raíz del proyecto
-render blueprint launch
+`package.json` tiene un script `prepare` que ejecuta `git submodule update`. Si el submodule es un repo privado (como `design-system`), falla en Render y aborta `pnpm install` silenciosamente.
 
-# Seguir el wizard
+**Fix:** El script usa `|| true` para continuar si falla:
+```json
+"prepare": "git submodule update --init --recursive || true"
 ```
 
-**⚠️ IMPORTANTE:** Los servicios se crearán pero fallarán inicialmente porque faltan las variables secretas. Esto es normal, las configuraremos en el siguiente paso.
+### 3. No usar `npx` para Prisma
+
+`npx prisma generate` descarga la **última versión global** de Prisma (v7+), que tiene breaking changes. Siempre usar `pnpm exec prisma` para respetar la versión del lockfile.
+
+### 4. No usar `--frozen-lockfile` si el lockfile puede estar desincronizado
+
+Al cambiar el workspace (agregar/quitar packages), el lockfile queda desincronizado. `--frozen-lockfile` falla silenciosamente en pnpm sin instalar nada.
+
+**Fix:** Usar `--no-frozen-lockfile` hasta que el lockfile esté estable.
+
+### 5. Submodules privados no funcionan en Render
+
+Render no tiene SSH keys para clonar repos privados. El submodule `design-system` no se clona y los workspace packages dentro de él no existen.
+
+**Fix:** No incluir packages del submodule en `pnpm-workspace.yaml` para el deploy:
+```yaml
+packages:
+  - 'packages/api'
+  - 'packages/web'
+  - 'packages/shared'
+  - 'packages/mobile'
+  # design-system packages se excluyen (repo privado)
+```
+
+### 6. Dependencias phantom con pnpm
+
+pnpm tiene strict hoisting — cada package solo ve sus propias dependencias. Si un import funciona con npm pero no está declarado en package.json, falla con pnpm.
+
+Dependencias que se tuvieron que agregar explícitamente a `packages/api`:
+- `react` y `@types/react` (email templates JSX)
+- `express` (tRPC adapters)
+- `@types/multer` y `@types/express` (tipos para file upload)
+
+### 7. Node.js version
+
+Render usa la última versión de Node por defecto (v25+ bleeding edge). Pinear a LTS con `.node-version`:
+```
+22
+```
+
+### 8. El dashboard overrides render.yaml
+
+Cambios en `render.yaml` **no se sincronizan automáticamente** al dashboard de Render. Si cambias el buildCommand en el yaml, debes cambiarlo también manualmente en Dashboard > Service > Settings > Build Command.
 
 ---
 
-## 🔐 Paso 4: Configurar Variables Secretas
+## Variables de Entorno
 
-Ahora debes agregar las variables secretas que marcamos como `sync: false` en el `render.yaml`.
+### Configuradas en render.yaml (automáticas)
 
-### 4.1 Configurar API Service
+| Variable | Servicio | Valor |
+|---|---|---|
+| `NODE_ENV` | ambos | `production` |
+| `PORT` | ambos | `10000` |
+| `JWT_EXPIRES_IN` | api | `7d` |
+| `EMAIL_FROM` | api | `noreply@alkitu.com` |
+| `CORS_ORIGINS` | api | URL del web service |
+| `API_URL` | api | URL del api service |
+| `APP_URL` | api | URL del web service |
+| `FRONTEND_URL` | api | URL del web service |
+| `NEXT_PUBLIC_API_URL` | web | URL del api service |
+| `NEXT_PUBLIC_APP_URL` | web | URL del web service |
+| `NEXT_TELEMETRY_DISABLED` | web | `1` |
+| `VAPID_SUBJECT` | web | `mailto:admin@alkitu.com` |
 
-1. Dashboard → **alkitu-api** → **Environment**
-2. Agregar variables:
+### Configurar manualmente en Dashboard (secrets)
 
-```env
-# Database
-DATABASE_URL=mongodb+srv://alkitu_user:TU_PASSWORD@cluster.mongodb.net/alkitu?retryWrites=true&w=majority
-
-# JWT (generado en Paso 2.1)
-JWT_SECRET=tu-jwt-secret-generado-con-openssl
-
-# Resend (generado en Paso 2.4)
-RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxx
-```
-
-3. Click **"Save Changes"**
-4. El servicio se redespleará automáticamente
-
-### 4.2 Configurar Web Service
-
-1. Dashboard → **alkitu-web** → **Environment**
-2. Agregar variables:
-
-```env
-# VAPID Keys (generadas en Paso 2.2)
-NEXT_PUBLIC_VAPID_PUBLIC_KEY=tu-vapid-public-key
-VAPID_PRIVATE_KEY=tu-vapid-private-key
-```
-
-3. Click **"Save Changes"**
-4. El servicio se redespleará automáticamente
+| Variable | Servicio | Descripción |
+|---|---|---|
+| `DATABASE_URL` | api | MongoDB Atlas connection string |
+| `JWT_SECRET` | api | `openssl rand -base64 32` |
+| `RESEND_API_KEY` | api | Desde resend.com |
+| `GOOGLE_DRIVE_CLIENT_EMAIL` | api | Service account email |
+| `GOOGLE_DRIVE_PRIVATE_KEY` | api | Service account key |
+| `GOOGLE_DRIVE_PROJECT_ID` | api | GCP project ID |
+| `GOOGLE_DRIVE_ROOT_FOLDER_ID` | api | Carpeta raíz en Drive |
+| `GOOGLE_CLIENT_ID` | api | OAuth (login con Google) |
+| `GOOGLE_CLIENT_SECRET` | api | OAuth (login con Google) |
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | web | `npx web-push generate-vapid-keys` |
+| `VAPID_PRIVATE_KEY` | web | Del mismo comando |
 
 ---
 
-## 🔍 Paso 5: Verificar Deployment
+## Troubleshooting
 
-### 5.1 Ver Logs en Tiempo Real
+### Build falla sin output de pnpm install
 
-**Desde CLI:**
-```bash
-# Ver logs de API
-render logs alkitu-api --tail
+**Causa:** `NODE_ENV=production` omitiendo devDependencies.
+**Fix:** Agregar `NODE_ENV=development` antes de `pnpm install`.
 
-# Ver logs de Web
-render logs alkitu-web --tail
-```
+### "Command prisma not found"
 
-**Desde Dashboard:**
-```
-Dashboard → Service → Logs (pestaña)
-```
+**Causa:** devDependencies no instaladas o `npx` usando versión global.
+**Fix:** Usar `pnpm exec prisma` y asegurar que devDeps se instalan.
 
-### 5.2 Verificar Health Checks
+### "Prisma schema validation - url no longer supported"
 
-**API:**
-```bash
-# Copiar URL de alkitu-api desde dashboard
-curl https://alkitu-api-xxxx.onrender.com/health
+**Causa:** `npx prisma` descargó Prisma v7 (breaking change).
+**Fix:** Usar `pnpm exec prisma` que respeta la v6 del lockfile.
 
-# Debe responder:
-# {"status":"ok","timestamp":"..."}
-```
+### Service Worker redirect loop en browser
 
-**Web:**
-```bash
-# Copiar URL de alkitu-web desde dashboard
-curl https://alkitu-web-xxxx.onrender.com
+**Causa:** Service worker cacheado de deploy anterior.
+**Fix:** Abrir en ventana de incógnito o limpiar cache del browser.
 
-# Debe responder con HTML de Next.js
-```
-
-**⚠️ Primera Carga:** Si el servicio está "dormido", esperarás 30-60 segundos. Esto es normal en free tier.
-
-### 5.3 Verificar en Navegador
-
-1. Abrir URL del frontend: `https://alkitu-web-xxxx.onrender.com`
-2. **Primera carga:** Puede tardar 30-60s (servicio despertando)
-3. **Cargas siguientes:** Instantáneas
-4. Verificar que carga correctamente sin errores de CORS
-
----
-
-## 🌐 Paso 6: Dominio Personalizado (Opcional)
-
-### 6.1 Agregar Dominio Custom
-
-**Para Frontend:**
-1. Dashboard → **alkitu-web** → **Settings** → **Custom Domains**
-2. Click **"Add Custom Domain"**
-3. Ingresar: `tudominio.com`
-4. Render te dará un CNAME target
-
-**Para Backend:**
-1. Dashboard → **alkitu-api** → **Settings** → **Custom Domains**
-2. Click **"Add Custom Domain"**
-3. Ingresar: `api.tudominio.com`
-4. Copiar CNAME target
-
-### 6.2 Configurar DNS
-
-En tu proveedor de DNS (GoDaddy, Namecheap, Cloudflare, etc.):
-
-```
-# Frontend
-Type: CNAME
-Name: @  (o tudominio.com)
-Target: alkitu-web-xxxx.onrender.com
-TTL: 300
-
-# Backend
-Type: CNAME
-Name: api
-Target: alkitu-api-xxxx.onrender.com
-TTL: 300
-```
-
-### 6.3 Actualizar CORS
-
-Una vez que el dominio esté activo:
-
-1. Dashboard → **alkitu-api** → **Environment**
-2. Actualizar `CORS_ORIGINS`:
-   ```env
-   CORS_ORIGINS=https://tudominio.com,https://www.tudominio.com
-   ```
-3. Save Changes
-
----
-
-## 🔄 CI/CD Automático
-
-Render hace deploy automático cuando haces push a GitHub:
-
-```bash
-# Hacer cambios
-git add .
-git commit -m "feat: nueva funcionalidad"
-git push origin main
-
-# Render detectará el cambio y desplegará automáticamente
-# Ver progreso en Dashboard o:
-render logs alkitu-api --tail
-```
-
----
-
-## 📊 Monitoreo
-
-### Ver Métricas
-
-Dashboard → Service → Metrics:
-- CPU usage
-- Memory usage
-- Request count
-- Response times
-
-### Configurar Alertas (Opcional)
-
-Dashboard → Service → Settings → Notifications:
-- Email on deploy failure
-- Slack/Discord webhooks
-
----
-
-## 💤 Gestionar el "Sleep" del Free Tier
-
-### Opción 1: Aceptar el Sleep (Recomendado para Free)
-
-- ✅ Cumple con Terms of Service
-- ✅ Costo: $0
-- ⚠️ Primera carga: 30-60s
-
-### Opción 2: Upgrade a Starter ($7/mes por servicio)
-
-```
-Dashboard → Service → Settings → Plan
-→ Upgrade to Starter
-
-Beneficios:
-- ✅ Sin sleep automático
-- ✅ Arranque inmediato
-- ✅ 0.5 CPU (vs 0.1 en free)
-
-Costo:
-API: $7/mes
-Web: $7/mes (o gratis si usas Static Site)
-Total: $7-14/mes
-```
-
-### Opción 3: Ping Service (⚠️ No Recomendado)
-
-**NO hagas esto** - viola Terms of Service de Render:
-```bash
-# ❌ NO USAR
-# Hacer ping cada 10min para mantener despierto
-# Render puede suspender tu cuenta
-```
-
----
-
-## 🐛 Troubleshooting
-
-### Error: "Build Failed"
-
-```bash
-# Ver logs detallados
-render logs alkitu-api --tail 100
-
-# Causas comunes:
-# 1. Faltan dependencies en package.json
-# 2. TypeScript errors
-# 3. Prisma schema incorrecta
-
-# Verificar localmente:
-cd packages/api
-npm ci
-npx prisma generate
-npm run build
-```
-
-### Error: "Cannot connect to database"
+### "Cannot connect to database"
 
 1. Verificar `DATABASE_URL` en Environment Variables
-2. Verificar IP Whitelist en MongoDB Atlas (debe ser `0.0.0.0/0`)
+2. Verificar IP Whitelist en MongoDB Atlas (`0.0.0.0/0`)
 3. Verificar username/password en connection string
-4. Test desde CLI:
-   ```bash
-   render shell alkitu-api
-   # Dentro del shell:
-   npx prisma db pull
-   ```
 
-### Error: "CORS policy"
+### DriveService crash al iniciar
 
-1. Verificar `CORS_ORIGINS` en API service
-2. Debe incluir URL exacta del frontend (con https://)
-3. Sin trailing slash
-4. Ejemplo correcto: `https://alkitu-web-xxxx.onrender.com`
-
-### Servicio "Dormido" - Carga Lenta
-
-Esto es **normal** en free tier:
-- Primera carga: 30-60s
-- Solución 1: Aceptarlo (para demos/portfolio)
-- Solución 2: Upgrade to Starter ($7/mes, sin sleep)
+**Causa:** Variables de Google Drive no configuradas.
+**Fix:** Configurar `GOOGLE_DRIVE_CLIENT_EMAIL`, `GOOGLE_DRIVE_PRIVATE_KEY`, `GOOGLE_DRIVE_PROJECT_ID` en el dashboard.
 
 ---
 
-## 💰 Costos
+## Free Tier Limitaciones
 
-### Free Tier (Actual)
-
-```
-API Service:      $0/mes
-Web Service:      $0/mes
-MongoDB Atlas:    $0/mes (M0 free tier)
-Resend:           $0/mes (100 emails/día)
-------------------------
-TOTAL:            $0/mes ✅
-```
-
-**Limitaciones:**
-- Sleep después 15min inactividad
+- Servicios se "duermen" después de 15 minutos de inactividad
+- Primera carga tarda 30-60 segundos al despertar
 - 512MB RAM por servicio
 - 0.1 CPU compartida
 
-### Si Upgrades a Starter
-
-```
-API (Starter):    $7/mes
-Web (Starter):    $7/mes
-MongoDB Atlas:    $0/mes
-Resend:           $0/mes
-------------------------
-TOTAL:            $14/mes
-
-Beneficios:
-- Sin sleep
-- 0.5 CPU
-- Mejor performance
-```
-
 ---
 
-## ✅ Checklist Final
+## Checklist de Deploy
 
-- [ ] Render CLI instalado y autenticado
-- [ ] JWT secret generado
-- [ ] VAPID keys generadas
-- [ ] MongoDB Atlas configurado (IP whitelist 0.0.0.0/0)
-- [ ] Resend API key obtenida
-- [ ] Blueprint deployed (render.yaml aplicado)
-- [ ] Variables secretas configuradas en API service
-- [ ] Variables secretas configuradas en Web service
-- [ ] Health check API funciona
+- [ ] `.node-version` con `22` en el repo
+- [ ] `render.yaml` actualizado con pnpm commands
+- [ ] Build commands actualizados en **dashboard** de Render
+- [ ] `pnpm-workspace.yaml` sin packages de submodules privados
+- [ ] Variables secretas configuradas en dashboard (API + Web)
+- [ ] MongoDB Atlas IP whitelist incluye `0.0.0.0/0`
+- [ ] Health check API funciona (`/health`)
 - [ ] Frontend carga correctamente
-- [ ] Sin errores de CORS
-- [ ] Logs sin errores críticos
-
----
-
-## 🎉 ¡Listo!
-
-Tu aplicación está en producción en Render Free Tier.
-
-**URLs de acceso:**
-- Backend: `https://alkitu-api-xxxx.onrender.com`
-- Frontend: `https://alkitu-web-xxxx.onrender.com`
-
-**Siguiente:**
-- Probar funcionalidad completa
-- Monitorear logs primeros días
-- Decidir si upgradelar a Starter cuando tengas usuarios reales
-
----
-
-## 📞 Soporte
-
-- [Render Docs](https://render.com/docs)
-- [Community Forum](https://community.render.com)
-- [Status Page](https://status.render.com)
-- [Support](https://render.com/support)
-
----
-
-## 🔄 Migrar a Railway Después (si lo necesitas)
-
-Si decides que necesitas mejor performance:
-
-1. Seguir `DEPLOY-RAILWAY.md`
-2. Configurar servicios en Railway
-3. Actualizar DNS
-4. Eliminar servicios de Render
-
-Railway ventajas vs Render Free:
-- ✅ Sin sleep ($12-18/mes)
-- ✅ Redis incluido
-- ✅ Mejor CPU/RAM
-- ✅ Arranque inmediato
+- [ ] Clear build cache después de cambios importantes

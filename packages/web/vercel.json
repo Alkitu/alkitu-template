@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "cd ../.. && pnpm exec prisma generate --schema=packages/api/prisma/schema.prisma && pnpm run build:shared && pnpm run build:web",
+  "buildCommand": "cd ../.. && pnpm exec prisma generate --schema=packages/api/prisma/schema.prisma && pnpm run build:shared && cd packages/web && next build --no-turbopack",
   "installCommand": "cd ../.. && pnpm install",
   "framework": "nextjs",
   "outputDirectory": ".next",

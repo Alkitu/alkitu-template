@@ -1,14 +1,15 @@
 'use client';
 
 import { useState, useMemo, useCallback } from 'react';
-import { Calendar, Clock, Play, CheckCircle, XCircle } from 'lucide-react';
+import { Calendar, Clock, Play, CheckCircle, XCircle, Users } from 'lucide-react';
 import { useRouter, useParams } from 'next/navigation';
-import { RequestStatus } from '@alkitu/shared';
+import { RequestStatus, UserRole } from '@alkitu/shared';
 import { useTranslations } from '@/context/TranslationsContext';
 import { trpc } from '@/lib/trpc';
 import { Button } from '@/components/primitives/ui/button';
 import { AdminPageHeader } from '@/components/molecules-alianza/AdminPageHeader';
 import { CalendarOrganism } from '@/components/organisms/calendar';
+import { Combobox } from '@/components/molecules-alianza/Combobox';
 import type {
   CalendarLabels,
   CalendarEvent,
@@ -61,19 +62,40 @@ export default function AdminCalendarPage() {
   const router = useRouter();
   const { lang } = useParams<{ lang: string }>();
 
+  // Client filter state
+  const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
+
   // Filter state: all statuses active by default
   // Uses string set to avoid Prisma vs shared enum type mismatch
   const [activeStatuses, setActiveStatuses] = useState<Set<string>>(
     () => new Set<string>(ALL_STATUSES)
   );
 
-  // Fetch requests (no status filter — we filter client-side for toggle UX)
+  // Fetch clients for the filter combobox
+  const { data: clientsData } = trpc.user.getFilteredUsers.useQuery({
+    role: UserRole.CLIENT,
+    limit: 100,
+    sortBy: 'firstname',
+    sortOrder: 'asc',
+  });
+
+  const clientOptions = useMemo(() => {
+    const users = clientsData?.users ?? [];
+    return (users as Array<{ id: string; firstname?: string | null; lastname?: string | null }>).map((user) => ({
+      id: user.id,
+      value: user.id,
+      label: [user.firstname, user.lastname].filter(Boolean).join(' ') || user.id,
+    }));
+  }, [clientsData]);
+
+  // Fetch requests filtered by selected client (server-side)
   const { data: requestsData, isLoading: requestsLoading } =
     trpc.request.getFilteredRequests.useQuery({
       page: 1,
       limit: 100,
       sortBy: 'executionDateTime',
       sortOrder: 'asc',
+      userId: selectedClientId || undefined,
     });
 
   // Fetch stats for badge counts
@@ -179,6 +201,21 @@ export default function AdminCalendarPage() {
               </Button>
             );
           })}
+        </div>
+
+        {/* Client filter */}
+        <div className="flex items-center gap-2">
+          <Users className="h-4 w-4 text-muted-foreground" />
+          <span className="text-sm text-muted-foreground">{t('filters.byClient')}</span>
+          <Combobox
+            options={clientOptions}
+            value={selectedClientId ?? ''}
+            onChange={(value) => setSelectedClientId((value as string) || null)}
+            placeholder={t('filters.allClients')}
+            searchable
+            clearable
+            className="w-64"
+          />
         </div>
 
         <CalendarOrganism

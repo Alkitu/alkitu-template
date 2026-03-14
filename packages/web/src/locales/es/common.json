@@ -353,7 +353,9 @@
         "pending": "Pendientes",
         "ongoing": "En Progreso",
         "completed": "Completadas",
-        "cancelled": "Canceladas"
+        "cancelled": "Canceladas",
+        "byClient": "Filtrar por cliente",
+        "allClients": "Todos los clientes"
       }
     },
     "users": {

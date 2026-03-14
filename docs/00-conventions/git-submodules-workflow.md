@@ -2,7 +2,7 @@
 
 ## Overview
 
-The alkitu-template monorepo uses git submodules to integrate the design system (`Alkitu/design-system-web`) at `packages/design-system/`. This allows the design system to be developed independently while remaining tightly integrated.
+The alkitu-template monorepo uses git submodules to integrate the design system (`Alkitu/design-system`) at `packages/design-system/`. This allows the design system to be developed independently while remaining tightly integrated.
 
 ## Structure
 
@@ -50,7 +50,7 @@ git commit -m "chore: update design-system submodule to latest"
 1. Navigate to the submodule: `cd packages/design-system`
 2. Create a branch: `git checkout -b feat/my-change`
 3. Make changes, commit, and push to the design-system repo
-4. Create a PR in `Alkitu/design-system-web`
+4. Create a PR in `Alkitu/design-system`
 5. After merge, update the submodule pointer in alkitu-template
 
 ### Important Rules

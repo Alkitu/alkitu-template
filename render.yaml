@@ -9,7 +9,7 @@ services:
     region: oregon # Opciones: oregon, frankfurt, singapore
     plan: free
     branch: main
-    buildCommand: git submodule update --init --recursive && npm install -g pnpm@9 && pnpm install --frozen-lockfile && pnpm exec prisma generate --schema=packages/api/prisma/schema.prisma && pnpm run build:shared && pnpm run build:api
+    buildCommand: git submodule update --init --recursive && npm install -g pnpm@9 && pnpm install --frozen-lockfile && ./node_modules/.bin/prisma generate --schema=packages/api/prisma/schema.prisma && pnpm run build:shared && pnpm run build:api
     startCommand: bash scripts/start-api-production.sh
     healthCheckPath: /health
     autoDeploy: true
@@ -56,7 +56,7 @@ services:
     region: oregon
     plan: free
     branch: main
-    buildCommand: git submodule update --init --recursive && npm install -g pnpm@9 && pnpm install --frozen-lockfile && pnpm exec prisma generate --schema=packages/api/prisma/schema.prisma && pnpm run build:shared && pnpm run build:web
+    buildCommand: git submodule update --init --recursive && npm install -g pnpm@9 && pnpm install --frozen-lockfile && ./node_modules/.bin/prisma generate --schema=packages/api/prisma/schema.prisma && pnpm run build:shared && pnpm run build:web
     startCommand: cd packages/web && pnpm start
     healthCheckPath: /
     autoDeploy: true

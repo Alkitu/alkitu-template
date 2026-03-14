@@ -26,9 +26,6 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
 
-  // Empty Turbopack config for Next.js 16 compatibility
-  turbopack: {},
-
   webpack: (config, { dev, isServer }) => {
     // Enhanced HMR configuration for development
     if (dev && !isServer) {

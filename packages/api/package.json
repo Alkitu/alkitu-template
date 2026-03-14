@@ -84,7 +84,9 @@
     "socket.io": "^4.8.1",
     "swagger-ui-express": "^5.0.1",
     "web-push": "^3.6.7",
-    "zod": "^3.25.67"
+    "zod": "^3.25.67",
+    "@types/express": "^5.0.0",
+    "@types/multer": "^2.0.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
@@ -98,9 +100,7 @@
     "@stryker-mutator/typescript-checker": "^9.0.1",
     "@swc/cli": "^0.6.0",
     "@swc/core": "^1.10.7",
-    "@types/express": "^5.0.0",
     "@types/jest": "^29.5.14",
-    "@types/multer": "^2.0.0",
     "@types/node": "^22.10.7",
     "@types/passport-google-oauth20": "^2.0.17",
     "@types/supertest": "^6.0.3",

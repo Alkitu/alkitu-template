@@ -1,8 +1,8 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "cd ../.. && npm run build --workspace=@alkitu/web",
-  "devCommand": "cd ../.. && npm run dev --workspace=@alkitu/web",
-  "installCommand": "cd ../.. && npm install",
+  "buildCommand": "cd ../.. && pnpm exec prisma generate --schema=packages/api/prisma/schema.prisma && pnpm run build:shared && pnpm run build:web",
+  "devCommand": "cd ../.. && pnpm run dev:web",
+  "installCommand": "cd ../.. && pnpm install --no-frozen-lockfile",
   "framework": "nextjs",
   "outputDirectory": ".next",
   "regions": ["iad1"],

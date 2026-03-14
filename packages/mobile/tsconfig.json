@@ -1,6 +1,13 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    "strict": true
-  }
+    "strict": true,
+    "paths": {
+      "@/*": ["./src/*"],
+      "@alkitu/shared": ["../shared/src"],
+      "@alkitu/shared/*": ["../shared/src/*"],
+      "@alkitu/api/*": ["../api/*"]
+    }
+  },
+  "include": ["**/*.ts", "**/*.tsx", "nativewind-env.d.ts"]
 }

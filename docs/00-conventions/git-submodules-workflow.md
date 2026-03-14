@@ -13,7 +13,7 @@ alkitu-template/
 │   ├── shared/           (in monorepo)
 │   ├── web/              (in monorepo)
 │   ├── mobile/           (in monorepo - Expo app)
-│   └── design-system/    → submodule → github.com/Alkitu/design-system-web
+│   └── design-system/    → submodule → github.com/Alkitu/design-system
 │       ├── tokens/       (@alkitu/design-tokens)
 │       ├── web/          (@alkitu/design-system-web)
 │       └── mobile/       (@alkitu/design-system-mobile)
